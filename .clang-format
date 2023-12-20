@@ -1,0 +1,49 @@
+# .clang-format
+#
+# vim: ft=yaml
+# clang-format on/off
+
+IndentWidth: 4
+ColumnLimit: 128
+
+---
+Language: Cpp
+
+AccessModifierOffset: -4
+AlignAfterOpenBracket: Align
+AlignArrayOfStructures: Right
+# AlignConsecutiveDeclarations: true
+AlignConsecutiveMacros: Consecutive
+AlignEscapedNewlines: Left
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: Empty
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
+BreakConstructorInitializers: BeforeComma
+IndentCaseBlocks: true
+IndentPPDirectives: BeforeHash
+PackConstructorInitializers: CurrentLine
+PenaltyBreakAssignment: 300
+PenaltyBreakBeforeFirstCallParameter: 0
+PenaltyReturnTypeOnItsOwnLine: 300
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+AttributeMacros:
+  - VKAPI_ATTR
+  - VKAPI_CALL
+  - VKAPI_PTR
+# StatementAttributeLikeMacros:
+StatementMacros:
+  - OnType
+# WhitespaceSensitiveMacros:
