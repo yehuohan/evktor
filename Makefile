@@ -2,12 +2,11 @@ DIR_ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 BUILD_TYPE ?= Debug
 #BUILD_TYPE ?= Release
-#BUILD_GEN ?= "NMake Makefiles"
-#BUILD_GEN ?= "Unix Makefiles"
 BUILD_GEN ?= "Ninja"
+#BUILD_GEN ?= "Unix Makefiles"
 BUILD_JOB ?= -j4
-BUILD_DIR ?= _VOut/${BUILD_TYPE}
-INSTALL_DIR ?= install/${BUILD_TYPE}
+DIR_BUILD ?= _VOut/${BUILD_TYPE}
+DIR_INSTALL ?= install/${BUILD_TYPE}
 
 VCPKG_ROOT ?= ${APPS_HOME}/vcpkg
 VCPKG_TRIPLET ?= x64-mingw-mix
@@ -20,36 +19,53 @@ all: alpha #omega
 
 .PHONY: alpha
 alpha: src
-	@echo [run] egraphics/alpha...
-	./${INSTALL_DIR}/alpha ${DIR_ROOT}/../assets
+	@echo [run] evktor/alpha...
+	./${DIR_INSTALL}/alpha ${DIR_ROOT}/../assets
 
 .PHONY: omega
 omega: src
-	@echo [run] egraphics/omega...
-	./${INSTALL_DIR}/omega ${DIR_ROOT}/../assets
+	@echo [run] evktor/omega...
+	./${DIR_INSTALL}/omega ${DIR_ROOT}/../assets
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Build src
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .PHONY: src
-src:
-	@echo [src] Build egraphics...
+src: gen
+	@echo [src] Build evktor...
 	cmake -G ${BUILD_GEN} -Wno-dev \
 		-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-		-DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} \
-		-DPROJECT_BUILD_DIR=${BUILD_DIR} \
+		-DCMAKE_INSTALL_PREFIX=${DIR_INSTALL} \
+		-DPROJECT_BUILD_DIR=${DIR_BUILD} \
 		-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake \
 		-DVCPKG_TARGET_TRIPLET=${VCPKG_TRIPLET} \
 		-DVCPKG_OVERLAY_TRIPLETS=${DIR_ROOT}/cmake \
 		-DVCPKG_INSTALLED_DIR=${DEPS_DIR} \
 		-DVCPKG_MANIFEST_INSTALL=OFF \
-		-S . -B ${BUILD_DIR}
-	cmake --build ${BUILD_DIR} ${BUILD_JOB}
-	cmake --install ${BUILD_DIR}
+		-S . -B ${DIR_BUILD}
+
+.PHONY: gen
+gen:
+	@echo [src] Generate evktor...
+	cmake -G ${BUILD_GEN} -Wno-dev \
+		-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+		-DCMAKE_INSTALL_PREFIX=${DIR_INSTALL} \
+		-DPROJECT_BUILD_DIR=${DIR_BUILD} \
+		-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake \
+		-DVCPKG_TARGET_TRIPLET=${VCPKG_TRIPLET} \
+		-DVCPKG_OVERLAY_TRIPLETS=${DIR_ROOT}/cmake \
+		-DVCPKG_INSTALLED_DIR=${DEPS_DIR} \
+		-DVCPKG_MANIFEST_INSTALL=OFF \
+		-S . -B ${DIR_BUILD}
+
+.PHONY: tags
+tags: gen
+	cmake --build ${DIR_BUILD} ${BUILD_JOB} --target tags
 
 .PHONY: clean
 clean:
-	-rm -rf ${BUILD_DIR}
+	-rm -rf ${DIR_BUILD}
+	-rm -rf ${DIR_INSTALL}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Build deps
@@ -69,11 +85,3 @@ deps-repos:
 	@echo Prepare deps-repos...
 	git clone --depth=1 https://github.com/zeux/volk.git ${DEPS_DIR}/repos/volk
 	git clone --depth=1 https://github.com/KhronosGroup/Vulkan-ValidationLayers.git ${DEPS_DIR}/repos/Vulkan-ValidationLayers
-
-.PHONY: tags
-tags:
-	cmake -G ${BUILD_GEN} -Wno-dev \
-		-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-		-DCMAKE_INSTALL_PREFIX=${BUILD_DIR}/${BUILD_TYPE} \
-		-S . -B ${BUILD_DIR}
-	cmake --build ${BUILD_DIR} ${BUILD_JOB} --target tags
