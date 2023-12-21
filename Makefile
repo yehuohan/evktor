@@ -5,8 +5,8 @@ BUILD_TYPE ?= Debug
 BUILD_GEN ?= "Ninja"
 #BUILD_GEN ?= "Unix Makefiles"
 BUILD_JOB ?= -j4
-DIR_BUILD ?= _VOut/${BUILD_TYPE}
-DIR_INSTALL ?= install/${BUILD_TYPE}
+DIR_BUILD ?= ${DIR_ROOT}/_VOut/${BUILD_TYPE}
+DIR_INSTALL ?= ${DIR_ROOT}/install/${BUILD_TYPE}
 
 VCPKG_ROOT ?= ${APPS_HOME}/vcpkg
 VCPKG_TRIPLET ?= x64-mingw-mix
@@ -20,12 +20,12 @@ all: alpha #omega
 .PHONY: alpha
 alpha: src
 	@echo [run] evktor/alpha...
-	./${DIR_INSTALL}/alpha ${DIR_ROOT}/../assets
+	${DIR_INSTALL}/alpha ${DIR_ROOT}/../assets
 
 .PHONY: omega
 omega: src
 	@echo [run] evktor/omega...
-	./${DIR_INSTALL}/omega ${DIR_ROOT}/../assets
+	${DIR_INSTALL}/omega ${DIR_ROOT}/../assets
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Build src

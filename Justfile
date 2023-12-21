@@ -1,0 +1,75 @@
+set shell := ['bash', '-uc']
+set dotenv-load
+set ignore-comments
+
+dir_root := replace(justfile_directory(), '\', '/')
+dir_home := replace(env('APPS_HOME'), '\', '/')
+
+build_type := env('BUILD_TYPE', 'Debug')
+# build_type := env('BUILD_TYPE', 'Release')
+build_gen := env('BUILD_GEN', 'Ninja')
+# build_gen := env('BUILD_GEN', '"Unix Makefiles"')
+build_job := '-j4'
+dir_build := dir_root / '_VOut' / build_type
+dir_install := dir_root / 'install' / build_type
+
+VCPKG_ROOT := dir_home / 'vcpkg'
+VCPKG_TRIPLET := env('VCPKG_TRIPLET', 'x64-mingw-mix')
+VCPKG_XSCRIPT := 'clear;x-script,bash {{dir_root}}/scripts/vcpkg_xscript.sh {url} {dst};x-block-origin'
+DEPS_DIR := dir_root / 'deps'
+
+
+all: alpha #omega
+
+alpha: src
+    @echo [run] evktor/alpha...
+    {{dir_install}}/alpha {{dir_root}}/../assets
+
+omega: src
+    @echo [run] evktor/omega...
+    {{dir_install}}/omega {{dir_root}}/../assets
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Build src
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src: gen
+    @echo [src] Build evktor...
+    cmake --build {{dir_build}} {{build_job}}
+    cmake --install {{dir_build}}
+
+gen:
+    @echo [src] Generate evktor...
+    cmake -G {{build_gen}} -Wno-dev \
+        -DCMAKE_BUILD_TYPE={{build_type}} \
+        -DCMAKE_INSTALL_PREFIX={{dir_install}} \
+        -DPROJECT_BUILD_DIR={{dir_build}} \
+        -DCMAKE_TOOLCHAIN_FILE={{VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake \
+        -DVCPKG_TARGET_TRIPLET={{VCPKG_TRIPLET}} \
+        -DVCPKG_OVERLAY_TRIPLETS={{dir_root}}/cmake \
+        -DVCPKG_INSTALLED_DIR={{DEPS_DIR}} \
+        -DVCPKG_MANIFEST_INSTALL=OFF \
+        -S . -B {{dir_build}}
+
+tags: gen
+    cmake --build {{dir_build}} {{build_job}} --target tags
+
+clean:
+    -rm -rf {{dir_build}}
+    -rm -rf {{dir_install}}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Build deps
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+deps:
+    @echo Prepare deps...
+    vcpkg install --recurse --no-binarycaching \
+        --triplet={{VCPKG_TRIPLET}} \
+        --overlay-triplets={{dir_root}}/cmake \
+        --x-install-root={{DEPS_DIR}} \
+        --x-asset-sources={{VCPKG_XSCRIPT}}
+
+deps-repos:
+    # Modify vcpkg.json to install/remove
+    @echo Prepare deps-repos...
+    git clone --depth=1 https://github.com/zeux/volk.git ${DEPS_DIR}/repos/volk
+    git clone --depth=1 https://github.com/KhronosGroup/Vulkan-ValidationLayers.git ${DEPS_DIR}/repos/Vulkan-ValidationLayers
