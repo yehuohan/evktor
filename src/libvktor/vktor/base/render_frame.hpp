@@ -33,19 +33,34 @@ public:
     /**
      * @brief Free all descriptor pools and sets within thread index
      */
-    void freeDescriptorSets(uint32_t thread_index = 0);
+    void freeDescriptorSets(size_t thread_index = 0);
     /**
      * @brief Request one command buffer from this frame
      *
      * Reset command buffer via vkResetCommandBuffer or vkBeginCommandBuffer
      */
-    Res<Ref<CommandBuffer>> requestCommandBuffer(const Queue& queue, uint32_t thread_index = 0);
+    Res<Ref<CommandBuffer>> requestCommandBuffer(const Queue& queue, size_t thread_index = 0);
     /**
      * @brief Request one descriptor set from an available descriptor pool that is got from pooler
      */
     Res<Ref<DescriptorSet>> requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
                                                  const DescriptorInfo& desc_info,
-                                                 uint32_t thread_index = 0);
+                                                 size_t thread_index = 0);
+    /**
+     * @brief Request one descriptor set from an available descriptor pool that is got from pooler
+     */
+    Res<Ref<DescriptorSet>> requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
+                                                 const DescriptorArrayInfo& desc_info,
+                                                 size_t thread_index = 0);
+
+private:
+    Res<Ref<DescriptorPool>> requestDescriptorPool(const DescriptorSetLayout& desc_setlayout, size_t thread_index);
+    /** T should be DescriptorInfo or DescriptorArrayInfo */
+    template <typename T>
+    Res<Ref<DescriptorSet>> requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
+                                                 const T& desc_info,
+                                                 DescriptorPool& desc_pool,
+                                                 size_t thread_index);
 };
 
 NAMESPACE_END(vkt)

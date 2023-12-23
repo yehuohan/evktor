@@ -18,14 +18,14 @@ void RenderFrame::reset() {
     }
 }
 
-void RenderFrame::freeDescriptorSets(uint32_t thread_index) {
+void RenderFrame::freeDescriptorSets(size_t thread_index) {
     assert(thread_index < desc_poolers.size() && "Thread index is out of descriptor pooler array");
     assert(thread_index < desc_sets.size() && "Thread index is out of descriptor set array");
     desc_poolers[thread_index].clear();
     desc_sets[thread_index].clear();
 }
 
-Res<Ref<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, uint32_t thread_index) {
+Res<Ref<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, size_t thread_index) {
     assert(thread_index < cmd_pools.size() && "Thread index is out of command pool array");
     CommandPool* pool = nullptr;
 
@@ -50,9 +50,30 @@ Res<Ref<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, ui
 
 Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
                                                           const DescriptorInfo& desc_info,
-                                                          uint32_t thread_index) {
+                                                          size_t thread_index) {
+    auto res_pool = requestDescriptorPool(desc_setlayout, thread_index);
+    if (res_pool.isErr()) {
+        return Err(res_pool.unwrapErr());
+    }
+    auto& pool = res_pool.unwrap().get();
+
+    return requestDescriptorSet(desc_setlayout, desc_info, pool, thread_index);
+}
+
+Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
+                                                          const DescriptorArrayInfo& desc_info,
+                                                          size_t thread_index) {
+    auto res_pool = requestDescriptorPool(desc_setlayout, thread_index);
+    if (res_pool.isErr()) {
+        return Err(res_pool.unwrapErr());
+    }
+    auto& pool = res_pool.unwrap().get();
+
+    return requestDescriptorSet(desc_setlayout, desc_info, pool, thread_index);
+}
+
+Res<Ref<DescriptorPool>> RenderFrame::requestDescriptorPool(const DescriptorSetLayout& desc_setlayout, size_t thread_index) {
     assert(thread_index < desc_poolers.size() && "Thread index is out of descriptor pooler array");
-    assert(thread_index < desc_sets.size() && "Thread index is out of descriptor set array");
 
     // Get descriptor pooler
     DescriptorPooler* pooler = nullptr;
@@ -69,22 +90,26 @@ Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLay
     }
 
     // Get available descriptor pool from pooler
-    auto res_pool = pooler->get();
-    if (res_pool.isErr()) {
-        return Err(res_pool.unwrapErr());
-    }
-    auto& pool = res_pool.unwrap().get();
+    return pooler->get();
+}
+
+template <typename T>
+Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
+                                                          const T& desc_info,
+                                                          DescriptorPool& desc_pool,
+                                                          size_t thread_index) {
+    assert(thread_index < desc_sets.size() && "Thread index is out of descriptor set array");
 
     // Get descriptor set from pool
     DescriptorSet* set = nullptr;
     {
         auto& descsets = desc_sets[thread_index];
-        size_t key = hash(desc_setlayout, pool, desc_info);
+        size_t key = hash(desc_setlayout, desc_pool, desc_info);
         auto item = descsets.find(key);
         if (item != descsets.end()) {
             set = &item->second;
         } else {
-            auto res = pool.allocate();
+            auto res = desc_pool.allocate();
             if (res.isErr()) {
                 return Err(res.unwrapErr());
             }
