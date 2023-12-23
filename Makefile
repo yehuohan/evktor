@@ -33,16 +33,8 @@ omega: src
 .PHONY: src
 src: gen
 	@echo [src] Build evktor...
-	cmake -G ${BUILD_GEN} -Wno-dev \
-		-DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-		-DCMAKE_INSTALL_PREFIX=${DIR_INSTALL} \
-		-DPROJECT_BUILD_DIR=${DIR_BUILD} \
-		-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake \
-		-DVCPKG_TARGET_TRIPLET=${VCPKG_TRIPLET} \
-		-DVCPKG_OVERLAY_TRIPLETS=${DIR_ROOT}/cmake \
-		-DVCPKG_INSTALLED_DIR=${DEPS_DIR} \
-		-DVCPKG_MANIFEST_INSTALL=OFF \
-		-S . -B ${DIR_BUILD}
+	cmake --build ${DIR_BUILD} ${BUILD_JOB}
+	cmake --install ${DIR_BUILD}
 
 .PHONY: gen
 gen:

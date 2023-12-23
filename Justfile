@@ -71,5 +71,5 @@ deps:
 deps-repos:
     # Modify vcpkg.json to install/remove
     @echo Prepare deps-repos...
-    git clone --depth=1 https://github.com/zeux/volk.git ${DEPS_DIR}/repos/volk
-    git clone --depth=1 https://github.com/KhronosGroup/Vulkan-ValidationLayers.git ${DEPS_DIR}/repos/Vulkan-ValidationLayers
+    git clone --depth=1 https://github.com/zeux/volk.git {{DEPS_DIR}}/repos/volk
+    git clone --depth=1 https://github.com/KhronosGroup/Vulkan-ValidationLayers.git {{DEPS_DIR}}/repos/Vulkan-ValidationLayers
