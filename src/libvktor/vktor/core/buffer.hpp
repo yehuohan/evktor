@@ -24,7 +24,7 @@ struct Buffer : public BuiltResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
      *
      * @param src_size Give 0 to use `size`
      */
-    void copyFrom(const void* src, const VkDeviceSize src_size = 0);
+    void copyFrom(const void* src, const VkDeviceSize src_size = 0) const;
 
     /**
      * @brief Copy buffer to buffer `dst` at `dst_size`
@@ -33,7 +33,7 @@ struct Buffer : public BuiltResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
      *
      * @param dst_size Give 0 to use `size`
      */
-    void copyTo(const CommandBuffer& cmdbuf, const Buffer& dst, const VkDeviceSize dst_size = 0);
+    void copyTo(const CommandBuffer& cmdbuf, const Buffer& dst, const VkDeviceSize dst_size = 0) const;
 
     /**
      * @brief Copy buffer to image `dst` at `dst_size`
@@ -42,7 +42,7 @@ struct Buffer : public BuiltResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
      *
      * @param dst_size Give 0 to use `size`
      */
-    void copyTo(const CommandBuffer& cmdbuf, const Image& dst, const VkDeviceSize dst_size = 0);
+    void copyTo(const CommandBuffer& cmdbuf, const Image& dst, const VkDeviceSize dst_size = 0) const;
 };
 
 struct BufferInfo : public BuilderInfo {

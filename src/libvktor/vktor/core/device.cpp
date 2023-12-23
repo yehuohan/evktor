@@ -13,6 +13,9 @@ Device::Device(Device&& rhs)
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     queues = std::move(rhs.queues);
+    rhs.queues.clear();
+    queue_indices = std::move(rhs.queue_indices);
+    rhs.queue_indices.clear();
     mem_allocator = rhs.mem_allocator;
     rhs.mem_allocator = VK_NULL_HANDLE;
 }
@@ -24,11 +27,9 @@ Device::~Device() {
     if (handle) {
         vkDestroyDevice(handle, nullptr);
     }
+    queues.clear();
+    queue_indices.clear();
     handle = VK_NULL_HANDLE;
-    queues.present = VK_NULL_HANDLE;
-    queues.graphics = VK_NULL_HANDLE;
-    queues.compute = VK_NULL_HANDLE;
-    queues.transfer = VK_NULL_HANDLE;
     mem_allocator = VK_NULL_HANDLE;
 }
 
@@ -37,10 +38,10 @@ DeviceBuilder::Built DeviceBuilder::build() {
 
     const float queue_priority = QUEUE_PRIORITY;
     Vector<VkDeviceQueueCreateInfo> queues_ci;
-    for (uint32_t q : physical_device.indices_set) {
+    for (const auto& q : physical_device.queue_family_props) {
         auto dev_queue_ci = Itor::DeviceQueueCreateInfo();
-        dev_queue_ci.queueFamilyIndex = q;
-        dev_queue_ci.queueCount = QUEUE_COUNT;
+        dev_queue_ci.queueFamilyIndex = q.first;
+        dev_queue_ci.queueCount = q.second.count;
         dev_queue_ci.pQueuePriorities = &queue_priority;
         queues_ci.push_back(dev_queue_ci);
     }
@@ -74,18 +75,29 @@ DeviceBuilder::Built DeviceBuilder::build() {
     volkLoadDevice(device);
 
     // Queues are automatically created along with device, and we need to retrieve their handles.
-    const PhysicalDevice::QueueFamilyIndices& indices = physical_device.indices;
+    for (const auto& q : physical_device.queue_family_props) {
+        uint32_t family_index = q.first;
+        for (uint32_t index = 0; index < q.second.count; index++) {
+            Queue queue(family_index, index, "Queue" + std::to_string(family_index) + "." + std::to_string(index));
+            vkGetDeviceQueue(device, family_index, 0, queue);
+            OnRet(queue.setDebugName(device), "Failed to set debug name: {}", queue.__name);
+            device.queue_indices[family_index].push_back(std::move(queue));
+        }
+    }
+
+    // Select the first queue index by default
+    const auto& indices = physical_device.queue_families;
     if (indices.present.has_value()) {
-        vkGetDeviceQueue(device, indices.present.value(), 0, &device.queues.present);
+        device.queues.present = &device.queue_indices[indices.present.value()][0];
     }
     if (indices.graphics.has_value()) {
-        vkGetDeviceQueue(device, indices.graphics.value(), 0, &device.queues.graphics);
+        device.queues.graphics = &device.queue_indices[indices.graphics.value()][0];
     }
     if (indices.compute.has_value()) {
-        vkGetDeviceQueue(device, indices.compute.value(), 0, &device.queues.compute);
+        device.queues.compute = &device.queue_indices[indices.compute.value()][0];
     }
     if (indices.transfer.has_value()) {
-        vkGetDeviceQueue(device, indices.transfer.value(), 0, &device.queues.transfer);
+        device.queues.transfer = &device.queue_indices[indices.transfer.value()][0];
     }
 
     // Create memory allocator

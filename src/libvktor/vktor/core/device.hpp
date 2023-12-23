@@ -2,6 +2,7 @@
 #include "__builder.hpp"
 #include "instance.hpp"
 #include "physical_device.hpp"
+#include "queue.hpp"
 #include <vk_mem_alloc.h>
 
 NAMESPACE_BEGIN(vkt)
@@ -11,12 +12,8 @@ struct Device : public BuiltHandle<VkDevice> {
     const Instance& instance;
     const PhysicalDevice& physical_device;
 
-    struct Queues {
-        VkQueue present = VK_NULL_HANDLE;
-        VkQueue graphics = VK_NULL_HANDLE;
-        VkQueue compute = VK_NULL_HANDLE;
-        VkQueue transfer = VK_NULL_HANDLE;
-    } queues{};
+    Queues queues{};                                  /**< Corresponding queues for PhysicalDevice::queue_families */
+    HashMap<uint32_t, Vector<Queue>> queue_indices{}; /**< Map queue family index to corresponding queue array */
     VmaAllocator mem_allocator = VK_NULL_HANDLE;
 
     Device(const Instance& instance, const PhysicalDevice& physical_device, Name&& name)
@@ -34,7 +31,6 @@ class DeviceBuilder : public Builder<DeviceBuilder, Device, DeviceInfo> {
 private:
     const Instance& instance;
     const PhysicalDevice& physical_device;
-    constexpr static const uint32_t QUEUE_COUNT = 1;
     constexpr static const float QUEUE_PRIORITY = 1.0f;
 
 public:

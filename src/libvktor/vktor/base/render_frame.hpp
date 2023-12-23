@@ -7,6 +7,7 @@
 #include "vktor/core/descriptor_setlayout.hpp"
 #include "vktor/core/image.hpp"
 #include "vktor/core/image_view.hpp"
+#include "vktor/core/queue.hpp"
 #include <tuple>
 
 NAMESPACE_BEGIN(vkt)
@@ -38,7 +39,7 @@ public:
      *
      * Reset command buffer via vkResetCommandBuffer or vkBeginCommandBuffer
      */
-    Res<Ref<CommandBuffer>> requestCommandBuffer(uint32_t queue_family_index, uint32_t thread_index = 0);
+    Res<Ref<CommandBuffer>> requestCommandBuffer(const Queue& queue, uint32_t thread_index = 0);
     /**
      * @brief Request one descriptor set from an available descriptor pool that is got from pooler
      */

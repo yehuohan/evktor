@@ -25,23 +25,23 @@ void RenderFrame::freeDescriptorSets(uint32_t thread_index) {
     desc_sets[thread_index].clear();
 }
 
-Res<Ref<CommandBuffer>> RenderFrame::requestCommandBuffer(uint32_t queue_family_index, uint32_t thread_index) {
+Res<Ref<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, uint32_t thread_index) {
     assert(thread_index < cmd_pools.size() && "Thread index is out of command pool array");
     CommandPool* pool = nullptr;
 
     auto& cmdpools = cmd_pools[thread_index];
-    auto item = cmdpools.find(queue_family_index);
+    auto item = cmdpools.find(queue.family_index);
     if (item != cmdpools.end()) {
         pool = &item->second;
     } else {
         auto res = CommandPoolBuilder(api)
                        .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
-                       .setQueueIndex(api.graphicsIndex())
+                       .setQueueIndex(queue.family_index)
                        .build();
         if (res.isErr()) {
             return Err(res.unwrapErr());
         }
-        auto cmdpool = cmdpools.insert({queue_family_index, res.unwrap()}).first;
+        auto cmdpool = cmdpools.insert({queue.family_index, res.unwrap()}).first;
         pool = &cmdpool->second;
     }
 

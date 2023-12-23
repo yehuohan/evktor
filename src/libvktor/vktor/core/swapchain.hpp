@@ -42,7 +42,7 @@ public:
 
     Self addDesiredFormat(const VkSurfaceFormatKHR& format);
     Self addDesiredPresentMode(VkPresentModeKHR mode);
-    Self setDesiredExtent(const VkExtent2D& extent2d);
+    Self setDesiredExtent(const VkExtent2D& extent);
 
 private:
     VkSurfaceFormatKHR chooseSurfaceFormat(const Vector<VkSurfaceFormatKHR>& formats);

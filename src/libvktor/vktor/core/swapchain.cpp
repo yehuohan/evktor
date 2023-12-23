@@ -1,5 +1,6 @@
 #include "swapchain.hpp"
 #include "utils.hpp"
+#include <algorithm>
 #include <cassert>
 
 NAMESPACE_BEGIN(vkt)
@@ -41,13 +42,14 @@ Self SwapchainBuilder::addDesiredPresentMode(VkPresentModeKHR mode) {
     return *this;
 }
 
-Self SwapchainBuilder::setDesiredExtent(const VkExtent2D& extent2d) {
-    info.desired_extent = extent2d;
+Self SwapchainBuilder::setDesiredExtent(const VkExtent2D& extent) {
+    info.desired_extent = extent;
     return *this;
 }
 
 SwapchainBuilder::Built SwapchainBuilder::build() {
-    if ((!device.physical_device.indices.present.has_value()) || (!device.physical_device.indices.graphics.has_value())) {
+    if ((!device.physical_device.queue_families.present.has_value()) ||
+        (!device.physical_device.queue_families.graphics.has_value())) {
         return Er("SwapchainBuilder requires valid present and graphics queue family index");
     }
 
@@ -86,14 +88,14 @@ SwapchainBuilder::Built SwapchainBuilder::build() {
     swapchain_ci.presentMode = present_mode;
     swapchain_ci.clipped = VK_TRUE;
     swapchain_ci.oldSwapchain = VK_NULL_HANDLE;
-    uint32_t queues_arr[] = {
-        device.physical_device.indices.present.value(),
-        device.physical_device.indices.graphics.value(),
+    uint32_t queue_family_indices[] = {
+        device.physical_device.queue_families.present.value(),
+        device.physical_device.queue_families.graphics.value(),
     };
-    if (device.physical_device.indices.graphics != device.physical_device.indices.present) {
+    if (device.physical_device.queue_families.graphics != device.physical_device.queue_families.present) {
         swapchain_ci.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
         swapchain_ci.queueFamilyIndexCount = 2;
-        swapchain_ci.pQueueFamilyIndices = queues_arr;
+        swapchain_ci.pQueueFamilyIndices = queue_family_indices;
     } else {
         swapchain_ci.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
         swapchain_ci.queueFamilyIndexCount = 0;
@@ -169,14 +171,13 @@ VkExtent2D SwapchainBuilder::chooseExtent(const VkSurfaceCapabilitiesKHR& capali
     if (capalibities.currentExtent.width != UINT32_MAX) {
         return capalibities.currentExtent;
     } else {
-        // `currentExtent` == UINT32_MAX means that match window's resolution
-        // within minImageExtent and maxImageExtent
-        VkExtent2D extent2d = info.desired_extent;
-        extent2d.width = std::max(capalibities.minImageExtent.width,
-                                  std::min(capalibities.maxImageExtent.width, extent2d.width));
-        extent2d.height = std::max(capalibities.minImageExtent.height,
-                                   std::min(capalibities.maxImageExtent.height, extent2d.height));
-        return extent2d;
+        // `currentExtent` == UINT32_MAX means that match window's resolution within minImageExtent and maxImageExtent
+        VkExtent2D extent = info.desired_extent;
+        extent.width = std::min(capalibities.maxImageExtent.width, extent.width);
+        extent.height = std::min(capalibities.maxImageExtent.height, extent.height);
+        extent.width = std::max(capalibities.minImageExtent.width, extent.width);
+        extent.height = std::max(capalibities.minImageExtent.height, extent.height);
+        return extent;
     }
 }
 

@@ -32,7 +32,7 @@ Image::~Image() {
     memory = VK_NULL_HANDLE;
 }
 
-void Image::copyFrom(const void* src, const VkDeviceSize src_size) {
+void Image::copyFrom(const void* src, const VkDeviceSize src_size) const {
     VkDeviceSize copy_size = src_size;
     void* data;
     vmaMapMemory(device, allocation, &data);
@@ -40,7 +40,7 @@ void Image::copyFrom(const void* src, const VkDeviceSize src_size) {
     vmaUnmapMemory(device, allocation);
 }
 
-bool Image::genMipmaps(const CommandBuffer& cmdbuf) {
+void Image::genMipmaps(const CommandBuffer& cmdbuf) const {
     int32_t mip_wid = extent.width;
     int32_t mip_hei = extent.height;
 
@@ -100,12 +100,8 @@ bool Image::genMipmaps(const CommandBuffer& cmdbuf) {
     }
     cmdbuf.end();
 
-    auto submit_info = Itor::SubmitInfo();
-    submit_info.commandBufferCount = 1;
-    submit_info.pCommandBuffers = cmdbuf;
-    vkQueueSubmit(device.queues.transfer, 1, &submit_info, VK_NULL_HANDLE);
-    vkQueueWaitIdle(device.queues.transfer);
-    return true;
+    device.queues.transfer->submit(cmdbuf);
+    device.queues.transfer->waitIdle();
 }
 
 Self ImageBuilder::setFormat(VkFormat format) {

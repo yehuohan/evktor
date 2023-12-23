@@ -29,7 +29,7 @@ Buffer::~Buffer() {
     allocation = VK_NULL_HANDLE;
 }
 
-void Buffer::copyFrom(const void* src, const VkDeviceSize src_size) {
+void Buffer::copyFrom(const void* src, const VkDeviceSize src_size) const {
     VkDeviceSize copy_size = src_size > 0 ? src_size : size;
     void* data;
     vmaMapMemory(device, allocation, &data);
@@ -37,7 +37,7 @@ void Buffer::copyFrom(const void* src, const VkDeviceSize src_size) {
     vmaUnmapMemory(device, allocation);
 }
 
-void Buffer::copyTo(const CommandBuffer& cmdbuf, const Buffer& dst, const VkDeviceSize dst_size) {
+void Buffer::copyTo(const CommandBuffer& cmdbuf, const Buffer& dst, const VkDeviceSize dst_size) const {
     VkDeviceSize copy_size = dst_size > 0 ? dst_size : size;
 
     cmdbuf.begin();
@@ -48,14 +48,11 @@ void Buffer::copyTo(const CommandBuffer& cmdbuf, const Buffer& dst, const VkDevi
     vkCmdCopyBuffer(cmdbuf, handle, dst, 1, &copy);
     cmdbuf.end();
 
-    auto submit_info = Itor::SubmitInfo();
-    submit_info.commandBufferCount = 1;
-    submit_info.pCommandBuffers = cmdbuf;
-    vkQueueSubmit(device.queues.transfer, 1, &submit_info, VK_NULL_HANDLE);
-    vkQueueWaitIdle(device.queues.transfer);
+    device.queues.transfer->submit(cmdbuf);
+    device.queues.transfer->waitIdle();
 }
 
-void Buffer::copyTo(const CommandBuffer& cmdbuf, const Image& dst, const VkDeviceSize dst_size) {
+void Buffer::copyTo(const CommandBuffer& cmdbuf, const Image& dst, const VkDeviceSize dst_size) const {
     VkDeviceSize copy_size = dst_size > 0 ? dst_size : size;
 
     cmdbuf.begin();
@@ -72,11 +69,8 @@ void Buffer::copyTo(const CommandBuffer& cmdbuf, const Image& dst, const VkDevic
     vkCmdCopyBufferToImage(cmdbuf, handle, dst, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copy);
     cmdbuf.end();
 
-    auto submit_info = Itor::SubmitInfo();
-    submit_info.commandBufferCount = 1;
-    submit_info.pCommandBuffers = cmdbuf;
-    vkQueueSubmit(device.queues.transfer, 1, &submit_info, VK_NULL_HANDLE);
-    vkQueueWaitIdle(device.queues.transfer);
+    device.queues.transfer->submit(cmdbuf);
+    device.queues.transfer->waitIdle();
 }
 
 Self BufferBuilder::setSize(VkDeviceSize size) {

@@ -1,20 +1,15 @@
 #pragma once
 #include "__builder.hpp"
 #include "instance.hpp"
-#include <set>
+#include "queue.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
 struct PhysicalDevice : public BuiltHandle<VkPhysicalDevice> {
-    struct QueueFamilyIndices {
-        std::optional<uint32_t> present{};
-        std::optional<uint32_t> graphics{};
-        std::optional<uint32_t> compute{};
-        std::optional<uint32_t> transfer{};
-    } indices{};
-    std::set<uint32_t> indices_set{}; /**< Collect non-duplicated queue family indices */
-    Vector<const char*> extensions{}; /**< Enabled extensions for device */
+    QueueFamilies queue_families{};
+    HashMap<uint32_t, QueueFamilyProps> queue_family_props{}; /**< Map queue family index to it's properties */
+    Vector<const char*> extensions{};                         /**< Enabled extensions for device */
     // VkPhysicalDeviceFeatures features{};
 
     PhysicalDevice(Name&& name) : BuiltHandle(std::move(name)) {}
@@ -42,10 +37,11 @@ struct PhysicalDeviceInfo : public BuilderInfo {
 struct PhysicalDeviceDetails {
     const VkPhysicalDevice& physical_device; /**< The physical device to get details */
     const VkSurfaceKHR& surface;             /**< Surface for collecting presence indices */
-    Vector<uint32_t> present_indices{};
-    Vector<uint32_t> graphics_indices{};
-    Vector<uint32_t> compute_indices{};
-    Vector<uint32_t> transfer_indices{};
+    Vector<uint32_t> present_indices{};      /**< Present queue family index for queue_family_props */
+    Vector<uint32_t> graphics_indices{};     /**< Graphics queue family index for queue_family_props */
+    Vector<uint32_t> compute_indices{};      /**< Compute queue family index for queue_family_props */
+    Vector<uint32_t> transfer_indices{};     /**< Transfer queue family index for queue_family_props */
+    Vector<VkQueueFamilyProperties> queue_family_props{};
 
     static void collect(PhysicalDeviceDetails& details);
     static void print(const PhysicalDeviceDetails& details);
@@ -79,7 +75,9 @@ public:
     // Self setRequiredFeatures(const VkPhysicalDeviceFeatures& features);
 
 private:
+    /** Check required items */
     bool checkSuitable(const PhysicalDeviceDetails& details);
+    /** Check preferred items */
     PhysicalDevice pickBestSuitable(const Vector<PhysicalDeviceDetails> details);
 };
 

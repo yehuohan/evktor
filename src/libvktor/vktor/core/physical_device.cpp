@@ -10,19 +10,16 @@ using Self = PhysicalDeviceSelector::Self;
 PhysicalDevice::PhysicalDevice(PhysicalDevice&& rhs) : BuiltHandle(std::move(rhs.__name)) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
-    indices = std::move(rhs.indices);
-    indices_set = std::move(rhs.indices_set);
+    queue_families = std::move(rhs.queue_families);
+    queue_family_props = std::move(rhs.queue_family_props);
     extensions = std::move(rhs.extensions);
     // features = std::move(rhs.features);
 }
 
 PhysicalDevice::~PhysicalDevice() {
     handle = VK_NULL_HANDLE;
-    indices.present.reset();
-    indices.graphics.reset();
-    indices.compute.reset();
-    indices.transfer.reset();
-    indices_set.clear();
+    queue_families.clear();
+    queue_family_props.clear();
     extensions.clear();
 }
 
@@ -33,9 +30,10 @@ bool PhysicalDevice::isExtensionEnabled(const char* extension) const {
 }
 
 void PhysicalDeviceDetails::collect(PhysicalDeviceDetails& details) {
-    auto props = enumerate<VkQueueFamilyProperties>(vkGetPhysicalDeviceQueueFamilyProperties, details.physical_device);
-    for (uint32_t idx = 0; idx < u32(props.size()); idx++) {
-        const VkQueueFamilyProperties& p = props[idx];
+    details.queue_family_props = enumerate<VkQueueFamilyProperties>(vkGetPhysicalDeviceQueueFamilyProperties,
+                                                                    details.physical_device);
+    for (uint32_t idx = 0; idx < u32(details.queue_family_props.size()); idx++) {
+        const VkQueueFamilyProperties& p = details.queue_family_props[idx];
         if (details.surface) {
             VkBool32 present = false;
             vkGetPhysicalDeviceSurfaceSupportKHR(details.physical_device, idx, details.surface, &present);
@@ -165,10 +163,7 @@ PhysicalDeviceSelector::Built PhysicalDeviceSelector::select() {
     // Get all suitable physical device on account of properties, features and extensions and so on
     Vector<PhysicalDeviceDetails> suitables{};
     for (const auto& d : devs) {
-        PhysicalDeviceDetails details{
-            .physical_device = d,
-            .surface = info.surface,
-        };
+        PhysicalDeviceDetails details{d, info.surface};
         PhysicalDeviceDetails::collect(details);
         if (info.__verbose) {
             PhysicalDeviceDetails::print(details);
@@ -183,30 +178,21 @@ PhysicalDeviceSelector::Built PhysicalDeviceSelector::select() {
 
     // Pick the best suitable
     PhysicalDevice phy_dev = pickBestSuitable(suitables);
-
     return Ok(std::move(phy_dev));
 }
 
 bool PhysicalDeviceSelector::checkSuitable(const PhysicalDeviceDetails& details) {
-    if (info.require_present_queue) {
-        if (details.present_indices.size() == 0) {
-            return false;
-        }
+    if (info.require_present_queue && details.present_indices.size() == 0) {
+        return false;
     }
-    if (info.require_graphics_queue) {
-        if (details.graphics_indices.size() == 0) {
-            return false;
-        }
+    if (info.require_graphics_queue && details.graphics_indices.size() == 0) {
+        return false;
     }
-    if (info.require_compute_queue) {
-        if (details.compute_indices.size() == 0) {
-            return false;
-        }
+    if (info.require_compute_queue && details.compute_indices.size() == 0) {
+        return false;
     }
-    if (info.require_transfer_queue) {
-        if (details.transfer_indices.size() == 0) {
-            return false;
-        }
+    if (info.require_transfer_queue && details.transfer_indices.size() == 0) {
+        return false;
     }
     if (!checkDeviceExtensions(details.physical_device, info.required_extensions)) {
         return false;
@@ -220,7 +206,6 @@ PhysicalDevice PhysicalDeviceSelector::pickBestSuitable(const Vector<PhysicalDev
     for (const auto& d : details) {
         VkPhysicalDeviceProperties props;
         vkGetPhysicalDeviceProperties(d.physical_device, &props);
-
         if (info.preferred_type == props.deviceType) {
             pd = &d;
             break;
@@ -235,26 +220,37 @@ PhysicalDevice PhysicalDeviceSelector::pickBestSuitable(const Vector<PhysicalDev
     std::string str(vktFmt("{} is selected {{\n", props.deviceName));
     PhysicalDevice phy_dev(std::move(info.__name));
     phy_dev.handle = pd->physical_device;
+
+    // Select the first queue family index by default
     if (info.require_present_queue) {
-        phy_dev.indices.present = pd->present_indices.at(0);
-        phy_dev.indices_set.insert(pd->present_indices.at(0));
-        str += vktFmt("    present index: {}\n", pd->present_indices.at(0));
+        uint32_t index = pd->present_indices[0];
+        phy_dev.queue_families.present = index;
+        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
+        phy_dev.queue_family_props[index].present = true;
+        str += vktFmt("    present index: {}\n", index);
     }
     if (info.require_graphics_queue) {
-        phy_dev.indices.graphics = pd->graphics_indices.at(0);
-        phy_dev.indices_set.insert(pd->graphics_indices.at(0));
-        str += vktFmt("    graphics index: {}\n", pd->graphics_indices.at(0));
+        uint32_t index = pd->graphics_indices[0];
+        phy_dev.queue_families.graphics = index;
+        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
+        phy_dev.queue_family_props[index].graphics = true;
+        str += vktFmt("    graphics index: {}\n", index);
     }
     if (info.require_compute_queue) {
-        phy_dev.indices.compute = pd->compute_indices.at(0);
-        phy_dev.indices_set.insert(pd->compute_indices.at(0));
-        str += vktFmt("    compute index: {}\n", pd->compute_indices.at(0));
+        uint32_t index = pd->compute_indices[0];
+        phy_dev.queue_families.compute = index;
+        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
+        phy_dev.queue_family_props[index].compute = true;
+        str += vktFmt("    compute index: {}\n", index);
     }
     if (info.require_transfer_queue) {
-        phy_dev.indices.transfer = pd->transfer_indices.at(0);
-        phy_dev.indices_set.insert(pd->transfer_indices.at(0));
-        str += vktFmt("    transfer index: {}\n", pd->transfer_indices.at(0));
+        uint32_t index = pd->transfer_indices[0];
+        phy_dev.queue_families.transfer = index;
+        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
+        phy_dev.queue_family_props[index].transfer = true;
+        str += vktFmt("    transfer index: {}\n", index);
     }
+
     str += "}";
     vktPrint("{}", str.c_str());
     phy_dev.extensions = std::move(info.required_extensions);
