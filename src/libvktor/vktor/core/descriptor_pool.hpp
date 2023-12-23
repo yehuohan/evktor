@@ -53,7 +53,6 @@ public:
  */
 struct DescriptorPooler : private NonCopyable {
     const DescriptorSetLayout& desc_setlayout;
-    constexpr static const uint32_t MAX_SETS = 16;
 
     DescriptorPooler(const DescriptorSetLayout& setlayout) : desc_setlayout(setlayout) {}
     DescriptorPooler(DescriptorPooler&&);

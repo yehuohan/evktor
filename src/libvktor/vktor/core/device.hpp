@@ -31,7 +31,6 @@ class DeviceBuilder : public Builder<DeviceBuilder, Device, DeviceInfo> {
 private:
     const Instance& instance;
     const PhysicalDevice& physical_device;
-    constexpr static const float QUEUE_PRIORITY = 1.0f;
 
 public:
     explicit DeviceBuilder(const Instance& instance, const PhysicalDevice& phy_dev, Name&& name = "Device")

@@ -83,7 +83,7 @@ DescriptorPooler::~DescriptorPooler() {
 
 Res<Ref<DescriptorPool>> DescriptorPooler::get() {
     if (desc_pools.empty() || !desc_pools.back().available()) {
-        auto res = DescriptorPoolBuilder(desc_setlayout).setMaxsets(MAX_SETS).build();
+        auto res = DescriptorPoolBuilder(desc_setlayout).setMaxsets(VKt_CORE_MAX_SETS).build();
         if (res.isErr()) {
             return Err(res.unwrapErr());
         }
