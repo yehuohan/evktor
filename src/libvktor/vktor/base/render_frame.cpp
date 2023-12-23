@@ -19,14 +19,22 @@ void RenderFrame::reset() {
 }
 
 void RenderFrame::freeDescriptorSets(size_t thread_index) {
-    assert(thread_index < desc_poolers.size() && "Thread index is out of descriptor pooler array");
-    assert(thread_index < desc_sets.size() && "Thread index is out of descriptor set array");
-    desc_poolers[thread_index].clear();
-    desc_sets[thread_index].clear();
+    if (thread_index < desc_poolers.size()) {
+        desc_poolers[thread_index].clear();
+    } else {
+        LogW("The thread index to free is out of descriptor pooler array");
+    }
+    if (thread_index < desc_sets.size()) {
+        desc_sets[thread_index].clear();
+    } else {
+        LogW("The thread index to free is out of descriptor set array");
+    }
 }
 
 Res<Ref<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, size_t thread_index) {
-    assert(thread_index < cmd_pools.size() && "Thread index is out of command pool array");
+    if (thread_index >= cmd_pools.size()) {
+        return Er("Thread index is out of command pool array");
+    }
     CommandPool* pool = nullptr;
 
     auto& cmdpools = cmd_pools[thread_index];
@@ -73,7 +81,9 @@ Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLay
 }
 
 Res<Ref<DescriptorPool>> RenderFrame::requestDescriptorPool(const DescriptorSetLayout& desc_setlayout, size_t thread_index) {
-    assert(thread_index < desc_poolers.size() && "Thread index is out of descriptor pooler array");
+    if (thread_index >= desc_poolers.size()) {
+        return Er("Thread index is out of descriptor pooler array");
+    }
 
     // Get descriptor pooler
     DescriptorPooler* pooler = nullptr;
@@ -98,7 +108,9 @@ Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLay
                                                           const T& desc_info,
                                                           DescriptorPool& desc_pool,
                                                           size_t thread_index) {
-    assert(thread_index < desc_sets.size() && "Thread index is out of descriptor set array");
+    if (thread_index >= desc_sets.size()) {
+        return Er("Thread index is out of descriptor set array");
+    }
 
     // Get descriptor set from pool
     DescriptorSet* set = nullptr;
