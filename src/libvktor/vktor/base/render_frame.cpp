@@ -10,6 +10,12 @@ RenderFrame::RenderFrame(const BaseApi& base_api, size_t thread_count) : api(bas
     desc_sets.resize(thread_count);
 }
 
+RenderFrame::RenderFrame(RenderFrame&& rhs) : api(rhs.api), thread_count(rhs.thread_count) {
+    cmd_pools = std::move(rhs.cmd_pools);
+    desc_poolers = std::move(rhs.desc_poolers);
+    desc_sets = std::move(rhs.desc_sets);
+}
+
 void RenderFrame::reset() {
     for (auto& cmdpools : cmd_pools) {
         for (auto& cmdpool : cmdpools) {

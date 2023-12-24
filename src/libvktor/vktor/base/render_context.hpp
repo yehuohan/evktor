@@ -14,32 +14,29 @@ class RenderContext : private NonCopyable {
 private:
     const BaseApi& api;
 
+    const size_t thread_count = 1;
     Box<Swapchain> swapchain = nullptr;
-    Vector<Box<RenderFrame>> frames{};
+    Vector<RenderFrame> frames{};
     uint32_t frame_index = 0;
 
 public:
-    explicit RenderContext(const BaseApi& base_api) : api(base_api) {}
+    explicit RenderContext(const BaseApi& base_api, size_t thread_count = 1) : api(base_api), thread_count(thread_count) {}
 
     /* Swapchain */
     OnConstType(VkSwapchainKHR, swapchain->handle);
 
+    void add(Swapchain&& _swapchain);
     inline const Swapchain& getSwapchain() {
         assert(swapchain && "Swapchain is invalid");
         return *swapchain;
-    }
-    inline void add(Swapchain&& _swapchain) {
-        swapchain.reset();
-        swapchain = newBox<Swapchain>(std::move(_swapchain));
     }
     inline bool hasSwapchain() const {
         return swapchain != nullptr;
     }
 
-    /* RenderFrame */
-    void addRenderFrames(uint32_t count);
+    /* Render frame */
     void activateRenderFrame(uint32_t index);
-    RenderFrame& getRenderFrame();
+    Res<Ref<RenderFrame>> getRenderFrame();
 };
 
 NAMESPACE_END(vkt)

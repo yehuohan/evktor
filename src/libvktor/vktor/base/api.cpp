@@ -9,7 +9,7 @@ Res<Ref<Queue>> BaseApi::presentQueue() const {
     if (dev->queues.present) {
         return Ok(newRef(*dev->queues.present));
     } else {
-        return Er("Invalid present queue");
+        return Er("Present queue is not supported");
     }
 }
 
@@ -18,7 +18,7 @@ Res<Ref<Queue>> BaseApi::graphicsQueue() const {
     if (dev->queues.graphics) {
         return Ok(newRef(*dev->queues.graphics));
     } else {
-        return Er("Invalid graphics queue");
+        return Er("Graphics queue is not supported");
     }
 }
 
@@ -27,7 +27,7 @@ Res<Ref<Queue>> BaseApi::computeQueue() const {
     if (dev->queues.compute) {
         return Ok(newRef(*dev->queues.compute));
     } else {
-        return Er("Invalid compute queue");
+        return Er("Compute queue is not supported");
     }
 }
 
@@ -36,7 +36,7 @@ Res<Ref<Queue>> BaseApi::transferQueue() const {
     if (dev->queues.transfer) {
         return Ok(newRef(*dev->queues.transfer));
     } else {
-        return Er("Invalid transfer queue");
+        return Er("Transfer queue is not supported");
     }
 }
 
