@@ -22,9 +22,13 @@ struct Buffer : public BuiltResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
      *
      * There should be `src_size` <= `size`
      *
+     * @param dst_offset The buffer offset to copy into
      * @param src_size Give 0 to use `size`
      */
-    void copyFrom(const void* src, const VkDeviceSize src_size = 0) const;
+    void copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size = 0) const;
+    inline void copyFrom(const void* src, const VkDeviceSize src_size = 0) const {
+        copyFrom(0, src, src_size);
+    }
 
     /**
      * @brief Copy buffer to buffer `dst` at `dst_size`

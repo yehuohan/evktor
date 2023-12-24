@@ -22,7 +22,10 @@ struct Image : public BuiltResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
     OnConstType(VkDeviceMemory, memory);
 
     /** Copy data `src` from cpu to image memory at `src_size` */
-    void copyFrom(const void* src, const VkDeviceSize src_size) const;
+    void copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size) const;
+    inline void copyFrom(const void* src, const VkDeviceSize src_size = 0) const {
+        copyFrom(0, src, src_size);
+    }
     void genMipmaps(const CommandBuffer& cmdbuf) const;
 };
 

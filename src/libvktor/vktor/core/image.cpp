@@ -32,11 +32,11 @@ Image::~Image() {
     memory = VK_NULL_HANDLE;
 }
 
-void Image::copyFrom(const void* src, const VkDeviceSize src_size) const {
+void Image::copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size) const {
     VkDeviceSize copy_size = src_size;
     void* data;
     vmaMapMemory(device, allocation, &data);
-    std::memcpy(data, src, (size_t)copy_size);
+    std::memcpy((uint8_t*)data + dst_offset, src, (size_t)copy_size);
     vmaUnmapMemory(device, allocation);
 }
 

@@ -29,11 +29,11 @@ Buffer::~Buffer() {
     allocation = VK_NULL_HANDLE;
 }
 
-void Buffer::copyFrom(const void* src, const VkDeviceSize src_size) const {
+void Buffer::copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size) const {
     VkDeviceSize copy_size = src_size > 0 ? src_size : size;
     void* data;
     vmaMapMemory(device, allocation, &data);
-    std::memcpy(data, src, (size_t)copy_size);
+    std::memcpy((uint8_t*)data + dst_offset, src, (size_t)copy_size);
     vmaUnmapMemory(device, allocation);
 }
 
