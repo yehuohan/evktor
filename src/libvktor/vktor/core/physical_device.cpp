@@ -69,31 +69,31 @@ void PhysicalDeviceDetails::print(const PhysicalDeviceDetails& details) {
     default: break;
     }
 
-    vktPrint("{} {{\n"
-             "    vender id: {:#04x}\n"
-             "    device id: {:#04x}\n"
-             "    device type: {}\n"
-             "    api version: {}.{}.{}\n"
-             "    driver version: {}.{}.{}\n"
-             "    present indices: {}\n"
-             "    graphics indices: {}\n"
-             "    compute indices: {}\n"
-             "    transfer indices: {}\n"
-             "}}",
-             props.deviceName,
-             props.vendorID,
-             props.deviceID,
-             pdev_type,
-             VK_API_VERSION_MAJOR(props.apiVersion),
-             VK_API_VERSION_MINOR(props.apiVersion),
-             VK_API_VERSION_PATCH(props.apiVersion),
-             VK_VERSION_MAJOR(props.driverVersion),
-             VK_VERSION_MINOR(props.driverVersion),
-             VK_VERSION_PATCH(props.driverVersion),
-             vec2str(details.present_indices).c_str(),
-             vec2str(details.graphics_indices).c_str(),
-             vec2str(details.compute_indices).c_str(),
-             vec2str(details.transfer_indices).c_str());
+    vktOut("{} {{\n"
+           "    vender id: {:#04x}\n"
+           "    device id: {:#04x}\n"
+           "    device type: {}\n"
+           "    api version: {}.{}.{}\n"
+           "    driver version: {}.{}.{}\n"
+           "    present indices: {}\n"
+           "    graphics indices: {}\n"
+           "    compute indices: {}\n"
+           "    transfer indices: {}\n"
+           "}}",
+           props.deviceName,
+           props.vendorID,
+           props.deviceID,
+           pdev_type,
+           VK_API_VERSION_MAJOR(props.apiVersion),
+           VK_API_VERSION_MINOR(props.apiVersion),
+           VK_API_VERSION_PATCH(props.apiVersion),
+           VK_VERSION_MAJOR(props.driverVersion),
+           VK_VERSION_MINOR(props.driverVersion),
+           VK_VERSION_PATCH(props.driverVersion),
+           vec2str(details.present_indices),
+           vec2str(details.graphics_indices),
+           vec2str(details.compute_indices),
+           vec2str(details.transfer_indices));
 }
 
 Self PhysicalDeviceSelector::preferDiscreteGPU() {
@@ -252,7 +252,7 @@ PhysicalDevice PhysicalDeviceSelector::pickBestSuitable(const Vector<PhysicalDev
     }
 
     str += "}";
-    vktPrint("{}", str.c_str());
+    vktOut("{}", str);
     phy_dev.extensions = std::move(info.required_extensions);
 
     return std::move(phy_dev);

@@ -58,7 +58,7 @@ void printInstanceLayers(const Vector<const char*>& enabled_layers) {
     }
     str += "}";
 
-    vktPrint("{}", str.c_str());
+    vktOut("{}", str);
 }
 
 void printInstanceExtensions(const Vector<const char*>& enabled_extensions) {
@@ -78,7 +78,7 @@ void printInstanceExtensions(const Vector<const char*>& enabled_extensions) {
     }
     str += "}";
 
-    vktPrint("{}", str.c_str());
+    vktOut("{}", str);
 }
 
 void printDeviceExtensions(const VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions) {
@@ -98,7 +98,7 @@ void printDeviceExtensions(const VkPhysicalDevice pd, const Vector<const char*>&
     }
     str += "}";
 
-    vktPrint("{}", str.c_str());
+    vktOut("{}", str);
 }
 
 NAMESPACE_END(core)

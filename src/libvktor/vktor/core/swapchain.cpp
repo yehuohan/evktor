@@ -114,7 +114,7 @@ SwapchainBuilder::Built SwapchainBuilder::build() {
         str += vktFmt("\tImage extent: {}x{}\n", image_extent.width, image_extent.height);
         str += vktFmt("\tImage count: {}\n", image_count);
         str += "}";
-        vktPrint("{}", str.c_str());
+        vktOut("{}", str);
     }
 
     // Retrieve handles of swapchain images
