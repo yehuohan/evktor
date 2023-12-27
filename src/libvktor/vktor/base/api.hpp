@@ -1,8 +1,17 @@
 #pragma once
+#include "vktor/core/buffer.hpp"
 #include "vktor/core/device.hpp"
+#include "vktor/core/framebuffer.hpp"
+#include "vktor/core/image.hpp"
+#include "vktor/core/image_view.hpp"
 #include "vktor/core/instance.hpp"
 #include "vktor/core/physical_device.hpp"
+#include "vktor/core/pipeline_compute.hpp"
+#include "vktor/core/pipeline_graphics.hpp"
 #include "vktor/core/queue.hpp"
+#include "vktor/core/render_pass.hpp"
+#include "vktor/core/sampler.hpp"
+#include "vktor/core/shader_module.hpp"
 #include <cassert>
 
 NAMESPACE_BEGIN(vkt)

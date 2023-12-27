@@ -12,13 +12,6 @@
 #include "vktor/base/api.hpp"
 #include "vktor/base/render_context.hpp"
 #include "vktor/base/render_frame.hpp"
-
-#include "vktor/core/shader_module.hpp"
-#include "vktor/core/render_pass.hpp"
-#include "vktor/core/pipeline_compute.hpp"
-#include "vktor/core/pipeline_graphics.hpp"
-#include "vktor/core/framebuffer.hpp"
-#include "vktor/core/sampler.hpp"
 // clang-format on
 
 NAMESPACE_BEGIN(vkt)

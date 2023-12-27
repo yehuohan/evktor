@@ -1,12 +1,9 @@
 #pragma once
 #include "api.hpp"
-#include "vktor/core/buffer.hpp"
 #include "vktor/core/command_pool.hpp"
 #include "vktor/core/descriptor_pool.hpp"
 #include "vktor/core/descriptor_set.hpp"
 #include "vktor/core/descriptor_setlayout.hpp"
-#include "vktor/core/image.hpp"
-#include "vktor/core/image_view.hpp"
 #include "vktor/core/queue.hpp"
 #include <tuple>
 
