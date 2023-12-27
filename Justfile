@@ -19,11 +19,11 @@ VCPKG_XSCRIPT := 'clear;x-script,bash {{dir_root}}/scripts/vcpkg_xscript.sh {url
 DEPS_DIR := dir_root / 'deps'
 
 
-all: alpha #omega
+all: evktor #omega
 
-alpha: src
-    @echo [run] evktor/alpha...
-    {{dir_install}}/alpha {{dir_root}}/../assets
+evktor: src
+    @echo [run] evktor...
+    {{dir_install}}/evktor {{dir_root}}/../assets
 
 omega: src
     @echo [run] evktor/omega...

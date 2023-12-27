@@ -1,10 +1,6 @@
 
 Learn graphics with OpenGL and Vulkan.
 
-> - `Omega` name for OpenGL
-> - `Alpha` name for Vulkan
-
-
 ## Requirements
 
 - [assets](https://github.com/yehuohan/graphics-assets)

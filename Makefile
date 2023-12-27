@@ -15,12 +15,12 @@ DEPS_DIR ?= ${DIR_ROOT}/deps
 
 
 .PHONY: all
-all: alpha #omega
+all: evktor #omega
 
-.PHONY: alpha
-alpha: src
-	@echo [run] evktor/alpha...
-	${DIR_INSTALL}/alpha ${DIR_ROOT}/../assets
+.PHONY: evktor
+evktor: src
+	@echo [run] evktor...
+	${DIR_INSTALL}/evktor ${DIR_ROOT}/../assets
 
 .PHONY: omega
 omega: src

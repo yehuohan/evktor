@@ -1,11 +1,10 @@
 
 # include(CompileShader)
-# file(GLOB SHADER_VERT_SRC ${PROJECT_GLSL}/alpha/*.vert)
-# file(GLOB SHADER_FRAG_SRC ${PROJECT_GLSL}/alpha/*.frag)
-# add_shader_target(alpha_shader ${SHADER_VERT_SRC} ${SHADER_FRAG_SRC})
+# file(GLOB SHADER_VERT_SRC ${PROJECT_GLSL}/*.vert)
+# file(GLOB SHADER_FRAG_SRC ${PROJECT_GLSL}/*.frag)
+# add_shader_target(evktor_shader ${SHADER_VERT_SRC} ${SHADER_FRAG_SRC})
 
-
-project(alpha)
+project(evktor)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SRC)
