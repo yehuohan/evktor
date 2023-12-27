@@ -124,7 +124,10 @@ SwapchainBuilder::Built SwapchainBuilder::build() {
     // Create image views
     swapchain.imageviews.resize(swapchain.images.size());
     for (int k = 0; k < swapchain.imageviews.size(); k++) {
-        auto imageview_ci = Itor::ImageViewCreateInfo(swapchain.images[k], VK_IMAGE_VIEW_TYPE_2D, swapchain.format);
+        auto imageview_ci = Itor::ImageViewCreateInfo();
+        imageview_ci.image = swapchain.images[k];
+        imageview_ci.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        imageview_ci.format = swapchain.format;
         // Swizzle the color channels around with components(映射颜色通道)
         imageview_ci.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
         imageview_ci.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
