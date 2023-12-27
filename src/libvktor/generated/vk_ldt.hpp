@@ -730,4 +730,5 @@ typedef struct VkLayerDispatchTable {
     PFN_vkCmdDrawMeshTasksIndirectEXT CmdDrawMeshTasksIndirectEXT;
     PFN_vkCmdDrawMeshTasksIndirectCountEXT CmdDrawMeshTasksIndirectCountEXT;
 } VkLayerDispatchTable;
+
 } // namespace vkt

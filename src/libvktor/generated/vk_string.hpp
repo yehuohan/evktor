@@ -6,6 +6,7 @@
 #define VkStr(Type, Var) vkt::On_Str_##Type(Var)
 
 namespace vkt {
+
 // Enums
 std::string On_Str_VkResult(VkResult e);
 std::string On_Str_VkStructureType(VkStructureType e);
@@ -217,17 +218,9 @@ std::string On_Str_VkPerformanceCounterDescriptionFlagsKHR(VkPerformanceCounterD
 std::string On_Str_VkAcquireProfilingLockFlagsKHR(VkAcquireProfilingLockFlagsKHR f);
 #ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeCapabilityFlagsKHR(VkVideoEncodeCapabilityFlagsKHR f);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeRateControlModeFlagsKHR(VkVideoEncodeRateControlModeFlagsKHR f);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeFeedbackFlagsKHR(VkVideoEncodeFeedbackFlagsKHR f);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeUsageFlagsKHR(VkVideoEncodeUsageFlagsKHR f);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeContentFlagsKHR(VkVideoEncodeContentFlagsKHR f);
 #endif // VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkPipelineCreateFlags2KHR(VkPipelineCreateFlags2KHR f);
@@ -235,26 +228,12 @@ std::string On_Str_VkBufferUsageFlags2KHR(VkBufferUsageFlags2KHR f);
 std::string On_Str_VkDebugReportFlagsEXT(VkDebugReportFlagsEXT f);
 #ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH264CapabilityFlagsEXT(VkVideoEncodeH264CapabilityFlagsEXT f);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH264StdFlagsEXT(VkVideoEncodeH264StdFlagsEXT f);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH264RateControlFlagsEXT(VkVideoEncodeH264RateControlFlagsEXT f);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH265CapabilityFlagsEXT(VkVideoEncodeH265CapabilityFlagsEXT f);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH265StdFlagsEXT(VkVideoEncodeH265StdFlagsEXT f);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH265CtbSizeFlagsEXT(VkVideoEncodeH265CtbSizeFlagsEXT f);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH265TransformBlockSizeFlagsEXT(VkVideoEncodeH265TransformBlockSizeFlagsEXT f);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH265RateControlFlagsEXT(VkVideoEncodeH265RateControlFlagsEXT f);
 #endif // VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkExternalMemoryHandleTypeFlagsNV(VkExternalMemoryHandleTypeFlagsNV f);
@@ -293,4 +272,5 @@ std::string On_Str_VkOpticalFlowSessionCreateFlagsNV(VkOpticalFlowSessionCreateF
 std::string On_Str_VkOpticalFlowExecuteFlagsNV(VkOpticalFlowExecuteFlagsNV f);
 std::string On_Str_VkShaderCreateFlagsEXT(VkShaderCreateFlagsEXT f);
 std::string On_Str_VkAccelerationStructureCreateFlagsKHR(VkAccelerationStructureCreateFlagsKHR f);
+
 } // namespace vkt

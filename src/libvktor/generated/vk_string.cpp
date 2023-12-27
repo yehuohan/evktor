@@ -3,6 +3,7 @@
 namespace vkt {
 
 // Enums
+
 std::string On_Str_VkResult(VkResult e) {
     std::string str = "Unknown " + std::to_string(e);
     switch (e) {
@@ -3800,6 +3801,7 @@ std::string On_Str_VkShaderGroupShaderKHR(VkShaderGroupShaderKHR e) {
 }
 
 // Flags
+
 std::string On_Str_VkAccessFlags(VkAccessFlags f) {
     std::string str = "";
     if (f & VK_ACCESS_INDIRECT_COMMAND_READ_BIT) {
@@ -6108,9 +6110,7 @@ std::string On_Str_VkVideoEncodeCapabilityFlagsKHR(VkVideoEncodeCapabilityFlagsK
     str += "|";
     return std::move(str);
 }
-#endif // VK_ENABLE_BETA_EXTENSIONS
 
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeRateControlModeFlagsKHR(VkVideoEncodeRateControlModeFlagsKHR f) {
     std::string str = "";
     if (f & VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DEFAULT_KHR) {
@@ -6128,9 +6128,7 @@ std::string On_Str_VkVideoEncodeRateControlModeFlagsKHR(VkVideoEncodeRateControl
     str += "|";
     return std::move(str);
 }
-#endif // VK_ENABLE_BETA_EXTENSIONS
 
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeFeedbackFlagsKHR(VkVideoEncodeFeedbackFlagsKHR f) {
     std::string str = "";
     if (f & VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BUFFER_OFFSET_BIT_KHR) {
@@ -6145,9 +6143,7 @@ std::string On_Str_VkVideoEncodeFeedbackFlagsKHR(VkVideoEncodeFeedbackFlagsKHR f
     str += "|";
     return std::move(str);
 }
-#endif // VK_ENABLE_BETA_EXTENSIONS
 
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeUsageFlagsKHR(VkVideoEncodeUsageFlagsKHR f) {
     std::string str = "";
     if (f & VK_VIDEO_ENCODE_USAGE_DEFAULT_KHR) {
@@ -6168,9 +6164,7 @@ std::string On_Str_VkVideoEncodeUsageFlagsKHR(VkVideoEncodeUsageFlagsKHR f) {
     str += "|";
     return std::move(str);
 }
-#endif // VK_ENABLE_BETA_EXTENSIONS
 
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeContentFlagsKHR(VkVideoEncodeContentFlagsKHR f) {
     std::string str = "";
     if (f & VK_VIDEO_ENCODE_CONTENT_DEFAULT_KHR) {
@@ -6431,9 +6425,7 @@ std::string On_Str_VkVideoEncodeH264CapabilityFlagsEXT(VkVideoEncodeH264Capabili
     str += "|";
     return std::move(str);
 }
-#endif // VK_ENABLE_BETA_EXTENSIONS
 
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH264StdFlagsEXT(VkVideoEncodeH264StdFlagsEXT f) {
     std::string str = "";
     if (f & VK_VIDEO_ENCODE_H264_STD_SEPARATE_COLOR_PLANE_FLAG_SET_BIT_EXT) {
@@ -6493,9 +6485,7 @@ std::string On_Str_VkVideoEncodeH264StdFlagsEXT(VkVideoEncodeH264StdFlagsEXT f) 
     str += "|";
     return std::move(str);
 }
-#endif // VK_ENABLE_BETA_EXTENSIONS
 
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH264RateControlFlagsEXT(VkVideoEncodeH264RateControlFlagsEXT f) {
     std::string str = "";
     if (f & VK_VIDEO_ENCODE_H264_RATE_CONTROL_ATTEMPT_HRD_COMPLIANCE_BIT_EXT) {
@@ -6516,9 +6506,7 @@ std::string On_Str_VkVideoEncodeH264RateControlFlagsEXT(VkVideoEncodeH264RateCon
     str += "|";
     return std::move(str);
 }
-#endif // VK_ENABLE_BETA_EXTENSIONS
 
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH265CapabilityFlagsEXT(VkVideoEncodeH265CapabilityFlagsEXT f) {
     std::string str = "";
     if (f & VK_VIDEO_ENCODE_H265_CAPABILITY_HRD_COMPLIANCE_BIT_EXT) {
@@ -6554,9 +6542,7 @@ std::string On_Str_VkVideoEncodeH265CapabilityFlagsEXT(VkVideoEncodeH265Capabili
     str += "|";
     return std::move(str);
 }
-#endif // VK_ENABLE_BETA_EXTENSIONS
 
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH265StdFlagsEXT(VkVideoEncodeH265StdFlagsEXT f) {
     std::string str = "";
     if (f & VK_VIDEO_ENCODE_H265_STD_SEPARATE_COLOR_PLANE_FLAG_SET_BIT_EXT) {
@@ -6619,9 +6605,7 @@ std::string On_Str_VkVideoEncodeH265StdFlagsEXT(VkVideoEncodeH265StdFlagsEXT f) 
     str += "|";
     return std::move(str);
 }
-#endif // VK_ENABLE_BETA_EXTENSIONS
 
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH265CtbSizeFlagsEXT(VkVideoEncodeH265CtbSizeFlagsEXT f) {
     std::string str = "";
     if (f & VK_VIDEO_ENCODE_H265_CTB_SIZE_16_BIT_EXT) {
@@ -6636,9 +6620,7 @@ std::string On_Str_VkVideoEncodeH265CtbSizeFlagsEXT(VkVideoEncodeH265CtbSizeFlag
     str += "|";
     return std::move(str);
 }
-#endif // VK_ENABLE_BETA_EXTENSIONS
 
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH265TransformBlockSizeFlagsEXT(VkVideoEncodeH265TransformBlockSizeFlagsEXT f) {
     std::string str = "";
     if (f & VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_4_BIT_EXT) {
@@ -6656,9 +6638,7 @@ std::string On_Str_VkVideoEncodeH265TransformBlockSizeFlagsEXT(VkVideoEncodeH265
     str += "|";
     return std::move(str);
 }
-#endif // VK_ENABLE_BETA_EXTENSIONS
 
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH265RateControlFlagsEXT(VkVideoEncodeH265RateControlFlagsEXT f) {
     std::string str = "";
     if (f & VK_VIDEO_ENCODE_H265_RATE_CONTROL_ATTEMPT_HRD_COMPLIANCE_BIT_EXT) {
@@ -7262,5 +7242,4 @@ std::string On_Str_VkAccelerationStructureCreateFlagsKHR(VkAccelerationStructure
     str += "|";
     return std::move(str);
 }
-
 } // namespace vkt
