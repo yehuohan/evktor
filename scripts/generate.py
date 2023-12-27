@@ -18,14 +18,16 @@ from xml.etree import ElementTree
 from reg import Registry
 from generators.base_generator import SetOutputDirectory, SetTargetApiName, SetMergedApiNames
 from generators.base_generator import BaseGeneratorOptions
+from generators.ldt_generator import LDTGenerator
 from generators.initializer_generator import InitializerGenerator
 from generators.vkstring_generator import VkStringGenerator
 
-__VK_Out = f"{__DIR_ROOT}/src/libvktor/vktor/generated"
+__VK_Out = f"{__DIR_ROOT}/src/libvktor/generated"
 __VK_Sty = f"{__DIR_ROOT}/.clang-format"
 __VK_Xml = f"{__DIR_VkHeaders}/vk.xml"
 __VK_Api = "vulkan"
 __VK_Generators = {
+    "vk_ldt.hpp": lambda: LDTGenerator(["vkt"]),
     "vk_initializer.hpp": lambda: InitializerGenerator(["vkt", "Itor"]),
     "vk_string.hpp": lambda: VkStringGenerator(["vkt"]),
     "vk_string.cpp": lambda: VkStringGenerator(["vkt"], "vk_string.hpp"),
