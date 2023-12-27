@@ -119,14 +119,6 @@ inline VkImageViewCreateInfo ImageViewCreateInfo() {
     return info;
 }
 
-inline VkImageViewCreateInfo ImageViewCreateInfo(VkImage image, VkImageViewType view_type, VkFormat format) {
-    auto info = ImageViewCreateInfo();
-    info.image = image;
-    info.viewType = view_type;
-    info.format = format;
-    return info;
-}
-
 inline VkShaderModuleCreateInfo ShaderModuleCreateInfo() {
     VkShaderModuleCreateInfo info{};
     info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

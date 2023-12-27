@@ -4,17 +4,6 @@ from generators.base_generator import BaseGenerator
 
 LBracket = "{"
 RBracket = "}"
-Extras = {
-    "VkImageViewCreateInfo": """
-inline VkImageViewCreateInfo ImageViewCreateInfo(VkImage image, VkImageViewType view_type, VkFormat format) {
-    auto info = ImageViewCreateInfo();
-    info.image = image;
-    info.viewType = view_type;
-    info.format = format;
-    return info;
-}
-""",
-}
 
 
 class InitializerGenerator(BaseGenerator):
@@ -39,8 +28,6 @@ class InitializerGenerator(BaseGenerator):
                 out.append(f"    info.sType = {s.sType};\n")
                 out.append(f"    return info;\n")
                 out.append(f"{RBracket}\n")
-                if name in Extras:
-                    out.append(Extras[name])
                 if s.protect:
                     out.append(f"#endif // {s.protect}\n")
                 out.append("\n")
