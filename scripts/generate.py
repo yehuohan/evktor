@@ -20,7 +20,7 @@ from generators.base_generator import SetOutputDirectory, SetTargetApiName, SetM
 from generators.base_generator import BaseGeneratorOptions
 from generators.ldt_generator import LDTGenerator
 from generators.initializer_generator import InitializerGenerator
-from generators.vkstring_generator import VkStringGenerator
+from generators.onstring_generator import OnStringGenerator
 
 __VK_Out = f"{__DIR_ROOT}/src/libvktor/generated"
 __VK_Sty = f"{__DIR_ROOT}/.clang-format"
@@ -29,8 +29,8 @@ __VK_Api = "vulkan"
 __VK_Generators = {
     "vk_ldt.hpp": lambda: LDTGenerator(["vkt"]),
     "vk_initializer.hpp": lambda: InitializerGenerator(["vkt", "Itor"]),
-    "vk_string.hpp": lambda: VkStringGenerator(["vkt"]),
-    "vk_string.cpp": lambda: VkStringGenerator(["vkt"], "vk_string.hpp"),
+    "vk_string.hpp": lambda: OnStringGenerator(["vkt"]),
+    "vk_string.cpp": lambda: OnStringGenerator(["vkt"], "vk_string.hpp"),
 }
 
 
