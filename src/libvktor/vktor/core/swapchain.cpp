@@ -110,7 +110,7 @@ SwapchainBuilder::Built SwapchainBuilder::build() {
     swapchain.count = image_count;
     if (info.__verbose) {
         std::string str("Swapchain is created {\n");
-        str += vktFmt("\tColor format(VkFormat): {}\n", (int)surface_format.format);
+        str += vktFmt("\tColor format(VkFormat): {}\n", VkStr(VkFormat, surface_format.format));
         str += vktFmt("\tImage extent: {}x{}\n", image_extent.width, image_extent.height);
         str += vktFmt("\tImage count: {}\n", image_count);
         str += "}";

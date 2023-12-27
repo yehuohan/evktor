@@ -70,7 +70,7 @@ Res<Vector<uint32_t>> ShaderBuilder::glsl2spv() {
                                                     EShMessages::EShMsgSpvRules);
     EShLanguage language;
     if (!getShaderLanguage(language, info.stage)) {
-        return Er("Stage = {} is not expected to get an EShLanguage", (int)info.stage);
+        return Er("Stage = {} is not expected to get an EShLanguage", VkStr(VkShaderStageFlags, info.stage));
     }
 
     glslang::InitializeProcess();

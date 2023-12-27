@@ -65,7 +65,9 @@ Res<Ref<CommandBuffer>> CommandPool::requestCommandBuffer(CommandBuffer::Level l
             }
             break;
         }
-    default: return Er("The command buffer level = {} to request is not supported", (int)level);
+    default:
+        return Er("The command buffer level = {} to request is not supported",
+                  VkStr(VkCommandBufferLevel, (VkCommandBufferLevel)level));
     }
 
     return Ok(newRef(*ptr));

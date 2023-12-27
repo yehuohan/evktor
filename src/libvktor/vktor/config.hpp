@@ -7,6 +7,7 @@
 #include "common/result.hpp"
 #include "common/traits.hpp"
 #include "generated/vk_initializer.hpp"
+#include "generated/vk_string.hpp"
 
 #define VKT_CORE_VERBOSE true
 
