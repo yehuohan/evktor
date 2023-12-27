@@ -5,6 +5,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/common SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor SRC)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/generated SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/core SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/base SRC)
 
