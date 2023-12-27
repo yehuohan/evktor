@@ -77,3 +77,8 @@ deps-repos:
 	@echo Prepare deps-repos...
 	git clone --depth=1 https://github.com/zeux/volk.git ${DEPS_DIR}/repos/volk
 	git clone --depth=1 https://github.com/KhronosGroup/Vulkan-ValidationLayers.git ${DEPS_DIR}/repos/Vulkan-ValidationLayers
+
+.PHONY: deps-gen
+deps-gen:
+	@echo Prepare generated
+	VCPKG_TRIPLET=${VCPKG_TRIPLET} python ${DIR_ROOT}/scripts/generate.py

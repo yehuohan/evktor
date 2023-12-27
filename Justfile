@@ -13,8 +13,8 @@ build_job := '-j4'
 dir_build := dir_root / '_VOut' / build_type
 dir_install := dir_root / 'install' / build_type
 
-VCPKG_ROOT := dir_home / 'vcpkg'
-VCPKG_TRIPLET := env('VCPKG_TRIPLET', 'x64-mingw-mix')
+export VCPKG_ROOT := dir_home / 'vcpkg'
+export VCPKG_TRIPLET := env('VCPKG_TRIPLET', 'x64-mingw-mix')
 VCPKG_XSCRIPT := 'clear;x-script,bash {{dir_root}}/scripts/vcpkg_xscript.sh {url} {dst};x-block-origin'
 DEPS_DIR := dir_root / 'deps'
 
@@ -73,3 +73,7 @@ deps-repos:
     @echo Prepare deps-repos...
     git clone --depth=1 https://github.com/zeux/volk.git {{DEPS_DIR}}/repos/volk
     git clone --depth=1 https://github.com/KhronosGroup/Vulkan-ValidationLayers.git {{DEPS_DIR}}/repos/Vulkan-ValidationLayers
+
+deps-gen:
+    @echo Prepare generated
+    python {{dir_root}}/scripts/generate.py

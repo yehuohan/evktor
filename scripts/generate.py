@@ -3,7 +3,7 @@
 import os
 import sys
 
-__VCPKG_TRIPLET = 'x64-mingw'
+__VCPKG_TRIPLET = os.environ["VCPKG_TRIPLET"]
 
 __DIR_THIS = os.path.dirname(os.path.abspath(__file__))
 __DIR_ROOT = os.path.dirname(__DIR_THIS)
