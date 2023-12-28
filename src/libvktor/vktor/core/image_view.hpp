@@ -18,8 +18,13 @@ struct ImageViewInfo : public BuilderInfo {
     VkImageViewCreateFlags flags = 0;
     VkImageViewType type = VK_IMAGE_VIEW_TYPE_2D;
     VkFormat format = VK_FORMAT_UNDEFINED;
-    VkComponentMapping components{};
-    VkImageSubresourceRange subresource_range{};
+    VkComponentMapping components{
+        VK_COMPONENT_SWIZZLE_R,
+        VK_COMPONENT_SWIZZLE_G,
+        VK_COMPONENT_SWIZZLE_B,
+        VK_COMPONENT_SWIZZLE_A,
+    };
+    VkImageSubresourceRange subresource_range{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
 };
 
 class ImageViewBuilder : public Builder<ImageViewBuilder, ImageView, ImageViewInfo> {

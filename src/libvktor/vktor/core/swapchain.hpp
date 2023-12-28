@@ -1,21 +1,28 @@
 #pragma once
 #include "__builder.hpp"
 #include "device.hpp"
+#include "image_view.hpp"
 #include "physical_device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
 struct Swapchain : public BuiltResource<VkSwapchainKHR, VK_OBJECT_TYPE_SWAPCHAIN_KHR, Device> {
-    Vector<VkImage> images;                /**< Handles of images in swapchain */
-    Vector<VkImageView> imageviews;        /**< Views of images */
-    uint32_t count = 0;                    /**< Number of images */
-    VkFormat format = VK_FORMAT_UNDEFINED; /**< Color format of images */
-    VkExtent2D extent{0, 0};               /**< Resolution of images */
+    Vector<VkImage> images;                      /**< Handles of images in swapchain */
+    uint32_t image_count = 0;                    /**< Image number that has count == images.size() */
+    VkFormat image_format = VK_FORMAT_UNDEFINED; /**< Image format */
+    VkExtent2D image_extent{0, 0};               /**< Image extent */
+    uint32_t image_layers = 1;
+    VkImageUsageFlags image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
     Swapchain(const Device& device, Name&& name) : BuiltResource(device, std::move(name)) {}
     Swapchain(Swapchain&&);
     ~Swapchain();
+
+    /**
+     * @brief Create image views for swapchain images
+     */
+    Vector<ImageView> createImageViews() const;
 };
 
 struct SwapchainInfo : public BuilderInfo {
@@ -25,7 +32,9 @@ struct SwapchainInfo : public BuilderInfo {
     Vector<VkPresentModeKHR> desired_present_modes{};
     VkExtent2D desired_extent{256, 256};
     // VkFormatFeatureFlags format_feature_flags = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
-    // VkImageUsageFlags image_usage_flags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    uint32_t image_layers = 1;
+    VkImageUsageFlags image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    VkSwapchainKHR old = VK_NULL_HANDLE;
 };
 
 class SwapchainBuilder : public Builder<SwapchainBuilder, Swapchain, SwapchainInfo> {

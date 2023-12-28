@@ -26,7 +26,7 @@ public:
     OnConstType(VkSwapchainKHR, swapchain->handle);
 
     void add(Swapchain&& _swapchain);
-    inline const Swapchain& getSwapchain() {
+    inline const Swapchain& getSwapchain() const {
         assert(swapchain && "Swapchain is invalid");
         return *swapchain;
     }

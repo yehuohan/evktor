@@ -99,7 +99,7 @@ Self RenderPassBuilder::addDepthStencilAttachment(VkFormat format,
 }
 
 Self RenderPassBuilder::addSubpass(Vector<uint32_t>&& input, Vector<uint32_t>&& color, uint32_t depthstencil) {
-    RenderSubpass subpass;
+    RenderSubpass subpass{};
     subpass.inputs = std::move(input);
     subpass.colors = std::move(color);
     if (depthstencil != VK_ATTACHMENT_UNUSED) {

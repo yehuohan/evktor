@@ -12,24 +12,38 @@ Swapchain::Swapchain(Swapchain&& rhs) : BuiltResource(rhs.device, std::move(rhs.
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     images = std::move(rhs.images);
-    imageviews = std::move(rhs.imageviews);
-    count = rhs.count;
-    format = rhs.format;
-    extent = rhs.extent;
+    image_count = rhs.image_count;
+    image_format = rhs.image_format;
+    image_extent = rhs.image_extent;
+    image_layers = rhs.image_layers;
+    image_usage = rhs.image_usage;
 }
 
 Swapchain::~Swapchain() {
-    for (auto view : imageviews) {
-        if (view) {
-            vkDestroyImageView(device, view, nullptr);
-        }
-    }
     if (handle) {
         vkDestroySwapchainKHR(device, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
     images.clear(); // The images will be destroyed along with swapchain's destruction
-    imageviews.clear();
+}
+
+Vector<ImageView> Swapchain::createImageViews() const {
+    Vector<ImageView> views{};
+
+    for (int k = 0; k < image_count; k++) {
+        ImageViewBuilder builder(device, images[k], "SwapchainImageView");
+        auto res = builder.setType(VK_IMAGE_VIEW_TYPE_2D)
+                       .setFormat(image_format)
+                       .setAspect(VK_IMAGE_ASPECT_COLOR_BIT)
+                       .setMipRange(0, 1)
+                       .setArrayRange(0, image_layers)
+                       .build();
+        if (res.isOk()) {
+            views.push_back(res.unwrap());
+        }
+    }
+
+    return std::move(views);
 }
 
 Self SwapchainBuilder::addDesiredFormat(const VkSurfaceFormatKHR& format) {
@@ -79,15 +93,13 @@ SwapchainBuilder::Built SwapchainBuilder::build() {
     swapchain_ci.imageFormat = surface_format.format;
     swapchain_ci.imageColorSpace = surface_format.colorSpace;
     swapchain_ci.imageExtent = image_extent;
-    // Specify the amount of layers each image consists of.
-    swapchain_ci.imageArrayLayers = 1;
-    // Specify what king of operations that the image in the swapchain used for
-    swapchain_ci.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    swapchain_ci.imageArrayLayers = info.image_layers;
+    swapchain_ci.imageUsage = info.image_usage;
     swapchain_ci.preTransform = surface_capalibities.currentTransform;
     swapchain_ci.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     swapchain_ci.presentMode = present_mode;
     swapchain_ci.clipped = VK_TRUE;
-    swapchain_ci.oldSwapchain = VK_NULL_HANDLE;
+    swapchain_ci.oldSwapchain = info.old;
     uint32_t queue_family_indices[] = {
         device.physical_device.queue_families.present.value(),
         device.physical_device.queue_families.graphics.value(),
@@ -105,9 +117,11 @@ SwapchainBuilder::Built SwapchainBuilder::build() {
     Swapchain swapchain(device, std::move(info.__name));
     OnRet(vkCreateSwapchainKHR(device, &swapchain_ci, nullptr, swapchain), "Failed to create swapchain");
     OnName(swapchain);
-    swapchain.format = surface_format.format;
-    swapchain.extent = image_extent;
-    swapchain.count = image_count;
+    swapchain.image_format = surface_format.format;
+    swapchain.image_extent = image_extent;
+    swapchain.image_count = image_count;
+    swapchain.image_layers = info.image_layers;
+    swapchain.image_usage = info.image_usage;
     if (info.__verbose) {
         std::string str("Swapchain is created {\n");
         str += vktFmt("\tColor format(VkFormat): {}\n", VkStr(VkFormat, surface_format.format));
@@ -119,31 +133,7 @@ SwapchainBuilder::Built SwapchainBuilder::build() {
 
     // Retrieve handles of swapchain images
     OnRet(enumerate(swapchain.images, vkGetSwapchainImagesKHR, device, swapchain), "Failed get images from swapchain");
-    assert(u32(swapchain.images.size()) == swapchain.count);
-
-    // Create image views
-    swapchain.imageviews.resize(swapchain.images.size());
-    for (int k = 0; k < swapchain.imageviews.size(); k++) {
-        auto imageview_ci = Itor::ImageViewCreateInfo();
-        imageview_ci.image = swapchain.images[k];
-        imageview_ci.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        imageview_ci.format = swapchain.format;
-        // Swizzle the color channels around with components(映射颜色通道)
-        imageview_ci.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-        imageview_ci.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-        imageview_ci.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-        imageview_ci.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-        // Describe what's the image's purpose is and which part of the image should be accessed.
-        imageview_ci.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        imageview_ci.subresourceRange.baseMipLevel = 0;
-        imageview_ci.subresourceRange.levelCount = 1;
-        imageview_ci.subresourceRange.baseArrayLayer = 0;
-        imageview_ci.subresourceRange.layerCount = 1;
-
-        OnRet(vkCreateImageView(device, &imageview_ci, nullptr, &swapchain.imageviews[k]),
-              "Failed to create imageview for swapchain image[{}]",
-              k);
-    }
+    assert(u32(swapchain.images.size()) == swapchain.image_count);
 
     return Ok(std::move(swapchain));
 }
@@ -177,8 +167,8 @@ VkExtent2D SwapchainBuilder::chooseExtent(const VkSurfaceCapabilitiesKHR& capali
         // `currentExtent` == UINT32_MAX means that match window's resolution within minImageExtent and maxImageExtent
         VkExtent2D extent = info.desired_extent;
         extent.width = std::min(capalibities.maxImageExtent.width, extent.width);
-        extent.height = std::min(capalibities.maxImageExtent.height, extent.height);
         extent.width = std::max(capalibities.minImageExtent.width, extent.width);
+        extent.height = std::min(capalibities.maxImageExtent.height, extent.height);
         extent.height = std::max(capalibities.minImageExtent.height, extent.height);
         return extent;
     }

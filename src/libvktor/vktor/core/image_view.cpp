@@ -76,6 +76,7 @@ ImageViewBuilder::Built ImageViewBuilder::build() {
     ImageView imageview(device, image, std::move(info.__name));
 
     auto imageview_ci = Itor::ImageViewCreateInfo();
+    imageview_ci.flags = info.flags;
     imageview_ci.image = image;
     imageview_ci.viewType = info.type;
     imageview_ci.format = info.format;

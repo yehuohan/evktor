@@ -7,7 +7,7 @@ using namespace core;
 void RenderContext::add(Swapchain&& _swapchain) {
     swapchain.reset();
     swapchain = newBox<Swapchain>(std::move(_swapchain));
-    for (uint32_t k = 0; k < swapchain->count; k++) {
+    for (uint32_t k = 0; k < swapchain->image_count; k++) {
         frames.push_back(RenderFrame(api, thread_count));
     }
 }
