@@ -30,8 +30,8 @@ Swapchain::~Swapchain() {
 Vector<ImageView> Swapchain::createImageViews() const {
     Vector<ImageView> views{};
 
-    for (int k = 0; k < image_count; k++) {
-        ImageViewBuilder builder(device, images[k], "SwapchainImageView");
+    for (uint32_t k = 0; k < images.size(); k++) {
+        ImageViewBuilder builder(images[k], "SwapchainImageView" + std::to_string(k));
         auto res = builder.setType(VK_IMAGE_VIEW_TYPE_2D)
                        .setFormat(image_format)
                        .setAspect(VK_IMAGE_ASPECT_COLOR_BIT)
@@ -40,6 +40,7 @@ Vector<ImageView> Swapchain::createImageViews() const {
                        .build();
         if (res.isOk()) {
             views.push_back(res.unwrap());
+            views.back().setDebugName();
         }
     }
 
@@ -117,9 +118,9 @@ SwapchainBuilder::Built SwapchainBuilder::build() {
     Swapchain swapchain(device, std::move(info.__name));
     OnRet(vkCreateSwapchainKHR(device, &swapchain_ci, nullptr, swapchain), "Failed to create swapchain");
     OnName(swapchain);
+    swapchain.image_count = image_count;
     swapchain.image_format = surface_format.format;
     swapchain.image_extent = image_extent;
-    swapchain.image_count = image_count;
     swapchain.image_layers = info.image_layers;
     swapchain.image_usage = info.image_usage;
     if (info.__verbose) {
@@ -132,8 +133,22 @@ SwapchainBuilder::Built SwapchainBuilder::build() {
     }
 
     // Retrieve handles of swapchain images
-    OnRet(enumerate(swapchain.images, vkGetSwapchainImagesKHR, device, swapchain), "Failed get images from swapchain");
-    assert(u32(swapchain.images.size()) == swapchain.image_count);
+    Vector<VkImage> images; /**< Handles of images in swapchain */
+    OnRet(enumerate(images, vkGetSwapchainImagesKHR, device, swapchain), "Failed get images from swapchain");
+    assert(u32(images.size()) == swapchain.image_count);
+    for (uint32_t k = 0; k < images.size(); k++) {
+        swapchain.images.push_back(Image::build(device,
+                                                images[k],
+                                                swapchain.image_format,
+                                                VkExtent3D{swapchain.image_extent.width, swapchain.image_extent.height, 1},
+                                                1,
+                                                swapchain.image_layers,
+                                                VK_SAMPLE_COUNT_1_BIT,
+                                                VK_IMAGE_TILING_OPTIMAL,
+                                                swapchain.image_usage,
+                                                "SwapchainImage" + std::to_string(k)));
+        OnName(swapchain.images.back());
+    }
 
     return Ok(std::move(swapchain));
 }

@@ -17,7 +17,7 @@ ImageView::~ImageView() {
     handle = VK_NULL_HANDLE;
 }
 
-Self ImageViewBuilder::setFromImage(const Image& image) {
+ImageViewBuilder::ImageViewBuilder(const Image& image, Name&& name) : Builder(std::move(name)), image(image) {
     switch (image.type) {
     case VK_IMAGE_TYPE_1D: info.type = image.array_layers > 1 ? VK_IMAGE_VIEW_TYPE_1D_ARRAY : VK_IMAGE_VIEW_TYPE_1D; break;
     case VK_IMAGE_TYPE_2D: info.type = image.array_layers > 1 ? VK_IMAGE_VIEW_TYPE_2D_ARRAY : VK_IMAGE_VIEW_TYPE_2D; break;
@@ -34,7 +34,6 @@ Self ImageViewBuilder::setFromImage(const Image& image) {
     info.subresource_range.levelCount = image.mip_levels;
     info.subresource_range.baseArrayLayer = 0;
     info.subresource_range.layerCount = image.array_layers;
-    return *this;
 }
 
 Self ImageViewBuilder::setType(VkImageViewType type) {
@@ -73,7 +72,7 @@ Self ImageViewBuilder::setArrayRange(uint32_t base, uint32_t count) {
 }
 
 ImageViewBuilder::Built ImageViewBuilder::build() {
-    ImageView imageview(device, image, std::move(info.__name));
+    ImageView imageview(image, std::move(info.__name));
 
     auto imageview_ci = Itor::ImageViewCreateInfo();
     imageview_ci.flags = info.flags;
@@ -83,7 +82,7 @@ ImageViewBuilder::Built ImageViewBuilder::build() {
     imageview_ci.components = info.components;
     imageview_ci.subresourceRange = info.subresource_range;
 
-    OnRet(vkCreateImageView(device, &imageview_ci, nullptr, imageview), "Failed to create image view");
+    OnRet(vkCreateImageView(image.device, &imageview_ci, nullptr, imageview), "Failed to create image view");
     OnName(imageview);
 
     return Ok(std::move(imageview));

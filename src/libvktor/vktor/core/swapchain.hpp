@@ -1,6 +1,7 @@
 #pragma once
 #include "__builder.hpp"
 #include "device.hpp"
+#include "image.hpp"
 #include "image_view.hpp"
 #include "physical_device.hpp"
 
@@ -8,12 +9,12 @@ NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
 struct Swapchain : public BuiltResource<VkSwapchainKHR, VK_OBJECT_TYPE_SWAPCHAIN_KHR, Device> {
-    Vector<VkImage> images;                      /**< Handles of images in swapchain */
-    uint32_t image_count = 0;                    /**< Image number that has count == images.size() */
-    VkFormat image_format = VK_FORMAT_UNDEFINED; /**< Image format */
-    VkExtent2D image_extent{0, 0};               /**< Image extent */
-    uint32_t image_layers = 1;
-    VkImageUsageFlags image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    Vector<Image> images;                                                /**< Handles of images in swapchain */
+    uint32_t image_count = 0;                                            /**< Image number that has count == images.size() */
+    VkFormat image_format = VK_FORMAT_UNDEFINED;                         /**< Image format of images[*].format */
+    VkExtent2D image_extent{0, 0};                                       /**< Image extent of images[*].extent */
+    uint32_t image_layers = 1;                                           /**< Image extent of images[*].array_layers */
+    VkImageUsageFlags image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT; /**< Image extent of images[*].usage*/
 
     Swapchain(const Device& device, Name&& name) : BuiltResource(device, std::move(name)) {}
     Swapchain(Swapchain&&);

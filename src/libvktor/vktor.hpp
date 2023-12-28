@@ -49,8 +49,8 @@ public:
     inline ImageBuilder Image() {
         return ImageBuilder(api);
     }
-    inline ImageViewBuilder ImageView(VkImage image) {
-        return ImageViewBuilder(api, image);
+    inline ImageViewBuilder ImageView(const core::Image& image) {
+        return ImageViewBuilder(image);
     }
     inline DescriptorSetLayoutBuilder DescriptorSetLayout() {
         return DescriptorSetLayoutBuilder(api);
