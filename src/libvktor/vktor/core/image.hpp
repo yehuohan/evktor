@@ -12,6 +12,9 @@ struct Image : public BuiltResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
     VkExtent3D extent{};
     uint32_t mip_levels = 1;
     uint32_t array_layers = 1;
+    VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
+    VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
+    VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT;
 
     VkDeviceMemory memory = VK_NULL_HANDLE;
     VmaAllocation allocation = VK_NULL_HANDLE;
@@ -27,6 +30,20 @@ struct Image : public BuiltResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
         copyFrom(0, src, src_size);
     }
     void genMipmaps(const CommandBuffer& cmdbuf) const;
+
+    /**
+     * @brief Build image with already allocated handle
+     */
+    static Image build(const Device& device,
+                       const VkImage image,
+                       VkFormat format,
+                       VkExtent3D extent,
+                       uint32_t mip_levels = 1,
+                       uint32_t array_layers = 1,
+                       VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT,
+                       VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL,
+                       VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT,
+                       Name&& name = "Image");
 };
 
 struct ImageInfo : public BuilderInfo {

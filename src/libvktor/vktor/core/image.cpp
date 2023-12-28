@@ -5,31 +5,76 @@ NAMESPACE_BEGIN(core)
 
 using Self = ImageBuilder::Self;
 
+static VkImageType getType(const VkExtent3D& extent) {
+    uint32_t dim = 0;
+    if (extent.width >= 1) {
+        dim++;
+    }
+    if (extent.height >= 1) {
+        dim++;
+    }
+    if (extent.depth > 1) {
+        dim++;
+    }
+
+    VkImageType type = VK_IMAGE_TYPE_2D;
+    switch (dim) {
+    case 1: type = VK_IMAGE_TYPE_1D; break;
+    case 2: type = VK_IMAGE_TYPE_2D; break;
+    case 3: type = VK_IMAGE_TYPE_3D; break;
+    }
+    return type;
+}
+
 Image::Image(Image&& rhs) : BuiltResource(rhs.device, std::move(rhs.__name)) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    memory = rhs.memory;
+    rhs.memory = VK_NULL_HANDLE;
+    allocation = rhs.allocation;
+    rhs.allocation = VK_NULL_HANDLE;
+
     type = rhs.type;
     format = rhs.format;
     extent = rhs.extent;
     mip_levels = rhs.mip_levels;
     array_layers = rhs.array_layers;
-    memory = rhs.memory;
-    rhs.memory = VK_NULL_HANDLE;
-    allocation = rhs.allocation;
-    rhs.allocation = VK_NULL_HANDLE;
+    samples = rhs.samples;
+    tiling = rhs.tiling;
+    usage = rhs.usage;
 }
 
 Image::~Image() {
-    if (handle) {
-        if (allocation) {
-            vmaDestroyImage(device, handle, allocation);
-        } else {
-            vkFreeMemory(device, memory, nullptr);
-            vkDestroyImage(device, handle, nullptr);
-        }
+    if (handle && allocation) {
+        // If allocation is VK_NULL_HANDLE, means this image is not created from ImageBuilder, but from Image::build().
+        vmaDestroyImage(device, handle, allocation);
     }
     handle = VK_NULL_HANDLE;
     memory = VK_NULL_HANDLE;
+    allocation = VK_NULL_HANDLE;
+}
+
+Image Image::build(const Device& device,
+                   const VkImage _image,
+                   VkFormat _format,
+                   VkExtent3D _extent,
+                   uint32_t _mip_levels,
+                   uint32_t _array_layers,
+                   VkSampleCountFlagBits _samples,
+                   VkImageTiling _tiling,
+                   VkImageUsageFlags _usage,
+                   Name&& name) {
+    Image image(device, std::move(name));
+    image.handle = _image;
+    image.type = getType(_extent);
+    image.format = _format;
+    image.extent = _extent;
+    image.mip_levels = _mip_levels;
+    image.array_layers = _array_layers;
+    image.samples = _samples;
+    image.tiling = _tiling;
+    image.usage = _usage;
+    return std::move(image);
 }
 
 void Image::copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size) const {
@@ -110,25 +155,8 @@ Self ImageBuilder::setFormat(VkFormat format) {
 }
 
 Self ImageBuilder::setExtent(const VkExtent3D& extent) {
-    uint32_t dim = 0;
-    if (extent.width >= 1) {
-        dim++;
-    }
-    if (extent.height >= 1) {
-        dim++;
-    }
-    if (extent.depth > 1) {
-        dim++;
-    }
-    VkImageType type = VK_IMAGE_TYPE_2D;
-    switch (dim) {
-    case 1: type = VK_IMAGE_TYPE_1D; break;
-    case 2: type = VK_IMAGE_TYPE_2D; break;
-    case 3: type = VK_IMAGE_TYPE_3D; break;
-    }
-
     info.extent = extent;
-    info.type = type;
+    info.type = getType(extent);
     return *this;
 }
 
@@ -205,6 +233,9 @@ ImageBuilder::Built ImageBuilder::build() {
     image.mip_levels = info.mip_levels;
     image.array_layers = info.array_layers;
     image.memory = allocation_info.deviceMemory;
+    image.samples = info.samples;
+    image.tiling = info.tiling;
+    image.usage = info.usage;
 
     return Ok(std::move(image));
 }
