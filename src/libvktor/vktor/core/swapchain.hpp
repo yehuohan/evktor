@@ -27,12 +27,10 @@ struct Swapchain : public BuiltResource<VkSwapchainKHR, VK_OBJECT_TYPE_SWAPCHAIN
 };
 
 struct SwapchainInfo : public BuilderInfo {
-    Vector<VkSurfaceFormatKHR> desired_formats{
-        VkSurfaceFormatKHR{VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR}
-    };
-    Vector<VkPresentModeKHR> desired_present_modes{};
-    VkExtent2D desired_extent{256, 256};
+    Vector<VkSurfaceFormatKHR> desired_formats{};
     // VkFormatFeatureFlags format_feature_flags = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
+    Vector<VkPresentModeKHR> desired_present_modes{};
+    VkExtent2D desired_extent{};
     uint32_t image_layers = 1;
     VkImageUsageFlags image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
     VkSwapchainKHR old = VK_NULL_HANDLE;

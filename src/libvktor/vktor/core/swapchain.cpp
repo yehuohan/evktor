@@ -67,6 +67,12 @@ SwapchainBuilder::Built SwapchainBuilder::build() {
         (!device.physical_device.queue_families.graphics.has_value())) {
         return Er("SwapchainBuilder requires valid present and graphics queue family index");
     }
+    if (info.desired_formats.empty()) {
+        info.desired_formats.push_back(VkSurfaceFormatKHR{VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR});
+    }
+    if (info.desired_present_modes.empty()) {
+        info.desired_present_modes.push_back(VK_PRESENT_MODE_FIFO_KHR);
+    }
 
     VkSurfaceCapabilitiesKHR surface_capalibities{};
     Vector<VkSurfaceFormatKHR> surface_formats{};
@@ -181,10 +187,8 @@ VkExtent2D SwapchainBuilder::chooseExtent(const VkSurfaceCapabilitiesKHR& capali
     } else {
         // `currentExtent` == UINT32_MAX means that match window's resolution within minImageExtent and maxImageExtent
         VkExtent2D extent = info.desired_extent;
-        extent.width = std::min(capalibities.maxImageExtent.width, extent.width);
-        extent.width = std::max(capalibities.minImageExtent.width, extent.width);
-        extent.height = std::min(capalibities.maxImageExtent.height, extent.height);
-        extent.height = std::max(capalibities.minImageExtent.height, extent.height);
+        extent.width = std::clamp(extent.width, capalibities.minImageExtent.width, capalibities.maxImageExtent.width);
+        extent.height = std::clamp(extent.height, capalibities.minImageExtent.height, capalibities.maxImageExtent.height);
         return extent;
     }
 }
