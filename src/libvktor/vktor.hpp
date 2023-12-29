@@ -13,14 +13,6 @@
 #include "vktor/rendering/render_context.hpp"
 #include "vktor/rendering/render_frame.hpp"
 #include "vktor/rendering/render_target.hpp"
-
-#include "vktor/core/sampler.hpp"
-#include "vktor/core/buffer.hpp"
-#include "vktor/core/render_pass.hpp"
-#include "vktor/core/pipeline_graphics.hpp"
-#include "vktor/core/pipeline_compute.hpp"
-#include "vktor/core/framebuffer.hpp"
-#include "vktor/core/shader_module.hpp"
 // clang-format on
 
 NAMESPACE_BEGIN(vkt)
@@ -49,8 +41,8 @@ public:
         return SwapchainBuilder(api, surface);
     }
 
-    inline ShaderBuilder Shader() {
-        return ShaderBuilder(api);
+    inline ShaderModuleBuilder ShaderModule() {
+        return ShaderModuleBuilder(api);
     }
     inline BufferBuilder Buffer() {
         return BufferBuilder(api);

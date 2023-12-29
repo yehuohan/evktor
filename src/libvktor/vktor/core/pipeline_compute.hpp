@@ -21,7 +21,7 @@ struct ComputePipeline : public BuiltResource<VkPipeline, VK_OBJECT_TYPE_PIPELIN
 
 struct ComputePipelineInfo : public BuilderInfo {
     VkPipelineCreateFlags flags = 0;
-    std::optional<Shader> shader{};
+    std::optional<ShaderModule> shader{};
 };
 
 class ComputePipelineBuilder : public Builder<ComputePipelineBuilder, ComputePipeline, ComputePipelineInfo> {
@@ -35,7 +35,7 @@ public:
     virtual Built build() override;
 
     Self setFlags(VkPipelineCreateFlags flags);
-    Self setShader(Shader&& shader);
+    Self setShader(ShaderModule&& shader);
 };
 
 NAMESPACE_END(core)

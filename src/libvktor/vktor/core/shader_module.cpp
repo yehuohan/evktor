@@ -29,39 +29,39 @@ inline static bool getShaderLanguage(EShLanguage& lang, const VkShaderStageFlagB
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-using Self = ShaderBuilder::Self;
+using Self = ShaderModuleBuilder::Self;
 
-Shader::Shader(Shader&& rhs) : BuiltResource(rhs.device, std::move(rhs.__name)) {
+ShaderModule::ShaderModule(ShaderModule&& rhs) : BuiltResource(rhs.device, std::move(rhs.__name)) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     stage = rhs.stage;
     entry = std::move(rhs.entry);
 }
 
-Shader::~Shader() {
+ShaderModule::~ShaderModule() {
     if (handle) {
         vkDestroyShaderModule(device, handle, nullptr);
     }
     handle = nullptr;
 }
 
-Self ShaderBuilder::setName(const std::string& name) {
+Self ShaderModuleBuilder::setName(const std::string& name) {
     info.name = name;
     return *this;
 }
 
-Self ShaderBuilder::setCode(const std::string&& code, VkShaderStageFlagBits stage) {
+Self ShaderModuleBuilder::setCode(const std::string&& code, VkShaderStageFlagBits stage) {
     info.code = std::move(code);
     info.stage = stage;
     return *this;
 }
 
-Self ShaderBuilder::setEntry(const std::string& entry) {
+Self ShaderModuleBuilder::setEntry(const std::string& entry) {
     info.entry = entry;
     return *this;
 }
 
-Res<Vector<uint32_t>> ShaderBuilder::glsl2spv() {
+Res<Vector<uint32_t>> ShaderModuleBuilder::glsl2spv() {
     const char* shader_strings[] = {info.code.c_str()};
     const int shader_lengths[] = {(int)info.code.size()};
     const char* shader_filenames[] = {info.name.c_str()};
@@ -103,7 +103,7 @@ Res<Vector<uint32_t>> ShaderBuilder::glsl2spv() {
     return Ok(std::move(spirv));
 }
 
-ShaderBuilder::Built ShaderBuilder::build() {
+ShaderModuleBuilder::Built ShaderModuleBuilder::build() {
     auto res_spirv = glsl2spv();
     if (res_spirv.isErr()) {
         return Err(res_spirv.unwrapErr());
@@ -113,13 +113,13 @@ ShaderBuilder::Built ShaderBuilder::build() {
     shader_ci.codeSize = spirv.size() * sizeof(uint32_t);
     shader_ci.pCode = spirv.data();
 
-    Shader shader(device, std::move(info.__name));
-    OnRet(vkCreateShaderModule(device, &shader_ci, nullptr, shader), "Failed to create shader module for {}", info.name);
-    OnName(shader);
-    shader.entry = std::move(info.entry);
-    shader.stage = info.stage;
+    ShaderModule shader_module(device, std::move(info.__name));
+    OnRet(vkCreateShaderModule(device, &shader_ci, nullptr, shader_module), "Failed to create shader module for {}", info.name);
+    OnName(shader_module);
+    shader_module.entry = std::move(info.entry);
+    shader_module.stage = info.stage;
 
-    return Ok(std::move(shader));
+    return Ok(std::move(shader_module));
 }
 
 NAMESPACE_END(core)

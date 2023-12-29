@@ -1,4 +1,5 @@
 #pragma once
+#include "resource_cache.hpp"
 #include "vktor/core/device.hpp"
 #include "vktor/core/instance.hpp"
 #include "vktor/core/physical_device.hpp"
@@ -17,6 +18,7 @@ private:
     Box<Instance> instance = nullptr;
     Box<PhysicalDevice> phy_dev = nullptr;
     Box<Device> dev = nullptr;
+    ResourceCache resource_cache{};
 
 public:
     explicit BaseApi() {}

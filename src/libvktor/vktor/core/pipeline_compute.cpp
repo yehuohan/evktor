@@ -24,7 +24,7 @@ Self ComputePipelineBuilder::setFlags(VkPipelineCreateFlags flags) {
     return *this;
 }
 
-Self ComputePipelineBuilder::setShader(Shader&& shader) {
+Self ComputePipelineBuilder::setShader(ShaderModule&& shader) {
     info.shader.emplace(std::move(shader));
     return *this;
 }

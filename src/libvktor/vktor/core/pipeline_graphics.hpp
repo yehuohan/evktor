@@ -21,7 +21,7 @@ struct GraphicsPipeline : public BuiltResource<VkPipeline, VK_OBJECT_TYPE_PIPELI
 
 struct GraphicsPipelineState : public BuilderInfo {
     VkPipelineCreateFlags flags = 0;
-    Vector<Shader> shaders{};
+    Vector<ShaderModule> shaders{};
     Ptr<RenderPass> render_pass = nullptr;
     uint32_t subpass = 0;
 
@@ -42,7 +42,7 @@ public:
     virtual Built build() override;
 
     Self setFlags(VkPipelineCreateFlags flags);
-    Self addShader(Shader&& shader);
+    Self addShader(ShaderModule&& shader);
     Self setRenderPass(const Ptr<RenderPass>& render_pass, uint32_t subpass_index = 0);
 
     Self addVertexInputBinding(const VkVertexInputBindingDescription& binding);

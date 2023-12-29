@@ -24,7 +24,7 @@ Self GraphicsPipelineBuilder::setFlags(VkPipelineCreateFlags flags) {
     return *this;
 }
 
-Self GraphicsPipelineBuilder::addShader(Shader&& shader) {
+Self GraphicsPipelineBuilder::addShader(ShaderModule&& shader) {
     info.shaders.push_back(std::move(shader));
     return *this;
 }
