@@ -84,6 +84,7 @@ ImageViewBuilder::Built ImageViewBuilder::build() {
 
     OnRet(vkCreateImageView(image.device, &imageview_ci, nullptr, imageview), "Failed to create image view");
     OnName(imageview);
+    imageview.subresource_range = info.subresource_range;
 
     return Ok(std::move(imageview));
 }

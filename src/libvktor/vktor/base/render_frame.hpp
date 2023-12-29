@@ -24,7 +24,7 @@ private:
     Vector<HashMap<size_t, DescriptorSet>> desc_sets{};
 
 public:
-    explicit RenderFrame(const BaseApi& base_api, size_t thread_count);
+    explicit RenderFrame(const BaseApi& api, size_t thread_count);
     RenderFrame(RenderFrame&&);
 
     void reset();

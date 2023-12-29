@@ -4,7 +4,7 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
-RenderFrame::RenderFrame(const BaseApi& base_api, size_t thread_count) : api(base_api), thread_count(thread_count) {
+RenderFrame::RenderFrame(const BaseApi& api, size_t thread_count) : api(api), thread_count(thread_count) {
     cmd_pools.resize(thread_count);
     desc_poolers.resize(thread_count);
     desc_sets.resize(thread_count);

@@ -9,6 +9,8 @@ NAMESPACE_BEGIN(core)
 struct ImageView : public BuiltResource<VkImageView, VK_OBJECT_TYPE_IMAGE_VIEW, Device> {
     const Image& image;
 
+    VkImageSubresourceRange subresource_range{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+
     ImageView(const Image& image, Name&& name) : BuiltResource(image.device, std::move(name)), image(image) {}
     ImageView(ImageView&&);
     ~ImageView();

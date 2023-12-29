@@ -20,7 +20,7 @@ private:
     uint32_t frame_index = 0;
 
 public:
-    explicit RenderContext(const BaseApi& base_api, size_t thread_count = 1) : api(base_api), thread_count(thread_count) {}
+    explicit RenderContext(const BaseApi& api, size_t thread_count = 1) : api(api), thread_count(thread_count) {}
 
     /* Swapchain */
     OnConstType(VkSwapchainKHR, swapchain->handle);
