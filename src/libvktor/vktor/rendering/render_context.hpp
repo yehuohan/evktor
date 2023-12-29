@@ -1,8 +1,6 @@
 #pragma once
-#include "api.hpp"
-#include "common/defs.hpp"
-#include "common/traits.hpp"
 #include "render_frame.hpp"
+#include "vktor/base/api.hpp"
 #include "vktor/core/swapchain.hpp"
 #include <cassert>
 

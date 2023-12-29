@@ -8,6 +8,7 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/generated SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/core SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/base SRC)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/rendering SRC)
 
 add_library(${PROJECT_NAME} STATIC ${SRC})
 

@@ -10,9 +10,9 @@
 /* vktor */
 // clang-format off
 #include "vktor/base/api.hpp"
-#include "vktor/base/render_context.hpp"
-#include "vktor/base/render_frame.hpp"
-#include "vktor/base/render_target.hpp"
+#include "vktor/rendering/render_context.hpp"
+#include "vktor/rendering/render_frame.hpp"
+#include "vktor/rendering/render_target.hpp"
 
 #include "vktor/core/sampler.hpp"
 #include "vktor/core/buffer.hpp"
