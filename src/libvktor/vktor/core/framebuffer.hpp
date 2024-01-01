@@ -16,7 +16,7 @@ struct Framebuffer : public BuiltResource<VkFramebuffer, VK_OBJECT_TYPE_FRAMEBUF
 };
 
 struct FramebufferInfo : public BuilderInfo {
-    Vector<VkImageView> image_views{};
+    Vector<VkImageView> imageviews{};
     uint32_t width = 0;
     uint32_t height = 0;
     uint32_t layers = 0;
@@ -32,8 +32,8 @@ public:
         , render_pass(render_pass) {}
     virtual Built build() override;
 
-    Self addAttachment(const VkImageView image_view);
-    Self addAttachments(const Vector<VkImageView>& image_views);
+    Self addAttachment(const VkImageView imageview);
+    Self addAttachments(const Vector<VkImageView>& imageviews);
     Self setExtent(uint32_t width, uint32_t height, uint32_t layers = 1);
     inline Self setExtent(const VkExtent2D& extent) {
         return setExtent(extent.width, extent.height);

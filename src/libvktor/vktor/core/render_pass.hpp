@@ -49,7 +49,7 @@ struct AttachmentLayouts {
     }
 };
 
-struct RenderSubpass {
+struct RenderSubpassInfo {
     /** Input attachment indices for `attm_refs` (layout(location) in) */
     Vector<uint32_t> inputs{};
     /** Color attachment indices for `attm_refs` (layout(location) out) */
@@ -63,7 +63,7 @@ struct RenderPassInfo : public BuilderInfo {
     Vector<VkAttachmentDescription> attm_descs{};
     /** Corresponding attachment indices for `attm_descs` */
     Vector<VkAttachmentReference> attm_refs{};
-    Vector<RenderSubpass> subpasses{};
+    Vector<RenderSubpassInfo> subpasses{};
 };
 
 class RenderPassBuilder : public Builder<RenderPassBuilder, RenderPass, RenderPassInfo> {

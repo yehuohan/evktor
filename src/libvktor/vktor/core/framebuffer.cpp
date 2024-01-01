@@ -19,13 +19,13 @@ Framebuffer::~Framebuffer() {
     handle = VK_NULL_HANDLE;
 }
 
-Self FramebufferBuilder::addAttachment(const VkImageView image_view) {
-    info.image_views.push_back(image_view);
+Self FramebufferBuilder::addAttachment(const VkImageView imageview) {
+    info.imageviews.push_back(imageview);
     return *this;
 }
 
-Self FramebufferBuilder::addAttachments(const Vector<VkImageView>& image_views) {
-    info.image_views.insert(info.image_views.end(), image_views.begin(), image_views.end());
+Self FramebufferBuilder::addAttachments(const Vector<VkImageView>& imageviews) {
+    info.imageviews.insert(info.imageviews.end(), imageviews.begin(), imageviews.end());
     return *this;
 }
 
@@ -41,8 +41,8 @@ FramebufferBuilder::Built FramebufferBuilder::build() {
 
     auto framebuffer_ci = Itor::FramebufferCreateInfo();
     framebuffer_ci.renderPass = render_pass;
-    framebuffer_ci.attachmentCount = u32(info.image_views.size());
-    framebuffer_ci.pAttachments = info.image_views.data();
+    framebuffer_ci.attachmentCount = u32(info.imageviews.size());
+    framebuffer_ci.pAttachments = info.imageviews.data();
     framebuffer_ci.width = info.width;
     framebuffer_ci.height = info.height;
     framebuffer_ci.layers = info.layers;
