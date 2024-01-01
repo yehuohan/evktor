@@ -101,3 +101,14 @@ bool isDepthStencilFormat(VkFormat format);
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)
+
+NAMESPACE_BEGIN(std)
+
+template <>
+struct hash<vkt::core::Image> {
+    size_t operator()(const vkt::core::Image& image) const {
+        return hash<VkImage>{}(image);
+    }
+};
+
+NAMESPACE_END(std)

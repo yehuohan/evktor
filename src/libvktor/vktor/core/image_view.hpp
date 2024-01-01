@@ -47,3 +47,14 @@ public:
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)
+
+NAMESPACE_BEGIN(std)
+
+template <>
+struct hash<vkt::core::ImageView> {
+    size_t operator()(const vkt::core::ImageView& imageview) const {
+        return hash<VkImageView>{}(imageview);
+    }
+};
+
+NAMESPACE_END(std)
