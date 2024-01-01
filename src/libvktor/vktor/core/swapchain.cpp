@@ -29,22 +29,29 @@ Swapchain::~Swapchain() {
 
 Vector<ImageView> Swapchain::createImageViews() const {
     Vector<ImageView> views{};
-
     for (uint32_t k = 0; k < images.size(); k++) {
-        ImageViewBuilder builder(images[k], "SwapchainImageView" + std::to_string(k));
-        auto res = builder.setType(VK_IMAGE_VIEW_TYPE_2D)
-                       .setFormat(image_format)
-                       .setAspect(VK_IMAGE_ASPECT_COLOR_BIT)
-                       .setMipRange(0, 1)
-                       .setArrayRange(0, image_layers)
-                       .build();
+        auto res = createImageView(k);
         if (res.isOk()) {
             views.push_back(res.unwrap());
-            views.back().setDebugName();
         }
     }
-
     return std::move(views);
+}
+
+Res<ImageView> Swapchain::createImageView(uint32_t index) const {
+    ImageViewBuilder builder(images[index], "SwapchainImageView" + std::to_string(index));
+    auto res = builder.setType(VK_IMAGE_VIEW_TYPE_2D)
+                   .setFormat(image_format)
+                   .setAspect(VK_IMAGE_ASPECT_COLOR_BIT)
+                   .setMipRange(0, 1)
+                   .setArrayRange(0, image_layers)
+                   .build();
+    if (res.isErr()) {
+        return Err(res.unwrapErr());
+    }
+    ImageView view = res.unwrap();
+    view.setDebugName();
+    return Ok(std::move(view));
 }
 
 Self SwapchainBuilder::addDesiredFormat(const VkSurfaceFormatKHR& format) {

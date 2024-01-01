@@ -24,6 +24,10 @@ struct Swapchain : public BuiltResource<VkSwapchainKHR, VK_OBJECT_TYPE_SWAPCHAIN
      * @brief Create image views for swapchain images
      */
     Vector<ImageView> createImageViews() const;
+    /**
+     * @brief Create the image view for the index-th swapchain image
+     */
+    Res<ImageView> createImageView(uint32_t index) const;
 };
 
 struct SwapchainInfo : public BuilderInfo {
