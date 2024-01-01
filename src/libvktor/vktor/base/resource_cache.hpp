@@ -6,17 +6,35 @@
 #include "vktor/core/render_pass.hpp"
 #include "vktor/core/sampler.hpp"
 #include "vktor/core/shader_module.hpp"
+#include <mutex>
 
 NAMESPACE_BEGIN(vkt)
 
+using namespace core;
+
+#define RESOURCE_STATE_LOCKER(rs) std::lock_guard<std::mutex> guard((rs).mtx)
+
+template <typename T>
+struct ResourceState {
+    HashMap<size_t, T> map{};
+    std::mutex mtx;
+
+    inline HashMap<size_t, T>::iterator find(size_t key) {
+        return map.find(key);
+    }
+    inline bool found(const HashMap<size_t, T>::iterator& item) {
+        return item != map.end();
+    }
+};
+
 struct ResourceCache {
-    HashMap<size_t, core::ShaderModule> shader_modules{};
-    HashMap<size_t, core::DescriptorSetLayout> descriptor_setlayouts{};
-    HashMap<size_t, core::RenderPass> render_passes{};
-    HashMap<size_t, core::PipelineLayout> pipeline_layouts{};
-    HashMap<size_t, core::GraphicsPipeline> graphics_pipelines{};
-    HashMap<size_t, core::ComputePipeline> compute_pipelines{};
-    HashMap<size_t, core::Framebuffer> framebuffers{};
+    ResourceState<ShaderModule> shader_modules{};
+    ResourceState<DescriptorSetLayout> descriptor_setlayouts{};
+    ResourceState<RenderPass> render_passes{};
+    ResourceState<PipelineLayout> pipeline_layouts{};
+    ResourceState<GraphicsPipeline> graphics_pipelines{};
+    ResourceState<ComputePipeline> compute_pipelines{};
+    ResourceState<Framebuffer> framebuffers{};
 };
 
 NAMESPACE_END(vkt)
