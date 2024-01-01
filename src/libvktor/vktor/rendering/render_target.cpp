@@ -2,10 +2,20 @@
 
 NAMESPACE_BEGIN(vkt)
 
+using namespace core;
+
 RenderTarget::RenderTarget(RenderTarget&& rhs) : RenderTarget(rhs.api) {
     extent = rhs.extent;
     imageviews = std::move(rhs.imageviews);
 };
+
+Vector<VkImageView> RenderTarget::getImageViews() const {
+    Vector<VkImageView> views{};
+    for (const auto& view : imageviews) {
+        views.push_back(view);
+    }
+    return std::move(views);
+}
 
 Res<RenderTarget> RenderTarget::build(const BaseApi& api, Vector<ImageView>&& imageviews) {
     if (imageviews.empty()) {
