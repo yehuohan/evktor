@@ -102,9 +102,7 @@ Self RenderPassBuilder::addSubpass(Vector<uint32_t>&& input, Vector<uint32_t>&& 
     RenderSubpassInfo subpass{};
     subpass.inputs = std::move(input);
     subpass.colors = std::move(color);
-    if (depthstencil != VK_ATTACHMENT_UNUSED) {
-        subpass.depthstencil.push_back(depthstencil);
-    }
+    subpass.depthstencil = depthstencil;
     info.subpasses.push_back(std::move(subpass));
     return *this;
 }
@@ -117,32 +115,35 @@ RenderPassBuilder::Built RenderPassBuilder::build() {
     Vector<VkSubpassDescription> subpasses(subpass_count);
     Vector<Vector<VkAttachmentReference>> inputs(subpass_count);
     Vector<Vector<VkAttachmentReference>> colors(subpass_count);
-    Vector<Vector<VkAttachmentReference>> depthstencil(subpass_count);
+    Vector<VkAttachmentReference*> depthstencils(subpass_count);
     Vector<VkSubpassDependency> dependencies(subpass_count - 1);
 
     for (uint32_t k = 0; k < subpass_count; k++) {
-        auto& subpass = subpasses[k];
+        auto& subpass = info.subpasses[k];
         auto& inp = inputs[k];
         auto& clr = colors[k];
-        auto& ds = depthstencil[k];
-        for (auto a : info.subpasses[k].inputs) {
+        auto& ds = depthstencils[k];
+        for (auto a : subpass.inputs) {
             inp.push_back(info.attm_refs[a]);
         }
-        for (auto a : info.subpasses[k].colors) {
+        for (auto a : subpass.colors) {
             clr.push_back(info.attm_refs[a]);
         }
-        for (auto a : info.subpasses[k].depthstencil) {
-            ds.push_back(info.attm_refs[a]);
+        ds = nullptr;
+        if (VK_ATTACHMENT_UNUSED != subpass.depthstencil) {
+            ds = &info.attm_refs[subpass.depthstencil];
         }
-        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass.inputAttachmentCount = u32(inp.size());
-        subpass.pInputAttachments = inp.data();
-        subpass.colorAttachmentCount = u32(clr.size());
-        subpass.pColorAttachments = clr.data();
-        subpass.pResolveAttachments = nullptr;
-        subpass.pDepthStencilAttachment = ds.empty() ? nullptr : ds.data();
-        subpass.preserveAttachmentCount = 0;
-        subpass.pPreserveAttachments = nullptr;
+
+        auto& desc = subpasses[k];
+        desc.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        desc.inputAttachmentCount = u32(inp.size());
+        desc.pInputAttachments = inp.data();
+        desc.colorAttachmentCount = u32(clr.size());
+        desc.pColorAttachments = clr.data();
+        desc.pResolveAttachments = nullptr;
+        desc.pDepthStencilAttachment = ds;
+        desc.preserveAttachmentCount = 0;
+        desc.pPreserveAttachments = nullptr;
     }
 
     for (uint32_t k = 0; k < u32(dependencies.size()); k++) {

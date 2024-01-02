@@ -55,7 +55,7 @@ struct RenderSubpassInfo {
     /** Color attachment indices for `attm_refs` (layout(location) out) */
     Vector<uint32_t> colors{};
     /** Depth stencil attachment index for `attm_refs` */
-    Vector<uint32_t> depthstencil{};
+    uint32_t depthstencil = VK_ATTACHMENT_UNUSED;
 };
 
 struct RenderPassInfo : public BuilderInfo {
