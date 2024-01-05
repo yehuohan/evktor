@@ -3803,3443 +3803,3314 @@ std::string On_Str_VkShaderGroupShaderKHR(VkShaderGroupShaderKHR e) {
 // Flags
 
 std::string On_Str_VkAccessFlags(VkAccessFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_ACCESS_INDIRECT_COMMAND_READ_BIT) {
-        str += "|INDIRECT_COMMAND_READ";
+        str += "INDIRECT_COMMAND_READ|";
     }
     if (f & VK_ACCESS_INDEX_READ_BIT) {
-        str += "|INDEX_READ";
+        str += "INDEX_READ|";
     }
     if (f & VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT) {
-        str += "|VERTEX_ATTRIBUTE_READ";
+        str += "VERTEX_ATTRIBUTE_READ|";
     }
     if (f & VK_ACCESS_UNIFORM_READ_BIT) {
-        str += "|UNIFORM_READ";
+        str += "UNIFORM_READ|";
     }
     if (f & VK_ACCESS_INPUT_ATTACHMENT_READ_BIT) {
-        str += "|INPUT_ATTACHMENT_READ";
+        str += "INPUT_ATTACHMENT_READ|";
     }
     if (f & VK_ACCESS_SHADER_READ_BIT) {
-        str += "|SHADER_READ";
+        str += "SHADER_READ|";
     }
     if (f & VK_ACCESS_SHADER_WRITE_BIT) {
-        str += "|SHADER_WRITE";
+        str += "SHADER_WRITE|";
     }
     if (f & VK_ACCESS_COLOR_ATTACHMENT_READ_BIT) {
-        str += "|COLOR_ATTACHMENT_READ";
+        str += "COLOR_ATTACHMENT_READ|";
     }
     if (f & VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT) {
-        str += "|COLOR_ATTACHMENT_WRITE";
+        str += "COLOR_ATTACHMENT_WRITE|";
     }
     if (f & VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT) {
-        str += "|DEPTH_STENCIL_ATTACHMENT_READ";
+        str += "DEPTH_STENCIL_ATTACHMENT_READ|";
     }
     if (f & VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT) {
-        str += "|DEPTH_STENCIL_ATTACHMENT_WRITE";
+        str += "DEPTH_STENCIL_ATTACHMENT_WRITE|";
     }
     if (f & VK_ACCESS_TRANSFER_READ_BIT) {
-        str += "|TRANSFER_READ";
+        str += "TRANSFER_READ|";
     }
     if (f & VK_ACCESS_TRANSFER_WRITE_BIT) {
-        str += "|TRANSFER_WRITE";
+        str += "TRANSFER_WRITE|";
     }
     if (f & VK_ACCESS_HOST_READ_BIT) {
-        str += "|HOST_READ";
+        str += "HOST_READ|";
     }
     if (f & VK_ACCESS_HOST_WRITE_BIT) {
-        str += "|HOST_WRITE";
+        str += "HOST_WRITE|";
     }
     if (f & VK_ACCESS_MEMORY_READ_BIT) {
-        str += "|MEMORY_READ";
+        str += "MEMORY_READ|";
     }
     if (f & VK_ACCESS_MEMORY_WRITE_BIT) {
-        str += "|MEMORY_WRITE";
+        str += "MEMORY_WRITE|";
     }
     if (f & VK_ACCESS_NONE) {
-        str += "|NONE";
+        str += "NONE|";
     }
     if (f & VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT) {
-        str += "|TRANSFORM_FEEDBACK_WRITE";
+        str += "TRANSFORM_FEEDBACK_WRITE|";
     }
     if (f & VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT) {
-        str += "|TRANSFORM_FEEDBACK_COUNTER_READ";
+        str += "TRANSFORM_FEEDBACK_COUNTER_READ|";
     }
     if (f & VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT) {
-        str += "|TRANSFORM_FEEDBACK_COUNTER_WRITE";
+        str += "TRANSFORM_FEEDBACK_COUNTER_WRITE|";
     }
     if (f & VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT) {
-        str += "|CONDITIONAL_RENDERING_READ";
+        str += "CONDITIONAL_RENDERING_READ|";
     }
     if (f & VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT) {
-        str += "|COLOR_ATTACHMENT_READ_NONCOHERENT";
+        str += "COLOR_ATTACHMENT_READ_NONCOHERENT|";
     }
     if (f & VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR) {
-        str += "|ACCELERATION_STRUCTURE_READ";
+        str += "ACCELERATION_STRUCTURE_READ|";
     }
     if (f & VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR) {
-        str += "|ACCELERATION_STRUCTURE_WRITE";
+        str += "ACCELERATION_STRUCTURE_WRITE|";
     }
     if (f & VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT) {
-        str += "|FRAGMENT_DENSITY_MAP_READ";
+        str += "FRAGMENT_DENSITY_MAP_READ|";
     }
     if (f & VK_ACCESS_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR) {
-        str += "|FRAGMENT_SHADING_RATE_ATTACHMENT_READ";
+        str += "FRAGMENT_SHADING_RATE_ATTACHMENT_READ|";
     }
     if (f & VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV) {
-        str += "|COMMAND_PREPROCESS_READ";
+        str += "COMMAND_PREPROCESS_READ|";
     }
     if (f & VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV) {
-        str += "|COMMAND_PREPROCESS_WRITE";
+        str += "COMMAND_PREPROCESS_WRITE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkImageAspectFlags(VkImageAspectFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_IMAGE_ASPECT_COLOR_BIT) {
-        str += "|COLOR";
+        str += "COLOR|";
     }
     if (f & VK_IMAGE_ASPECT_DEPTH_BIT) {
-        str += "|DEPTH";
+        str += "DEPTH|";
     }
     if (f & VK_IMAGE_ASPECT_STENCIL_BIT) {
-        str += "|STENCIL";
+        str += "STENCIL|";
     }
     if (f & VK_IMAGE_ASPECT_METADATA_BIT) {
-        str += "|METADATA";
+        str += "METADATA|";
     }
     if (f & VK_IMAGE_ASPECT_PLANE_0_BIT) {
-        str += "|PLANE_0";
+        str += "PLANE_0|";
     }
     if (f & VK_IMAGE_ASPECT_PLANE_1_BIT) {
-        str += "|PLANE_1";
+        str += "PLANE_1|";
     }
     if (f & VK_IMAGE_ASPECT_PLANE_2_BIT) {
-        str += "|PLANE_2";
+        str += "PLANE_2|";
     }
     if (f & VK_IMAGE_ASPECT_NONE) {
-        str += "|NONE";
+        str += "NONE|";
     }
     if (f & VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT) {
-        str += "|MEMORY_PLANE_0";
+        str += "MEMORY_PLANE_0|";
     }
     if (f & VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT) {
-        str += "|MEMORY_PLANE_1";
+        str += "MEMORY_PLANE_1|";
     }
     if (f & VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT) {
-        str += "|MEMORY_PLANE_2";
+        str += "MEMORY_PLANE_2|";
     }
     if (f & VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT) {
-        str += "|MEMORY_PLANE_3";
+        str += "MEMORY_PLANE_3|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkFormatFeatureFlags(VkFormatFeatureFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT) {
-        str += "|SAMPLED_IMAGE";
+        str += "SAMPLED_IMAGE|";
     }
     if (f & VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT) {
-        str += "|STORAGE_IMAGE";
+        str += "STORAGE_IMAGE|";
     }
     if (f & VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT) {
-        str += "|STORAGE_IMAGE_ATOMIC";
+        str += "STORAGE_IMAGE_ATOMIC|";
     }
     if (f & VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT) {
-        str += "|UNIFORM_TEXEL_BUFFER";
+        str += "UNIFORM_TEXEL_BUFFER|";
     }
     if (f & VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT) {
-        str += "|STORAGE_TEXEL_BUFFER";
+        str += "STORAGE_TEXEL_BUFFER|";
     }
     if (f & VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT) {
-        str += "|STORAGE_TEXEL_BUFFER_ATOMIC";
+        str += "STORAGE_TEXEL_BUFFER_ATOMIC|";
     }
     if (f & VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT) {
-        str += "|VERTEX_BUFFER";
+        str += "VERTEX_BUFFER|";
     }
     if (f & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT) {
-        str += "|COLOR_ATTACHMENT";
+        str += "COLOR_ATTACHMENT|";
     }
     if (f & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT) {
-        str += "|COLOR_ATTACHMENT_BLEND";
+        str += "COLOR_ATTACHMENT_BLEND|";
     }
     if (f & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) {
-        str += "|DEPTH_STENCIL_ATTACHMENT";
+        str += "DEPTH_STENCIL_ATTACHMENT|";
     }
     if (f & VK_FORMAT_FEATURE_BLIT_SRC_BIT) {
-        str += "|BLIT_SRC";
+        str += "BLIT_SRC|";
     }
     if (f & VK_FORMAT_FEATURE_BLIT_DST_BIT) {
-        str += "|BLIT_DST";
+        str += "BLIT_DST|";
     }
     if (f & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT) {
-        str += "|SAMPLED_IMAGE_FILTER_LINEAR";
+        str += "SAMPLED_IMAGE_FILTER_LINEAR|";
     }
     if (f & VK_FORMAT_FEATURE_TRANSFER_SRC_BIT) {
-        str += "|TRANSFER_SRC";
+        str += "TRANSFER_SRC|";
     }
     if (f & VK_FORMAT_FEATURE_TRANSFER_DST_BIT) {
-        str += "|TRANSFER_DST";
+        str += "TRANSFER_DST|";
     }
     if (f & VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT) {
-        str += "|MIDPOINT_CHROMA_SAMPLES";
+        str += "MIDPOINT_CHROMA_SAMPLES|";
     }
     if (f & VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT) {
-        str += "|SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER";
+        str += "SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER|";
     }
     if (f & VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT) {
-        str += "|SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER";
+        str += "SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER|";
     }
     if (f & VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT) {
-        str += "|SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT";
+        str += "SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT|";
     }
     if (f & VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT) {
-        str += "|SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE";
+        str += "SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE|";
     }
     if (f & VK_FORMAT_FEATURE_DISJOINT_BIT) {
-        str += "|DISJOINT";
+        str += "DISJOINT|";
     }
     if (f & VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT) {
-        str += "|COSITED_CHROMA_SAMPLES";
+        str += "COSITED_CHROMA_SAMPLES|";
     }
     if (f & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT) {
-        str += "|SAMPLED_IMAGE_FILTER_MINMAX";
+        str += "SAMPLED_IMAGE_FILTER_MINMAX|";
     }
     if (f & VK_FORMAT_FEATURE_VIDEO_DECODE_OUTPUT_BIT_KHR) {
-        str += "|VIDEO_DECODE_OUTPUT";
+        str += "VIDEO_DECODE_OUTPUT|";
     }
     if (f & VK_FORMAT_FEATURE_VIDEO_DECODE_DPB_BIT_KHR) {
-        str += "|VIDEO_DECODE_DPB";
+        str += "VIDEO_DECODE_DPB|";
     }
     if (f & VK_FORMAT_FEATURE_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR) {
-        str += "|ACCELERATION_STRUCTURE_VERTEX_BUFFER";
+        str += "ACCELERATION_STRUCTURE_VERTEX_BUFFER|";
     }
     if (f & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT) {
-        str += "|SAMPLED_IMAGE_FILTER_CUBIC";
+        str += "SAMPLED_IMAGE_FILTER_CUBIC|";
     }
     if (f & VK_FORMAT_FEATURE_FRAGMENT_DENSITY_MAP_BIT_EXT) {
-        str += "|FRAGMENT_DENSITY_MAP";
+        str += "FRAGMENT_DENSITY_MAP|";
     }
     if (f & VK_FORMAT_FEATURE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR) {
-        str += "|FRAGMENT_SHADING_RATE_ATTACHMENT";
+        str += "FRAGMENT_SHADING_RATE_ATTACHMENT|";
     }
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_FORMAT_FEATURE_VIDEO_ENCODE_INPUT_BIT_KHR) {
-        str += "|VIDEO_ENCODE_INPUT";
+        str += "VIDEO_ENCODE_INPUT|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_FORMAT_FEATURE_VIDEO_ENCODE_DPB_BIT_KHR) {
-        str += "|VIDEO_ENCODE_DPB";
+        str += "VIDEO_ENCODE_DPB|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkImageCreateFlags(VkImageCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_IMAGE_CREATE_SPARSE_BINDING_BIT) {
-        str += "|SPARSE_BINDING";
+        str += "SPARSE_BINDING|";
     }
     if (f & VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT) {
-        str += "|SPARSE_RESIDENCY";
+        str += "SPARSE_RESIDENCY|";
     }
     if (f & VK_IMAGE_CREATE_SPARSE_ALIASED_BIT) {
-        str += "|SPARSE_ALIASED";
+        str += "SPARSE_ALIASED|";
     }
     if (f & VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT) {
-        str += "|MUTABLE_FORMAT";
+        str += "MUTABLE_FORMAT|";
     }
     if (f & VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT) {
-        str += "|CUBE_COMPATIBLE";
+        str += "CUBE_COMPATIBLE|";
     }
     if (f & VK_IMAGE_CREATE_ALIAS_BIT) {
-        str += "|ALIAS";
+        str += "ALIAS|";
     }
     if (f & VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT) {
-        str += "|SPLIT_INSTANCE_BIND_REGIONS";
+        str += "SPLIT_INSTANCE_BIND_REGIONS|";
     }
     if (f & VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT) {
-        str += "|2D_ARRAY_COMPATIBLE";
+        str += "2D_ARRAY_COMPATIBLE|";
     }
     if (f & VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT) {
-        str += "|BLOCK_TEXEL_VIEW_COMPATIBLE";
+        str += "BLOCK_TEXEL_VIEW_COMPATIBLE|";
     }
     if (f & VK_IMAGE_CREATE_EXTENDED_USAGE_BIT) {
-        str += "|EXTENDED_USAGE";
+        str += "EXTENDED_USAGE|";
     }
     if (f & VK_IMAGE_CREATE_PROTECTED_BIT) {
-        str += "|PROTECTED";
+        str += "PROTECTED|";
     }
     if (f & VK_IMAGE_CREATE_DISJOINT_BIT) {
-        str += "|DISJOINT";
+        str += "DISJOINT|";
     }
     if (f & VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV) {
-        str += "|CORNER_SAMPLED";
+        str += "CORNER_SAMPLED|";
     }
     if (f & VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT) {
-        str += "|SAMPLE_LOCATIONS_COMPATIBLE_DEPTH";
+        str += "SAMPLE_LOCATIONS_COMPATIBLE_DEPTH|";
     }
     if (f & VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT) {
-        str += "|SUBSAMPLED";
+        str += "SUBSAMPLED|";
     }
     if (f & VK_IMAGE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT) {
-        str += "|DESCRIPTOR_BUFFER_CAPTURE_REPLAY";
+        str += "DESCRIPTOR_BUFFER_CAPTURE_REPLAY|";
     }
     if (f & VK_IMAGE_CREATE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_BIT_EXT) {
-        str += "|MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED";
+        str += "MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED|";
     }
     if (f & VK_IMAGE_CREATE_2D_VIEW_COMPATIBLE_BIT_EXT) {
-        str += "|2D_VIEW_COMPATIBLE";
+        str += "2D_VIEW_COMPATIBLE|";
     }
     if (f & VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_QCOM) {
-        str += "|FRAGMENT_DENSITY_MAP_OFFSET";
+        str += "FRAGMENT_DENSITY_MAP_OFFSET|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkSampleCountFlags(VkSampleCountFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_SAMPLE_COUNT_1_BIT) {
-        str += "|1";
+        str += "1|";
     }
     if (f & VK_SAMPLE_COUNT_2_BIT) {
-        str += "|2";
+        str += "2|";
     }
     if (f & VK_SAMPLE_COUNT_4_BIT) {
-        str += "|4";
+        str += "4|";
     }
     if (f & VK_SAMPLE_COUNT_8_BIT) {
-        str += "|8";
+        str += "8|";
     }
     if (f & VK_SAMPLE_COUNT_16_BIT) {
-        str += "|16";
+        str += "16|";
     }
     if (f & VK_SAMPLE_COUNT_32_BIT) {
-        str += "|32";
+        str += "32|";
     }
     if (f & VK_SAMPLE_COUNT_64_BIT) {
-        str += "|64";
+        str += "64|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkImageUsageFlags(VkImageUsageFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) {
-        str += "|TRANSFER_SRC";
+        str += "TRANSFER_SRC|";
     }
     if (f & VK_IMAGE_USAGE_TRANSFER_DST_BIT) {
-        str += "|TRANSFER_DST";
+        str += "TRANSFER_DST|";
     }
     if (f & VK_IMAGE_USAGE_SAMPLED_BIT) {
-        str += "|SAMPLED";
+        str += "SAMPLED|";
     }
     if (f & VK_IMAGE_USAGE_STORAGE_BIT) {
-        str += "|STORAGE";
+        str += "STORAGE|";
     }
     if (f & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) {
-        str += "|COLOR_ATTACHMENT";
+        str += "COLOR_ATTACHMENT|";
     }
     if (f & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) {
-        str += "|DEPTH_STENCIL_ATTACHMENT";
+        str += "DEPTH_STENCIL_ATTACHMENT|";
     }
     if (f & VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT) {
-        str += "|TRANSIENT_ATTACHMENT";
+        str += "TRANSIENT_ATTACHMENT|";
     }
     if (f & VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT) {
-        str += "|INPUT_ATTACHMENT";
+        str += "INPUT_ATTACHMENT|";
     }
     if (f & VK_IMAGE_USAGE_VIDEO_DECODE_DST_BIT_KHR) {
-        str += "|VIDEO_DECODE_DST";
+        str += "VIDEO_DECODE_DST|";
     }
     if (f & VK_IMAGE_USAGE_VIDEO_DECODE_SRC_BIT_KHR) {
-        str += "|VIDEO_DECODE_SRC";
+        str += "VIDEO_DECODE_SRC|";
     }
     if (f & VK_IMAGE_USAGE_VIDEO_DECODE_DPB_BIT_KHR) {
-        str += "|VIDEO_DECODE_DPB";
+        str += "VIDEO_DECODE_DPB|";
     }
     if (f & VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT) {
-        str += "|FRAGMENT_DENSITY_MAP";
+        str += "FRAGMENT_DENSITY_MAP|";
     }
     if (f & VK_IMAGE_USAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR) {
-        str += "|FRAGMENT_SHADING_RATE_ATTACHMENT";
+        str += "FRAGMENT_SHADING_RATE_ATTACHMENT|";
     }
     if (f & VK_IMAGE_USAGE_HOST_TRANSFER_BIT_EXT) {
-        str += "|HOST_TRANSFER";
+        str += "HOST_TRANSFER|";
     }
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_IMAGE_USAGE_VIDEO_ENCODE_DST_BIT_KHR) {
-        str += "|VIDEO_ENCODE_DST";
+        str += "VIDEO_ENCODE_DST|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_IMAGE_USAGE_VIDEO_ENCODE_SRC_BIT_KHR) {
-        str += "|VIDEO_ENCODE_SRC";
+        str += "VIDEO_ENCODE_SRC|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_IMAGE_USAGE_VIDEO_ENCODE_DPB_BIT_KHR) {
-        str += "|VIDEO_ENCODE_DPB";
+        str += "VIDEO_ENCODE_DPB|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_IMAGE_USAGE_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT) {
-        str += "|ATTACHMENT_FEEDBACK_LOOP";
+        str += "ATTACHMENT_FEEDBACK_LOOP|";
     }
     if (f & VK_IMAGE_USAGE_INVOCATION_MASK_BIT_HUAWEI) {
-        str += "|INVOCATION_MASK";
+        str += "INVOCATION_MASK|";
     }
     if (f & VK_IMAGE_USAGE_SAMPLE_WEIGHT_BIT_QCOM) {
-        str += "|SAMPLE_WEIGHT";
+        str += "SAMPLE_WEIGHT|";
     }
     if (f & VK_IMAGE_USAGE_SAMPLE_BLOCK_MATCH_BIT_QCOM) {
-        str += "|SAMPLE_BLOCK_MATCH";
+        str += "SAMPLE_BLOCK_MATCH|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkInstanceCreateFlags(VkInstanceCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR) {
-        str += "|ENUMERATE_PORTABILITY";
+        str += "ENUMERATE_PORTABILITY|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkMemoryHeapFlags(VkMemoryHeapFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) {
-        str += "|DEVICE_LOCAL";
+        str += "DEVICE_LOCAL|";
     }
     if (f & VK_MEMORY_HEAP_MULTI_INSTANCE_BIT) {
-        str += "|MULTI_INSTANCE";
+        str += "MULTI_INSTANCE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkMemoryPropertyFlags(VkMemoryPropertyFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) {
-        str += "|DEVICE_LOCAL";
+        str += "DEVICE_LOCAL|";
     }
     if (f & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) {
-        str += "|HOST_VISIBLE";
+        str += "HOST_VISIBLE|";
     }
     if (f & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) {
-        str += "|HOST_COHERENT";
+        str += "HOST_COHERENT|";
     }
     if (f & VK_MEMORY_PROPERTY_HOST_CACHED_BIT) {
-        str += "|HOST_CACHED";
+        str += "HOST_CACHED|";
     }
     if (f & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT) {
-        str += "|LAZILY_ALLOCATED";
+        str += "LAZILY_ALLOCATED|";
     }
     if (f & VK_MEMORY_PROPERTY_PROTECTED_BIT) {
-        str += "|PROTECTED";
+        str += "PROTECTED|";
     }
     if (f & VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD) {
-        str += "|DEVICE_COHERENT";
+        str += "DEVICE_COHERENT|";
     }
     if (f & VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD) {
-        str += "|DEVICE_UNCACHED";
+        str += "DEVICE_UNCACHED|";
     }
     if (f & VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV) {
-        str += "|RDMA_CAPABLE";
+        str += "RDMA_CAPABLE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkQueueFlags(VkQueueFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_QUEUE_GRAPHICS_BIT) {
-        str += "|GRAPHICS";
+        str += "GRAPHICS|";
     }
     if (f & VK_QUEUE_COMPUTE_BIT) {
-        str += "|COMPUTE";
+        str += "COMPUTE|";
     }
     if (f & VK_QUEUE_TRANSFER_BIT) {
-        str += "|TRANSFER";
+        str += "TRANSFER|";
     }
     if (f & VK_QUEUE_SPARSE_BINDING_BIT) {
-        str += "|SPARSE_BINDING";
+        str += "SPARSE_BINDING|";
     }
     if (f & VK_QUEUE_PROTECTED_BIT) {
-        str += "|PROTECTED";
+        str += "PROTECTED|";
     }
     if (f & VK_QUEUE_VIDEO_DECODE_BIT_KHR) {
-        str += "|VIDEO_DECODE";
+        str += "VIDEO_DECODE|";
     }
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_QUEUE_VIDEO_ENCODE_BIT_KHR) {
-        str += "|VIDEO_ENCODE";
+        str += "VIDEO_ENCODE|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_QUEUE_OPTICAL_FLOW_BIT_NV) {
-        str += "|OPTICAL_FLOW";
+        str += "OPTICAL_FLOW|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkDeviceQueueCreateFlags(VkDeviceQueueCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_DEVICE_QUEUE_CREATE_PROTECTED_BIT) {
-        str += "|PROTECTED";
+        str += "PROTECTED|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkPipelineStageFlags(VkPipelineStageFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT) {
-        str += "|TOP_OF_PIPE";
+        str += "TOP_OF_PIPE|";
     }
     if (f & VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT) {
-        str += "|DRAW_INDIRECT";
+        str += "DRAW_INDIRECT|";
     }
     if (f & VK_PIPELINE_STAGE_VERTEX_INPUT_BIT) {
-        str += "|VERTEX_INPUT";
+        str += "VERTEX_INPUT|";
     }
     if (f & VK_PIPELINE_STAGE_VERTEX_SHADER_BIT) {
-        str += "|VERTEX_SHADER";
+        str += "VERTEX_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT) {
-        str += "|TESSELLATION_CONTROL_SHADER";
+        str += "TESSELLATION_CONTROL_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT) {
-        str += "|TESSELLATION_EVALUATION_SHADER";
+        str += "TESSELLATION_EVALUATION_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT) {
-        str += "|GEOMETRY_SHADER";
+        str += "GEOMETRY_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT) {
-        str += "|FRAGMENT_SHADER";
+        str += "FRAGMENT_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT) {
-        str += "|EARLY_FRAGMENT_TESTS";
+        str += "EARLY_FRAGMENT_TESTS|";
     }
     if (f & VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT) {
-        str += "|LATE_FRAGMENT_TESTS";
+        str += "LATE_FRAGMENT_TESTS|";
     }
     if (f & VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT) {
-        str += "|COLOR_ATTACHMENT_OUTPUT";
+        str += "COLOR_ATTACHMENT_OUTPUT|";
     }
     if (f & VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT) {
-        str += "|COMPUTE_SHADER";
+        str += "COMPUTE_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_TRANSFER_BIT) {
-        str += "|TRANSFER";
+        str += "TRANSFER|";
     }
     if (f & VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT) {
-        str += "|BOTTOM_OF_PIPE";
+        str += "BOTTOM_OF_PIPE|";
     }
     if (f & VK_PIPELINE_STAGE_HOST_BIT) {
-        str += "|HOST";
+        str += "HOST|";
     }
     if (f & VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT) {
-        str += "|ALL_GRAPHICS";
+        str += "ALL_GRAPHICS|";
     }
     if (f & VK_PIPELINE_STAGE_ALL_COMMANDS_BIT) {
-        str += "|ALL_COMMANDS";
+        str += "ALL_COMMANDS|";
     }
     if (f & VK_PIPELINE_STAGE_NONE) {
-        str += "|NONE";
+        str += "NONE|";
     }
     if (f & VK_PIPELINE_STAGE_TRANSFORM_FEEDBACK_BIT_EXT) {
-        str += "|TRANSFORM_FEEDBACK";
+        str += "TRANSFORM_FEEDBACK|";
     }
     if (f & VK_PIPELINE_STAGE_CONDITIONAL_RENDERING_BIT_EXT) {
-        str += "|CONDITIONAL_RENDERING";
+        str += "CONDITIONAL_RENDERING|";
     }
     if (f & VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR) {
-        str += "|ACCELERATION_STRUCTURE_BUILD";
+        str += "ACCELERATION_STRUCTURE_BUILD|";
     }
     if (f & VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR) {
-        str += "|RAY_TRACING_SHADER";
+        str += "RAY_TRACING_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_FRAGMENT_DENSITY_PROCESS_BIT_EXT) {
-        str += "|FRAGMENT_DENSITY_PROCESS";
+        str += "FRAGMENT_DENSITY_PROCESS|";
     }
     if (f & VK_PIPELINE_STAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR) {
-        str += "|FRAGMENT_SHADING_RATE_ATTACHMENT";
+        str += "FRAGMENT_SHADING_RATE_ATTACHMENT|";
     }
     if (f & VK_PIPELINE_STAGE_COMMAND_PREPROCESS_BIT_NV) {
-        str += "|COMMAND_PREPROCESS";
+        str += "COMMAND_PREPROCESS|";
     }
     if (f & VK_PIPELINE_STAGE_TASK_SHADER_BIT_EXT) {
-        str += "|TASK_SHADER";
+        str += "TASK_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT) {
-        str += "|MESH_SHADER";
+        str += "MESH_SHADER|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkSparseMemoryBindFlags(VkSparseMemoryBindFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_SPARSE_MEMORY_BIND_METADATA_BIT) {
-        str += "|METADATA";
+        str += "METADATA|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkSparseImageFormatFlags(VkSparseImageFormatFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT) {
-        str += "|SINGLE_MIPTAIL";
+        str += "SINGLE_MIPTAIL|";
     }
     if (f & VK_SPARSE_IMAGE_FORMAT_ALIGNED_MIP_SIZE_BIT) {
-        str += "|ALIGNED_MIP_SIZE";
+        str += "ALIGNED_MIP_SIZE|";
     }
     if (f & VK_SPARSE_IMAGE_FORMAT_NONSTANDARD_BLOCK_SIZE_BIT) {
-        str += "|NONSTANDARD_BLOCK_SIZE";
+        str += "NONSTANDARD_BLOCK_SIZE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkFenceCreateFlags(VkFenceCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_FENCE_CREATE_SIGNALED_BIT) {
-        str += "|SIGNALED";
+        str += "SIGNALED|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkEventCreateFlags(VkEventCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_EVENT_CREATE_DEVICE_ONLY_BIT) {
-        str += "|DEVICE_ONLY";
+        str += "DEVICE_ONLY|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkQueryPipelineStatisticFlags(VkQueryPipelineStatisticFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_VERTICES_BIT) {
-        str += "|INPUT_ASSEMBLY_VERTICES";
+        str += "INPUT_ASSEMBLY_VERTICES|";
     }
     if (f & VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT) {
-        str += "|INPUT_ASSEMBLY_PRIMITIVES";
+        str += "INPUT_ASSEMBLY_PRIMITIVES|";
     }
     if (f & VK_QUERY_PIPELINE_STATISTIC_VERTEX_SHADER_INVOCATIONS_BIT) {
-        str += "|VERTEX_SHADER_INVOCATIONS";
+        str += "VERTEX_SHADER_INVOCATIONS|";
     }
     if (f & VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_INVOCATIONS_BIT) {
-        str += "|GEOMETRY_SHADER_INVOCATIONS";
+        str += "GEOMETRY_SHADER_INVOCATIONS|";
     }
     if (f & VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_PRIMITIVES_BIT) {
-        str += "|GEOMETRY_SHADER_PRIMITIVES";
+        str += "GEOMETRY_SHADER_PRIMITIVES|";
     }
     if (f & VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT) {
-        str += "|CLIPPING_INVOCATIONS";
+        str += "CLIPPING_INVOCATIONS|";
     }
     if (f & VK_QUERY_PIPELINE_STATISTIC_CLIPPING_PRIMITIVES_BIT) {
-        str += "|CLIPPING_PRIMITIVES";
+        str += "CLIPPING_PRIMITIVES|";
     }
     if (f & VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT) {
-        str += "|FRAGMENT_SHADER_INVOCATIONS";
+        str += "FRAGMENT_SHADER_INVOCATIONS|";
     }
     if (f & VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_CONTROL_SHADER_PATCHES_BIT) {
-        str += "|TESSELLATION_CONTROL_SHADER_PATCHES";
+        str += "TESSELLATION_CONTROL_SHADER_PATCHES|";
     }
     if (f & VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_EVALUATION_SHADER_INVOCATIONS_BIT) {
-        str += "|TESSELLATION_EVALUATION_SHADER_INVOCATIONS";
+        str += "TESSELLATION_EVALUATION_SHADER_INVOCATIONS|";
     }
     if (f & VK_QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT) {
-        str += "|COMPUTE_SHADER_INVOCATIONS";
+        str += "COMPUTE_SHADER_INVOCATIONS|";
     }
     if (f & VK_QUERY_PIPELINE_STATISTIC_TASK_SHADER_INVOCATIONS_BIT_EXT) {
-        str += "|TASK_SHADER_INVOCATIONS";
+        str += "TASK_SHADER_INVOCATIONS|";
     }
     if (f & VK_QUERY_PIPELINE_STATISTIC_MESH_SHADER_INVOCATIONS_BIT_EXT) {
-        str += "|MESH_SHADER_INVOCATIONS";
+        str += "MESH_SHADER_INVOCATIONS|";
     }
     if (f & VK_QUERY_PIPELINE_STATISTIC_CLUSTER_CULLING_SHADER_INVOCATIONS_BIT_HUAWEI) {
-        str += "|CLUSTER_CULLING_SHADER_INVOCATIONS";
+        str += "CLUSTER_CULLING_SHADER_INVOCATIONS|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkQueryResultFlags(VkQueryResultFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_QUERY_RESULT_64_BIT) {
-        str += "|64";
+        str += "64|";
     }
     if (f & VK_QUERY_RESULT_WAIT_BIT) {
-        str += "|WAIT";
+        str += "WAIT|";
     }
     if (f & VK_QUERY_RESULT_WITH_AVAILABILITY_BIT) {
-        str += "|WITH_AVAILABILITY";
+        str += "WITH_AVAILABILITY|";
     }
     if (f & VK_QUERY_RESULT_PARTIAL_BIT) {
-        str += "|PARTIAL";
+        str += "PARTIAL|";
     }
     if (f & VK_QUERY_RESULT_WITH_STATUS_BIT_KHR) {
-        str += "|WITH_STATUS";
+        str += "WITH_STATUS|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkBufferCreateFlags(VkBufferCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_BUFFER_CREATE_SPARSE_BINDING_BIT) {
-        str += "|SPARSE_BINDING";
+        str += "SPARSE_BINDING|";
     }
     if (f & VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT) {
-        str += "|SPARSE_RESIDENCY";
+        str += "SPARSE_RESIDENCY|";
     }
     if (f & VK_BUFFER_CREATE_SPARSE_ALIASED_BIT) {
-        str += "|SPARSE_ALIASED";
+        str += "SPARSE_ALIASED|";
     }
     if (f & VK_BUFFER_CREATE_PROTECTED_BIT) {
-        str += "|PROTECTED";
+        str += "PROTECTED|";
     }
     if (f & VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT) {
-        str += "|DEVICE_ADDRESS_CAPTURE_REPLAY";
+        str += "DEVICE_ADDRESS_CAPTURE_REPLAY|";
     }
     if (f & VK_BUFFER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT) {
-        str += "|DESCRIPTOR_BUFFER_CAPTURE_REPLAY";
+        str += "DESCRIPTOR_BUFFER_CAPTURE_REPLAY|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkBufferUsageFlags(VkBufferUsageFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_BUFFER_USAGE_TRANSFER_SRC_BIT) {
-        str += "|TRANSFER_SRC";
+        str += "TRANSFER_SRC|";
     }
     if (f & VK_BUFFER_USAGE_TRANSFER_DST_BIT) {
-        str += "|TRANSFER_DST";
+        str += "TRANSFER_DST|";
     }
     if (f & VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT) {
-        str += "|UNIFORM_TEXEL_BUFFER";
+        str += "UNIFORM_TEXEL_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT) {
-        str += "|STORAGE_TEXEL_BUFFER";
+        str += "STORAGE_TEXEL_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT) {
-        str += "|UNIFORM_BUFFER";
+        str += "UNIFORM_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_STORAGE_BUFFER_BIT) {
-        str += "|STORAGE_BUFFER";
+        str += "STORAGE_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_INDEX_BUFFER_BIT) {
-        str += "|INDEX_BUFFER";
+        str += "INDEX_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_VERTEX_BUFFER_BIT) {
-        str += "|VERTEX_BUFFER";
+        str += "VERTEX_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT) {
-        str += "|INDIRECT_BUFFER";
+        str += "INDIRECT_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT) {
-        str += "|SHADER_DEVICE_ADDRESS";
+        str += "SHADER_DEVICE_ADDRESS|";
     }
     if (f & VK_BUFFER_USAGE_VIDEO_DECODE_SRC_BIT_KHR) {
-        str += "|VIDEO_DECODE_SRC";
+        str += "VIDEO_DECODE_SRC|";
     }
     if (f & VK_BUFFER_USAGE_VIDEO_DECODE_DST_BIT_KHR) {
-        str += "|VIDEO_DECODE_DST";
+        str += "VIDEO_DECODE_DST|";
     }
     if (f & VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_BUFFER_BIT_EXT) {
-        str += "|TRANSFORM_FEEDBACK_BUFFER";
+        str += "TRANSFORM_FEEDBACK_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_COUNTER_BUFFER_BIT_EXT) {
-        str += "|TRANSFORM_FEEDBACK_COUNTER_BUFFER";
+        str += "TRANSFORM_FEEDBACK_COUNTER_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_CONDITIONAL_RENDERING_BIT_EXT) {
-        str += "|CONDITIONAL_RENDERING";
+        str += "CONDITIONAL_RENDERING|";
     }
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_BUFFER_USAGE_EXECUTION_GRAPH_SCRATCH_BIT_AMDX) {
-        str += "|EXECUTION_GRAPH_SCRATCH";
+        str += "EXECUTION_GRAPH_SCRATCH|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR) {
-        str += "|ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY";
+        str += "ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY|";
     }
     if (f & VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR) {
-        str += "|ACCELERATION_STRUCTURE_STORAGE";
+        str += "ACCELERATION_STRUCTURE_STORAGE|";
     }
     if (f & VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR) {
-        str += "|SHADER_BINDING_TABLE";
+        str += "SHADER_BINDING_TABLE|";
     }
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_BUFFER_USAGE_VIDEO_ENCODE_DST_BIT_KHR) {
-        str += "|VIDEO_ENCODE_DST";
+        str += "VIDEO_ENCODE_DST|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_BUFFER_USAGE_VIDEO_ENCODE_SRC_BIT_KHR) {
-        str += "|VIDEO_ENCODE_SRC";
+        str += "VIDEO_ENCODE_SRC|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT) {
-        str += "|SAMPLER_DESCRIPTOR_BUFFER";
+        str += "SAMPLER_DESCRIPTOR_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT) {
-        str += "|RESOURCE_DESCRIPTOR_BUFFER";
+        str += "RESOURCE_DESCRIPTOR_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT) {
-        str += "|PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER";
+        str += "PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_MICROMAP_BUILD_INPUT_READ_ONLY_BIT_EXT) {
-        str += "|MICROMAP_BUILD_INPUT_READ_ONLY";
+        str += "MICROMAP_BUILD_INPUT_READ_ONLY|";
     }
     if (f & VK_BUFFER_USAGE_MICROMAP_STORAGE_BIT_EXT) {
-        str += "|MICROMAP_STORAGE";
+        str += "MICROMAP_STORAGE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkImageViewCreateFlags(VkImageViewCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT) {
-        str += "|FRAGMENT_DENSITY_MAP_DYNAMIC";
+        str += "FRAGMENT_DENSITY_MAP_DYNAMIC|";
     }
     if (f & VK_IMAGE_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT) {
-        str += "|DESCRIPTOR_BUFFER_CAPTURE_REPLAY";
+        str += "DESCRIPTOR_BUFFER_CAPTURE_REPLAY|";
     }
     if (f & VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DEFERRED_BIT_EXT) {
-        str += "|FRAGMENT_DENSITY_MAP_DEFERRED";
+        str += "FRAGMENT_DENSITY_MAP_DEFERRED|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkPipelineCacheCreateFlags(VkPipelineCacheCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT) {
-        str += "|EXTERNALLY_SYNCHRONIZED";
+        str += "EXTERNALLY_SYNCHRONIZED|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkColorComponentFlags(VkColorComponentFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_COLOR_COMPONENT_R_BIT) {
-        str += "|R";
+        str += "R|";
     }
     if (f & VK_COLOR_COMPONENT_G_BIT) {
-        str += "|G";
+        str += "G|";
     }
     if (f & VK_COLOR_COMPONENT_B_BIT) {
-        str += "|B";
+        str += "B|";
     }
     if (f & VK_COLOR_COMPONENT_A_BIT) {
-        str += "|A";
+        str += "A|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkPipelineCreateFlags(VkPipelineCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT) {
-        str += "|DISABLE_OPTIMIZATION";
+        str += "DISABLE_OPTIMIZATION|";
     }
     if (f & VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT) {
-        str += "|ALLOW_DERIVATIVES";
+        str += "ALLOW_DERIVATIVES|";
     }
     if (f & VK_PIPELINE_CREATE_DERIVATIVE_BIT) {
-        str += "|DERIVATIVE";
+        str += "DERIVATIVE|";
     }
     if (f & VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT) {
-        str += "|VIEW_INDEX_FROM_DEVICE_INDEX";
+        str += "VIEW_INDEX_FROM_DEVICE_INDEX|";
     }
     if (f & VK_PIPELINE_CREATE_DISPATCH_BASE_BIT) {
-        str += "|DISPATCH_BASE";
+        str += "DISPATCH_BASE|";
     }
     if (f & VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT) {
-        str += "|FAIL_ON_PIPELINE_COMPILE_REQUIRED";
+        str += "FAIL_ON_PIPELINE_COMPILE_REQUIRED|";
     }
     if (f & VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT) {
-        str += "|EARLY_RETURN_ON_FAILURE";
+        str += "EARLY_RETURN_ON_FAILURE|";
     }
     if (f & VK_PIPELINE_CREATE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR) {
-        str += "|RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT";
+        str += "RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT|";
     }
     if (f & VK_PIPELINE_CREATE_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT) {
-        str += "|RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT";
+        str += "RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT|";
     }
     if (f & VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR) {
-        str += "|RAY_TRACING_NO_NULL_ANY_HIT_SHADERS";
+        str += "RAY_TRACING_NO_NULL_ANY_HIT_SHADERS|";
     }
     if (f & VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR) {
-        str += "|RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS";
+        str += "RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS|";
     }
     if (f & VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR) {
-        str += "|RAY_TRACING_NO_NULL_MISS_SHADERS";
+        str += "RAY_TRACING_NO_NULL_MISS_SHADERS|";
     }
     if (f & VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR) {
-        str += "|RAY_TRACING_NO_NULL_INTERSECTION_SHADERS";
+        str += "RAY_TRACING_NO_NULL_INTERSECTION_SHADERS|";
     }
     if (f & VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR) {
-        str += "|RAY_TRACING_SKIP_TRIANGLES";
+        str += "RAY_TRACING_SKIP_TRIANGLES|";
     }
     if (f & VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR) {
-        str += "|RAY_TRACING_SKIP_AABBS";
+        str += "RAY_TRACING_SKIP_AABBS|";
     }
     if (f & VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR) {
-        str += "|RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY";
+        str += "RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY|";
     }
     if (f & VK_PIPELINE_CREATE_DEFER_COMPILE_BIT_NV) {
-        str += "|DEFER_COMPILE";
+        str += "DEFER_COMPILE|";
     }
     if (f & VK_PIPELINE_CREATE_CAPTURE_STATISTICS_BIT_KHR) {
-        str += "|CAPTURE_STATISTICS";
+        str += "CAPTURE_STATISTICS|";
     }
     if (f & VK_PIPELINE_CREATE_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_KHR) {
-        str += "|CAPTURE_INTERNAL_REPRESENTATIONS";
+        str += "CAPTURE_INTERNAL_REPRESENTATIONS|";
     }
     if (f & VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV) {
-        str += "|INDIRECT_BINDABLE";
+        str += "INDIRECT_BINDABLE|";
     }
     if (f & VK_PIPELINE_CREATE_LIBRARY_BIT_KHR) {
-        str += "|LIBRARY";
+        str += "LIBRARY|";
     }
     if (f & VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT) {
-        str += "|DESCRIPTOR_BUFFER";
+        str += "DESCRIPTOR_BUFFER|";
     }
     if (f & VK_PIPELINE_CREATE_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_EXT) {
-        str += "|RETAIN_LINK_TIME_OPTIMIZATION_INFO";
+        str += "RETAIN_LINK_TIME_OPTIMIZATION_INFO|";
     }
     if (f & VK_PIPELINE_CREATE_LINK_TIME_OPTIMIZATION_BIT_EXT) {
-        str += "|LINK_TIME_OPTIMIZATION";
+        str += "LINK_TIME_OPTIMIZATION|";
     }
     if (f & VK_PIPELINE_CREATE_RAY_TRACING_ALLOW_MOTION_BIT_NV) {
-        str += "|RAY_TRACING_ALLOW_MOTION";
+        str += "RAY_TRACING_ALLOW_MOTION|";
     }
     if (f & VK_PIPELINE_CREATE_COLOR_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT) {
-        str += "|COLOR_ATTACHMENT_FEEDBACK_LOOP";
+        str += "COLOR_ATTACHMENT_FEEDBACK_LOOP|";
     }
     if (f & VK_PIPELINE_CREATE_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_EXT) {
-        str += "|DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP";
+        str += "DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP|";
     }
     if (f & VK_PIPELINE_CREATE_RAY_TRACING_OPACITY_MICROMAP_BIT_EXT) {
-        str += "|RAY_TRACING_OPACITY_MICROMAP";
+        str += "RAY_TRACING_OPACITY_MICROMAP|";
     }
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_PIPELINE_CREATE_RAY_TRACING_DISPLACEMENT_MICROMAP_BIT_NV) {
-        str += "|RAY_TRACING_DISPLACEMENT_MICROMAP";
+        str += "RAY_TRACING_DISPLACEMENT_MICROMAP|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_PIPELINE_CREATE_NO_PROTECTED_ACCESS_BIT_EXT) {
-        str += "|NO_PROTECTED_ACCESS";
+        str += "NO_PROTECTED_ACCESS|";
     }
     if (f & VK_PIPELINE_CREATE_PROTECTED_ACCESS_ONLY_BIT_EXT) {
-        str += "|PROTECTED_ACCESS_ONLY";
+        str += "PROTECTED_ACCESS_ONLY|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkPipelineShaderStageCreateFlags(VkPipelineShaderStageCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT) {
-        str += "|ALLOW_VARYING_SUBGROUP_SIZE";
+        str += "ALLOW_VARYING_SUBGROUP_SIZE|";
     }
     if (f & VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT) {
-        str += "|REQUIRE_FULL_SUBGROUPS";
+        str += "REQUIRE_FULL_SUBGROUPS|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkShaderStageFlags(VkShaderStageFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_SHADER_STAGE_VERTEX_BIT) {
-        str += "|VERTEX";
+        str += "VERTEX|";
     }
     if (f & VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT) {
-        str += "|TESSELLATION_CONTROL";
+        str += "TESSELLATION_CONTROL|";
     }
     if (f & VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT) {
-        str += "|TESSELLATION_EVALUATION";
+        str += "TESSELLATION_EVALUATION|";
     }
     if (f & VK_SHADER_STAGE_GEOMETRY_BIT) {
-        str += "|GEOMETRY";
+        str += "GEOMETRY|";
     }
     if (f & VK_SHADER_STAGE_FRAGMENT_BIT) {
-        str += "|FRAGMENT";
+        str += "FRAGMENT|";
     }
     if (f & VK_SHADER_STAGE_COMPUTE_BIT) {
-        str += "|COMPUTE";
+        str += "COMPUTE|";
     }
     if (f & VK_SHADER_STAGE_ALL_GRAPHICS) {
-        str += "|ALL_GRAPHICS";
+        str += "ALL_GRAPHICS|";
     }
     if (f & VK_SHADER_STAGE_ALL) {
-        str += "|ALL";
+        str += "ALL|";
     }
     if (f & VK_SHADER_STAGE_RAYGEN_BIT_KHR) {
-        str += "|RAYGEN";
+        str += "RAYGEN|";
     }
     if (f & VK_SHADER_STAGE_ANY_HIT_BIT_KHR) {
-        str += "|ANY_HIT";
+        str += "ANY_HIT|";
     }
     if (f & VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR) {
-        str += "|CLOSEST_HIT";
+        str += "CLOSEST_HIT|";
     }
     if (f & VK_SHADER_STAGE_MISS_BIT_KHR) {
-        str += "|MISS";
+        str += "MISS|";
     }
     if (f & VK_SHADER_STAGE_INTERSECTION_BIT_KHR) {
-        str += "|INTERSECTION";
+        str += "INTERSECTION|";
     }
     if (f & VK_SHADER_STAGE_CALLABLE_BIT_KHR) {
-        str += "|CALLABLE";
+        str += "CALLABLE|";
     }
     if (f & VK_SHADER_STAGE_TASK_BIT_EXT) {
-        str += "|TASK";
+        str += "TASK|";
     }
     if (f & VK_SHADER_STAGE_MESH_BIT_EXT) {
-        str += "|MESH";
+        str += "MESH|";
     }
     if (f & VK_SHADER_STAGE_SUBPASS_SHADING_BIT_HUAWEI) {
-        str += "|SUBPASS_SHADING";
+        str += "SUBPASS_SHADING|";
     }
     if (f & VK_SHADER_STAGE_CLUSTER_CULLING_BIT_HUAWEI) {
-        str += "|CLUSTER_CULLING";
+        str += "CLUSTER_CULLING|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkCullModeFlags(VkCullModeFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_CULL_MODE_NONE) {
-        str += "|NONE";
+        str += "NONE|";
     }
     if (f & VK_CULL_MODE_FRONT_BIT) {
-        str += "|FRONT";
+        str += "FRONT|";
     }
     if (f & VK_CULL_MODE_BACK_BIT) {
-        str += "|BACK";
+        str += "BACK|";
     }
     if (f & VK_CULL_MODE_FRONT_AND_BACK) {
-        str += "|FRONT_AND_BACK";
+        str += "FRONT_AND_BACK|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkPipelineDepthStencilStateCreateFlags(VkPipelineDepthStencilStateCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT) {
-        str += "|RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS";
+        str += "RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS|";
     }
     if (f & VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT) {
-        str += "|RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS";
+        str += "RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkPipelineColorBlendStateCreateFlags(VkPipelineColorBlendStateCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_EXT) {
-        str += "|RASTERIZATION_ORDER_ATTACHMENT_ACCESS";
+        str += "RASTERIZATION_ORDER_ATTACHMENT_ACCESS|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkPipelineLayoutCreateFlags(VkPipelineLayoutCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT) {
-        str += "|INDEPENDENT_SETS";
+        str += "INDEPENDENT_SETS|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkSamplerCreateFlags(VkSamplerCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_SAMPLER_CREATE_SUBSAMPLED_BIT_EXT) {
-        str += "|SUBSAMPLED";
+        str += "SUBSAMPLED|";
     }
     if (f & VK_SAMPLER_CREATE_SUBSAMPLED_COARSE_RECONSTRUCTION_BIT_EXT) {
-        str += "|SUBSAMPLED_COARSE_RECONSTRUCTION";
+        str += "SUBSAMPLED_COARSE_RECONSTRUCTION|";
     }
     if (f & VK_SAMPLER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT) {
-        str += "|DESCRIPTOR_BUFFER_CAPTURE_REPLAY";
+        str += "DESCRIPTOR_BUFFER_CAPTURE_REPLAY|";
     }
     if (f & VK_SAMPLER_CREATE_NON_SEAMLESS_CUBE_MAP_BIT_EXT) {
-        str += "|NON_SEAMLESS_CUBE_MAP";
+        str += "NON_SEAMLESS_CUBE_MAP|";
     }
     if (f & VK_SAMPLER_CREATE_IMAGE_PROCESSING_BIT_QCOM) {
-        str += "|IMAGE_PROCESSING";
+        str += "IMAGE_PROCESSING|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkDescriptorPoolCreateFlags(VkDescriptorPoolCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT) {
-        str += "|FREE_DESCRIPTOR_SET";
+        str += "FREE_DESCRIPTOR_SET|";
     }
     if (f & VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT) {
-        str += "|UPDATE_AFTER_BIND";
+        str += "UPDATE_AFTER_BIND|";
     }
     if (f & VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_EXT) {
-        str += "|HOST_ONLY";
+        str += "HOST_ONLY|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkDescriptorSetLayoutCreateFlags(VkDescriptorSetLayoutCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT) {
-        str += "|UPDATE_AFTER_BIND_POOL";
+        str += "UPDATE_AFTER_BIND_POOL|";
     }
     if (f & VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR) {
-        str += "|PUSH_DESCRIPTOR";
+        str += "PUSH_DESCRIPTOR|";
     }
     if (f & VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT) {
-        str += "|DESCRIPTOR_BUFFER";
+        str += "DESCRIPTOR_BUFFER|";
     }
     if (f & VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXT) {
-        str += "|EMBEDDED_IMMUTABLE_SAMPLERS";
+        str += "EMBEDDED_IMMUTABLE_SAMPLERS|";
     }
     if (f & VK_DESCRIPTOR_SET_LAYOUT_CREATE_INDIRECT_BINDABLE_BIT_NV) {
-        str += "|INDIRECT_BINDABLE";
+        str += "INDIRECT_BINDABLE|";
     }
     if (f & VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_EXT) {
-        str += "|HOST_ONLY_POOL";
+        str += "HOST_ONLY_POOL|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkAttachmentDescriptionFlags(VkAttachmentDescriptionFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT) {
-        str += "|MAY_ALIAS";
+        str += "MAY_ALIAS|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkDependencyFlags(VkDependencyFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_DEPENDENCY_BY_REGION_BIT) {
-        str += "|BY_REGION";
+        str += "BY_REGION|";
     }
     if (f & VK_DEPENDENCY_DEVICE_GROUP_BIT) {
-        str += "|DEVICE_GROUP";
+        str += "DEVICE_GROUP|";
     }
     if (f & VK_DEPENDENCY_VIEW_LOCAL_BIT) {
-        str += "|VIEW_LOCAL";
+        str += "VIEW_LOCAL|";
     }
     if (f & VK_DEPENDENCY_FEEDBACK_LOOP_BIT_EXT) {
-        str += "|FEEDBACK_LOOP";
+        str += "FEEDBACK_LOOP|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkFramebufferCreateFlags(VkFramebufferCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT) {
-        str += "|IMAGELESS";
+        str += "IMAGELESS|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkRenderPassCreateFlags(VkRenderPassCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_RENDER_PASS_CREATE_TRANSFORM_BIT_QCOM) {
-        str += "|TRANSFORM";
+        str += "TRANSFORM|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkSubpassDescriptionFlags(VkSubpassDescriptionFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_SUBPASS_DESCRIPTION_PER_VIEW_ATTRIBUTES_BIT_NVX) {
-        str += "|PER_VIEW_ATTRIBUTES_BIT_NVX";
+        str += "PER_VIEW_ATTRIBUTES_BIT_NVX|";
     }
     if (f & VK_SUBPASS_DESCRIPTION_PER_VIEW_POSITION_X_ONLY_BIT_NVX) {
-        str += "|PER_VIEW_POSITION_X_ONLY_BIT_NVX";
+        str += "PER_VIEW_POSITION_X_ONLY_BIT_NVX|";
     }
     if (f & VK_SUBPASS_DESCRIPTION_FRAGMENT_REGION_BIT_QCOM) {
-        str += "|FRAGMENT_REGION";
+        str += "FRAGMENT_REGION|";
     }
     if (f & VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM) {
-        str += "|SHADER_RESOLVE";
+        str += "SHADER_RESOLVE|";
     }
     if (f & VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS_BIT_EXT) {
-        str += "|RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS";
+        str += "RASTERIZATION_ORDER_ATTACHMENT_COLOR_ACCESS|";
     }
     if (f & VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT) {
-        str += "|RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS";
+        str += "RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS|";
     }
     if (f & VK_SUBPASS_DESCRIPTION_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT) {
-        str += "|RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS";
+        str += "RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS|";
     }
     if (f & VK_SUBPASS_DESCRIPTION_ENABLE_LEGACY_DITHERING_BIT_EXT) {
-        str += "|ENABLE_LEGACY_DITHERING";
+        str += "ENABLE_LEGACY_DITHERING|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkCommandPoolCreateFlags(VkCommandPoolCreateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) {
-        str += "|TRANSIENT";
+        str += "TRANSIENT|";
     }
     if (f & VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT) {
-        str += "|RESET_COMMAND_BUFFER";
+        str += "RESET_COMMAND_BUFFER|";
     }
     if (f & VK_COMMAND_POOL_CREATE_PROTECTED_BIT) {
-        str += "|PROTECTED";
+        str += "PROTECTED|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkCommandPoolResetFlags(VkCommandPoolResetFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT) {
-        str += "|RELEASE_RESOURCES";
+        str += "RELEASE_RESOURCES|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkCommandBufferUsageFlags(VkCommandBufferUsageFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT) {
-        str += "|ONE_TIME_SUBMIT";
+        str += "ONE_TIME_SUBMIT|";
     }
     if (f & VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT) {
-        str += "|RENDER_PASS_CONTINUE";
+        str += "RENDER_PASS_CONTINUE|";
     }
     if (f & VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT) {
-        str += "|SIMULTANEOUS_USE";
+        str += "SIMULTANEOUS_USE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkQueryControlFlags(VkQueryControlFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_QUERY_CONTROL_PRECISE_BIT) {
-        str += "|PRECISE";
+        str += "PRECISE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkCommandBufferResetFlags(VkCommandBufferResetFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT) {
-        str += "|RELEASE_RESOURCES";
+        str += "RELEASE_RESOURCES|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkStencilFaceFlags(VkStencilFaceFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_STENCIL_FACE_FRONT_BIT) {
-        str += "|FRONT";
+        str += "FRONT|";
     }
     if (f & VK_STENCIL_FACE_BACK_BIT) {
-        str += "|BACK";
+        str += "BACK|";
     }
     if (f & VK_STENCIL_FACE_FRONT_AND_BACK) {
-        str += "|FRONT_AND_BACK";
+        str += "FRONT_AND_BACK|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkSubgroupFeatureFlags(VkSubgroupFeatureFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_SUBGROUP_FEATURE_BASIC_BIT) {
-        str += "|BASIC";
+        str += "BASIC|";
     }
     if (f & VK_SUBGROUP_FEATURE_VOTE_BIT) {
-        str += "|VOTE";
+        str += "VOTE|";
     }
     if (f & VK_SUBGROUP_FEATURE_ARITHMETIC_BIT) {
-        str += "|ARITHMETIC";
+        str += "ARITHMETIC|";
     }
     if (f & VK_SUBGROUP_FEATURE_BALLOT_BIT) {
-        str += "|BALLOT";
+        str += "BALLOT|";
     }
     if (f & VK_SUBGROUP_FEATURE_SHUFFLE_BIT) {
-        str += "|SHUFFLE";
+        str += "SHUFFLE|";
     }
     if (f & VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT) {
-        str += "|SHUFFLE_RELATIVE";
+        str += "SHUFFLE_RELATIVE|";
     }
     if (f & VK_SUBGROUP_FEATURE_CLUSTERED_BIT) {
-        str += "|CLUSTERED";
+        str += "CLUSTERED|";
     }
     if (f & VK_SUBGROUP_FEATURE_QUAD_BIT) {
-        str += "|QUAD";
+        str += "QUAD|";
     }
     if (f & VK_SUBGROUP_FEATURE_PARTITIONED_BIT_NV) {
-        str += "|PARTITIONED";
+        str += "PARTITIONED|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkPeerMemoryFeatureFlags(VkPeerMemoryFeatureFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_PEER_MEMORY_FEATURE_COPY_SRC_BIT) {
-        str += "|COPY_SRC";
+        str += "COPY_SRC|";
     }
     if (f & VK_PEER_MEMORY_FEATURE_COPY_DST_BIT) {
-        str += "|COPY_DST";
+        str += "COPY_DST|";
     }
     if (f & VK_PEER_MEMORY_FEATURE_GENERIC_SRC_BIT) {
-        str += "|GENERIC_SRC";
+        str += "GENERIC_SRC|";
     }
     if (f & VK_PEER_MEMORY_FEATURE_GENERIC_DST_BIT) {
-        str += "|GENERIC_DST";
+        str += "GENERIC_DST|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkMemoryAllocateFlags(VkMemoryAllocateFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT) {
-        str += "|DEVICE_MASK";
+        str += "DEVICE_MASK|";
     }
     if (f & VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT) {
-        str += "|DEVICE_ADDRESS";
+        str += "DEVICE_ADDRESS|";
     }
     if (f & VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT) {
-        str += "|DEVICE_ADDRESS_CAPTURE_REPLAY";
+        str += "DEVICE_ADDRESS_CAPTURE_REPLAY|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkExternalMemoryHandleTypeFlags(VkExternalMemoryHandleTypeFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT) {
-        str += "|OPAQUE_FD";
+        str += "OPAQUE_FD|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT) {
-        str += "|OPAQUE_WIN32";
+        str += "OPAQUE_WIN32|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT) {
-        str += "|OPAQUE_WIN32_KMT";
+        str += "OPAQUE_WIN32_KMT|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT) {
-        str += "|D3D11_TEXTURE";
+        str += "D3D11_TEXTURE|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_KMT_BIT) {
-        str += "|D3D11_TEXTURE_KMT";
+        str += "D3D11_TEXTURE_KMT|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT) {
-        str += "|D3D12_HEAP";
+        str += "D3D12_HEAP|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT) {
-        str += "|D3D12_RESOURCE";
+        str += "D3D12_RESOURCE|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT) {
-        str += "|DMA_BUF";
+        str += "DMA_BUF|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID) {
-        str += "|ANDROID_HARDWARE_BUFFER_BIT_ANDROID";
+        str += "ANDROID_HARDWARE_BUFFER_BIT_ANDROID|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT) {
-        str += "|HOST_ALLOCATION";
+        str += "HOST_ALLOCATION|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT) {
-        str += "|HOST_MAPPED_FOREIGN_MEMORY";
+        str += "HOST_MAPPED_FOREIGN_MEMORY|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA) {
-        str += "|ZIRCON_VMO";
+        str += "ZIRCON_VMO|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_RDMA_ADDRESS_BIT_NV) {
-        str += "|RDMA_ADDRESS";
+        str += "RDMA_ADDRESS|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_SCREEN_BUFFER_BIT_QNX) {
-        str += "|SCREEN_BUFFER";
+        str += "SCREEN_BUFFER|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkExternalMemoryFeatureFlags(VkExternalMemoryFeatureFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT) {
-        str += "|DEDICATED_ONLY";
+        str += "DEDICATED_ONLY|";
     }
     if (f & VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT) {
-        str += "|EXPORTABLE";
+        str += "EXPORTABLE|";
     }
     if (f & VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT) {
-        str += "|IMPORTABLE";
+        str += "IMPORTABLE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkExternalFenceHandleTypeFlags(VkExternalFenceHandleTypeFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_FD_BIT) {
-        str += "|OPAQUE_FD";
+        str += "OPAQUE_FD|";
     }
     if (f & VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT) {
-        str += "|OPAQUE_WIN32";
+        str += "OPAQUE_WIN32|";
     }
     if (f & VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT) {
-        str += "|OPAQUE_WIN32_KMT";
+        str += "OPAQUE_WIN32_KMT|";
     }
     if (f & VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT) {
-        str += "|SYNC_FD";
+        str += "SYNC_FD|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkExternalFenceFeatureFlags(VkExternalFenceFeatureFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_EXTERNAL_FENCE_FEATURE_EXPORTABLE_BIT) {
-        str += "|EXPORTABLE";
+        str += "EXPORTABLE|";
     }
     if (f & VK_EXTERNAL_FENCE_FEATURE_IMPORTABLE_BIT) {
-        str += "|IMPORTABLE";
+        str += "IMPORTABLE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkFenceImportFlags(VkFenceImportFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_FENCE_IMPORT_TEMPORARY_BIT) {
-        str += "|TEMPORARY";
+        str += "TEMPORARY|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkSemaphoreImportFlags(VkSemaphoreImportFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_SEMAPHORE_IMPORT_TEMPORARY_BIT) {
-        str += "|TEMPORARY";
+        str += "TEMPORARY|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkExternalSemaphoreHandleTypeFlags(VkExternalSemaphoreHandleTypeFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT) {
-        str += "|OPAQUE_FD";
+        str += "OPAQUE_FD|";
     }
     if (f & VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT) {
-        str += "|OPAQUE_WIN32";
+        str += "OPAQUE_WIN32|";
     }
     if (f & VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT) {
-        str += "|OPAQUE_WIN32_KMT";
+        str += "OPAQUE_WIN32_KMT|";
     }
     if (f & VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D12_FENCE_BIT) {
-        str += "|D3D12_FENCE";
+        str += "D3D12_FENCE|";
     }
     if (f & VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT) {
-        str += "|SYNC_FD";
+        str += "SYNC_FD|";
     }
     if (f & VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA) {
-        str += "|ZIRCON_EVENT";
+        str += "ZIRCON_EVENT|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkExternalSemaphoreFeatureFlags(VkExternalSemaphoreFeatureFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT) {
-        str += "|EXPORTABLE";
+        str += "EXPORTABLE|";
     }
     if (f & VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT) {
-        str += "|IMPORTABLE";
+        str += "IMPORTABLE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkResolveModeFlags(VkResolveModeFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_RESOLVE_MODE_NONE) {
-        str += "|NONE";
+        str += "NONE|";
     }
     if (f & VK_RESOLVE_MODE_SAMPLE_ZERO_BIT) {
-        str += "|SAMPLE_ZERO";
+        str += "SAMPLE_ZERO|";
     }
     if (f & VK_RESOLVE_MODE_AVERAGE_BIT) {
-        str += "|AVERAGE";
+        str += "AVERAGE|";
     }
     if (f & VK_RESOLVE_MODE_MIN_BIT) {
-        str += "|MIN";
+        str += "MIN|";
     }
     if (f & VK_RESOLVE_MODE_MAX_BIT) {
-        str += "|MAX";
+        str += "MAX|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkDescriptorBindingFlags(VkDescriptorBindingFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT) {
-        str += "|UPDATE_AFTER_BIND";
+        str += "UPDATE_AFTER_BIND|";
     }
     if (f & VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT) {
-        str += "|UPDATE_UNUSED_WHILE_PENDING";
+        str += "UPDATE_UNUSED_WHILE_PENDING|";
     }
     if (f & VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT) {
-        str += "|PARTIALLY_BOUND";
+        str += "PARTIALLY_BOUND|";
     }
     if (f & VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT) {
-        str += "|VARIABLE_DESCRIPTOR_COUNT";
+        str += "VARIABLE_DESCRIPTOR_COUNT|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkSemaphoreWaitFlags(VkSemaphoreWaitFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_SEMAPHORE_WAIT_ANY_BIT) {
-        str += "|ANY";
+        str += "ANY|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkPipelineCreationFeedbackFlags(VkPipelineCreationFeedbackFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_PIPELINE_CREATION_FEEDBACK_VALID_BIT) {
-        str += "|VALID";
+        str += "VALID|";
     }
     if (f & VK_PIPELINE_CREATION_FEEDBACK_APPLICATION_PIPELINE_CACHE_HIT_BIT) {
-        str += "|APPLICATION_PIPELINE_CACHE_HIT";
+        str += "APPLICATION_PIPELINE_CACHE_HIT|";
     }
     if (f & VK_PIPELINE_CREATION_FEEDBACK_BASE_PIPELINE_ACCELERATION_BIT) {
-        str += "|BASE_PIPELINE_ACCELERATION";
+        str += "BASE_PIPELINE_ACCELERATION|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkToolPurposeFlags(VkToolPurposeFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_TOOL_PURPOSE_VALIDATION_BIT) {
-        str += "|VALIDATION";
+        str += "VALIDATION|";
     }
     if (f & VK_TOOL_PURPOSE_PROFILING_BIT) {
-        str += "|PROFILING";
+        str += "PROFILING|";
     }
     if (f & VK_TOOL_PURPOSE_TRACING_BIT) {
-        str += "|TRACING";
+        str += "TRACING|";
     }
     if (f & VK_TOOL_PURPOSE_ADDITIONAL_FEATURES_BIT) {
-        str += "|ADDITIONAL_FEATURES";
+        str += "ADDITIONAL_FEATURES|";
     }
     if (f & VK_TOOL_PURPOSE_MODIFYING_FEATURES_BIT) {
-        str += "|MODIFYING_FEATURES";
+        str += "MODIFYING_FEATURES|";
     }
     if (f & VK_TOOL_PURPOSE_DEBUG_REPORTING_BIT_EXT) {
-        str += "|DEBUG_REPORTING";
+        str += "DEBUG_REPORTING|";
     }
     if (f & VK_TOOL_PURPOSE_DEBUG_MARKERS_BIT_EXT) {
-        str += "|DEBUG_MARKERS";
+        str += "DEBUG_MARKERS|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkPipelineStageFlags2(VkPipelineStageFlags2 f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_PIPELINE_STAGE_2_NONE) {
-        str += "|2_NONE";
+        str += "2_NONE|";
     }
     if (f & VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT) {
-        str += "|2_TOP_OF_PIPE";
+        str += "2_TOP_OF_PIPE|";
     }
     if (f & VK_PIPELINE_STAGE_2_DRAW_INDIRECT_BIT) {
-        str += "|2_DRAW_INDIRECT";
+        str += "2_DRAW_INDIRECT|";
     }
     if (f & VK_PIPELINE_STAGE_2_VERTEX_INPUT_BIT) {
-        str += "|2_VERTEX_INPUT";
+        str += "2_VERTEX_INPUT|";
     }
     if (f & VK_PIPELINE_STAGE_2_VERTEX_SHADER_BIT) {
-        str += "|2_VERTEX_SHADER";
+        str += "2_VERTEX_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_2_TESSELLATION_CONTROL_SHADER_BIT) {
-        str += "|2_TESSELLATION_CONTROL_SHADER";
+        str += "2_TESSELLATION_CONTROL_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_2_TESSELLATION_EVALUATION_SHADER_BIT) {
-        str += "|2_TESSELLATION_EVALUATION_SHADER";
+        str += "2_TESSELLATION_EVALUATION_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_2_GEOMETRY_SHADER_BIT) {
-        str += "|2_GEOMETRY_SHADER";
+        str += "2_GEOMETRY_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT) {
-        str += "|2_FRAGMENT_SHADER";
+        str += "2_FRAGMENT_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT) {
-        str += "|2_EARLY_FRAGMENT_TESTS";
+        str += "2_EARLY_FRAGMENT_TESTS|";
     }
     if (f & VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT) {
-        str += "|2_LATE_FRAGMENT_TESTS";
+        str += "2_LATE_FRAGMENT_TESTS|";
     }
     if (f & VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT) {
-        str += "|2_COLOR_ATTACHMENT_OUTPUT";
+        str += "2_COLOR_ATTACHMENT_OUTPUT|";
     }
     if (f & VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT) {
-        str += "|2_COMPUTE_SHADER";
+        str += "2_COMPUTE_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_2_ALL_TRANSFER_BIT) {
-        str += "|2_ALL_TRANSFER";
+        str += "2_ALL_TRANSFER|";
     }
     if (f & VK_PIPELINE_STAGE_2_BOTTOM_OF_PIPE_BIT) {
-        str += "|2_BOTTOM_OF_PIPE";
+        str += "2_BOTTOM_OF_PIPE|";
     }
     if (f & VK_PIPELINE_STAGE_2_HOST_BIT) {
-        str += "|2_HOST";
+        str += "2_HOST|";
     }
     if (f & VK_PIPELINE_STAGE_2_ALL_GRAPHICS_BIT) {
-        str += "|2_ALL_GRAPHICS";
+        str += "2_ALL_GRAPHICS|";
     }
     if (f & VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT) {
-        str += "|2_ALL_COMMANDS";
+        str += "2_ALL_COMMANDS|";
     }
     if (f & VK_PIPELINE_STAGE_2_COPY_BIT) {
-        str += "|2_COPY";
+        str += "2_COPY|";
     }
     if (f & VK_PIPELINE_STAGE_2_RESOLVE_BIT) {
-        str += "|2_RESOLVE";
+        str += "2_RESOLVE|";
     }
     if (f & VK_PIPELINE_STAGE_2_BLIT_BIT) {
-        str += "|2_BLIT";
+        str += "2_BLIT|";
     }
     if (f & VK_PIPELINE_STAGE_2_CLEAR_BIT) {
-        str += "|2_CLEAR";
+        str += "2_CLEAR|";
     }
     if (f & VK_PIPELINE_STAGE_2_INDEX_INPUT_BIT) {
-        str += "|2_INDEX_INPUT";
+        str += "2_INDEX_INPUT|";
     }
     if (f & VK_PIPELINE_STAGE_2_VERTEX_ATTRIBUTE_INPUT_BIT) {
-        str += "|2_VERTEX_ATTRIBUTE_INPUT";
+        str += "2_VERTEX_ATTRIBUTE_INPUT|";
     }
     if (f & VK_PIPELINE_STAGE_2_PRE_RASTERIZATION_SHADERS_BIT) {
-        str += "|2_PRE_RASTERIZATION_SHADERS";
+        str += "2_PRE_RASTERIZATION_SHADERS|";
     }
     if (f & VK_PIPELINE_STAGE_2_VIDEO_DECODE_BIT_KHR) {
-        str += "|2_VIDEO_DECODE";
+        str += "2_VIDEO_DECODE|";
     }
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_PIPELINE_STAGE_2_VIDEO_ENCODE_BIT_KHR) {
-        str += "|2_VIDEO_ENCODE";
+        str += "2_VIDEO_ENCODE|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_PIPELINE_STAGE_2_TRANSFORM_FEEDBACK_BIT_EXT) {
-        str += "|2_TRANSFORM_FEEDBACK";
+        str += "2_TRANSFORM_FEEDBACK|";
     }
     if (f & VK_PIPELINE_STAGE_2_CONDITIONAL_RENDERING_BIT_EXT) {
-        str += "|2_CONDITIONAL_RENDERING";
+        str += "2_CONDITIONAL_RENDERING|";
     }
     if (f & VK_PIPELINE_STAGE_2_COMMAND_PREPROCESS_BIT_NV) {
-        str += "|2_COMMAND_PREPROCESS";
+        str += "2_COMMAND_PREPROCESS|";
     }
     if (f & VK_PIPELINE_STAGE_2_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR) {
-        str += "|2_FRAGMENT_SHADING_RATE_ATTACHMENT";
+        str += "2_FRAGMENT_SHADING_RATE_ATTACHMENT|";
     }
     if (f & VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_BUILD_BIT_KHR) {
-        str += "|2_ACCELERATION_STRUCTURE_BUILD";
+        str += "2_ACCELERATION_STRUCTURE_BUILD|";
     }
     if (f & VK_PIPELINE_STAGE_2_RAY_TRACING_SHADER_BIT_KHR) {
-        str += "|2_RAY_TRACING_SHADER";
+        str += "2_RAY_TRACING_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_2_FRAGMENT_DENSITY_PROCESS_BIT_EXT) {
-        str += "|2_FRAGMENT_DENSITY_PROCESS";
+        str += "2_FRAGMENT_DENSITY_PROCESS|";
     }
     if (f & VK_PIPELINE_STAGE_2_TASK_SHADER_BIT_EXT) {
-        str += "|2_TASK_SHADER";
+        str += "2_TASK_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_2_MESH_SHADER_BIT_EXT) {
-        str += "|2_MESH_SHADER";
+        str += "2_MESH_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_2_SUBPASS_SHADER_BIT_HUAWEI) {
-        str += "|2_SUBPASS_SHADER";
+        str += "2_SUBPASS_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_2_INVOCATION_MASK_BIT_HUAWEI) {
-        str += "|2_INVOCATION_MASK";
+        str += "2_INVOCATION_MASK|";
     }
     if (f & VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR) {
-        str += "|2_ACCELERATION_STRUCTURE_COPY";
+        str += "2_ACCELERATION_STRUCTURE_COPY|";
     }
     if (f & VK_PIPELINE_STAGE_2_MICROMAP_BUILD_BIT_EXT) {
-        str += "|2_MICROMAP_BUILD";
+        str += "2_MICROMAP_BUILD|";
     }
     if (f & VK_PIPELINE_STAGE_2_CLUSTER_CULLING_SHADER_BIT_HUAWEI) {
-        str += "|2_CLUSTER_CULLING_SHADER";
+        str += "2_CLUSTER_CULLING_SHADER|";
     }
     if (f & VK_PIPELINE_STAGE_2_OPTICAL_FLOW_BIT_NV) {
-        str += "|2_OPTICAL_FLOW";
+        str += "2_OPTICAL_FLOW|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkAccessFlags2(VkAccessFlags2 f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_ACCESS_2_NONE) {
-        str += "|2_NONE";
+        str += "2_NONE|";
     }
     if (f & VK_ACCESS_2_INDIRECT_COMMAND_READ_BIT) {
-        str += "|2_INDIRECT_COMMAND_READ";
+        str += "2_INDIRECT_COMMAND_READ|";
     }
     if (f & VK_ACCESS_2_INDEX_READ_BIT) {
-        str += "|2_INDEX_READ";
+        str += "2_INDEX_READ|";
     }
     if (f & VK_ACCESS_2_VERTEX_ATTRIBUTE_READ_BIT) {
-        str += "|2_VERTEX_ATTRIBUTE_READ";
+        str += "2_VERTEX_ATTRIBUTE_READ|";
     }
     if (f & VK_ACCESS_2_UNIFORM_READ_BIT) {
-        str += "|2_UNIFORM_READ";
+        str += "2_UNIFORM_READ|";
     }
     if (f & VK_ACCESS_2_INPUT_ATTACHMENT_READ_BIT) {
-        str += "|2_INPUT_ATTACHMENT_READ";
+        str += "2_INPUT_ATTACHMENT_READ|";
     }
     if (f & VK_ACCESS_2_SHADER_READ_BIT) {
-        str += "|2_SHADER_READ";
+        str += "2_SHADER_READ|";
     }
     if (f & VK_ACCESS_2_SHADER_WRITE_BIT) {
-        str += "|2_SHADER_WRITE";
+        str += "2_SHADER_WRITE|";
     }
     if (f & VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT) {
-        str += "|2_COLOR_ATTACHMENT_READ";
+        str += "2_COLOR_ATTACHMENT_READ|";
     }
     if (f & VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT) {
-        str += "|2_COLOR_ATTACHMENT_WRITE";
+        str += "2_COLOR_ATTACHMENT_WRITE|";
     }
     if (f & VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT) {
-        str += "|2_DEPTH_STENCIL_ATTACHMENT_READ";
+        str += "2_DEPTH_STENCIL_ATTACHMENT_READ|";
     }
     if (f & VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT) {
-        str += "|2_DEPTH_STENCIL_ATTACHMENT_WRITE";
+        str += "2_DEPTH_STENCIL_ATTACHMENT_WRITE|";
     }
     if (f & VK_ACCESS_2_TRANSFER_READ_BIT) {
-        str += "|2_TRANSFER_READ";
+        str += "2_TRANSFER_READ|";
     }
     if (f & VK_ACCESS_2_TRANSFER_WRITE_BIT) {
-        str += "|2_TRANSFER_WRITE";
+        str += "2_TRANSFER_WRITE|";
     }
     if (f & VK_ACCESS_2_HOST_READ_BIT) {
-        str += "|2_HOST_READ";
+        str += "2_HOST_READ|";
     }
     if (f & VK_ACCESS_2_HOST_WRITE_BIT) {
-        str += "|2_HOST_WRITE";
+        str += "2_HOST_WRITE|";
     }
     if (f & VK_ACCESS_2_MEMORY_READ_BIT) {
-        str += "|2_MEMORY_READ";
+        str += "2_MEMORY_READ|";
     }
     if (f & VK_ACCESS_2_MEMORY_WRITE_BIT) {
-        str += "|2_MEMORY_WRITE";
+        str += "2_MEMORY_WRITE|";
     }
     if (f & VK_ACCESS_2_SHADER_SAMPLED_READ_BIT) {
-        str += "|2_SHADER_SAMPLED_READ";
+        str += "2_SHADER_SAMPLED_READ|";
     }
     if (f & VK_ACCESS_2_SHADER_STORAGE_READ_BIT) {
-        str += "|2_SHADER_STORAGE_READ";
+        str += "2_SHADER_STORAGE_READ|";
     }
     if (f & VK_ACCESS_2_SHADER_STORAGE_WRITE_BIT) {
-        str += "|2_SHADER_STORAGE_WRITE";
+        str += "2_SHADER_STORAGE_WRITE|";
     }
     if (f & VK_ACCESS_2_VIDEO_DECODE_READ_BIT_KHR) {
-        str += "|2_VIDEO_DECODE_READ";
+        str += "2_VIDEO_DECODE_READ|";
     }
     if (f & VK_ACCESS_2_VIDEO_DECODE_WRITE_BIT_KHR) {
-        str += "|2_VIDEO_DECODE_WRITE";
+        str += "2_VIDEO_DECODE_WRITE|";
     }
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_ACCESS_2_VIDEO_ENCODE_READ_BIT_KHR) {
-        str += "|2_VIDEO_ENCODE_READ";
+        str += "2_VIDEO_ENCODE_READ|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_ACCESS_2_VIDEO_ENCODE_WRITE_BIT_KHR) {
-        str += "|2_VIDEO_ENCODE_WRITE";
+        str += "2_VIDEO_ENCODE_WRITE|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_ACCESS_2_TRANSFORM_FEEDBACK_WRITE_BIT_EXT) {
-        str += "|2_TRANSFORM_FEEDBACK_WRITE";
+        str += "2_TRANSFORM_FEEDBACK_WRITE|";
     }
     if (f & VK_ACCESS_2_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT) {
-        str += "|2_TRANSFORM_FEEDBACK_COUNTER_READ";
+        str += "2_TRANSFORM_FEEDBACK_COUNTER_READ|";
     }
     if (f & VK_ACCESS_2_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT) {
-        str += "|2_TRANSFORM_FEEDBACK_COUNTER_WRITE";
+        str += "2_TRANSFORM_FEEDBACK_COUNTER_WRITE|";
     }
     if (f & VK_ACCESS_2_CONDITIONAL_RENDERING_READ_BIT_EXT) {
-        str += "|2_CONDITIONAL_RENDERING_READ";
+        str += "2_CONDITIONAL_RENDERING_READ|";
     }
     if (f & VK_ACCESS_2_COMMAND_PREPROCESS_READ_BIT_NV) {
-        str += "|2_COMMAND_PREPROCESS_READ";
+        str += "2_COMMAND_PREPROCESS_READ|";
     }
     if (f & VK_ACCESS_2_COMMAND_PREPROCESS_WRITE_BIT_NV) {
-        str += "|2_COMMAND_PREPROCESS_WRITE";
+        str += "2_COMMAND_PREPROCESS_WRITE|";
     }
     if (f & VK_ACCESS_2_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR) {
-        str += "|2_FRAGMENT_SHADING_RATE_ATTACHMENT_READ";
+        str += "2_FRAGMENT_SHADING_RATE_ATTACHMENT_READ|";
     }
     if (f & VK_ACCESS_2_ACCELERATION_STRUCTURE_READ_BIT_KHR) {
-        str += "|2_ACCELERATION_STRUCTURE_READ";
+        str += "2_ACCELERATION_STRUCTURE_READ|";
     }
     if (f & VK_ACCESS_2_ACCELERATION_STRUCTURE_WRITE_BIT_KHR) {
-        str += "|2_ACCELERATION_STRUCTURE_WRITE";
+        str += "2_ACCELERATION_STRUCTURE_WRITE|";
     }
     if (f & VK_ACCESS_2_FRAGMENT_DENSITY_MAP_READ_BIT_EXT) {
-        str += "|2_FRAGMENT_DENSITY_MAP_READ";
+        str += "2_FRAGMENT_DENSITY_MAP_READ|";
     }
     if (f & VK_ACCESS_2_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT) {
-        str += "|2_COLOR_ATTACHMENT_READ_NONCOHERENT";
+        str += "2_COLOR_ATTACHMENT_READ_NONCOHERENT|";
     }
     if (f & VK_ACCESS_2_DESCRIPTOR_BUFFER_READ_BIT_EXT) {
-        str += "|2_DESCRIPTOR_BUFFER_READ";
+        str += "2_DESCRIPTOR_BUFFER_READ|";
     }
     if (f & VK_ACCESS_2_INVOCATION_MASK_READ_BIT_HUAWEI) {
-        str += "|2_INVOCATION_MASK_READ";
+        str += "2_INVOCATION_MASK_READ|";
     }
     if (f & VK_ACCESS_2_SHADER_BINDING_TABLE_READ_BIT_KHR) {
-        str += "|2_SHADER_BINDING_TABLE_READ";
+        str += "2_SHADER_BINDING_TABLE_READ|";
     }
     if (f & VK_ACCESS_2_MICROMAP_READ_BIT_EXT) {
-        str += "|2_MICROMAP_READ";
+        str += "2_MICROMAP_READ|";
     }
     if (f & VK_ACCESS_2_MICROMAP_WRITE_BIT_EXT) {
-        str += "|2_MICROMAP_WRITE";
+        str += "2_MICROMAP_WRITE|";
     }
     if (f & VK_ACCESS_2_OPTICAL_FLOW_READ_BIT_NV) {
-        str += "|2_OPTICAL_FLOW_READ";
+        str += "2_OPTICAL_FLOW_READ|";
     }
     if (f & VK_ACCESS_2_OPTICAL_FLOW_WRITE_BIT_NV) {
-        str += "|2_OPTICAL_FLOW_WRITE";
+        str += "2_OPTICAL_FLOW_WRITE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkSubmitFlags(VkSubmitFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_SUBMIT_PROTECTED_BIT) {
-        str += "|PROTECTED";
+        str += "PROTECTED|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkRenderingFlags(VkRenderingFlags f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_RENDERING_CONTENTS_SECONDARY_COMMAND_BUFFERS_BIT) {
-        str += "|CONTENTS_SECONDARY_COMMAND_BUFFERS";
+        str += "CONTENTS_SECONDARY_COMMAND_BUFFERS|";
     }
     if (f & VK_RENDERING_SUSPENDING_BIT) {
-        str += "|SUSPENDING";
+        str += "SUSPENDING|";
     }
     if (f & VK_RENDERING_RESUMING_BIT) {
-        str += "|RESUMING";
+        str += "RESUMING|";
     }
     if (f & VK_RENDERING_ENABLE_LEGACY_DITHERING_BIT_EXT) {
-        str += "|ENABLE_LEGACY_DITHERING";
+        str += "ENABLE_LEGACY_DITHERING|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkFormatFeatureFlags2(VkFormatFeatureFlags2 f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT) {
-        str += "|2_SAMPLED_IMAGE";
+        str += "2_SAMPLED_IMAGE|";
     }
     if (f & VK_FORMAT_FEATURE_2_STORAGE_IMAGE_BIT) {
-        str += "|2_STORAGE_IMAGE";
+        str += "2_STORAGE_IMAGE|";
     }
     if (f & VK_FORMAT_FEATURE_2_STORAGE_IMAGE_ATOMIC_BIT) {
-        str += "|2_STORAGE_IMAGE_ATOMIC";
+        str += "2_STORAGE_IMAGE_ATOMIC|";
     }
     if (f & VK_FORMAT_FEATURE_2_UNIFORM_TEXEL_BUFFER_BIT) {
-        str += "|2_UNIFORM_TEXEL_BUFFER";
+        str += "2_UNIFORM_TEXEL_BUFFER|";
     }
     if (f & VK_FORMAT_FEATURE_2_STORAGE_TEXEL_BUFFER_BIT) {
-        str += "|2_STORAGE_TEXEL_BUFFER";
+        str += "2_STORAGE_TEXEL_BUFFER|";
     }
     if (f & VK_FORMAT_FEATURE_2_STORAGE_TEXEL_BUFFER_ATOMIC_BIT) {
-        str += "|2_STORAGE_TEXEL_BUFFER_ATOMIC";
+        str += "2_STORAGE_TEXEL_BUFFER_ATOMIC|";
     }
     if (f & VK_FORMAT_FEATURE_2_VERTEX_BUFFER_BIT) {
-        str += "|2_VERTEX_BUFFER";
+        str += "2_VERTEX_BUFFER|";
     }
     if (f & VK_FORMAT_FEATURE_2_COLOR_ATTACHMENT_BIT) {
-        str += "|2_COLOR_ATTACHMENT";
+        str += "2_COLOR_ATTACHMENT|";
     }
     if (f & VK_FORMAT_FEATURE_2_COLOR_ATTACHMENT_BLEND_BIT) {
-        str += "|2_COLOR_ATTACHMENT_BLEND";
+        str += "2_COLOR_ATTACHMENT_BLEND|";
     }
     if (f & VK_FORMAT_FEATURE_2_DEPTH_STENCIL_ATTACHMENT_BIT) {
-        str += "|2_DEPTH_STENCIL_ATTACHMENT";
+        str += "2_DEPTH_STENCIL_ATTACHMENT|";
     }
     if (f & VK_FORMAT_FEATURE_2_BLIT_SRC_BIT) {
-        str += "|2_BLIT_SRC";
+        str += "2_BLIT_SRC|";
     }
     if (f & VK_FORMAT_FEATURE_2_BLIT_DST_BIT) {
-        str += "|2_BLIT_DST";
+        str += "2_BLIT_DST|";
     }
     if (f & VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_FILTER_LINEAR_BIT) {
-        str += "|2_SAMPLED_IMAGE_FILTER_LINEAR";
+        str += "2_SAMPLED_IMAGE_FILTER_LINEAR|";
     }
     if (f & VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_FILTER_CUBIC_BIT) {
-        str += "|2_SAMPLED_IMAGE_FILTER_CUBIC";
+        str += "2_SAMPLED_IMAGE_FILTER_CUBIC|";
     }
     if (f & VK_FORMAT_FEATURE_2_TRANSFER_SRC_BIT) {
-        str += "|2_TRANSFER_SRC";
+        str += "2_TRANSFER_SRC|";
     }
     if (f & VK_FORMAT_FEATURE_2_TRANSFER_DST_BIT) {
-        str += "|2_TRANSFER_DST";
+        str += "2_TRANSFER_DST|";
     }
     if (f & VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_FILTER_MINMAX_BIT) {
-        str += "|2_SAMPLED_IMAGE_FILTER_MINMAX";
+        str += "2_SAMPLED_IMAGE_FILTER_MINMAX|";
     }
     if (f & VK_FORMAT_FEATURE_2_MIDPOINT_CHROMA_SAMPLES_BIT) {
-        str += "|2_MIDPOINT_CHROMA_SAMPLES";
+        str += "2_MIDPOINT_CHROMA_SAMPLES|";
     }
     if (f & VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT) {
-        str += "|2_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER";
+        str += "2_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER|";
     }
     if (f & VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT) {
-        str += "|2_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER";
+        str += "2_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER|";
     }
     if (f & VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT) {
-        str += "|2_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT";
+        str += "2_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT|";
     }
     if (f & VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT) {
-        str += "|2_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE";
+        str += "2_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE|";
     }
     if (f & VK_FORMAT_FEATURE_2_DISJOINT_BIT) {
-        str += "|2_DISJOINT";
+        str += "2_DISJOINT|";
     }
     if (f & VK_FORMAT_FEATURE_2_COSITED_CHROMA_SAMPLES_BIT) {
-        str += "|2_COSITED_CHROMA_SAMPLES";
+        str += "2_COSITED_CHROMA_SAMPLES|";
     }
     if (f & VK_FORMAT_FEATURE_2_STORAGE_READ_WITHOUT_FORMAT_BIT) {
-        str += "|2_STORAGE_READ_WITHOUT_FORMAT";
+        str += "2_STORAGE_READ_WITHOUT_FORMAT|";
     }
     if (f & VK_FORMAT_FEATURE_2_STORAGE_WRITE_WITHOUT_FORMAT_BIT) {
-        str += "|2_STORAGE_WRITE_WITHOUT_FORMAT";
+        str += "2_STORAGE_WRITE_WITHOUT_FORMAT|";
     }
     if (f & VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_DEPTH_COMPARISON_BIT) {
-        str += "|2_SAMPLED_IMAGE_DEPTH_COMPARISON";
+        str += "2_SAMPLED_IMAGE_DEPTH_COMPARISON|";
     }
     if (f & VK_FORMAT_FEATURE_2_VIDEO_DECODE_OUTPUT_BIT_KHR) {
-        str += "|2_VIDEO_DECODE_OUTPUT";
+        str += "2_VIDEO_DECODE_OUTPUT|";
     }
     if (f & VK_FORMAT_FEATURE_2_VIDEO_DECODE_DPB_BIT_KHR) {
-        str += "|2_VIDEO_DECODE_DPB";
+        str += "2_VIDEO_DECODE_DPB|";
     }
     if (f & VK_FORMAT_FEATURE_2_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR) {
-        str += "|2_ACCELERATION_STRUCTURE_VERTEX_BUFFER";
+        str += "2_ACCELERATION_STRUCTURE_VERTEX_BUFFER|";
     }
     if (f & VK_FORMAT_FEATURE_2_FRAGMENT_DENSITY_MAP_BIT_EXT) {
-        str += "|2_FRAGMENT_DENSITY_MAP";
+        str += "2_FRAGMENT_DENSITY_MAP|";
     }
     if (f & VK_FORMAT_FEATURE_2_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR) {
-        str += "|2_FRAGMENT_SHADING_RATE_ATTACHMENT";
+        str += "2_FRAGMENT_SHADING_RATE_ATTACHMENT|";
     }
     if (f & VK_FORMAT_FEATURE_2_HOST_IMAGE_TRANSFER_BIT_EXT) {
-        str += "|2_HOST_IMAGE_TRANSFER";
+        str += "2_HOST_IMAGE_TRANSFER|";
     }
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_FORMAT_FEATURE_2_VIDEO_ENCODE_INPUT_BIT_KHR) {
-        str += "|2_VIDEO_ENCODE_INPUT";
+        str += "2_VIDEO_ENCODE_INPUT|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_FORMAT_FEATURE_2_VIDEO_ENCODE_DPB_BIT_KHR) {
-        str += "|2_VIDEO_ENCODE_DPB";
+        str += "2_VIDEO_ENCODE_DPB|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_FORMAT_FEATURE_2_LINEAR_COLOR_ATTACHMENT_BIT_NV) {
-        str += "|2_LINEAR_COLOR_ATTACHMENT";
+        str += "2_LINEAR_COLOR_ATTACHMENT|";
     }
     if (f & VK_FORMAT_FEATURE_2_WEIGHT_IMAGE_BIT_QCOM) {
-        str += "|2_WEIGHT_IMAGE";
+        str += "2_WEIGHT_IMAGE|";
     }
     if (f & VK_FORMAT_FEATURE_2_WEIGHT_SAMPLED_IMAGE_BIT_QCOM) {
-        str += "|2_WEIGHT_SAMPLED_IMAGE";
+        str += "2_WEIGHT_SAMPLED_IMAGE|";
     }
     if (f & VK_FORMAT_FEATURE_2_BLOCK_MATCHING_BIT_QCOM) {
-        str += "|2_BLOCK_MATCHING";
+        str += "2_BLOCK_MATCHING|";
     }
     if (f & VK_FORMAT_FEATURE_2_BOX_FILTER_SAMPLED_BIT_QCOM) {
-        str += "|2_BOX_FILTER_SAMPLED";
+        str += "2_BOX_FILTER_SAMPLED|";
     }
     if (f & VK_FORMAT_FEATURE_2_OPTICAL_FLOW_IMAGE_BIT_NV) {
-        str += "|2_OPTICAL_FLOW_IMAGE";
+        str += "2_OPTICAL_FLOW_IMAGE|";
     }
     if (f & VK_FORMAT_FEATURE_2_OPTICAL_FLOW_VECTOR_BIT_NV) {
-        str += "|2_OPTICAL_FLOW_VECTOR";
+        str += "2_OPTICAL_FLOW_VECTOR|";
     }
     if (f & VK_FORMAT_FEATURE_2_OPTICAL_FLOW_COST_BIT_NV) {
-        str += "|2_OPTICAL_FLOW_COST";
+        str += "2_OPTICAL_FLOW_COST|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkSurfaceTransformFlagsKHR(VkSurfaceTransformFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) {
-        str += "|IDENTITY";
+        str += "IDENTITY|";
     }
     if (f & VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR) {
-        str += "|ROTATE_90";
+        str += "ROTATE_90|";
     }
     if (f & VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR) {
-        str += "|ROTATE_180";
+        str += "ROTATE_180|";
     }
     if (f & VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR) {
-        str += "|ROTATE_270";
+        str += "ROTATE_270|";
     }
     if (f & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR) {
-        str += "|HORIZONTAL_MIRROR";
+        str += "HORIZONTAL_MIRROR|";
     }
     if (f & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR) {
-        str += "|HORIZONTAL_MIRROR_ROTATE_90";
+        str += "HORIZONTAL_MIRROR_ROTATE_90|";
     }
     if (f & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR) {
-        str += "|HORIZONTAL_MIRROR_ROTATE_180";
+        str += "HORIZONTAL_MIRROR_ROTATE_180|";
     }
     if (f & VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR) {
-        str += "|HORIZONTAL_MIRROR_ROTATE_270";
+        str += "HORIZONTAL_MIRROR_ROTATE_270|";
     }
     if (f & VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR) {
-        str += "|INHERIT";
+        str += "INHERIT|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkCompositeAlphaFlagsKHR(VkCompositeAlphaFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR) {
-        str += "|OPAQUE";
+        str += "OPAQUE|";
     }
     if (f & VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR) {
-        str += "|PRE_MULTIPLIED";
+        str += "PRE_MULTIPLIED|";
     }
     if (f & VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR) {
-        str += "|POST_MULTIPLIED";
+        str += "POST_MULTIPLIED|";
     }
     if (f & VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR) {
-        str += "|INHERIT";
+        str += "INHERIT|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkSwapchainCreateFlagsKHR(VkSwapchainCreateFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_SWAPCHAIN_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR) {
-        str += "|SPLIT_INSTANCE_BIND_REGIONS";
+        str += "SPLIT_INSTANCE_BIND_REGIONS|";
     }
     if (f & VK_SWAPCHAIN_CREATE_PROTECTED_BIT_KHR) {
-        str += "|PROTECTED";
+        str += "PROTECTED|";
     }
     if (f & VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR) {
-        str += "|MUTABLE_FORMAT";
+        str += "MUTABLE_FORMAT|";
     }
     if (f & VK_SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_EXT) {
-        str += "|DEFERRED_MEMORY_ALLOCATION";
+        str += "DEFERRED_MEMORY_ALLOCATION|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkDeviceGroupPresentModeFlagsKHR(VkDeviceGroupPresentModeFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR) {
-        str += "|LOCAL";
+        str += "LOCAL|";
     }
     if (f & VK_DEVICE_GROUP_PRESENT_MODE_REMOTE_BIT_KHR) {
-        str += "|REMOTE";
+        str += "REMOTE|";
     }
     if (f & VK_DEVICE_GROUP_PRESENT_MODE_SUM_BIT_KHR) {
-        str += "|SUM";
+        str += "SUM|";
     }
     if (f & VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR) {
-        str += "|LOCAL_MULTI_DEVICE";
+        str += "LOCAL_MULTI_DEVICE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkDisplayPlaneAlphaFlagsKHR(VkDisplayPlaneAlphaFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR) {
-        str += "|OPAQUE";
+        str += "OPAQUE|";
     }
     if (f & VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR) {
-        str += "|GLOBAL";
+        str += "GLOBAL|";
     }
     if (f & VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR) {
-        str += "|PER_PIXEL";
+        str += "PER_PIXEL|";
     }
     if (f & VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR) {
-        str += "|PER_PIXEL_PREMULTIPLIED";
+        str += "PER_PIXEL_PREMULTIPLIED|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoCodecOperationFlagsKHR(VkVideoCodecOperationFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_CODEC_OPERATION_NONE_KHR) {
-        str += "|NONE_KHR";
+        str += "NONE_KHR|";
     }
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_VIDEO_CODEC_OPERATION_ENCODE_H264_BIT_EXT) {
-        str += "|ENCODE_H264";
+        str += "ENCODE_H264|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_VIDEO_CODEC_OPERATION_ENCODE_H265_BIT_EXT) {
-        str += "|ENCODE_H265";
+        str += "ENCODE_H265|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_VIDEO_CODEC_OPERATION_DECODE_H264_BIT_KHR) {
-        str += "|DECODE_H264";
+        str += "DECODE_H264|";
     }
     if (f & VK_VIDEO_CODEC_OPERATION_DECODE_H265_BIT_KHR) {
-        str += "|DECODE_H265";
+        str += "DECODE_H265|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoChromaSubsamplingFlagsKHR(VkVideoChromaSubsamplingFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_CHROMA_SUBSAMPLING_INVALID_KHR) {
-        str += "|INVALID_KHR";
+        str += "INVALID_KHR|";
     }
     if (f & VK_VIDEO_CHROMA_SUBSAMPLING_MONOCHROME_BIT_KHR) {
-        str += "|MONOCHROME";
+        str += "MONOCHROME|";
     }
     if (f & VK_VIDEO_CHROMA_SUBSAMPLING_420_BIT_KHR) {
-        str += "|420";
+        str += "420|";
     }
     if (f & VK_VIDEO_CHROMA_SUBSAMPLING_422_BIT_KHR) {
-        str += "|422";
+        str += "422|";
     }
     if (f & VK_VIDEO_CHROMA_SUBSAMPLING_444_BIT_KHR) {
-        str += "|444";
+        str += "444|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoComponentBitDepthFlagsKHR(VkVideoComponentBitDepthFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_COMPONENT_BIT_DEPTH_INVALID_KHR) {
-        str += "|INVALID_KHR";
+        str += "INVALID_KHR|";
     }
     if (f & VK_VIDEO_COMPONENT_BIT_DEPTH_8_BIT_KHR) {
-        str += "|8";
+        str += "8|";
     }
     if (f & VK_VIDEO_COMPONENT_BIT_DEPTH_10_BIT_KHR) {
-        str += "|10";
+        str += "10|";
     }
     if (f & VK_VIDEO_COMPONENT_BIT_DEPTH_12_BIT_KHR) {
-        str += "|12";
+        str += "12|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoCapabilityFlagsKHR(VkVideoCapabilityFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_CAPABILITY_PROTECTED_CONTENT_BIT_KHR) {
-        str += "|PROTECTED_CONTENT";
+        str += "PROTECTED_CONTENT|";
     }
     if (f & VK_VIDEO_CAPABILITY_SEPARATE_REFERENCE_IMAGES_BIT_KHR) {
-        str += "|SEPARATE_REFERENCE_IMAGES";
+        str += "SEPARATE_REFERENCE_IMAGES|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoSessionCreateFlagsKHR(VkVideoSessionCreateFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_SESSION_CREATE_PROTECTED_CONTENT_BIT_KHR) {
-        str += "|PROTECTED_CONTENT";
+        str += "PROTECTED_CONTENT|";
     }
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_VIDEO_SESSION_CREATE_ALLOW_ENCODE_PARAMETER_OPTIMIZATIONS_BIT_KHR) {
-        str += "|ALLOW_ENCODE_PARAMETER_OPTIMIZATIONS";
+        str += "ALLOW_ENCODE_PARAMETER_OPTIMIZATIONS|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoCodingControlFlagsKHR(VkVideoCodingControlFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_CODING_CONTROL_RESET_BIT_KHR) {
-        str += "|RESET";
+        str += "RESET|";
     }
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_VIDEO_CODING_CONTROL_ENCODE_RATE_CONTROL_BIT_KHR) {
-        str += "|ENCODE_RATE_CONTROL";
+        str += "ENCODE_RATE_CONTROL|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_VIDEO_CODING_CONTROL_ENCODE_QUALITY_LEVEL_BIT_KHR) {
-        str += "|ENCODE_QUALITY_LEVEL";
+        str += "ENCODE_QUALITY_LEVEL|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoDecodeCapabilityFlagsKHR(VkVideoDecodeCapabilityFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_COINCIDE_BIT_KHR) {
-        str += "|DPB_AND_OUTPUT_COINCIDE";
+        str += "DPB_AND_OUTPUT_COINCIDE|";
     }
     if (f & VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_DISTINCT_BIT_KHR) {
-        str += "|DPB_AND_OUTPUT_DISTINCT";
+        str += "DPB_AND_OUTPUT_DISTINCT|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoDecodeUsageFlagsKHR(VkVideoDecodeUsageFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_DECODE_USAGE_DEFAULT_KHR) {
-        str += "|DEFAULT_KHR";
+        str += "DEFAULT_KHR|";
     }
     if (f & VK_VIDEO_DECODE_USAGE_TRANSCODING_BIT_KHR) {
-        str += "|TRANSCODING";
+        str += "TRANSCODING|";
     }
     if (f & VK_VIDEO_DECODE_USAGE_OFFLINE_BIT_KHR) {
-        str += "|OFFLINE";
+        str += "OFFLINE|";
     }
     if (f & VK_VIDEO_DECODE_USAGE_STREAMING_BIT_KHR) {
-        str += "|STREAMING";
+        str += "STREAMING|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoDecodeH264PictureLayoutFlagsKHR(VkVideoDecodeH264PictureLayoutFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_PROGRESSIVE_KHR) {
-        str += "|PROGRESSIVE_KHR";
+        str += "PROGRESSIVE_KHR|";
     }
     if (f & VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_INTERLACED_INTERLEAVED_LINES_BIT_KHR) {
-        str += "|INTERLACED_INTERLEAVED_LINES";
+        str += "INTERLACED_INTERLEAVED_LINES|";
     }
     if (f & VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_INTERLACED_SEPARATE_PLANES_BIT_KHR) {
-        str += "|INTERLACED_SEPARATE_PLANES";
+        str += "INTERLACED_SEPARATE_PLANES|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkPerformanceCounterDescriptionFlagsKHR(VkPerformanceCounterDescriptionFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_PERFORMANCE_COUNTER_DESCRIPTION_PERFORMANCE_IMPACTING_BIT_KHR) {
-        str += "|PERFORMANCE_IMPACTING";
+        str += "PERFORMANCE_IMPACTING|";
     }
     if (f & VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_BIT_KHR) {
-        str += "|CONCURRENTLY_IMPACTED";
+        str += "CONCURRENTLY_IMPACTED|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkAcquireProfilingLockFlagsKHR(VkAcquireProfilingLockFlagsKHR f) {
-    std::string str = "";
-    str += "|";
+    std::string str = "|";
     return std::move(str);
 }
 
 #ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeCapabilityFlagsKHR(VkVideoEncodeCapabilityFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_ENCODE_CAPABILITY_PRECEDING_EXTERNALLY_ENCODED_BYTES_BIT_KHR) {
-        str += "|PRECEDING_EXTERNALLY_ENCODED_BYTES";
+        str += "PRECEDING_EXTERNALLY_ENCODED_BYTES|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoEncodeRateControlModeFlagsKHR(VkVideoEncodeRateControlModeFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DEFAULT_KHR) {
-        str += "|DEFAULT_KHR";
+        str += "DEFAULT_KHR|";
     }
     if (f & VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DISABLED_BIT_KHR) {
-        str += "|DISABLED";
+        str += "DISABLED|";
     }
     if (f & VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR) {
-        str += "|CBR";
+        str += "CBR|";
     }
     if (f & VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR) {
-        str += "|VBR";
+        str += "VBR|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoEncodeFeedbackFlagsKHR(VkVideoEncodeFeedbackFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BUFFER_OFFSET_BIT_KHR) {
-        str += "|BITSTREAM_BUFFER_OFFSET";
+        str += "BITSTREAM_BUFFER_OFFSET|";
     }
     if (f & VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BYTES_WRITTEN_BIT_KHR) {
-        str += "|BITSTREAM_BYTES_WRITTEN";
+        str += "BITSTREAM_BYTES_WRITTEN|";
     }
     if (f & VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_HAS_OVERRIDES_BIT_KHR) {
-        str += "|BITSTREAM_HAS_OVERRIDES";
+        str += "BITSTREAM_HAS_OVERRIDES|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoEncodeUsageFlagsKHR(VkVideoEncodeUsageFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_ENCODE_USAGE_DEFAULT_KHR) {
-        str += "|DEFAULT_KHR";
+        str += "DEFAULT_KHR|";
     }
     if (f & VK_VIDEO_ENCODE_USAGE_TRANSCODING_BIT_KHR) {
-        str += "|TRANSCODING";
+        str += "TRANSCODING|";
     }
     if (f & VK_VIDEO_ENCODE_USAGE_STREAMING_BIT_KHR) {
-        str += "|STREAMING";
+        str += "STREAMING|";
     }
     if (f & VK_VIDEO_ENCODE_USAGE_RECORDING_BIT_KHR) {
-        str += "|RECORDING";
+        str += "RECORDING|";
     }
     if (f & VK_VIDEO_ENCODE_USAGE_CONFERENCING_BIT_KHR) {
-        str += "|CONFERENCING";
+        str += "CONFERENCING|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoEncodeContentFlagsKHR(VkVideoEncodeContentFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_ENCODE_CONTENT_DEFAULT_KHR) {
-        str += "|DEFAULT_KHR";
+        str += "DEFAULT_KHR|";
     }
     if (f & VK_VIDEO_ENCODE_CONTENT_CAMERA_BIT_KHR) {
-        str += "|CAMERA";
+        str += "CAMERA|";
     }
     if (f & VK_VIDEO_ENCODE_CONTENT_DESKTOP_BIT_KHR) {
-        str += "|DESKTOP";
+        str += "DESKTOP|";
     }
     if (f & VK_VIDEO_ENCODE_CONTENT_RENDERED_BIT_KHR) {
-        str += "|RENDERED";
+        str += "RENDERED|";
     }
-    str += "|";
     return std::move(str);
 }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 
 std::string On_Str_VkPipelineCreateFlags2KHR(VkPipelineCreateFlags2KHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_PIPELINE_CREATE_2_DISABLE_OPTIMIZATION_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_DISABLE_OPTIMIZATION";
+        str += "VK_PIPELINE_CREATE_2_DISABLE_OPTIMIZATION|";
     }
     if (f & VK_PIPELINE_CREATE_2_ALLOW_DERIVATIVES_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_ALLOW_DERIVATIVES";
+        str += "VK_PIPELINE_CREATE_2_ALLOW_DERIVATIVES|";
     }
     if (f & VK_PIPELINE_CREATE_2_DERIVATIVE_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_DERIVATIVE";
+        str += "VK_PIPELINE_CREATE_2_DERIVATIVE|";
     }
     if (f & VK_PIPELINE_CREATE_2_RESERVED_BIT_28_NV) {
-        str += "|VK_PIPELINE_CREATE_2_RESERVED_BIT_28_NV";
+        str += "VK_PIPELINE_CREATE_2_RESERVED_BIT_28_NV|";
     }
     if (f & VK_PIPELINE_CREATE_2_VIEW_INDEX_FROM_DEVICE_INDEX_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_VIEW_INDEX_FROM_DEVICE_INDEX";
+        str += "VK_PIPELINE_CREATE_2_VIEW_INDEX_FROM_DEVICE_INDEX|";
     }
     if (f & VK_PIPELINE_CREATE_2_DISPATCH_BASE_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_DISPATCH_BASE";
+        str += "VK_PIPELINE_CREATE_2_DISPATCH_BASE|";
     }
     if (f & VK_PIPELINE_CREATE_2_DEFER_COMPILE_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_DEFER_COMPILE";
+        str += "VK_PIPELINE_CREATE_2_DEFER_COMPILE|";
     }
     if (f & VK_PIPELINE_CREATE_2_CAPTURE_STATISTICS_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_CAPTURE_STATISTICS";
+        str += "VK_PIPELINE_CREATE_2_CAPTURE_STATISTICS|";
     }
     if (f & VK_PIPELINE_CREATE_2_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_CAPTURE_INTERNAL_REPRESENTATIONS";
+        str += "VK_PIPELINE_CREATE_2_CAPTURE_INTERNAL_REPRESENTATIONS|";
     }
     if (f & VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED";
+        str += "VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED|";
     }
     if (f & VK_PIPELINE_CREATE_2_EARLY_RETURN_ON_FAILURE_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_EARLY_RETURN_ON_FAILURE";
+        str += "VK_PIPELINE_CREATE_2_EARLY_RETURN_ON_FAILURE|";
     }
     if (f & VK_PIPELINE_CREATE_2_LINK_TIME_OPTIMIZATION_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_LINK_TIME_OPTIMIZATION";
+        str += "VK_PIPELINE_CREATE_2_LINK_TIME_OPTIMIZATION|";
     }
     if (f & VK_PIPELINE_CREATE_2_RETAIN_LINK_TIME_OPTIMIZATION_INFO_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_RETAIN_LINK_TIME_OPTIMIZATION_INFO";
+        str += "VK_PIPELINE_CREATE_2_RETAIN_LINK_TIME_OPTIMIZATION_INFO|";
     }
     if (f & VK_PIPELINE_CREATE_2_LIBRARY_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_LIBRARY";
+        str += "VK_PIPELINE_CREATE_2_LIBRARY|";
     }
     if (f & VK_PIPELINE_CREATE_2_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_RAY_TRACING_SKIP_TRIANGLES";
+        str += "VK_PIPELINE_CREATE_2_RAY_TRACING_SKIP_TRIANGLES|";
     }
     if (f & VK_PIPELINE_CREATE_2_RAY_TRACING_SKIP_AABBS_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_RAY_TRACING_SKIP_AABBS";
+        str += "VK_PIPELINE_CREATE_2_RAY_TRACING_SKIP_AABBS|";
     }
     if (f & VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS";
+        str += "VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS|";
     }
     if (f & VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS";
+        str += "VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS|";
     }
     if (f & VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_MISS_SHADERS";
+        str += "VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_MISS_SHADERS|";
     }
     if (f & VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS";
+        str += "VK_PIPELINE_CREATE_2_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS|";
     }
     if (f & VK_PIPELINE_CREATE_2_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY";
+        str += "VK_PIPELINE_CREATE_2_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY|";
     }
     if (f & VK_PIPELINE_CREATE_2_INDIRECT_BINDABLE_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_INDIRECT_BINDABLE";
+        str += "VK_PIPELINE_CREATE_2_INDIRECT_BINDABLE|";
     }
     if (f & VK_PIPELINE_CREATE_2_RAY_TRACING_ALLOW_MOTION_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_RAY_TRACING_ALLOW_MOTION";
+        str += "VK_PIPELINE_CREATE_2_RAY_TRACING_ALLOW_MOTION|";
     }
     if (f & VK_PIPELINE_CREATE_2_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT";
+        str += "VK_PIPELINE_CREATE_2_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT|";
     }
     if (f & VK_PIPELINE_CREATE_2_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT";
+        str += "VK_PIPELINE_CREATE_2_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT|";
     }
     if (f & VK_PIPELINE_CREATE_2_RAY_TRACING_OPACITY_MICROMAP_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_RAY_TRACING_OPACITY_MICROMAP";
+        str += "VK_PIPELINE_CREATE_2_RAY_TRACING_OPACITY_MICROMAP|";
     }
     if (f & VK_PIPELINE_CREATE_2_COLOR_ATTACHMENT_FEEDBACK_LOOP_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_COLOR_ATTACHMENT_FEEDBACK_LOOP";
+        str += "VK_PIPELINE_CREATE_2_COLOR_ATTACHMENT_FEEDBACK_LOOP|";
     }
     if (f & VK_PIPELINE_CREATE_2_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP";
+        str += "VK_PIPELINE_CREATE_2_DEPTH_STENCIL_ATTACHMENT_FEEDBACK_LOOP|";
     }
     if (f & VK_PIPELINE_CREATE_2_NO_PROTECTED_ACCESS_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_NO_PROTECTED_ACCESS";
+        str += "VK_PIPELINE_CREATE_2_NO_PROTECTED_ACCESS|";
     }
     if (f & VK_PIPELINE_CREATE_2_PROTECTED_ACCESS_ONLY_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_PROTECTED_ACCESS_ONLY";
+        str += "VK_PIPELINE_CREATE_2_PROTECTED_ACCESS_ONLY|";
     }
     if (f & VK_PIPELINE_CREATE_2_DESCRIPTOR_BUFFER_BIT_KHR) {
-        str += "|VK_PIPELINE_CREATE_2_DESCRIPTOR_BUFFER";
+        str += "VK_PIPELINE_CREATE_2_DESCRIPTOR_BUFFER|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkBufferUsageFlags2KHR(VkBufferUsageFlags2KHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_BUFFER_USAGE_2_TRANSFER_SRC_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_TRANSFER_SRC";
+        str += "VK_BUFFER_USAGE_2_TRANSFER_SRC|";
     }
     if (f & VK_BUFFER_USAGE_2_TRANSFER_DST_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_TRANSFER_DST";
+        str += "VK_BUFFER_USAGE_2_TRANSFER_DST|";
     }
     if (f & VK_BUFFER_USAGE_2_UNIFORM_TEXEL_BUFFER_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_UNIFORM_TEXEL_BUFFER";
+        str += "VK_BUFFER_USAGE_2_UNIFORM_TEXEL_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_2_STORAGE_TEXEL_BUFFER_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_STORAGE_TEXEL_BUFFER";
+        str += "VK_BUFFER_USAGE_2_STORAGE_TEXEL_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_2_UNIFORM_BUFFER_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_UNIFORM_BUFFER";
+        str += "VK_BUFFER_USAGE_2_UNIFORM_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_2_STORAGE_BUFFER_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_STORAGE_BUFFER";
+        str += "VK_BUFFER_USAGE_2_STORAGE_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_2_INDEX_BUFFER_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_INDEX_BUFFER";
+        str += "VK_BUFFER_USAGE_2_INDEX_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_2_VERTEX_BUFFER_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_VERTEX_BUFFER";
+        str += "VK_BUFFER_USAGE_2_VERTEX_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_2_INDIRECT_BUFFER_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_INDIRECT_BUFFER";
+        str += "VK_BUFFER_USAGE_2_INDIRECT_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_2_EXECUTION_GRAPH_SCRATCH_BIT_AMDX) {
-        str += "|VK_BUFFER_USAGE_2_EXECUTION_GRAPH_SCRATCH";
+        str += "VK_BUFFER_USAGE_2_EXECUTION_GRAPH_SCRATCH|";
     }
     if (f & VK_BUFFER_USAGE_2_CONDITIONAL_RENDERING_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_CONDITIONAL_RENDERING";
+        str += "VK_BUFFER_USAGE_2_CONDITIONAL_RENDERING|";
     }
     if (f & VK_BUFFER_USAGE_2_SHADER_BINDING_TABLE_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_SHADER_BINDING_TABLE";
+        str += "VK_BUFFER_USAGE_2_SHADER_BINDING_TABLE|";
     }
     if (f & VK_BUFFER_USAGE_2_TRANSFORM_FEEDBACK_BUFFER_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_TRANSFORM_FEEDBACK_BUFFER";
+        str += "VK_BUFFER_USAGE_2_TRANSFORM_FEEDBACK_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_2_TRANSFORM_FEEDBACK_COUNTER_BUFFER_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_TRANSFORM_FEEDBACK_COUNTER_BUFFER";
+        str += "VK_BUFFER_USAGE_2_TRANSFORM_FEEDBACK_COUNTER_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_2_VIDEO_DECODE_SRC_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_VIDEO_DECODE_SRC";
+        str += "VK_BUFFER_USAGE_2_VIDEO_DECODE_SRC|";
     }
     if (f & VK_BUFFER_USAGE_2_VIDEO_DECODE_DST_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_VIDEO_DECODE_DST";
+        str += "VK_BUFFER_USAGE_2_VIDEO_DECODE_DST|";
     }
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_BUFFER_USAGE_2_VIDEO_ENCODE_DST_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_VIDEO_ENCODE_DST";
+        str += "VK_BUFFER_USAGE_2_VIDEO_ENCODE_DST|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_BUFFER_USAGE_2_VIDEO_ENCODE_SRC_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_VIDEO_ENCODE_SRC";
+        str += "VK_BUFFER_USAGE_2_VIDEO_ENCODE_SRC|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_BUFFER_USAGE_2_SHADER_DEVICE_ADDRESS_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_SHADER_DEVICE_ADDRESS";
+        str += "VK_BUFFER_USAGE_2_SHADER_DEVICE_ADDRESS|";
     }
     if (f & VK_BUFFER_USAGE_2_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY";
+        str += "VK_BUFFER_USAGE_2_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY|";
     }
     if (f & VK_BUFFER_USAGE_2_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_ACCELERATION_STRUCTURE_STORAGE";
+        str += "VK_BUFFER_USAGE_2_ACCELERATION_STRUCTURE_STORAGE|";
     }
     if (f & VK_BUFFER_USAGE_2_SAMPLER_DESCRIPTOR_BUFFER_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_SAMPLER_DESCRIPTOR_BUFFER";
+        str += "VK_BUFFER_USAGE_2_SAMPLER_DESCRIPTOR_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_2_RESOURCE_DESCRIPTOR_BUFFER_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_RESOURCE_DESCRIPTOR_BUFFER";
+        str += "VK_BUFFER_USAGE_2_RESOURCE_DESCRIPTOR_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_2_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER";
+        str += "VK_BUFFER_USAGE_2_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER|";
     }
     if (f & VK_BUFFER_USAGE_2_MICROMAP_BUILD_INPUT_READ_ONLY_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_MICROMAP_BUILD_INPUT_READ_ONLY";
+        str += "VK_BUFFER_USAGE_2_MICROMAP_BUILD_INPUT_READ_ONLY|";
     }
     if (f & VK_BUFFER_USAGE_2_MICROMAP_STORAGE_BIT_KHR) {
-        str += "|VK_BUFFER_USAGE_2_MICROMAP_STORAGE";
+        str += "VK_BUFFER_USAGE_2_MICROMAP_STORAGE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkDebugReportFlagsEXT(VkDebugReportFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_DEBUG_REPORT_INFORMATION_BIT_EXT) {
-        str += "|INFORMATION";
+        str += "INFORMATION|";
     }
     if (f & VK_DEBUG_REPORT_WARNING_BIT_EXT) {
-        str += "|WARNING";
+        str += "WARNING|";
     }
     if (f & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT) {
-        str += "|PERFORMANCE_WARNING";
+        str += "PERFORMANCE_WARNING|";
     }
     if (f & VK_DEBUG_REPORT_ERROR_BIT_EXT) {
-        str += "|ERROR";
+        str += "ERROR|";
     }
     if (f & VK_DEBUG_REPORT_DEBUG_BIT_EXT) {
-        str += "|DEBUG";
+        str += "DEBUG|";
     }
-    str += "|";
     return std::move(str);
 }
 
 #ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeH264CapabilityFlagsEXT(VkVideoEncodeH264CapabilityFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_ENCODE_H264_CAPABILITY_HRD_COMPLIANCE_BIT_EXT) {
-        str += "|HRD_COMPLIANCE";
+        str += "HRD_COMPLIANCE|";
     }
     if (f & VK_VIDEO_ENCODE_H264_CAPABILITY_PREDICTION_WEIGHT_TABLE_GENERATED_BIT_EXT) {
-        str += "|PREDICTION_WEIGHT_TABLE_GENERATED";
+        str += "PREDICTION_WEIGHT_TABLE_GENERATED|";
     }
     if (f & VK_VIDEO_ENCODE_H264_CAPABILITY_ROW_UNALIGNED_SLICE_BIT_EXT) {
-        str += "|ROW_UNALIGNED_SLICE";
+        str += "ROW_UNALIGNED_SLICE|";
     }
     if (f & VK_VIDEO_ENCODE_H264_CAPABILITY_DIFFERENT_SLICE_TYPE_BIT_EXT) {
-        str += "|DIFFERENT_SLICE_TYPE";
+        str += "DIFFERENT_SLICE_TYPE|";
     }
     if (f & VK_VIDEO_ENCODE_H264_CAPABILITY_B_FRAME_IN_L0_LIST_BIT_EXT) {
-        str += "|B_FRAME_IN_L0_LIST";
+        str += "B_FRAME_IN_L0_LIST|";
     }
     if (f & VK_VIDEO_ENCODE_H264_CAPABILITY_B_FRAME_IN_L1_LIST_BIT_EXT) {
-        str += "|B_FRAME_IN_L1_LIST";
+        str += "B_FRAME_IN_L1_LIST|";
     }
     if (f & VK_VIDEO_ENCODE_H264_CAPABILITY_PER_PICTURE_TYPE_MIN_MAX_QP_BIT_EXT) {
-        str += "|PER_PICTURE_TYPE_MIN_MAX_QP";
+        str += "PER_PICTURE_TYPE_MIN_MAX_QP|";
     }
     if (f & VK_VIDEO_ENCODE_H264_CAPABILITY_PER_SLICE_CONSTANT_QP_BIT_EXT) {
-        str += "|PER_SLICE_CONSTANT_QP";
+        str += "PER_SLICE_CONSTANT_QP|";
     }
     if (f & VK_VIDEO_ENCODE_H264_CAPABILITY_GENERATE_PREFIX_NALU_BIT_EXT) {
-        str += "|GENERATE_PREFIX_NALU";
+        str += "GENERATE_PREFIX_NALU|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoEncodeH264StdFlagsEXT(VkVideoEncodeH264StdFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_ENCODE_H264_STD_SEPARATE_COLOR_PLANE_FLAG_SET_BIT_EXT) {
-        str += "|SEPARATE_COLOR_PLANE_FLAG_SET";
+        str += "SEPARATE_COLOR_PLANE_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG_SET_BIT_EXT) {
-        str += "|QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG_SET";
+        str += "QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_SCALING_MATRIX_PRESENT_FLAG_SET_BIT_EXT) {
-        str += "|SCALING_MATRIX_PRESENT_FLAG_SET";
+        str += "SCALING_MATRIX_PRESENT_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_CHROMA_QP_INDEX_OFFSET_BIT_EXT) {
-        str += "|CHROMA_QP_INDEX_OFFSET";
+        str += "CHROMA_QP_INDEX_OFFSET|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_SECOND_CHROMA_QP_INDEX_OFFSET_BIT_EXT) {
-        str += "|SECOND_CHROMA_QP_INDEX_OFFSET";
+        str += "SECOND_CHROMA_QP_INDEX_OFFSET|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_PIC_INIT_QP_MINUS26_BIT_EXT) {
-        str += "|PIC_INIT_QP_MINUS26";
+        str += "PIC_INIT_QP_MINUS26|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_WEIGHTED_PRED_FLAG_SET_BIT_EXT) {
-        str += "|WEIGHTED_PRED_FLAG_SET";
+        str += "WEIGHTED_PRED_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_WEIGHTED_BIPRED_IDC_EXPLICIT_BIT_EXT) {
-        str += "|WEIGHTED_BIPRED_IDC_EXPLICIT";
+        str += "WEIGHTED_BIPRED_IDC_EXPLICIT|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_WEIGHTED_BIPRED_IDC_IMPLICIT_BIT_EXT) {
-        str += "|WEIGHTED_BIPRED_IDC_IMPLICIT";
+        str += "WEIGHTED_BIPRED_IDC_IMPLICIT|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_TRANSFORM_8X8_MODE_FLAG_SET_BIT_EXT) {
-        str += "|TRANSFORM_8X8_MODE_FLAG_SET";
+        str += "TRANSFORM_8X8_MODE_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_DIRECT_SPATIAL_MV_PRED_FLAG_UNSET_BIT_EXT) {
-        str += "|DIRECT_SPATIAL_MV_PRED_FLAG_UNSET";
+        str += "DIRECT_SPATIAL_MV_PRED_FLAG_UNSET|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_ENTROPY_CODING_MODE_FLAG_UNSET_BIT_EXT) {
-        str += "|ENTROPY_CODING_MODE_FLAG_UNSET";
+        str += "ENTROPY_CODING_MODE_FLAG_UNSET|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_ENTROPY_CODING_MODE_FLAG_SET_BIT_EXT) {
-        str += "|ENTROPY_CODING_MODE_FLAG_SET";
+        str += "ENTROPY_CODING_MODE_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_DIRECT_8X8_INFERENCE_FLAG_UNSET_BIT_EXT) {
-        str += "|DIRECT_8X8_INFERENCE_FLAG_UNSET";
+        str += "DIRECT_8X8_INFERENCE_FLAG_UNSET|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_CONSTRAINED_INTRA_PRED_FLAG_SET_BIT_EXT) {
-        str += "|CONSTRAINED_INTRA_PRED_FLAG_SET";
+        str += "CONSTRAINED_INTRA_PRED_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_DISABLED_BIT_EXT) {
-        str += "|DEBLOCKING_FILTER_DISABLED";
+        str += "DEBLOCKING_FILTER_DISABLED|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_ENABLED_BIT_EXT) {
-        str += "|DEBLOCKING_FILTER_ENABLED";
+        str += "DEBLOCKING_FILTER_ENABLED|";
     }
     if (f & VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_PARTIAL_BIT_EXT) {
-        str += "|DEBLOCKING_FILTER_PARTIAL";
+        str += "DEBLOCKING_FILTER_PARTIAL|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoEncodeH264RateControlFlagsEXT(VkVideoEncodeH264RateControlFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_ENCODE_H264_RATE_CONTROL_ATTEMPT_HRD_COMPLIANCE_BIT_EXT) {
-        str += "|ATTEMPT_HRD_COMPLIANCE";
+        str += "ATTEMPT_HRD_COMPLIANCE|";
     }
     if (f & VK_VIDEO_ENCODE_H264_RATE_CONTROL_REGULAR_GOP_BIT_EXT) {
-        str += "|REGULAR_GOP";
+        str += "REGULAR_GOP|";
     }
     if (f & VK_VIDEO_ENCODE_H264_RATE_CONTROL_REFERENCE_PATTERN_FLAT_BIT_EXT) {
-        str += "|REFERENCE_PATTERN_FLAT";
+        str += "REFERENCE_PATTERN_FLAT|";
     }
     if (f & VK_VIDEO_ENCODE_H264_RATE_CONTROL_REFERENCE_PATTERN_DYADIC_BIT_EXT) {
-        str += "|REFERENCE_PATTERN_DYADIC";
+        str += "REFERENCE_PATTERN_DYADIC|";
     }
     if (f & VK_VIDEO_ENCODE_H264_RATE_CONTROL_TEMPORAL_LAYER_PATTERN_DYADIC_BIT_EXT) {
-        str += "|TEMPORAL_LAYER_PATTERN_DYADIC";
+        str += "TEMPORAL_LAYER_PATTERN_DYADIC|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoEncodeH265CapabilityFlagsEXT(VkVideoEncodeH265CapabilityFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_ENCODE_H265_CAPABILITY_HRD_COMPLIANCE_BIT_EXT) {
-        str += "|HRD_COMPLIANCE";
+        str += "HRD_COMPLIANCE|";
     }
     if (f & VK_VIDEO_ENCODE_H265_CAPABILITY_PREDICTION_WEIGHT_TABLE_GENERATED_BIT_EXT) {
-        str += "|PREDICTION_WEIGHT_TABLE_GENERATED";
+        str += "PREDICTION_WEIGHT_TABLE_GENERATED|";
     }
     if (f & VK_VIDEO_ENCODE_H265_CAPABILITY_ROW_UNALIGNED_SLICE_SEGMENT_BIT_EXT) {
-        str += "|ROW_UNALIGNED_SLICE_SEGMENT";
+        str += "ROW_UNALIGNED_SLICE_SEGMENT|";
     }
     if (f & VK_VIDEO_ENCODE_H265_CAPABILITY_DIFFERENT_SLICE_SEGMENT_TYPE_BIT_EXT) {
-        str += "|DIFFERENT_SLICE_SEGMENT_TYPE";
+        str += "DIFFERENT_SLICE_SEGMENT_TYPE|";
     }
     if (f & VK_VIDEO_ENCODE_H265_CAPABILITY_B_FRAME_IN_L0_LIST_BIT_EXT) {
-        str += "|B_FRAME_IN_L0_LIST";
+        str += "B_FRAME_IN_L0_LIST|";
     }
     if (f & VK_VIDEO_ENCODE_H265_CAPABILITY_B_FRAME_IN_L1_LIST_BIT_EXT) {
-        str += "|B_FRAME_IN_L1_LIST";
+        str += "B_FRAME_IN_L1_LIST|";
     }
     if (f & VK_VIDEO_ENCODE_H265_CAPABILITY_PER_PICTURE_TYPE_MIN_MAX_QP_BIT_EXT) {
-        str += "|PER_PICTURE_TYPE_MIN_MAX_QP";
+        str += "PER_PICTURE_TYPE_MIN_MAX_QP|";
     }
     if (f & VK_VIDEO_ENCODE_H265_CAPABILITY_PER_SLICE_SEGMENT_CONSTANT_QP_BIT_EXT) {
-        str += "|PER_SLICE_SEGMENT_CONSTANT_QP";
+        str += "PER_SLICE_SEGMENT_CONSTANT_QP|";
     }
     if (f & VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_TILES_PER_SLICE_SEGMENT_BIT_EXT) {
-        str += "|MULTIPLE_TILES_PER_SLICE_SEGMENT";
+        str += "MULTIPLE_TILES_PER_SLICE_SEGMENT|";
     }
     if (f & VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_SLICE_SEGMENTS_PER_TILE_BIT_EXT) {
-        str += "|MULTIPLE_SLICE_SEGMENTS_PER_TILE";
+        str += "MULTIPLE_SLICE_SEGMENTS_PER_TILE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoEncodeH265StdFlagsEXT(VkVideoEncodeH265StdFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_ENCODE_H265_STD_SEPARATE_COLOR_PLANE_FLAG_SET_BIT_EXT) {
-        str += "|SEPARATE_COLOR_PLANE_FLAG_SET";
+        str += "SEPARATE_COLOR_PLANE_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_SAMPLE_ADAPTIVE_OFFSET_ENABLED_FLAG_SET_BIT_EXT) {
-        str += "|SAMPLE_ADAPTIVE_OFFSET_ENABLED_FLAG_SET";
+        str += "SAMPLE_ADAPTIVE_OFFSET_ENABLED_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_SCALING_LIST_DATA_PRESENT_FLAG_SET_BIT_EXT) {
-        str += "|SCALING_LIST_DATA_PRESENT_FLAG_SET";
+        str += "SCALING_LIST_DATA_PRESENT_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_PCM_ENABLED_FLAG_SET_BIT_EXT) {
-        str += "|PCM_ENABLED_FLAG_SET";
+        str += "PCM_ENABLED_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_SPS_TEMPORAL_MVP_ENABLED_FLAG_SET_BIT_EXT) {
-        str += "|SPS_TEMPORAL_MVP_ENABLED_FLAG_SET";
+        str += "SPS_TEMPORAL_MVP_ENABLED_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_INIT_QP_MINUS26_BIT_EXT) {
-        str += "|INIT_QP_MINUS26";
+        str += "INIT_QP_MINUS26|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_WEIGHTED_PRED_FLAG_SET_BIT_EXT) {
-        str += "|WEIGHTED_PRED_FLAG_SET";
+        str += "WEIGHTED_PRED_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_WEIGHTED_BIPRED_FLAG_SET_BIT_EXT) {
-        str += "|WEIGHTED_BIPRED_FLAG_SET";
+        str += "WEIGHTED_BIPRED_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_LOG2_PARALLEL_MERGE_LEVEL_MINUS2_BIT_EXT) {
-        str += "|LOG2_PARALLEL_MERGE_LEVEL_MINUS2";
+        str += "LOG2_PARALLEL_MERGE_LEVEL_MINUS2|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_SIGN_DATA_HIDING_ENABLED_FLAG_SET_BIT_EXT) {
-        str += "|SIGN_DATA_HIDING_ENABLED_FLAG_SET";
+        str += "SIGN_DATA_HIDING_ENABLED_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_TRANSFORM_SKIP_ENABLED_FLAG_SET_BIT_EXT) {
-        str += "|TRANSFORM_SKIP_ENABLED_FLAG_SET";
+        str += "TRANSFORM_SKIP_ENABLED_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_TRANSFORM_SKIP_ENABLED_FLAG_UNSET_BIT_EXT) {
-        str += "|TRANSFORM_SKIP_ENABLED_FLAG_UNSET";
+        str += "TRANSFORM_SKIP_ENABLED_FLAG_UNSET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT_FLAG_SET_BIT_EXT) {
-        str += "|PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT_FLAG_SET";
+        str += "PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_TRANSQUANT_BYPASS_ENABLED_FLAG_SET_BIT_EXT) {
-        str += "|TRANSQUANT_BYPASS_ENABLED_FLAG_SET";
+        str += "TRANSQUANT_BYPASS_ENABLED_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_CONSTRAINED_INTRA_PRED_FLAG_SET_BIT_EXT) {
-        str += "|CONSTRAINED_INTRA_PRED_FLAG_SET";
+        str += "CONSTRAINED_INTRA_PRED_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_ENTROPY_CODING_SYNC_ENABLED_FLAG_SET_BIT_EXT) {
-        str += "|ENTROPY_CODING_SYNC_ENABLED_FLAG_SET";
+        str += "ENTROPY_CODING_SYNC_ENABLED_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_DEBLOCKING_FILTER_OVERRIDE_ENABLED_FLAG_SET_BIT_EXT) {
-        str += "|DEBLOCKING_FILTER_OVERRIDE_ENABLED_FLAG_SET";
+        str += "DEBLOCKING_FILTER_OVERRIDE_ENABLED_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_DEPENDENT_SLICE_SEGMENTS_ENABLED_FLAG_SET_BIT_EXT) {
-        str += "|DEPENDENT_SLICE_SEGMENTS_ENABLED_FLAG_SET";
+        str += "DEPENDENT_SLICE_SEGMENTS_ENABLED_FLAG_SET|";
     }
     if (f & VK_VIDEO_ENCODE_H265_STD_DEPENDENT_SLICE_SEGMENT_FLAG_SET_BIT_EXT) {
-        str += "|DEPENDENT_SLICE_SEGMENT_FLAG_SET";
+        str += "DEPENDENT_SLICE_SEGMENT_FLAG_SET|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoEncodeH265CtbSizeFlagsEXT(VkVideoEncodeH265CtbSizeFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_ENCODE_H265_CTB_SIZE_16_BIT_EXT) {
-        str += "|16";
+        str += "16|";
     }
     if (f & VK_VIDEO_ENCODE_H265_CTB_SIZE_32_BIT_EXT) {
-        str += "|32";
+        str += "32|";
     }
     if (f & VK_VIDEO_ENCODE_H265_CTB_SIZE_64_BIT_EXT) {
-        str += "|64";
+        str += "64|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoEncodeH265TransformBlockSizeFlagsEXT(VkVideoEncodeH265TransformBlockSizeFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_4_BIT_EXT) {
-        str += "|4";
+        str += "4|";
     }
     if (f & VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_8_BIT_EXT) {
-        str += "|8";
+        str += "8|";
     }
     if (f & VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_16_BIT_EXT) {
-        str += "|16";
+        str += "16|";
     }
     if (f & VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_32_BIT_EXT) {
-        str += "|32";
+        str += "32|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkVideoEncodeH265RateControlFlagsEXT(VkVideoEncodeH265RateControlFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_VIDEO_ENCODE_H265_RATE_CONTROL_ATTEMPT_HRD_COMPLIANCE_BIT_EXT) {
-        str += "|ATTEMPT_HRD_COMPLIANCE";
+        str += "ATTEMPT_HRD_COMPLIANCE|";
     }
     if (f & VK_VIDEO_ENCODE_H265_RATE_CONTROL_REGULAR_GOP_BIT_EXT) {
-        str += "|REGULAR_GOP";
+        str += "REGULAR_GOP|";
     }
     if (f & VK_VIDEO_ENCODE_H265_RATE_CONTROL_REFERENCE_PATTERN_FLAT_BIT_EXT) {
-        str += "|REFERENCE_PATTERN_FLAT";
+        str += "REFERENCE_PATTERN_FLAT|";
     }
     if (f & VK_VIDEO_ENCODE_H265_RATE_CONTROL_REFERENCE_PATTERN_DYADIC_BIT_EXT) {
-        str += "|REFERENCE_PATTERN_DYADIC";
+        str += "REFERENCE_PATTERN_DYADIC|";
     }
     if (f & VK_VIDEO_ENCODE_H265_RATE_CONTROL_TEMPORAL_SUB_LAYER_PATTERN_DYADIC_BIT_EXT) {
-        str += "|TEMPORAL_SUB_LAYER_PATTERN_DYADIC";
+        str += "TEMPORAL_SUB_LAYER_PATTERN_DYADIC|";
     }
-    str += "|";
     return std::move(str);
 }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 
 std::string On_Str_VkExternalMemoryHandleTypeFlagsNV(VkExternalMemoryHandleTypeFlagsNV f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_NV) {
-        str += "|OPAQUE_WIN32";
+        str += "OPAQUE_WIN32|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_NV) {
-        str += "|OPAQUE_WIN32_KMT";
+        str += "OPAQUE_WIN32_KMT|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_BIT_NV) {
-        str += "|D3D11_IMAGE";
+        str += "D3D11_IMAGE|";
     }
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_KMT_BIT_NV) {
-        str += "|D3D11_IMAGE_KMT";
+        str += "D3D11_IMAGE_KMT|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkExternalMemoryFeatureFlagsNV(VkExternalMemoryFeatureFlagsNV f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT_NV) {
-        str += "|DEDICATED_ONLY";
+        str += "DEDICATED_ONLY|";
     }
     if (f & VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT_NV) {
-        str += "|EXPORTABLE";
+        str += "EXPORTABLE|";
     }
     if (f & VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_NV) {
-        str += "|IMPORTABLE";
+        str += "IMPORTABLE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkConditionalRenderingFlagsEXT(VkConditionalRenderingFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_CONDITIONAL_RENDERING_INVERTED_BIT_EXT) {
-        str += "|INVERTED";
+        str += "INVERTED|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkSurfaceCounterFlagsEXT(VkSurfaceCounterFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_SURFACE_COUNTER_VBLANK_BIT_EXT) {
-        str += "|VBLANK";
+        str += "VBLANK|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkDebugUtilsMessageSeverityFlagsEXT(VkDebugUtilsMessageSeverityFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
-        str += "|VERBOSE";
+        str += "VERBOSE|";
     }
     if (f & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) {
-        str += "|INFO";
+        str += "INFO|";
     }
     if (f & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
-        str += "|WARNING";
+        str += "WARNING|";
     }
     if (f & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
-        str += "|ERROR";
+        str += "ERROR|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkDebugUtilsMessageTypeFlagsEXT(VkDebugUtilsMessageTypeFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT) {
-        str += "|GENERAL";
+        str += "GENERAL|";
     }
     if (f & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT) {
-        str += "|VALIDATION";
+        str += "VALIDATION|";
     }
     if (f & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT) {
-        str += "|PERFORMANCE";
+        str += "PERFORMANCE|";
     }
     if (f & VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT) {
-        str += "|DEVICE_ADDRESS_BINDING";
+        str += "DEVICE_ADDRESS_BINDING|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkGeometryFlagsKHR(VkGeometryFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_GEOMETRY_OPAQUE_BIT_KHR) {
-        str += "|OPAQUE";
+        str += "OPAQUE|";
     }
     if (f & VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR) {
-        str += "|NO_DUPLICATE_ANY_HIT_INVOCATION";
+        str += "NO_DUPLICATE_ANY_HIT_INVOCATION|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkGeometryInstanceFlagsKHR(VkGeometryInstanceFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR) {
-        str += "|TRIANGLE_FACING_CULL_DISABLE";
+        str += "TRIANGLE_FACING_CULL_DISABLE|";
     }
     if (f & VK_GEOMETRY_INSTANCE_TRIANGLE_FLIP_FACING_BIT_KHR) {
-        str += "|TRIANGLE_FLIP_FACING";
+        str += "TRIANGLE_FLIP_FACING|";
     }
     if (f & VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR) {
-        str += "|FORCE_OPAQUE";
+        str += "FORCE_OPAQUE|";
     }
     if (f & VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR) {
-        str += "|FORCE_NO_OPAQUE";
+        str += "FORCE_NO_OPAQUE|";
     }
     if (f & VK_GEOMETRY_INSTANCE_FORCE_OPACITY_MICROMAP_2_STATE_EXT) {
-        str += "|FORCE_OPACITY_MICROMAP_2_STATE_EXT";
+        str += "FORCE_OPACITY_MICROMAP_2_STATE_EXT|";
     }
     if (f & VK_GEOMETRY_INSTANCE_DISABLE_OPACITY_MICROMAPS_EXT) {
-        str += "|DISABLE_OPACITY_MICROMAPS_EXT";
+        str += "DISABLE_OPACITY_MICROMAPS_EXT|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkBuildAccelerationStructureFlagsKHR(VkBuildAccelerationStructureFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR) {
-        str += "|ALLOW_UPDATE";
+        str += "ALLOW_UPDATE|";
     }
     if (f & VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR) {
-        str += "|ALLOW_COMPACTION";
+        str += "ALLOW_COMPACTION|";
     }
     if (f & VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR) {
-        str += "|PREFER_FAST_TRACE";
+        str += "PREFER_FAST_TRACE|";
     }
     if (f & VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR) {
-        str += "|PREFER_FAST_BUILD";
+        str += "PREFER_FAST_BUILD|";
     }
     if (f & VK_BUILD_ACCELERATION_STRUCTURE_LOW_MEMORY_BIT_KHR) {
-        str += "|LOW_MEMORY";
+        str += "LOW_MEMORY|";
     }
     if (f & VK_BUILD_ACCELERATION_STRUCTURE_MOTION_BIT_NV) {
-        str += "|MOTION";
+        str += "MOTION|";
     }
     if (f & VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_UPDATE_EXT) {
-        str += "|ALLOW_OPACITY_MICROMAP_UPDATE_EXT";
+        str += "ALLOW_OPACITY_MICROMAP_UPDATE_EXT|";
     }
     if (f & VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DISABLE_OPACITY_MICROMAPS_EXT) {
-        str += "|ALLOW_DISABLE_OPACITY_MICROMAPS_EXT";
+        str += "ALLOW_DISABLE_OPACITY_MICROMAPS_EXT|";
     }
     if (f & VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_DATA_UPDATE_EXT) {
-        str += "|ALLOW_OPACITY_MICROMAP_DATA_UPDATE_EXT";
+        str += "ALLOW_OPACITY_MICROMAP_DATA_UPDATE_EXT|";
     }
 #ifdef VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DISPLACEMENT_MICROMAP_UPDATE_NV) {
-        str += "|ALLOW_DISPLACEMENT_MICROMAP_UPDATE_NV";
+        str += "ALLOW_DISPLACEMENT_MICROMAP_UPDATE_NV|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     if (f & VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DATA_ACCESS_KHR) {
-        str += "|ALLOW_DATA_ACCESS_KHR";
+        str += "ALLOW_DATA_ACCESS_KHR|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkPipelineCompilerControlFlagsAMD(VkPipelineCompilerControlFlagsAMD f) {
-    std::string str = "";
-    str += "|";
+    std::string str = "|";
     return std::move(str);
 }
 
 std::string On_Str_VkShaderCorePropertiesFlagsAMD(VkShaderCorePropertiesFlagsAMD f) {
-    std::string str = "";
-    str += "|";
+    std::string str = "|";
     return std::move(str);
 }
 
 std::string On_Str_VkHostImageCopyFlagsEXT(VkHostImageCopyFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_HOST_IMAGE_COPY_MEMCPY_EXT) {
-        str += "|MEMCPY_EXT";
+        str += "MEMCPY_EXT|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkPresentScalingFlagsEXT(VkPresentScalingFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_PRESENT_SCALING_ONE_TO_ONE_BIT_EXT) {
-        str += "|ONE_TO_ONE";
+        str += "ONE_TO_ONE|";
     }
     if (f & VK_PRESENT_SCALING_ASPECT_RATIO_STRETCH_BIT_EXT) {
-        str += "|ASPECT_RATIO_STRETCH";
+        str += "ASPECT_RATIO_STRETCH|";
     }
     if (f & VK_PRESENT_SCALING_STRETCH_BIT_EXT) {
-        str += "|STRETCH";
+        str += "STRETCH|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkPresentGravityFlagsEXT(VkPresentGravityFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_PRESENT_GRAVITY_MIN_BIT_EXT) {
-        str += "|MIN";
+        str += "MIN|";
     }
     if (f & VK_PRESENT_GRAVITY_MAX_BIT_EXT) {
-        str += "|MAX";
+        str += "MAX|";
     }
     if (f & VK_PRESENT_GRAVITY_CENTERED_BIT_EXT) {
-        str += "|CENTERED";
+        str += "CENTERED|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkIndirectStateFlagsNV(VkIndirectStateFlagsNV f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_INDIRECT_STATE_FLAG_FRONTFACE_BIT_NV) {
-        str += "|FLAG_FRONTFACE";
+        str += "FLAG_FRONTFACE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkIndirectCommandsLayoutUsageFlagsNV(VkIndirectCommandsLayoutUsageFlagsNV f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_NV) {
-        str += "|EXPLICIT_PREPROCESS";
+        str += "EXPLICIT_PREPROCESS|";
     }
     if (f & VK_INDIRECT_COMMANDS_LAYOUT_USAGE_INDEXED_SEQUENCES_BIT_NV) {
-        str += "|INDEXED_SEQUENCES";
+        str += "INDEXED_SEQUENCES|";
     }
     if (f & VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_NV) {
-        str += "|UNORDERED_SEQUENCES";
+        str += "UNORDERED_SEQUENCES|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkDeviceDiagnosticsConfigFlagsNV(VkDeviceDiagnosticsConfigFlagsNV f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_SHADER_DEBUG_INFO_BIT_NV) {
-        str += "|ENABLE_SHADER_DEBUG_INFO";
+        str += "ENABLE_SHADER_DEBUG_INFO|";
     }
     if (f & VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_RESOURCE_TRACKING_BIT_NV) {
-        str += "|ENABLE_RESOURCE_TRACKING";
+        str += "ENABLE_RESOURCE_TRACKING|";
     }
     if (f & VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_AUTOMATIC_CHECKPOINTS_BIT_NV) {
-        str += "|ENABLE_AUTOMATIC_CHECKPOINTS";
+        str += "ENABLE_AUTOMATIC_CHECKPOINTS|";
     }
     if (f & VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_SHADER_ERROR_REPORTING_BIT_NV) {
-        str += "|ENABLE_SHADER_ERROR_REPORTING";
+        str += "ENABLE_SHADER_ERROR_REPORTING|";
     }
-    str += "|";
     return std::move(str);
 }
 
 #ifdef VK_USE_PLATFORM_METAL_EXT
 std::string On_Str_VkExportMetalObjectTypeFlagsEXT(VkExportMetalObjectTypeFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_EXPORT_METAL_OBJECT_TYPE_METAL_DEVICE_BIT_EXT) {
-        str += "|METAL_DEVICE";
+        str += "METAL_DEVICE|";
     }
     if (f & VK_EXPORT_METAL_OBJECT_TYPE_METAL_COMMAND_QUEUE_BIT_EXT) {
-        str += "|METAL_COMMAND_QUEUE";
+        str += "METAL_COMMAND_QUEUE|";
     }
     if (f & VK_EXPORT_METAL_OBJECT_TYPE_METAL_BUFFER_BIT_EXT) {
-        str += "|METAL_BUFFER";
+        str += "METAL_BUFFER|";
     }
     if (f & VK_EXPORT_METAL_OBJECT_TYPE_METAL_TEXTURE_BIT_EXT) {
-        str += "|METAL_TEXTURE";
+        str += "METAL_TEXTURE|";
     }
     if (f & VK_EXPORT_METAL_OBJECT_TYPE_METAL_IOSURFACE_BIT_EXT) {
-        str += "|METAL_IOSURFACE";
+        str += "METAL_IOSURFACE|";
     }
     if (f & VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT) {
-        str += "|METAL_SHARED_EVENT";
+        str += "METAL_SHARED_EVENT|";
     }
-    str += "|";
     return std::move(str);
 }
 #endif // VK_USE_PLATFORM_METAL_EXT
 
 std::string On_Str_VkGraphicsPipelineLibraryFlagsEXT(VkGraphicsPipelineLibraryFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_GRAPHICS_PIPELINE_LIBRARY_VERTEX_INPUT_INTERFACE_BIT_EXT) {
-        str += "|VERTEX_INPUT_INTERFACE";
+        str += "VERTEX_INPUT_INTERFACE|";
     }
     if (f & VK_GRAPHICS_PIPELINE_LIBRARY_PRE_RASTERIZATION_SHADERS_BIT_EXT) {
-        str += "|PRE_RASTERIZATION_SHADERS";
+        str += "PRE_RASTERIZATION_SHADERS|";
     }
     if (f & VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_SHADER_BIT_EXT) {
-        str += "|FRAGMENT_SHADER";
+        str += "FRAGMENT_SHADER|";
     }
     if (f & VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_OUTPUT_INTERFACE_BIT_EXT) {
-        str += "|FRAGMENT_OUTPUT_INTERFACE";
+        str += "FRAGMENT_OUTPUT_INTERFACE|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkImageCompressionFlagsEXT(VkImageCompressionFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_IMAGE_COMPRESSION_DEFAULT_EXT) {
-        str += "|DEFAULT_EXT";
+        str += "DEFAULT_EXT|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_DEFAULT_EXT) {
-        str += "|FIXED_RATE_DEFAULT_EXT";
+        str += "FIXED_RATE_DEFAULT_EXT|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_EXPLICIT_EXT) {
-        str += "|FIXED_RATE_EXPLICIT_EXT";
+        str += "FIXED_RATE_EXPLICIT_EXT|";
     }
     if (f & VK_IMAGE_COMPRESSION_DISABLED_EXT) {
-        str += "|DISABLED_EXT";
+        str += "DISABLED_EXT|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkImageCompressionFixedRateFlagsEXT(VkImageCompressionFixedRateFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_NONE_EXT) {
-        str += "|NONE_EXT";
+        str += "NONE_EXT|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_1BPC_BIT_EXT) {
-        str += "|1BPC";
+        str += "1BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_2BPC_BIT_EXT) {
-        str += "|2BPC";
+        str += "2BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_3BPC_BIT_EXT) {
-        str += "|3BPC";
+        str += "3BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_4BPC_BIT_EXT) {
-        str += "|4BPC";
+        str += "4BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_5BPC_BIT_EXT) {
-        str += "|5BPC";
+        str += "5BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_6BPC_BIT_EXT) {
-        str += "|6BPC";
+        str += "6BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_7BPC_BIT_EXT) {
-        str += "|7BPC";
+        str += "7BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_8BPC_BIT_EXT) {
-        str += "|8BPC";
+        str += "8BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_9BPC_BIT_EXT) {
-        str += "|9BPC";
+        str += "9BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_10BPC_BIT_EXT) {
-        str += "|10BPC";
+        str += "10BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_11BPC_BIT_EXT) {
-        str += "|11BPC";
+        str += "11BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_12BPC_BIT_EXT) {
-        str += "|12BPC";
+        str += "12BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_13BPC_BIT_EXT) {
-        str += "|13BPC";
+        str += "13BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_14BPC_BIT_EXT) {
-        str += "|14BPC";
+        str += "14BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_15BPC_BIT_EXT) {
-        str += "|15BPC";
+        str += "15BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_16BPC_BIT_EXT) {
-        str += "|16BPC";
+        str += "16BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_17BPC_BIT_EXT) {
-        str += "|17BPC";
+        str += "17BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_18BPC_BIT_EXT) {
-        str += "|18BPC";
+        str += "18BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_19BPC_BIT_EXT) {
-        str += "|19BPC";
+        str += "19BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_20BPC_BIT_EXT) {
-        str += "|20BPC";
+        str += "20BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_21BPC_BIT_EXT) {
-        str += "|21BPC";
+        str += "21BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_22BPC_BIT_EXT) {
-        str += "|22BPC";
+        str += "22BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_23BPC_BIT_EXT) {
-        str += "|23BPC";
+        str += "23BPC|";
     }
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_24BPC_BIT_EXT) {
-        str += "|24BPC";
+        str += "24BPC|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkDeviceAddressBindingFlagsEXT(VkDeviceAddressBindingFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_DEVICE_ADDRESS_BINDING_INTERNAL_OBJECT_BIT_EXT) {
-        str += "|INTERNAL_OBJECT";
+        str += "INTERNAL_OBJECT|";
     }
-    str += "|";
     return std::move(str);
 }
 
 #ifdef VK_USE_PLATFORM_FUCHSIA
 std::string On_Str_VkImageConstraintsInfoFlagsFUCHSIA(VkImageConstraintsInfoFlagsFUCHSIA f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_IMAGE_CONSTRAINTS_INFO_CPU_READ_RARELY_FUCHSIA) {
-        str += "|CPU_READ_RARELY_FUCHSIA";
+        str += "CPU_READ_RARELY_FUCHSIA|";
     }
     if (f & VK_IMAGE_CONSTRAINTS_INFO_CPU_READ_OFTEN_FUCHSIA) {
-        str += "|CPU_READ_OFTEN_FUCHSIA";
+        str += "CPU_READ_OFTEN_FUCHSIA|";
     }
     if (f & VK_IMAGE_CONSTRAINTS_INFO_CPU_WRITE_RARELY_FUCHSIA) {
-        str += "|CPU_WRITE_RARELY_FUCHSIA";
+        str += "CPU_WRITE_RARELY_FUCHSIA|";
     }
     if (f & VK_IMAGE_CONSTRAINTS_INFO_CPU_WRITE_OFTEN_FUCHSIA) {
-        str += "|CPU_WRITE_OFTEN_FUCHSIA";
+        str += "CPU_WRITE_OFTEN_FUCHSIA|";
     }
     if (f & VK_IMAGE_CONSTRAINTS_INFO_PROTECTED_OPTIONAL_FUCHSIA) {
-        str += "|PROTECTED_OPTIONAL_FUCHSIA";
+        str += "PROTECTED_OPTIONAL_FUCHSIA|";
     }
-    str += "|";
     return std::move(str);
 }
 #endif // VK_USE_PLATFORM_FUCHSIA
 
 std::string On_Str_VkBuildMicromapFlagsEXT(VkBuildMicromapFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_BUILD_MICROMAP_PREFER_FAST_TRACE_BIT_EXT) {
-        str += "|PREFER_FAST_TRACE";
+        str += "PREFER_FAST_TRACE|";
     }
     if (f & VK_BUILD_MICROMAP_PREFER_FAST_BUILD_BIT_EXT) {
-        str += "|PREFER_FAST_BUILD";
+        str += "PREFER_FAST_BUILD|";
     }
     if (f & VK_BUILD_MICROMAP_ALLOW_COMPACTION_BIT_EXT) {
-        str += "|ALLOW_COMPACTION";
+        str += "ALLOW_COMPACTION|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkMicromapCreateFlagsEXT(VkMicromapCreateFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_MICROMAP_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT) {
-        str += "|DEVICE_ADDRESS_CAPTURE_REPLAY";
+        str += "DEVICE_ADDRESS_CAPTURE_REPLAY|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkMemoryDecompressionMethodFlagsNV(VkMemoryDecompressionMethodFlagsNV f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_MEMORY_DECOMPRESSION_METHOD_GDEFLATE_1_0_BIT_NV) {
-        str += "|GDEFLATE_1_0";
+        str += "GDEFLATE_1_0|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkOpticalFlowGridSizeFlagsNV(VkOpticalFlowGridSizeFlagsNV f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_OPTICAL_FLOW_GRID_SIZE_UNKNOWN_NV) {
-        str += "|UNKNOWN_NV";
+        str += "UNKNOWN_NV|";
     }
     if (f & VK_OPTICAL_FLOW_GRID_SIZE_1X1_BIT_NV) {
-        str += "|1X1";
+        str += "1X1|";
     }
     if (f & VK_OPTICAL_FLOW_GRID_SIZE_2X2_BIT_NV) {
-        str += "|2X2";
+        str += "2X2|";
     }
     if (f & VK_OPTICAL_FLOW_GRID_SIZE_4X4_BIT_NV) {
-        str += "|4X4";
+        str += "4X4|";
     }
     if (f & VK_OPTICAL_FLOW_GRID_SIZE_8X8_BIT_NV) {
-        str += "|8X8";
+        str += "8X8|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkOpticalFlowUsageFlagsNV(VkOpticalFlowUsageFlagsNV f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_OPTICAL_FLOW_USAGE_UNKNOWN_NV) {
-        str += "|UNKNOWN_NV";
+        str += "UNKNOWN_NV|";
     }
     if (f & VK_OPTICAL_FLOW_USAGE_INPUT_BIT_NV) {
-        str += "|INPUT";
+        str += "INPUT|";
     }
     if (f & VK_OPTICAL_FLOW_USAGE_OUTPUT_BIT_NV) {
-        str += "|OUTPUT";
+        str += "OUTPUT|";
     }
     if (f & VK_OPTICAL_FLOW_USAGE_HINT_BIT_NV) {
-        str += "|HINT";
+        str += "HINT|";
     }
     if (f & VK_OPTICAL_FLOW_USAGE_COST_BIT_NV) {
-        str += "|COST";
+        str += "COST|";
     }
     if (f & VK_OPTICAL_FLOW_USAGE_GLOBAL_FLOW_BIT_NV) {
-        str += "|GLOBAL_FLOW";
+        str += "GLOBAL_FLOW|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkOpticalFlowSessionCreateFlagsNV(VkOpticalFlowSessionCreateFlagsNV f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_HINT_BIT_NV) {
-        str += "|ENABLE_HINT";
+        str += "ENABLE_HINT|";
     }
     if (f & VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_COST_BIT_NV) {
-        str += "|ENABLE_COST";
+        str += "ENABLE_COST|";
     }
     if (f & VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_GLOBAL_FLOW_BIT_NV) {
-        str += "|ENABLE_GLOBAL_FLOW";
+        str += "ENABLE_GLOBAL_FLOW|";
     }
     if (f & VK_OPTICAL_FLOW_SESSION_CREATE_ALLOW_REGIONS_BIT_NV) {
-        str += "|ALLOW_REGIONS";
+        str += "ALLOW_REGIONS|";
     }
     if (f & VK_OPTICAL_FLOW_SESSION_CREATE_BOTH_DIRECTIONS_BIT_NV) {
-        str += "|BOTH_DIRECTIONS";
+        str += "BOTH_DIRECTIONS|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkOpticalFlowExecuteFlagsNV(VkOpticalFlowExecuteFlagsNV f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_OPTICAL_FLOW_EXECUTE_DISABLE_TEMPORAL_HINTS_BIT_NV) {
-        str += "|DISABLE_TEMPORAL_HINTS";
+        str += "DISABLE_TEMPORAL_HINTS|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkShaderCreateFlagsEXT(VkShaderCreateFlagsEXT f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_SHADER_CREATE_LINK_STAGE_BIT_EXT) {
-        str += "|LINK_STAGE";
+        str += "LINK_STAGE|";
     }
     if (f & VK_SHADER_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT_EXT) {
-        str += "|ALLOW_VARYING_SUBGROUP_SIZE";
+        str += "ALLOW_VARYING_SUBGROUP_SIZE|";
     }
     if (f & VK_SHADER_CREATE_REQUIRE_FULL_SUBGROUPS_BIT_EXT) {
-        str += "|REQUIRE_FULL_SUBGROUPS";
+        str += "REQUIRE_FULL_SUBGROUPS|";
     }
     if (f & VK_SHADER_CREATE_NO_TASK_SHADER_BIT_EXT) {
-        str += "|NO_TASK_SHADER";
+        str += "NO_TASK_SHADER|";
     }
     if (f & VK_SHADER_CREATE_DISPATCH_BASE_BIT_EXT) {
-        str += "|DISPATCH_BASE";
+        str += "DISPATCH_BASE|";
     }
     if (f & VK_SHADER_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_EXT) {
-        str += "|FRAGMENT_SHADING_RATE_ATTACHMENT";
+        str += "FRAGMENT_SHADING_RATE_ATTACHMENT|";
     }
     if (f & VK_SHADER_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT) {
-        str += "|FRAGMENT_DENSITY_MAP_ATTACHMENT";
+        str += "FRAGMENT_DENSITY_MAP_ATTACHMENT|";
     }
-    str += "|";
     return std::move(str);
 }
 
 std::string On_Str_VkAccelerationStructureCreateFlagsKHR(VkAccelerationStructureCreateFlagsKHR f) {
-    std::string str = "";
+    std::string str = "|";
     if (f & VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR) {
-        str += "|DEVICE_ADDRESS_CAPTURE_REPLAY";
+        str += "DEVICE_ADDRESS_CAPTURE_REPLAY|";
     }
     if (f & VK_ACCELERATION_STRUCTURE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT) {
-        str += "|DESCRIPTOR_BUFFER_CAPTURE_REPLAY";
+        str += "DESCRIPTOR_BUFFER_CAPTURE_REPLAY|";
     }
     if (f & VK_ACCELERATION_STRUCTURE_CREATE_MOTION_BIT_NV) {
-        str += "|MOTION";
+        str += "MOTION|";
     }
-    str += "|";
     return std::move(str);
 }
 } // namespace vkt
