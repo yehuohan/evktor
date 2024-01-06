@@ -5,7 +5,7 @@ NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
 struct Instance : public BuiltHandle<VkInstance> {
-    uint32_t api_version = VK_API_VERSION_1_2;
+    uint32_t api_version = VK_API_VERSION_1_0;
     Vector<const char*> layers{};     /**< Enabled instance layers */
     Vector<const char*> extensions{}; /**< Enabled instance extensions */
     VkDebugUtilsMessengerEXT debug_messenger = nullptr;
@@ -18,12 +18,7 @@ struct Instance : public BuiltHandle<VkInstance> {
 };
 
 struct InstanceInfo : public BuilderInfo {
-    const char* app_name = "vktor";
-    uint32_t app_version = VK_MAKE_VERSION(1, 0, 0);
-    const char* engine_name = "vktor";
-    uint32_t engine_version = VK_MAKE_VERSION(1, 0, 0);
-    uint32_t api_version = VK_API_VERSION_1_0;
-
+    VkApplicationInfo app_info;
     Vector<const char*> layers{};
     Vector<const char*> extensions{};
     bool enable_debug_utils = false;
@@ -32,7 +27,13 @@ struct InstanceInfo : public BuilderInfo {
 
 class InstanceBuilder : public Builder<InstanceBuilder, Instance, InstanceInfo> {
 public:
-    explicit InstanceBuilder(Name&& name = "Instance") : Builder(std::move(name)) {}
+    explicit InstanceBuilder(Name&& name = "Instance") : Builder(std::move(name)) {
+        info.app_info.pApplicationName = "vktor";
+        info.app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+        info.app_info.pEngineName = "vktor";
+        info.app_info.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+        info.app_info.apiVersion = VK_API_VERSION_1_0;
+    }
     virtual Built build() override;
 
     Self setAppName(const char* name);

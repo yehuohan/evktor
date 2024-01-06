@@ -15,6 +15,7 @@ struct Image : public BuiltResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
     VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
     VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
     VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT;
+    VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
 
     VkDeviceMemory memory = VK_NULL_HANDLE;
     VmaAllocation allocation = VK_NULL_HANDLE;
@@ -47,21 +48,7 @@ struct Image : public BuiltResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
 };
 
 struct ImageInfo : public BuilderInfo {
-    VkImageCreateFlags flags = 0;
-    VkImageType type = VK_IMAGE_TYPE_2D;
-    VkFormat format = VK_FORMAT_UNDEFINED;
-    VkExtent3D extent{};
-    uint32_t mip_levels = 1;
-    uint32_t array_layers = 1;
-    VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
-    VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
-    VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT;
-    // TODO: Support exclusive and concurrent mode
-    // VkSharingMode sharing_mode = VK_SHARING_MODE_EXCLUSIVE;
-    // uint32_t queue_family_index_count = 0;
-    // const uint32_t* queue_family_indices = nullptr;
-    VkImageLayout initial_layout = VK_IMAGE_LAYOUT_UNDEFINED;
-
+    VkImageCreateInfo image_ci;
     VmaAllocationCreateFlags memory_flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
     VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO;
 };
@@ -71,7 +58,23 @@ private:
     const Device& device;
 
 public:
-    explicit ImageBuilder(const Device& device, Name&& name = "Image") : Builder(std::move(name)), device(device) {}
+    explicit ImageBuilder(const Device& device, Name&& name = "Image") : Builder(std::move(name)), device(device) {
+        info.image_ci = Itor::ImageCreateInfo();
+        info.image_ci.flags = 0;
+        info.image_ci.imageType = VK_IMAGE_TYPE_2D;
+        info.image_ci.format = VK_FORMAT_UNDEFINED;
+        info.image_ci.extent = VkExtent3D{0, 0, 0};
+        info.image_ci.mipLevels = 1;
+        info.image_ci.arrayLayers = 1;
+        info.image_ci.samples = VK_SAMPLE_COUNT_1_BIT;
+        info.image_ci.tiling = VK_IMAGE_TILING_OPTIMAL;
+        info.image_ci.usage = VK_IMAGE_USAGE_SAMPLED_BIT;
+        info.image_ci.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        // TODO: Support exclusive and concurrent mode
+        info.image_ci.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        info.image_ci.queueFamilyIndexCount = 0;
+        info.image_ci.pQueueFamilyIndices = nullptr;
+    }
     virtual Built build() override;
 
     Self setFormat(VkFormat format);
@@ -84,6 +87,7 @@ public:
     Self setSamples(VkSampleCountFlagBits samples);
     Self setTiling(VkImageTiling tiling);
     Self setUsage(VkImageUsageFlags usage);
+    Self setLayout(VkImageLayout layout);
 
     Self setMemoryFlags(VmaAllocationCreateFlags flags);
     Self setMemoryUsage(VmaMemoryUsage usage);

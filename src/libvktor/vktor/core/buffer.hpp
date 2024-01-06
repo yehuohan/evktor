@@ -50,13 +50,7 @@ struct Buffer : public BuiltResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
 };
 
 struct BufferInfo : public BuilderInfo {
-    VkDeviceSize size = 0;
-    VkBufferUsageFlags usage = VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT;
-    // TODO: Support exclusive and concurrent mode
-    // VkSharingMode sharing_mode = VK_SHARING_MODE_EXCLUSIVE;
-    // uint32_t queue_family_index_count = 0;
-    // const uint32_t* queue_family_indices = nullptr;
-
+    VkBufferCreateInfo buffer_ci;
     VmaAllocationCreateFlags memory_flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
     VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO;
 };
@@ -66,7 +60,16 @@ private:
     const Device& device;
 
 public:
-    explicit BufferBuilder(const Device& device, Name&& name = "Buffer") : Builder(std::move(name)), device(device) {}
+    explicit BufferBuilder(const Device& device, Name&& name = "Buffer") : Builder(std::move(name)), device(device) {
+        info.buffer_ci = Itor::BufferCreateInfo();
+        info.buffer_ci.flags = 0;
+        info.buffer_ci.size = 0;
+        info.buffer_ci.usage = VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT;
+        // TODO: Support exclusive and concurrent mode
+        info.buffer_ci.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        info.buffer_ci.queueFamilyIndexCount = 0;
+        info.buffer_ci.pQueueFamilyIndices = nullptr;
+    }
     virtual Built build() override;
     /**
      * @brief Build buffer with native Vulkan api without device.mem_allocator for reference

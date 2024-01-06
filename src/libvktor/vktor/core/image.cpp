@@ -150,45 +150,50 @@ void Image::genMipmaps(const CommandBuffer& cmdbuf) const {
 }
 
 Self ImageBuilder::setFormat(VkFormat format) {
-    info.format = format;
+    info.image_ci.format = format;
     return *this;
 }
 
 Self ImageBuilder::setExtent(const VkExtent3D& extent) {
-    info.extent = extent;
-    info.type = getType(extent);
+    info.image_ci.extent = extent;
+    info.image_ci.imageType = getType(extent);
     return *this;
 }
 
 Self ImageBuilder::setMipLevels(uint32_t mip_levels) {
-    info.mip_levels = mip_levels;
+    info.image_ci.mipLevels = mip_levels;
     return *this;
 }
 
 Self ImageBuilder::setArrayLayers(uint32_t array_layers) {
-    info.array_layers = array_layers;
+    info.image_ci.arrayLayers = array_layers;
     return *this;
 }
 
 Self ImageBuilder::setSamples(VkSampleCountFlagBits samples) {
-    info.samples = samples;
+    info.image_ci.samples = samples;
     return *this;
 }
 
 Self ImageBuilder::setTiling(VkImageTiling tiling) {
-    info.tiling = tiling;
+    info.image_ci.tiling = tiling;
     return *this;
 }
 
 Self ImageBuilder::setUsage(VkImageUsageFlags usage) {
-    info.usage = usage;
+    info.image_ci.usage = usage;
+    return *this;
+}
+
+Self ImageBuilder::setLayout(VkImageLayout layout) {
+    info.image_ci.initialLayout = layout;
     return *this;
 }
 
 Self ImageBuilder::setMemoryFlags(VmaAllocationCreateFlags flags) {
     if ((flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT) ||
         (flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT)) {
-        if (info.tiling != VK_IMAGE_TILING_LINEAR) {
+        if (info.image_ci.tiling != VK_IMAGE_TILING_LINEAR) {
             LogW("Image should use linear tiling for host access");
         }
     }
@@ -204,38 +209,24 @@ Self ImageBuilder::setMemoryUsage(VmaMemoryUsage usage) {
 ImageBuilder::Built ImageBuilder::build() {
     Image image(device, std::move(info.__name));
 
-    auto image_ci = Itor::ImageCreateInfo();
-    image_ci.flags = info.flags;
-    image_ci.imageType = info.type;
-    image_ci.format = info.format;
-    image_ci.extent = info.extent;
-    image_ci.mipLevels = info.mip_levels;
-    image_ci.arrayLayers = info.array_layers;
-    image_ci.samples = info.samples;
-    image_ci.tiling = info.tiling;
-    image_ci.usage = info.usage;
-    image_ci.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    image_ci.queueFamilyIndexCount = 0;
-    image_ci.pQueueFamilyIndices = nullptr;
-    image_ci.initialLayout = info.initial_layout;
-
     VmaAllocationCreateInfo allocation_ci{};
     allocation_ci.flags = info.memory_flags;
     allocation_ci.usage = info.memory_usage;
     VmaAllocationInfo allocation_info{};
 
-    OnRet(vmaCreateImage(device, &image_ci, &allocation_ci, image, &image.allocation, &allocation_info),
+    OnRet(vmaCreateImage(device, &info.image_ci, &allocation_ci, image, &image.allocation, &allocation_info),
           "Failed to create image");
     OnName(image);
-    image.type = info.type;
-    image.format = info.format;
-    image.extent = info.extent;
-    image.mip_levels = info.mip_levels;
-    image.array_layers = info.array_layers;
+    image.type = info.image_ci.imageType;
+    image.format = info.image_ci.format;
+    image.extent = info.image_ci.extent;
+    image.mip_levels = info.image_ci.mipLevels;
+    image.array_layers = info.image_ci.arrayLayers;
+    image.samples = info.image_ci.samples;
+    image.tiling = info.image_ci.tiling;
+    image.usage = info.image_ci.usage;
+    image.layout = info.image_ci.initialLayout;
     image.memory = allocation_info.deviceMemory;
-    image.samples = info.samples;
-    image.tiling = info.tiling;
-    image.usage = info.usage;
 
     return Ok(std::move(image));
 }

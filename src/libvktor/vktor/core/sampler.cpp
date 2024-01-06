@@ -18,65 +18,47 @@ Sampler::~Sampler() {
 }
 
 Self SamplerBuilder::setNearest() {
-    info.mag_filter = VK_FILTER_NEAREST;
-    info.min_filter = VK_FILTER_NEAREST;
-    info.mipmap_mode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
-    info.address_mode_u = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    info.address_mode_v = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    info.address_mode_w = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    info.mip_lod_bias = 0.0f;
-    info.anisotropy = VK_FALSE;
-    info.max_anisotropy = 1.0f;
-    info.comparable = VK_FALSE;
-    info.compare_op = VK_COMPARE_OP_NEVER;
-    info.min_lod = 0.0f;
-    info.max_lod = VK_LOD_CLAMP_NONE;
-    info.border_color = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
-    info.unnormalized_coordinates = VK_FALSE;
+    info.sampler_ci.magFilter = VK_FILTER_NEAREST;
+    info.sampler_ci.minFilter = VK_FILTER_NEAREST;
+    info.sampler_ci.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+    info.sampler_ci.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    info.sampler_ci.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    info.sampler_ci.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    info.sampler_ci.mipLodBias = 0.0f;
+    info.sampler_ci.anisotropyEnable = VK_FALSE;
+    info.sampler_ci.maxAnisotropy = 1.0f;
+    info.sampler_ci.compareEnable = VK_FALSE;
+    info.sampler_ci.compareOp = VK_COMPARE_OP_NEVER;
+    info.sampler_ci.minLod = 0.0f;
+    info.sampler_ci.maxLod = VK_LOD_CLAMP_NONE;
+    info.sampler_ci.borderColor = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
+    info.sampler_ci.unnormalizedCoordinates = VK_FALSE;
     return *this;
 }
 
 Self SamplerBuilder::setLinear() {
-    info.mag_filter = VK_FILTER_LINEAR;
-    info.min_filter = VK_FILTER_LINEAR;
-    info.mipmap_mode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-    info.address_mode_u = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    info.address_mode_v = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    info.address_mode_w = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-    info.mip_lod_bias = 0.0f;
-    info.anisotropy = VK_FALSE;
-    info.max_anisotropy = 1.0f;
-    info.comparable = VK_FALSE;
-    info.compare_op = VK_COMPARE_OP_NEVER;
-    info.min_lod = 0.0f;
-    info.max_lod = VK_LOD_CLAMP_NONE;
-    info.border_color = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
-    info.unnormalized_coordinates = VK_FALSE;
+    info.sampler_ci.magFilter = VK_FILTER_LINEAR;
+    info.sampler_ci.minFilter = VK_FILTER_LINEAR;
+    info.sampler_ci.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    info.sampler_ci.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    info.sampler_ci.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    info.sampler_ci.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+    info.sampler_ci.mipLodBias = 0.0f;
+    info.sampler_ci.anisotropyEnable = VK_FALSE;
+    info.sampler_ci.maxAnisotropy = 1.0f;
+    info.sampler_ci.compareEnable = VK_FALSE;
+    info.sampler_ci.compareOp = VK_COMPARE_OP_NEVER;
+    info.sampler_ci.minLod = 0.0f;
+    info.sampler_ci.maxLod = VK_LOD_CLAMP_NONE;
+    info.sampler_ci.borderColor = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
+    info.sampler_ci.unnormalizedCoordinates = VK_FALSE;
     return *this;
 }
 
 SamplerBuilder::Built SamplerBuilder::build() {
     Sampler sampler(device, std::move(info.__name));
 
-    auto sampler_ci = Itor::SamplerCreateInfo();
-    sampler_ci.flags = info.flags;
-    sampler_ci.magFilter = info.mag_filter;
-    sampler_ci.minFilter = info.min_filter;
-    sampler_ci.mipmapMode = info.mipmap_mode;
-    sampler_ci.addressModeU = info.address_mode_u;
-    sampler_ci.addressModeV = info.address_mode_v;
-    sampler_ci.addressModeW = info.address_mode_w;
-    sampler_ci.mipLodBias = info.mip_lod_bias;
-    sampler_ci.anisotropyEnable = info.anisotropy;
-    sampler_ci.maxAnisotropy = info.max_anisotropy;
-    sampler_ci.compareEnable = info.comparable;
-    sampler_ci.compareOp = info.compare_op;
-    sampler_ci.minLod = info.min_lod;
-    sampler_ci.maxLod = info.max_lod;
-    sampler_ci.borderColor = info.border_color;
-    sampler_ci.unnormalizedCoordinates = info.unnormalized_coordinates;
-
-    OnRet(vkCreateSampler(device, &sampler_ci, nullptr, sampler), "Failed to create sampler");
+    OnRet(vkCreateSampler(device, &info.sampler_ci, nullptr, sampler), "Failed to create sampler");
     OnName(sampler);
 
     return Ok(std::move(sampler));

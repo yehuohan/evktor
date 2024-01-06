@@ -17,16 +17,7 @@ struct ImageView : public BuiltResource<VkImageView, VK_OBJECT_TYPE_IMAGE_VIEW, 
 };
 
 struct ImageViewInfo : public BuilderInfo {
-    VkImageViewCreateFlags flags = 0;
-    VkImageViewType type = VK_IMAGE_VIEW_TYPE_2D;
-    VkFormat format = VK_FORMAT_UNDEFINED;
-    VkComponentMapping components{
-        VK_COMPONENT_SWIZZLE_R,
-        VK_COMPONENT_SWIZZLE_G,
-        VK_COMPONENT_SWIZZLE_B,
-        VK_COMPONENT_SWIZZLE_A,
-    };
-    VkImageSubresourceRange subresource_range{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+    VkImageViewCreateInfo imageview_ci;
 };
 
 class ImageViewBuilder : public Builder<ImageViewBuilder, ImageView, ImageViewInfo> {

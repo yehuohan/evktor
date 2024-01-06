@@ -74,12 +74,12 @@ void Buffer::copyTo(const CommandBuffer& cmdbuf, const Image& dst, const VkDevic
 }
 
 Self BufferBuilder::setSize(VkDeviceSize size) {
-    info.size = size;
+    info.buffer_ci.size = size;
     return *this;
 }
 
 Self BufferBuilder::setUsage(VkBufferUsageFlags flags) {
-    info.usage = flags;
+    info.buffer_ci.usage = flags;
     return *this;
 }
 
@@ -96,22 +96,15 @@ Self BufferBuilder::setMemoryUsage(VmaMemoryUsage usage) {
 BufferBuilder::Built BufferBuilder::build() {
     Buffer buffer(device, std::move(info.__name));
 
-    auto buffer_ci = Itor::BufferCreateInfo();
-    buffer_ci.size = info.size;
-    buffer_ci.usage = info.usage;
-    buffer_ci.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    buffer_ci.queueFamilyIndexCount = 0;
-    buffer_ci.pQueueFamilyIndices = nullptr;
-
     VmaAllocationCreateInfo allocation_ci{};
     allocation_ci.flags = info.memory_flags;
     allocation_ci.usage = info.memory_usage;
     VmaAllocationInfo allocation_info{};
 
-    OnRet(vmaCreateBuffer(device, &buffer_ci, &allocation_ci, buffer, &buffer.allocation, &allocation_info),
+    OnRet(vmaCreateBuffer(device, &info.buffer_ci, &allocation_ci, buffer, &buffer.allocation, &allocation_info),
           "Failed to create buffer");
     OnName(buffer);
-    buffer.size = info.size;
+    buffer.size = info.buffer_ci.size;
     buffer.memory = allocation_info.deviceMemory;
 
     return Ok(std::move(buffer));
@@ -120,13 +113,9 @@ BufferBuilder::Built BufferBuilder::build() {
 BufferBuilder::Built BufferBuilder::build_native(VkMemoryPropertyFlags memory_props) {
     Buffer buffer(device, std::move(info.__name));
 
-    auto buffer_ci = Itor::BufferCreateInfo();
-    buffer_ci.size = info.size;
-    buffer_ci.usage = info.usage;
-    buffer_ci.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    OnRet(vkCreateBuffer(device, &buffer_ci, nullptr, buffer), "Failed to create buffer");
+    OnRet(vkCreateBuffer(device, &info.buffer_ci, nullptr, buffer), "Failed to create buffer");
     OnName(buffer);
-    buffer.size = info.size;
+    buffer.size = info.buffer_ci.size;
 
     // Allocate memory for buffer
     VkMemoryRequirements reqs;

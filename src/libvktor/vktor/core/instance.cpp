@@ -43,27 +43,27 @@ bool Instance::isExtensionEnabled(const char* extension) const {
 }
 
 Self InstanceBuilder::setAppName(const char* name) {
-    info.app_name = name;
+    info.app_info.pApplicationName = name;
     return *this;
 }
 
 Self InstanceBuilder::setAppVerion(uint32_t version) {
-    info.app_version = version;
+    info.app_info.applicationVersion = version;
     return *this;
 }
 
 Self InstanceBuilder::setEngineName(const char* name) {
-    info.engine_name = name;
+    info.app_info.pEngineName = name;
     return *this;
 }
 
 Self InstanceBuilder::setEngineVersion(uint32_t version) {
-    info.engine_version = version;
+    info.app_info.engineVersion = version;
     return *this;
 }
 
 Self InstanceBuilder::setApiVerion(uint32_t version) {
-    info.api_version = version;
+    info.app_info.apiVersion = version;
     return *this;
 }
 
@@ -106,7 +106,7 @@ InstanceBuilder::Built InstanceBuilder::build() {
     // Initialize Vulkan loader
     OnRet(volkInitialize(), "Unable to initialize Vulkan loader");
 
-    if (info.api_version >= VK_API_VERSION_1_1) {
+    if (info.app_info.apiVersion >= VK_API_VERSION_1_1) {
         // Add required extensions for memory allocator
         addExtension(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
     }
@@ -118,14 +118,8 @@ InstanceBuilder::Built InstanceBuilder::build() {
     auto new_end = std::unique(info.extensions.begin(), info.extensions.end());
     info.extensions.erase(new_end, info.extensions.end());
 
-    auto app_info = Itor::ApplicationInfo();
-    app_info.pApplicationName = info.app_name;
-    app_info.applicationVersion = info.app_version;
-    app_info.pEngineName = info.engine_name;
-    app_info.engineVersion = info.engine_version;
-    app_info.apiVersion = info.api_version;
     auto instance_ci = Itor::InstanceCreateInfo();
-    instance_ci.pApplicationInfo = &app_info;
+    instance_ci.pApplicationInfo = &info.app_info;
     if (info.layers.size() > 0) {
         if (!checkInstanceLayers(info.layers)) {
             return Er("Not all the required layers are supported");
@@ -149,7 +143,7 @@ InstanceBuilder::Built InstanceBuilder::build() {
 
     Instance instance(std::move(info.__name));
     OnRet(vkCreateInstance(&instance_ci, nullptr, instance), "Failed to create instance");
-    instance.api_version = info.api_version;
+    instance.api_version = info.app_info.apiVersion;
     instance.layers = std::move(info.layers);
     instance.extensions = std::move(info.extensions);
 

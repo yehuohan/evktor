@@ -18,73 +18,75 @@ ImageView::~ImageView() {
 }
 
 ImageViewBuilder::ImageViewBuilder(const Image& image, Name&& name) : Builder(std::move(name)), image(image) {
+    info.imageview_ci = Itor::ImageViewCreateInfo();
+    info.imageview_ci.flags = 0;
+    info.imageview_ci.image = image;
+    info.imageview_ci.components = VkComponentMapping{
+        VK_COMPONENT_SWIZZLE_R,
+        VK_COMPONENT_SWIZZLE_G,
+        VK_COMPONENT_SWIZZLE_B,
+        VK_COMPONENT_SWIZZLE_A,
+    };
+    bool is_array = image.array_layers > 1;
     switch (image.type) {
-    case VK_IMAGE_TYPE_1D: info.type = image.array_layers > 1 ? VK_IMAGE_VIEW_TYPE_1D_ARRAY : VK_IMAGE_VIEW_TYPE_1D; break;
-    case VK_IMAGE_TYPE_2D: info.type = image.array_layers > 1 ? VK_IMAGE_VIEW_TYPE_2D_ARRAY : VK_IMAGE_VIEW_TYPE_2D; break;
-    case VK_IMAGE_TYPE_3D: info.type = VK_IMAGE_VIEW_TYPE_3D; break;
+    case VK_IMAGE_TYPE_1D: info.imageview_ci.viewType = is_array ? VK_IMAGE_VIEW_TYPE_1D_ARRAY : VK_IMAGE_VIEW_TYPE_1D; break;
+    case VK_IMAGE_TYPE_2D: info.imageview_ci.viewType = is_array ? VK_IMAGE_VIEW_TYPE_2D_ARRAY : VK_IMAGE_VIEW_TYPE_2D; break;
+    case VK_IMAGE_TYPE_3D: info.imageview_ci.viewType = VK_IMAGE_VIEW_TYPE_3D; break;
     default: break;
     };
-    info.format = image.format;
+    info.imageview_ci.format = image.format;
     if (isDepthStencilFormat(image.format)) {
-        info.subresource_range.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+        info.imageview_ci.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
     } else {
-        info.subresource_range.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        info.imageview_ci.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
     }
-    info.subresource_range.baseMipLevel = 0;
-    info.subresource_range.levelCount = image.mip_levels;
-    info.subresource_range.baseArrayLayer = 0;
-    info.subresource_range.layerCount = image.array_layers;
+    info.imageview_ci.subresourceRange.baseMipLevel = 0;
+    info.imageview_ci.subresourceRange.levelCount = image.mip_levels;
+    info.imageview_ci.subresourceRange.baseArrayLayer = 0;
+    info.imageview_ci.subresourceRange.layerCount = image.array_layers;
 }
 
 Self ImageViewBuilder::setType(VkImageViewType type) {
-    info.type = type;
+    info.imageview_ci.viewType = type;
     return *this;
 }
 
 Self ImageViewBuilder::setFormat(VkFormat format) {
-    info.format = format;
+    info.imageview_ci.format = format;
     return *this;
 }
 
 Self ImageViewBuilder::setSwizzleRGBA(VkComponentSwizzle r, VkComponentSwizzle g, VkComponentSwizzle b, VkComponentSwizzle a) {
-    info.components.r = r;
-    info.components.g = g;
-    info.components.b = b;
-    info.components.a = a;
+    info.imageview_ci.components.r = r;
+    info.imageview_ci.components.g = g;
+    info.imageview_ci.components.b = b;
+    info.imageview_ci.components.a = a;
     return *this;
 }
 
 Self ImageViewBuilder::setAspect(VkImageAspectFlags aspect) {
-    info.subresource_range.aspectMask = aspect;
+    info.imageview_ci.subresourceRange.aspectMask = aspect;
     return *this;
 }
 
 Self ImageViewBuilder::setMipRange(uint32_t base, uint32_t count) {
-    info.subresource_range.baseMipLevel = base;
-    info.subresource_range.levelCount = count;
+    info.imageview_ci.subresourceRange.baseMipLevel = base;
+    info.imageview_ci.subresourceRange.levelCount = count;
     return *this;
 }
 
 Self ImageViewBuilder::setArrayRange(uint32_t base, uint32_t count) {
-    info.subresource_range.baseArrayLayer = base;
-    info.subresource_range.layerCount = count;
+    info.imageview_ci.subresourceRange.baseArrayLayer = base;
+    info.imageview_ci.subresourceRange.layerCount = count;
     return *this;
 }
 
 ImageViewBuilder::Built ImageViewBuilder::build() {
     ImageView imageview(image, std::move(info.__name));
 
-    auto imageview_ci = Itor::ImageViewCreateInfo();
-    imageview_ci.flags = info.flags;
-    imageview_ci.image = image;
-    imageview_ci.viewType = info.type;
-    imageview_ci.format = info.format;
-    imageview_ci.components = info.components;
-    imageview_ci.subresourceRange = info.subresource_range;
-
-    OnRet(vkCreateImageView(image.device, &imageview_ci, nullptr, imageview), "Failed to create image view");
+    OnRet(vkCreateImageView(image.device, &info.imageview_ci, nullptr, imageview), "Failed to create image view");
     OnName(imageview);
-    imageview.subresource_range = info.subresource_range;
+    imageview.subresource_range = info.imageview_ci.subresourceRange;
 
     return Ok(std::move(imageview));
 }
