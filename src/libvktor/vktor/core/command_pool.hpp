@@ -16,11 +16,11 @@ struct CommandPool : public BuiltResource<VkCommandPool, VK_OBJECT_TYPE_COMMAND_
     CommandPool(CommandPool&&);
     ~CommandPool();
     /**
-     * @brief Request one command buffer
+     * @brief Allocate one command buffer
      *
-     * Store requested `CommandBuffer` within this `CommandPool`, so return the referrence of the `CommandBuffer`
+     * Store allocated `CommandBuffer` within this `CommandPool`, so return the referrence of the `CommandBuffer`
      */
-    Res<Ref<CommandBuffer>> requestCommandBuffer(CommandBuffer::Level level);
+    Res<Ref<CommandBuffer>> allocateCommandBuffer(CommandBuffer::Level level);
     void resetCommandPool();
 };
 

@@ -24,7 +24,7 @@ CommandPool::~CommandPool() {
     handle = VK_NULL_HANDLE;
 }
 
-Res<Ref<CommandBuffer>> CommandPool::requestCommandBuffer(CommandBuffer::Level level) {
+Res<Ref<CommandBuffer>> CommandPool::allocateCommandBuffer(CommandBuffer::Level level) {
     CommandBuffer* ptr = nullptr;
     switch (level) {
     case CommandBuffer::Level::Primary:
@@ -66,7 +66,7 @@ Res<Ref<CommandBuffer>> CommandPool::requestCommandBuffer(CommandBuffer::Level l
             break;
         }
     default:
-        return Er("The command buffer level = {} to request is not supported",
+        return Er("The command buffer level = {} to allocate is not supported",
                   VkStr(VkCommandBufferLevel, (VkCommandBufferLevel)level));
     }
 
