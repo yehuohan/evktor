@@ -5,6 +5,12 @@
 
 namespace vkt {
 
+/** By pass Result<Err> */
+#define OnErr(r)                     \
+    if ((r).isErr()) {               \
+        return Err((r).unwrapErr()); \
+    }
+
 template <typename T>
 struct Ok {
     T value;

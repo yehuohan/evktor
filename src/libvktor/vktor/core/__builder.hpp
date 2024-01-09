@@ -6,20 +6,20 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-#define OnPanic(r, f, ...)                                                               \
-    {                                                                                    \
-        VkResult ret = (r);                                                              \
-        if (ret != VK_SUCCESS) {                                                         \
+#define OnPanic(r, f, ...)                                                                \
+    {                                                                                     \
+        VkResult ret = (r);                                                               \
+        if (ret != VK_SUCCESS) {                                                          \
             throw ErrorFormat("[VkResult = {}] " f, VkStr(VkResult, ret), ##__VA_ARGS__); \
-        }                                                                                \
+        }                                                                                 \
     }
 
-#define OnRet(r, f, ...)                                                         \
-    {                                                                            \
-        VkResult ret = (r);                                                      \
-        if (ret != VK_SUCCESS) {                                                 \
+#define OnRet(r, f, ...)                                                          \
+    {                                                                             \
+        VkResult ret = (r);                                                       \
+        if (ret != VK_SUCCESS) {                                                  \
             return Er("[VkResult = {}] " f, VkStr(VkResult, ret), ##__VA_ARGS__); \
-        }                                                                        \
+        }                                                                         \
     }
 
 #define OnName(r) OnRet(r.setDebugName(), "Failed to set debug name: {}", r.__name)

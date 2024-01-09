@@ -104,11 +104,9 @@ Res<Vector<uint32_t>> ShaderModuleBuilder::glsl2spv() {
 }
 
 ShaderModuleBuilder::Built ShaderModuleBuilder::build() {
-    auto res_spirv = glsl2spv();
-    if (res_spirv.isErr()) {
-        return Err(res_spirv.unwrapErr());
-    }
-    auto spirv = res_spirv.unwrap();
+    auto res = glsl2spv();
+    OnErr(res);
+    auto spirv = res.unwrap();
     auto shader_ci = Itor::ShaderModuleCreateInfo();
     shader_ci.codeSize = spirv.size() * sizeof(uint32_t);
     shader_ci.pCode = spirv.data();

@@ -46,9 +46,7 @@ Res<ImageView> Swapchain::createImageView(uint32_t index) const {
                    .setMipRange(0, 1)
                    .setArrayRange(0, image_layers)
                    .build();
-    if (res.isErr()) {
-        return Err(res.unwrapErr());
-    }
+    OnErr(res);
     res.ok().value()->setDebugName();
     return std::move(res);
 }
