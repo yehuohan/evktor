@@ -49,9 +49,8 @@ Res<ImageView> Swapchain::createImageView(uint32_t index) const {
     if (res.isErr()) {
         return Err(res.unwrapErr());
     }
-    ImageView view = res.unwrap();
-    view.setDebugName();
-    return Ok(std::move(view));
+    res.ok().value()->setDebugName();
+    return std::move(res);
 }
 
 Self SwapchainBuilder::addDesiredFormat(const VkSurfaceFormatKHR& format) {
