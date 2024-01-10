@@ -18,83 +18,21 @@ RenderPass::~RenderPass() {
     handle = VK_NULL_HANDLE;
 }
 
-Self RenderPassBuilder::addInputAttachment(VkFormat format,
-                                           VkSampleCountFlagBits samples,
-                                           AttachmentOps ops,
-                                           AttachmentLayouts layouts) {
-    VkAttachmentReference ref{};
-    ref.attachment = u32(info.attm_descs.size());
-    ref.layout = layouts.initial;
-    if (ref.layout == VK_IMAGE_LAYOUT_UNDEFINED) {
-        ref.layout = isDepthStencilFormat(format) ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
-                                                  : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    }
-    info.attm_refs.push_back(ref);
-
+Self RenderPassBuilder::addAttachment(VkFormat format,
+                                      VkSampleCountFlagBits samples,
+                                      AttachmentOps ops,
+                                      AttachmentOps stencil_ops,
+                                      AttachmentLayouts layouts) {
     VkAttachmentDescription desc{};
     desc.format = format;
     desc.samples = samples;
     desc.loadOp = ops.load;
     desc.storeOp = ops.store;
-    desc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    desc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    desc.initialLayout = layouts.initial;
-    desc.finalLayout = layouts.final;
-    info.attm_descs.push_back(desc);
-
-    return *this;
-}
-
-Self RenderPassBuilder::addColorAttachment(VkFormat format,
-                                           VkSampleCountFlagBits samples,
-                                           AttachmentOps ops,
-                                           AttachmentLayouts layouts) {
-    VkAttachmentReference ref{};
-    ref.attachment = u32(info.attm_descs.size());
-    ref.layout = layouts.initial;
-    if (ref.layout == VK_IMAGE_LAYOUT_UNDEFINED) {
-        ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-    }
-    info.attm_refs.push_back(ref);
-
-    VkAttachmentDescription desc{};
-    desc.format = format;
-    desc.samples = samples;
-    desc.loadOp = ops.load;
-    desc.storeOp = ops.store;
-    desc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    desc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    desc.initialLayout = layouts.initial;
-    desc.finalLayout = layouts.final;
-    info.attm_descs.push_back(desc);
-
-    return *this;
-}
-
-Self RenderPassBuilder::addDepthStencilAttachment(VkFormat format,
-                                                  VkSampleCountFlagBits samples,
-                                                  AttachmentOps depth_ops,
-                                                  AttachmentOps stencil_ops,
-                                                  AttachmentLayouts layouts) {
-    VkAttachmentReference ref{};
-    ref.attachment = u32(info.attm_descs.size());
-    ref.layout = layouts.initial;
-    if (ref.layout == VK_IMAGE_LAYOUT_UNDEFINED) {
-        ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-    }
-    info.attm_refs.push_back(ref);
-
-    VkAttachmentDescription desc{};
-    desc.format = format;
-    desc.samples = samples;
-    desc.loadOp = depth_ops.load;
-    desc.storeOp = depth_ops.store;
     desc.stencilLoadOp = stencil_ops.load;
     desc.stencilStoreOp = stencil_ops.store;
     desc.initialLayout = layouts.initial;
     desc.finalLayout = layouts.final;
     info.attm_descs.push_back(desc);
-
     return *this;
 }
 
@@ -107,6 +45,11 @@ Self RenderPassBuilder::addSubpass(Vector<uint32_t>&& input, Vector<uint32_t>&& 
     return *this;
 }
 
+Self RenderPassBuilder::addSubpass(const RenderSubpassInfo& subpass) {
+    info.subpasses.push_back(subpass);
+    return *this;
+}
+
 RenderPassBuilder::Built RenderPassBuilder::build() {
     uint32_t subpass_count = u32(info.subpasses.size());
     if (subpass_count == 0) {
@@ -115,23 +58,48 @@ RenderPassBuilder::Built RenderPassBuilder::build() {
     Vector<VkSubpassDescription> subpasses(subpass_count);
     Vector<Vector<VkAttachmentReference>> inputs(subpass_count);
     Vector<Vector<VkAttachmentReference>> colors(subpass_count);
-    Vector<VkAttachmentReference*> depthstencils(subpass_count);
+    Vector<VkAttachmentReference> depthstencils(subpass_count);
     Vector<VkSubpassDependency> dependencies(subpass_count - 1);
 
     for (uint32_t k = 0; k < subpass_count; k++) {
         auto& subpass = info.subpasses[k];
         auto& inp = inputs[k];
         auto& clr = colors[k];
-        auto& ds = depthstencils[k];
+        VkAttachmentReference* ds = nullptr;
+        // Prepare input attachments
         for (auto a : subpass.inputs) {
-            inp.push_back(info.attm_refs[a]);
+            auto& desc = info.attm_descs[a];
+            VkAttachmentReference ref{};
+            ref.attachment = a;
+            ref.layout = desc.initialLayout;
+            if (ref.layout == VK_IMAGE_LAYOUT_UNDEFINED) {
+                ref.layout = isDepthStencilFormat(desc.format) ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
+                                                               : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            }
+            inp.push_back(ref);
         }
+        // Prepare color attachments
         for (auto a : subpass.colors) {
-            clr.push_back(info.attm_refs[a]);
+            auto& desc = info.attm_descs[a];
+            VkAttachmentReference ref{};
+            ref.attachment = a;
+            ref.layout = desc.initialLayout;
+            if (ref.layout == VK_IMAGE_LAYOUT_UNDEFINED) {
+                ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            }
+            clr.push_back(ref);
         }
-        ds = nullptr;
+        // Prepare depth stencil attachments
         if (VK_ATTACHMENT_UNUSED != subpass.depthstencil) {
-            ds = &info.attm_refs[subpass.depthstencil];
+            auto& desc = info.attm_descs[subpass.depthstencil];
+            VkAttachmentReference ref{};
+            ref.attachment = subpass.depthstencil;
+            ref.layout = desc.initialLayout;
+            if (ref.layout == VK_IMAGE_LAYOUT_UNDEFINED) {
+                ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+            }
+            depthstencils[k] = ref;
+            ds = &depthstencils[k];
         }
 
         auto& desc = subpasses[k];
