@@ -19,7 +19,7 @@ template <typename T>
 using Ptr = std::shared_ptr<T>;
 
 template <typename T>
-using WeakPtr = std::weak_ptr<T>;
+using WPtr = std::weak_ptr<T>;
 
 template <typename T>
 using Ref = std::reference_wrapper<T>;
