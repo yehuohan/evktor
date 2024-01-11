@@ -48,10 +48,10 @@ struct QueueFamilyProps {
  * If there's no value in optional, the queue family is not required or not supported.
  */
 struct QueueFamilies {
-    std::optional<uint32_t> present{};
-    std::optional<uint32_t> graphics{};
-    std::optional<uint32_t> compute{};
-    std::optional<uint32_t> transfer{};
+    Opt<uint32_t> present{};
+    Opt<uint32_t> graphics{};
+    Opt<uint32_t> compute{};
+    Opt<uint32_t> transfer{};
 
     inline void clear() {
         present.reset();

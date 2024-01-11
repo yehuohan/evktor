@@ -2,6 +2,7 @@
 #include <cstring>
 #include <map>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -26,6 +27,9 @@ using Ref = std::reference_wrapper<T>;
 
 template <typename T>
 using CRef = std::reference_wrapper<const T>;
+
+template <typename T>
+using Opt = std::optional<T>;
 
 template <typename T>
 using Vector = std::vector<T>;

@@ -122,7 +122,7 @@ BufferBuilder::Built BufferBuilder::build_native(VkMemoryPropertyFlags memory_pr
     vkGetBufferMemoryRequirements(device, buffer, &reqs);
     VkPhysicalDeviceMemoryProperties props;
     vkGetPhysicalDeviceMemoryProperties(device.physical_device, &props);
-    std::optional<uint32_t> memory_typeidx{};
+    Opt<uint32_t> memory_typeidx{};
     for (uint32_t k = 0; k < props.memoryTypeCount; k++) {
         if ((reqs.memoryTypeBits & (1 << k)) && (props.memoryTypes[k].propertyFlags & memory_props) == memory_props) {
             memory_typeidx = k;

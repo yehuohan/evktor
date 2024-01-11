@@ -3,7 +3,6 @@
 #include "device.hpp"
 #include "pipeline_layout.hpp"
 #include "shader_module.hpp"
-#include <optional>
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -21,7 +20,7 @@ struct ComputePipeline : public BuiltResource<VkPipeline, VK_OBJECT_TYPE_PIPELIN
 
 struct ComputePipelineInfo : public BuilderInfo {
     VkPipelineCreateFlags flags = 0;
-    std::optional<ShaderModule> shader{};
+    Opt<ShaderModule> shader{};
 };
 
 class ComputePipelineBuilder : public Builder<ComputePipelineBuilder, ComputePipeline, ComputePipelineInfo> {
