@@ -6,20 +6,30 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-#define OnPanic(r, f, ...)                                                                \
-    {                                                                                     \
-        VkResult ret = (r);                                                               \
-        if (ret != VK_SUCCESS) {                                                          \
-            throw ErrorFormat("[VkResult = {}] " f, VkStr(VkResult, ret), ##__VA_ARGS__); \
-        }                                                                                 \
+/**
+ * @brief Panic on non-success vulkan result
+ *
+ * 'r' must not be '__ret__'
+ */
+#define OnPanic(r, f, ...)                                                                    \
+    {                                                                                         \
+        VkResult __ret__ = (r);                                                               \
+        if (__ret__ != VK_SUCCESS) {                                                          \
+            throw ErrorFormat("[VkResult = {}] " f, VkStr(VkResult, __ret__), ##__VA_ARGS__); \
+        }                                                                                     \
     }
 
-#define OnRet(r, f, ...)                                                          \
-    {                                                                             \
-        VkResult ret = (r);                                                       \
-        if (ret != VK_SUCCESS) {                                                  \
-            return Er("[VkResult = {}] " f, VkStr(VkResult, ret), ##__VA_ARGS__); \
-        }                                                                         \
+/**
+ * @brief Return Er on non-success vulkan result
+ *
+ * 'r' must not be '__ret__'
+ */
+#define OnRet(r, f, ...)                                                              \
+    {                                                                                 \
+        VkResult __ret__ = (r);                                                       \
+        if (__ret__ != VK_SUCCESS) {                                                  \
+            return Er("[VkResult = {}] " f, VkStr(VkResult, __ret__), ##__VA_ARGS__); \
+        }                                                                             \
     }
 
 #define OnName(r) OnRet(r.setDebugName(), "Failed to set debug name: {}", r.__name)
