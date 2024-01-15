@@ -4,25 +4,64 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
-RenderTarget::RenderTarget(RenderTarget&& rhs) : RenderTarget(rhs.api) {
+using Self = RenderTarget::Self;
+
+RenderTarget::RenderTarget(RenderTarget&& rhs) : RenderTarget(std::move(rhs.imageview)) {
+    ops = rhs.ops;
+    stencil_ops = rhs.stencil_ops;
+    layouts = rhs.layouts;
+    clear = rhs.clear;
+}
+
+Self RenderTarget::set(const AttachmentOps& _ops) {
+    ops = _ops;
+    return *this;
+}
+
+Self RenderTarget::set(const AttachmentOps& ops, const AttachmentOps& _stencil_ops) {
+    stencil_ops = _stencil_ops;
+    return *this;
+}
+
+Self RenderTarget::set(const AttachmentLayouts& _layouts) {
+    layouts = _layouts;
+    return *this;
+}
+
+Self RenderTarget::set(const VkImageLayout final_layout) {
+    layouts.final = final_layout;
+    return *this;
+}
+
+Self RenderTarget::set(const VkClearColorValue& color) {
+    clear.color = color;
+    return *this;
+}
+
+Self RenderTarget::set(const VkClearDepthStencilValue& depthstencil) {
+    clear.depthStencil = depthstencil;
+    return *this;
+}
+
+RenderTargetTable::RenderTargetTable(RenderTargetTable&& rhs) {
     extent = rhs.extent;
-    imageviews = std::move(rhs.imageviews);
+    targets = std::move(rhs.targets);
 };
 
-Vector<VkImageView> RenderTarget::getImageViews() const {
+Vector<VkImageView> RenderTargetTable::getImageViews() const {
     Vector<VkImageView> views{};
-    for (const auto& view : imageviews) {
-        views.push_back(view);
+    for (const auto& rt : targets) {
+        views.push_back(rt.imageview);
     }
     return std::move(views);
 }
 
-Res<RenderTarget> RenderTarget::build(const BaseApi& api, Vector<ImageView>&& imageviews) {
-    if (imageviews.empty()) {
-        return Er("There should be at least one ImageView for RenderTarget");
+Res<RenderTargetTable> RenderTargetTable::build(Vector<RenderTarget>&& targets) {
+    if (targets.empty()) {
+        return Er("There should be at least one RenderTarget for RenderTargetTable");
     }
 
-    RenderTarget rt(api);
+    RenderTargetTable rtt;
 
     static const auto getExtent = [](const ImageView& view) {
         const VkExtent3D e = view.image.extent;
@@ -30,23 +69,23 @@ Res<RenderTarget> RenderTarget::build(const BaseApi& api, Vector<ImageView>&& im
         return VkExtent2D{e.width >> m, e.height >> m};
     };
 
-    if (imageviews.size() == 1) {
-        rt.extent = getExtent(imageviews[0]);
+    if (targets.size() == 1) {
+        rtt.extent = getExtent(targets[0].imageview);
     } else {
         Vector<VkExtent2D> extents{};
-        for (const auto& view : imageviews) {
-            extents.push_back(getExtent(view));
+        for (const auto& rt : targets) {
+            extents.push_back(getExtent(rt.imageview));
         }
-        rt.extent = extents[0];
+        rtt.extent = extents[0];
         for (const auto& e : extents) {
-            if (!(rt.extent.width == e.width && rt.extent.height == e.height)) {
-                return Er("ImageView extent should be same for RenderTarget");
+            if (!(rtt.extent.width == e.width && rtt.extent.height == e.height)) {
+                return Er("RenderTarget's extent should be same for RenderTargetTable");
             }
         }
     }
 
-    rt.imageviews = std::move(imageviews);
-    return Ok(std::move(rt));
+    rtt.targets = std::move(targets);
+    return Ok(std::move(rtt));
 }
 
 NAMESPACE_END(vkt)
