@@ -19,10 +19,7 @@ struct Queue : public BuiltHandle<VkQueue> {
     ~Queue();
 
     inline VkResult setDebugName(VkDevice device) const {
-        return core::setDebugName(device,
-                                  VK_OBJECT_TYPE_QUEUE,
-                                  u64(reinterpret_cast<uint64_t>(this->handle)),
-                                  this->__name.c_str());
+        return core::setDebugName(device, VK_OBJECT_TYPE_QUEUE, u64(reinterpret_cast<uint64_t>(handle)), __name.c_str());
     }
 
     VkResult submit(const std::vector<VkSubmitInfo>& submits, VkFence fence = VK_NULL_HANDLE) const;
