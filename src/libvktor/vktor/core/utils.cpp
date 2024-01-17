@@ -81,7 +81,7 @@ void printInstanceExtensions(const Vector<const char*>& enabled_extensions) {
     vktOut("{}", str);
 }
 
-void printDeviceExtensions(const VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions) {
+void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions) {
     Vector<VkExtensionProperties> ext_props{};
     OnPanic(enumerate(ext_props, vkEnumerateDeviceExtensionProperties, pd, nullptr),
             "Failed to get properties of device extensions");

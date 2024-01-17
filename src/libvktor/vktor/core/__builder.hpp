@@ -7,7 +7,7 @@ NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
 /**
- * @brief Panic on non-success vulkan result
+ * @brief Panic on non-success Vulkan result
  *
  * 'r' must not be '__ret__'
  */
@@ -20,7 +20,7 @@ NAMESPACE_BEGIN(core)
     }
 
 /**
- * @brief Return Er on non-success vulkan result
+ * @brief Return Er on non-success Vulkan result
  *
  * 'r' must not be '__ret__'
  */

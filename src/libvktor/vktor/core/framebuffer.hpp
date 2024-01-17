@@ -32,7 +32,7 @@ public:
         , render_pass(render_pass) {}
     virtual Built build() override;
 
-    Self addAttachment(const VkImageView imageview);
+    Self addAttachment(VkImageView imageview);
     Self addAttachments(const Vector<VkImageView>& imageviews);
     Self setExtent(uint32_t width, uint32_t height, uint32_t layers = 1);
     inline Self setExtent(const VkExtent2D& extent) {

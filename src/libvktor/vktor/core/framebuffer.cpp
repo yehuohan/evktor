@@ -19,7 +19,7 @@ Framebuffer::~Framebuffer() {
     handle = VK_NULL_HANDLE;
 }
 
-Self FramebufferBuilder::addAttachment(const VkImageView imageview) {
+Self FramebufferBuilder::addAttachment(VkImageView imageview) {
     info.imageviews.push_back(imageview);
     return *this;
 }

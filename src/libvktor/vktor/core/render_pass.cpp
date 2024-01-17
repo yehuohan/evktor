@@ -67,8 +67,8 @@ RenderPassBuilder::Built RenderPassBuilder::build() {
         auto& clr = colors[k];
         VkAttachmentReference* ds = nullptr;
         // Prepare input attachments
-        for (auto a : subpass.inputs) {
-            auto& desc = info.attm_descs[a];
+        for (const auto a : subpass.inputs) {
+            const auto& desc = info.attm_descs[a];
             VkAttachmentReference ref{};
             ref.attachment = a;
             ref.layout = desc.initialLayout;
@@ -79,8 +79,8 @@ RenderPassBuilder::Built RenderPassBuilder::build() {
             inp.push_back(ref);
         }
         // Prepare color attachments
-        for (auto a : subpass.colors) {
-            auto& desc = info.attm_descs[a];
+        for (const auto a : subpass.colors) {
+            const auto& desc = info.attm_descs[a];
             VkAttachmentReference ref{};
             ref.attachment = a;
             ref.layout = desc.initialLayout;
@@ -91,7 +91,7 @@ RenderPassBuilder::Built RenderPassBuilder::build() {
         }
         // Prepare depth stencil attachments
         if (VK_ATTACHMENT_UNUSED != subpass.depthstencil) {
-            auto& desc = info.attm_descs[subpass.depthstencil];
+            const auto& desc = info.attm_descs[subpass.depthstencil];
             VkAttachmentReference ref{};
             ref.attachment = subpass.depthstencil;
             ref.layout = desc.initialLayout;

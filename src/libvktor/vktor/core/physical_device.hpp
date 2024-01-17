@@ -62,7 +62,7 @@ public:
 
     Self preferDiscreteGPU();
     Self preferIntegratedGPU();
-    Self requirePresentQueue(const VkSurfaceKHR surface, bool require = true);
+    Self requirePresentQueue(VkSurfaceKHR surface, bool require = true);
     Self requireGraphicsQueue(bool require = true);
     Self requireComputeQueue(bool require = true);
     Self requireTransferQueue(bool require = true);

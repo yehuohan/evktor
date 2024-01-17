@@ -106,7 +106,7 @@ Self PhysicalDeviceSelector::preferIntegratedGPU() {
     return *this;
 }
 
-Self PhysicalDeviceSelector::requirePresentQueue(const VkSurfaceKHR surface, bool require) {
+Self PhysicalDeviceSelector::requirePresentQueue(VkSurfaceKHR surface, bool require) {
     info.surface = surface;
     info.require_present_queue = require;
     return *this;

@@ -51,7 +51,7 @@ DeviceBuilder::Built DeviceBuilder::build() {
     auto dev_ci = Itor::DeviceCreateInfo();
     dev_ci.queueCreateInfoCount = u32(queues_ci.size());
     dev_ci.pQueueCreateInfos = queues_ci.data();
-    // Lastest vulkan implementation, there is no validation layers distinction between instance
+    // Lastest Vulkan implementation, there is no validation layers distinction between instance
     // and device. But it's ok to set validation layers explicitly for compatiblity here.
     //.enabledLayerCount = u32(validation_layers.size()),
     //.ppEnabledLayerNames = validation_layers.data(),

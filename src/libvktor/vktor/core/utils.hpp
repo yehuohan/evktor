@@ -6,7 +6,7 @@ NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
 /**
- * @brief Enumerate template for vulkan
+ * @brief Enumerate template for Vulkan
  *
  * Function 'F' return VkResult
  */
@@ -27,7 +27,7 @@ auto enumerate(Vector<T>& out, F&& f, Ts&&... ts) -> VkResult {
 }
 
 /**
- * @brief Enumerate template for vulkan
+ * @brief Enumerate template for Vulkan
  *
  * Function 'F' return void
  */
@@ -60,7 +60,7 @@ bool checkInstanceExtensions(const Vector<const char*>& extensions);
 bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& device_extensions);
 void printInstanceLayers(const Vector<const char*>& enabled_layers);
 void printInstanceExtensions(const Vector<const char*>& enabled_extensions);
-void printDeviceExtensions(const VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions);
+void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions);
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)
