@@ -103,3 +103,14 @@ public:
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)
+
+NAMESPACE_BEGIN(std)
+
+template <>
+struct hash<vkt::core::RenderPass> {
+    size_t operator()(const vkt::core::RenderPass& render_pass) const {
+        return hash<VkRenderPass>{}(render_pass);
+    }
+};
+
+NAMESPACE_END(std)

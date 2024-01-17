@@ -6,6 +6,15 @@ using namespace core;
 
 using Self = RenderTarget::Self;
 
+RenderTarget::RenderTarget(ImageView&& _imageview)
+    : imageview(std::move(_imageview))
+    , format(_imageview.image.format)
+    , samples(_imageview.image.samples)
+    , usage(_imageview.image.usage) {
+    layouts.initial = _imageview.image.layout;
+    layouts.final = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+}
+
 RenderTarget::RenderTarget(RenderTarget&& rhs) : RenderTarget(std::move(rhs.imageview)) {
     ops = rhs.ops;
     stencil_ops = rhs.stencil_ops;

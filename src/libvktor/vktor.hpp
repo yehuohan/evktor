@@ -8,12 +8,12 @@
 #pragma once
 
 /* vktor */
-// clang-format off
 #include "vktor/base/api.hpp"
 #include "vktor/rendering/render_context.hpp"
 #include "vktor/rendering/render_frame.hpp"
+#include "vktor/rendering/render_pipeline.hpp"
+#include "vktor/rendering/render_subpass.hpp"
 #include "vktor/rendering/render_target.hpp"
-// clang-format on
 
 NAMESPACE_BEGIN(vkt)
 
