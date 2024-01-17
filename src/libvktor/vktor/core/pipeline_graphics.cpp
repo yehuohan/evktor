@@ -69,7 +69,7 @@ Self GraphicsPipelineBuilder::addScissor(int32_t x, int32_t y, uint32_t width, u
     return *this;
 }
 
-Self GraphicsPipelineBuilder::setRenderPass(const Ptr<RenderPass>& render_pass, uint32_t subpass_index) {
+Self GraphicsPipelineBuilder::setRenderPass(VkRenderPass render_pass, uint32_t subpass_index) {
     info.render_pass = render_pass;
     info.subpass = subpass_index;
     return *this;
@@ -179,7 +179,7 @@ GraphicsPipelineBuilder::Built GraphicsPipelineBuilder::build() {
     pipeline_ci.pColorBlendState = &color_blend_sci;
     pipeline_ci.pDynamicState = nullptr; //&dynamic_sci;
     pipeline_ci.layout = pipeline_layout;
-    pipeline_ci.renderPass = info.render_pass ? info.render_pass->handle : VK_NULL_HANDLE;
+    pipeline_ci.renderPass = info.render_pass;
     pipeline_ci.subpass = info.subpass;
     pipeline_ci.basePipelineHandle = VK_NULL_HANDLE;
     pipeline_ci.basePipelineIndex = -1;

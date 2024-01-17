@@ -14,7 +14,7 @@ struct PipelineLayout : public BuiltResource<VkPipelineLayout, VK_OBJECT_TYPE_PI
 
 struct PipelineLayoutInfo : public BuilderInfo {
     VkPipelineLayoutCreateFlags flags = 0;
-    Vector<Ptr<DescriptorSetLayout>> desc_setlayouts{};
+    Vector<VkDescriptorSetLayout> desc_setlayouts{};
     Vector<VkPushConstantRange> constant_ranges{};
 };
 
@@ -29,7 +29,7 @@ public:
     virtual Built build() override;
 
     Self setFlags(VkPipelineLayoutCreateFlags flags);
-    Self addDescriptorSetLayout(const Ptr<DescriptorSetLayout>& setlayout);
+    Self addDescriptorSetLayout(VkDescriptorSetLayout setlayout);
     Self addPushConstantRange(const VkPushConstantRange& range);
 };
 

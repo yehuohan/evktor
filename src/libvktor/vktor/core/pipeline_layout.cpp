@@ -22,7 +22,7 @@ Self PipelineLayoutBuilder::setFlags(VkPipelineLayoutCreateFlags flags) {
     return *this;
 }
 
-Self PipelineLayoutBuilder::addDescriptorSetLayout(const Ptr<DescriptorSetLayout>& setlayout) {
+Self PipelineLayoutBuilder::addDescriptorSetLayout(VkDescriptorSetLayout setlayout) {
     info.desc_setlayouts.push_back(setlayout);
     return *this;
 }
@@ -35,16 +35,9 @@ Self PipelineLayoutBuilder::addPushConstantRange(const VkPushConstantRange& rang
 PipelineLayoutBuilder::Built PipelineLayoutBuilder::build() {
     PipelineLayout pipeline_layout(device, std::move(info.__name));
 
-    Vector<VkDescriptorSetLayout> setlayouts{};
-    for (const auto& dsl : info.desc_setlayouts) {
-        // core::Builder just passes all from core::BuilderInfo to vk-functions, even it's not reasonable.
-        // So if `dsl` is null, means user want to provide a VK_NULL_HANDLE descriptor setlayout.
-        setlayouts.push_back(dsl ? dsl->handle : VK_NULL_HANDLE);
-    }
-
     auto pipeline_layout_ci = Itor::PipelineLayoutCreateInfo();
-    pipeline_layout_ci.setLayoutCount = u32(setlayouts.size());
-    pipeline_layout_ci.pSetLayouts = setlayouts.data();
+    pipeline_layout_ci.setLayoutCount = u32(info.desc_setlayouts.size());
+    pipeline_layout_ci.pSetLayouts = info.desc_setlayouts.data();
     pipeline_layout_ci.pushConstantRangeCount = u32(info.constant_ranges.size());
     pipeline_layout_ci.pPushConstantRanges = info.constant_ranges.data();
     OnRet(vkCreatePipelineLayout(device, &pipeline_layout_ci, nullptr, pipeline_layout), "Failed to create pipeline layout");

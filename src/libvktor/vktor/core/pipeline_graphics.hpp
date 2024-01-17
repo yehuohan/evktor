@@ -22,7 +22,7 @@ struct GraphicsPipeline : public BuiltResource<VkPipeline, VK_OBJECT_TYPE_PIPELI
 struct GraphicsPipelineState : public BuilderInfo {
     VkPipelineCreateFlags flags = 0;
     Vector<ShaderModule> shaders{};
-    Ptr<RenderPass> render_pass = nullptr;
+    VkRenderPass render_pass = VK_NULL_HANDLE;
     uint32_t subpass = 0;
 
     Vector<VkVertexInputBindingDescription> vert_input_bindings{};
@@ -43,7 +43,7 @@ public:
 
     Self setFlags(VkPipelineCreateFlags flags);
     Self addShader(ShaderModule&& shader);
-    Self setRenderPass(const Ptr<RenderPass>& render_pass, uint32_t subpass_index = 0);
+    Self setRenderPass(VkRenderPass render_pass, uint32_t subpass_index = 0);
 
     Self addVertexInputBinding(const VkVertexInputBindingDescription& binding);
     Self addVertexInputBindings(const Vector<VkVertexInputBindingDescription>& bindings);
