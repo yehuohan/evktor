@@ -4,11 +4,14 @@
 #include "vktor/core/instance.hpp"
 #include "vktor/core/physical_device.hpp"
 #include "vktor/core/queue.hpp"
+#include "vktor/rendering/render_target.hpp"
 #include <cassert>
 
 NAMESPACE_BEGIN(vkt)
 
 using namespace core;
+
+class RenderPipeline;
 
 /**
  * @brief Basic Vulkan API for instance and device
@@ -56,6 +59,10 @@ public:
     Res<Ref<Queue>> graphicsQueue() const;
     Res<Ref<Queue>> computeQueue() const;
     Res<Ref<Queue>> transferQueue() const;
+
+    /* Resource cache */
+    Res<Ref<RenderPass>> requestRenderPass(const RenderTargetTable& render_target_table, const RenderPipeline& render_pipeline);
+    Res<Ref<Framebuffer>> requestFramebuffer(const RenderTargetTable& render_target_table, const RenderPass& render_pass);
 };
 
 NAMESPACE_END(vkt)

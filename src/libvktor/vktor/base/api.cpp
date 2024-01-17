@@ -1,4 +1,5 @@
 #include "api.hpp"
+#include "vktor/rendering/render_pipeline.hpp"
 
 NAMESPACE_BEGIN(vkt)
 
@@ -38,6 +39,28 @@ Res<Ref<Queue>> BaseApi::transferQueue() const {
     } else {
         return Er("Transfer queue is not supported");
     }
+}
+
+Res<Ref<RenderPass>> BaseApi::requestRenderPass(const RenderTargetTable& render_target_table,
+                                                const RenderPipeline& render_pipeline) {
+    assert(dev && "Device is invalid");
+
+    size_t key = hash(render_target_table.getTargets(), render_pipeline.getSubpasses());
+    return resource_cache.render_passes.request(key, [&render_target_table, &render_pipeline]() {
+        return render_pipeline.createRenderPass(render_target_table);
+    });
+}
+
+Res<Ref<Framebuffer>> BaseApi::requestFramebuffer(const RenderTargetTable& render_target_table, const RenderPass& render_pass) {
+    assert(dev && "Device is invalid");
+
+    size_t key = hash(render_target_table, render_pass);
+    return resource_cache.framebuffers.request(key, [&render_target_table, &render_pass]() {
+        FramebufferBuilder builder(render_pass);
+        builder.addAttachments(render_target_table.getImageViews());
+        builder.setExtent(render_target_table.getExtent());
+        return builder();
+    });
 }
 
 NAMESPACE_END(vkt)
