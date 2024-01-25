@@ -64,6 +64,7 @@ clean:
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .PHONY: deps
 deps:
+	# Modify vcpkg.json to install/remove
 	@echo Prepare deps...
 	vcpkg install --recurse --no-binarycaching \
 		--triplet=${VCPKG_TRIPLET} \
@@ -73,10 +74,15 @@ deps:
 
 .PHONY: deps-repos
 deps-repos:
-	# Modify vcpkg.json to install/remove
 	@echo Prepare deps-repos...
-	git clone --depth=1 https://github.com/zeux/volk.git ${DEPS_DIR}/repos/volk
-	git clone --depth=1 https://github.com/KhronosGroup/Vulkan-ValidationLayers.git ${DEPS_DIR}/repos/Vulkan-ValidationLayers
+	-git clone --depth=1 https://github.com/zeux/volk.git ${DEPS_DIR}/repos/volk
+	-git clone --depth=1 https://github.com/KhronosGroup/Vulkan-ValidationLayers.git ${DEPS_DIR}/repos/Vulkan-ValidationLayers
+	pip install glad2
+	python -m glad \
+		--api='gl:core=4.5' \
+		--extensions='' \
+		--reproducible \
+		--out-path ${DEPS_DIR}/repos/glad
 
 .PHONY: deps-gen
 deps-gen:
