@@ -31,6 +31,14 @@ target_compile_definitions(GPUOpen::VulkanMemoryAllocator
     INTERFACE VMA_STATIC_VULKAN_FUNCTIONS=0
     INTERFACE VMA_DYNAMIC_VULKAN_FUNCTIONS=0)
 
+# Target: glad
+project(glad)
+add_library(glad INTERFACE)
+set_target_properties(glad PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES   "${REPOS_DIR}/glad/include"
+    INTERFACE_SOURCES               "${REPOS_DIR}/glad/src/gl.c"
+    INTERFACE_COMPILE_DEFINITIONS   "GLAD_CTX_VER_MAJOR=4;GLAD_CTX_VER_MINOR=5")
+
 # Target: glfw
 find_package(glfw3 CONFIG REQUIRED)
 
