@@ -97,4 +97,13 @@ Res<RenderTargetTable> RenderTargetTable::build(Vector<RenderTarget>&& targets) 
     return Ok(std::move(rtt));
 }
 
+Res<RenderTargetTable> RenderTargetTable::build(std::initializer_list<MovedRenderTarget> moved_targets) {
+    Vector<RenderTarget> rts;
+    for (auto item = moved_targets.begin(); item != moved_targets.end(); ++item) {
+        // The `item` is const pointer. So move RenderTarget with pointer-to-pointer.
+        rts.push_back(std::move(**item));
+    }
+    return RenderTargetTable::build(std::move(rts));
+}
+
 NAMESPACE_END(vkt)

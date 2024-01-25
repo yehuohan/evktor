@@ -44,6 +44,14 @@ public:
 };
 
 /**
+ * @brief Alias RenderTarget* as moved RenderTarget for std::initializer_list
+ *
+ * std::initializer_list doesn't support std::move(RenderTarget) currently.
+ * So move the RenderTarget within std::initializer_list via pointer.
+ */
+typedef RenderTarget* MovedRenderTarget;
+
+/**
  * @brief All render targets of one render pass and framebuffer
  */
 class RenderTargetTable : private NonCopyable {
@@ -65,6 +73,7 @@ public:
     Vector<VkImageView> getImageViews() const;
 
     static Res<RenderTargetTable> build(Vector<RenderTarget>&& targets);
+    static Res<RenderTargetTable> build(std::initializer_list<MovedRenderTarget> moved_targets);
 };
 
 NAMESPACE_END(vkt)
