@@ -25,7 +25,8 @@ class LDTGenerator(BaseGenerator):
         )
         out.append(f"// Instance dispatch table\n")
         out.append(f"typedef struct VkLayerInstanceDispatchTable {LBracket}\n")
-        out.append(f"PFN_GetPhysicalDeviceProcAddr GetPhysicalDeviceProcAddr;\n")
+        out.append(f"    VkInstance instance;\n")
+        out.append(f"    PFN_GetPhysicalDeviceProcAddr GetPhysicalDeviceProcAddr;\n")
         for c in [x for x in self.vk.commands.values() if x.instance]:
             out.extend(guarder.add_guard(c.protect))
             out.append(f"    PFN_{c.name} {c.name[2:]};\n")
@@ -35,11 +36,49 @@ class LDTGenerator(BaseGenerator):
         guarder = PlatformGuardHelper()
         out.append(f"// Device dispatch table\n")
         out.append(f"typedef struct VkLayerDispatchTable {LBracket}\n")
+        out.append(f"    VkPhysicalDevice physical_device;\n")
+        out.append(f"    VkDevice device;\n")
         for c in [x for x in self.vk.commands.values() if x.device]:
             out.extend(guarder.add_guard(c.protect))
             out.append(f"    PFN_{c.name} {c.name[2:]};\n")
         out.extend(guarder.add_guard(None))
         out.append(f"{RBracket} VkLayerDispatchTable;\n\n")
+
+        guarder = PlatformGuardHelper()
+        out.append(f"// Init instance dispatch table\n")
+        out.append(
+            f"static inline bool initLDT(VkLayerInstanceDispatchTable& ldt, PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr, VkInstance instance) {LBracket}\n"
+        )
+        out.append(f"    memset(&ldt, 0, sizeof(VkLayerInstanceDispatchTable));\n")
+        out.append(f"    ldt.instance = instance;\n")
+        out.append(
+            f'    ldt.GetPhysicalDeviceProcAddr = reinterpret_cast<PFN_GetPhysicalDeviceProcAddr>(fpGetInstanceProcAddr(instance, "vkGetPhysicalDeviceProcAddr"));\n'
+        )
+        out.append(f'#define GET(n) ldt.n = reinterpret_cast<PFN_vk##n>(fpGetInstanceProcAddr(instance, "vk" #n))\n')
+        for c in [x for x in self.vk.commands.values() if x.instance]:
+            out.extend(guarder.add_guard(c.protect))
+            out.append(f"    GET({c.name[2:]});\n")
+        out.extend(guarder.add_guard(None))
+        out.append(f"#undef GET\n")
+        out.append(f"    return true;\n")
+        out.append(f"{RBracket}\n\n")
+
+        guarder = PlatformGuardHelper()
+        out.append(f"// Init device dispatch table\n")
+        out.append(
+            f"static inline bool initLDT(VkLayerDispatchTable& ldt, PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr, VkPhysicalDevice physical_device, VkDevice device) {LBracket}\n"
+        )
+        out.append(f"    memset(&ldt, 0, sizeof(VkLayerDispatchTable));\n")
+        out.append(f"    ldt.physical_device = physical_device;\n")
+        out.append(f"    ldt.device = device;\n")
+        out.append(f'#define GET(n) ldt.n = reinterpret_cast<PFN_vk##n>(fpGetDeviceProcAddr(device, "vk" #n))\n')
+        for c in [x for x in self.vk.commands.values() if x.device]:
+            out.extend(guarder.add_guard(c.protect))
+            out.append(f"    GET({c.name[2:]});\n")
+        out.extend(guarder.add_guard(None))
+        out.append(f"#undef GET\n")
+        out.append(f"    return true;\n")
+        out.append(f"{RBracket}\n\n")
 
         out.append("\n".join([RBracket] * len(self.namespaces)))
         self.write("".join(out))
