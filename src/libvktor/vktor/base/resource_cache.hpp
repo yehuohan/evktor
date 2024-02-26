@@ -31,16 +31,6 @@ public:
     }
 
     /**
-     * @brief Add resource
-     *
-     * This returns the iterator returned from HashMap::insert() directly.
-     * So you should make sure the insertion is going to success or fail.
-     */
-    inline HashMap<size_t, T>::iterator add(size_t key, T&& value) {
-        return map.insert({key, std::move(value)}).first;
-    }
-
-    /**
      * @brief Request resource that stored in `map`
      */
     inline Res<Ref<T>> request(size_t key, std::function<Res<T>()> fn) {
@@ -60,6 +50,17 @@ public:
         }
 
         return Ok(newRef(*ptr));
+    }
+
+private:
+    /**
+     * @brief Add resource
+     *
+     * This returns the iterator returned from HashMap::insert() directly.
+     * So you should make sure the insertion is going to success or fail.
+     */
+    inline HashMap<size_t, T>::iterator add(size_t key, T&& value) {
+        return map.insert({key, std::move(value)}).first;
     }
 };
 
