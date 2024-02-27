@@ -9,7 +9,6 @@
 #include <cstdint>
 #include <memory>
 #include "camera.h"
-#include "efmt.h"
 
 
 class XWin {

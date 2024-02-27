@@ -4,7 +4,6 @@
 #include <fmt/core.h>
 #include <iostream>
 #include "utils.h"
-#include "efmt.h"
 
 
 RMeshData loadMeshData(const MeshData& mesh) {

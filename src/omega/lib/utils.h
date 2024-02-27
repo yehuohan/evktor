@@ -10,9 +10,15 @@
 #include <glad/gl.h>
 #include <string>
 #include <vector>
+#include <string>
+#include <stdexcept>
+#include <fmt/core.h>
 #include "model.h"
 #include "mesh_data.h"
 #include "shader.h"
+
+#define _eformat(f, ...)      std::runtime_error(fmt::format(f, ##__VA_ARGS__))
+#define eformat(f, ...)       _eformat(__FILE__ ":{}:0: error: " f, __LINE__, ##__VA_ARGS__)
 
 
 /*!

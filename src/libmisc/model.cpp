@@ -1,6 +1,8 @@
 #include <cstdint>
 #include "model.h"
-#include "efmt.h"
+#include <string>
+#include <stdexcept>
+#include <fmt/core.h>
 
 
 void Model::load(const std::string& objpath) {
@@ -10,7 +12,7 @@ void Model::load(const std::string& objpath) {
         aiProcess_FlipUVs);     // 翻转y轴
 
     if (!scene || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || !scene->mRootNode) {
-        throw eformat("{}", imp.GetErrorString());
+        throw std::runtime_error(imp.GetErrorString());
     }
 
     this->dir = objpath.substr(0, objpath.find_last_of('/'));
