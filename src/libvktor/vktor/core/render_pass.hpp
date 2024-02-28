@@ -2,7 +2,6 @@
 #include "__builder.hpp"
 #include "device.hpp"
 #include "swapchain.hpp"
-#include <cassert>
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)

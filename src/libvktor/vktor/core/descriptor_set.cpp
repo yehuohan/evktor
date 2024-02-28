@@ -1,6 +1,5 @@
 #include "descriptor_set.hpp"
 #include "descriptor_pool.hpp"
-#include <cassert>
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -23,7 +22,7 @@ void DescriptorSet::update(const DescriptorInfo& desc_info) {
     Vector<VkWriteDescriptorSet> desc_writes{};
     for (const auto& item : desc_info.bufs) {
         const auto& bind = desc_pool.desc_setlayout.bindings.at(item.first);
-        assert(1 == bind.descriptorCount && "There should be bind.descriptorCount == 1 for buf");
+        Check(1 == bind.descriptorCount, "There should be bind.descriptorCount == 1 for buf");
         auto write = Itor::WriteDescriptorSet();
         write.dstSet = handle;
         write.dstBinding = bind.binding;
@@ -35,7 +34,7 @@ void DescriptorSet::update(const DescriptorInfo& desc_info) {
     }
     for (const auto& item : desc_info.imgs) {
         const auto& bind = desc_pool.desc_setlayout.bindings.at(item.first);
-        assert(1 == bind.descriptorCount && "There should be bind.descriptorCount == 1 for img");
+        Check(1 == bind.descriptorCount, "There should be bind.descriptorCount == 1 for img");
         auto write = Itor::WriteDescriptorSet();
         write.dstSet = handle;
         write.dstBinding = bind.binding;
@@ -53,7 +52,7 @@ void DescriptorSet::update(const DescriptorArrayInfo& desc_arrinfo) {
     for (const auto& item : desc_arrinfo.bufs) {
         const auto& bind = desc_pool.desc_setlayout.bindings.at(item.first);
         const auto& bufs = item.second;
-        assert(bufs.size() == bind.descriptorCount && "The bufs size should be bind.descriptorCount");
+        Check(bufs.size() == bind.descriptorCount, "The bufs size should be bind.descriptorCount");
         auto write = Itor::WriteDescriptorSet();
         write.dstSet = handle;
         write.dstBinding = bind.binding;
@@ -66,7 +65,7 @@ void DescriptorSet::update(const DescriptorArrayInfo& desc_arrinfo) {
     for (const auto& item : desc_arrinfo.imgs) {
         const auto& bind = desc_pool.desc_setlayout.bindings.at(item.first);
         const auto& imgs = item.second;
-        assert(imgs.size() == bind.descriptorCount && "The imgs size should be bind.descriptorCount");
+        Check(imgs.size() == bind.descriptorCount, "The imgs size should be bind.descriptorCount");
         auto write = Itor::WriteDescriptorSet();
         write.dstSet = handle;
         write.dstBinding = bind.binding;

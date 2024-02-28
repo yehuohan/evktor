@@ -5,7 +5,6 @@
 #include "vktor/core/physical_device.hpp"
 #include "vktor/core/queue.hpp"
 #include "vktor/rendering/render_target.hpp"
-#include <cassert>
 
 NAMESPACE_BEGIN(vkt)
 
@@ -30,15 +29,15 @@ public:
     OnConstType(VkPhysicalDevice, phy_dev->handle);
     OnConstType(VkDevice, dev->handle);
     operator Instance&() const {
-        assert(instance && "Instance device is invalid");
+        Check(instance, "Instance device is invalid");
         return *instance;
     }
     operator PhysicalDevice&() const {
-        assert(phy_dev && "Physical device is invalid");
+        Check(phy_dev, "Physical device is invalid");
         return *phy_dev;
     }
     operator Device&() const {
-        assert(dev && "Device is invalid");
+        Check(dev, "Device is invalid");
         return *dev;
     }
 

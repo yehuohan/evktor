@@ -2,7 +2,6 @@
 #include "render_frame.hpp"
 #include "vktor/base/api.hpp"
 #include "vktor/core/swapchain.hpp"
-#include <cassert>
 
 NAMESPACE_BEGIN(vkt)
 
@@ -25,7 +24,7 @@ public:
 
     void add(Swapchain&& _swapchain);
     inline const Swapchain& getSwapchain() const {
-        assert(swapchain && "Swapchain is invalid");
+        Check(swapchain, "Swapchain is invalid");
         return *swapchain;
     }
     inline bool hasSwapchain() const {

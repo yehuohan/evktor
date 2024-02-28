@@ -1,7 +1,6 @@
 #include "swapchain.hpp"
 #include "utils.hpp"
 #include <algorithm>
-#include <cassert>
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -145,7 +144,7 @@ SwapchainBuilder::Built SwapchainBuilder::build() {
     // Retrieve handles of swapchain images
     Vector<VkImage> images; /**< Handles of images in swapchain */
     OnRet(enumerate(images, vkGetSwapchainImagesKHR, device, swapchain), "Failed get images from swapchain");
-    assert(u32(images.size()) == swapchain.image_count);
+    Check(u32(images.size()) == swapchain.image_count, "Get wrong image count from swapchain");
     for (uint32_t k = 0; k < images.size(); k++) {
         swapchain.images.push_back(Image::build(device,
                                                 images[k],

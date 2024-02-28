@@ -6,7 +6,7 @@ NAMESPACE_BEGIN(vkt)
 using namespace core;
 
 Res<Ref<Queue>> BaseApi::presentQueue() const {
-    assert(dev && "Device is invalid");
+    Check(dev, "Device is invalid");
     if (dev->queues.present) {
         return Ok(newRef(*dev->queues.present));
     } else {
@@ -15,7 +15,7 @@ Res<Ref<Queue>> BaseApi::presentQueue() const {
 }
 
 Res<Ref<Queue>> BaseApi::graphicsQueue() const {
-    assert(dev && "Device is invalid");
+    Check(dev, "Device is invalid");
     if (dev->queues.graphics) {
         return Ok(newRef(*dev->queues.graphics));
     } else {
@@ -24,7 +24,7 @@ Res<Ref<Queue>> BaseApi::graphicsQueue() const {
 }
 
 Res<Ref<Queue>> BaseApi::computeQueue() const {
-    assert(dev && "Device is invalid");
+    Check(dev, "Device is invalid");
     if (dev->queues.compute) {
         return Ok(newRef(*dev->queues.compute));
     } else {
@@ -33,7 +33,7 @@ Res<Ref<Queue>> BaseApi::computeQueue() const {
 }
 
 Res<Ref<Queue>> BaseApi::transferQueue() const {
-    assert(dev && "Device is invalid");
+    Check(dev, "Device is invalid");
     if (dev->queues.transfer) {
         return Ok(newRef(*dev->queues.transfer));
     } else {
@@ -43,7 +43,7 @@ Res<Ref<Queue>> BaseApi::transferQueue() const {
 
 Res<Ref<RenderPass>> BaseApi::requestRenderPass(const RenderTargetTable& render_target_table,
                                                 const RenderPipeline& render_pipeline) {
-    assert(dev && "Device is invalid");
+    Check(dev, "Device is invalid");
 
     size_t key = hash(render_target_table.getTargets(), render_pipeline.getSubpasses());
     return resource_cache.render_passes.request(key, [&render_target_table, &render_pipeline]() {
@@ -52,7 +52,7 @@ Res<Ref<RenderPass>> BaseApi::requestRenderPass(const RenderTargetTable& render_
 }
 
 Res<Ref<Framebuffer>> BaseApi::requestFramebuffer(const RenderTargetTable& render_target_table, const RenderPass& render_pass) {
-    assert(dev && "Device is invalid");
+    Check(dev, "Device is invalid");
 
     size_t key = hash(render_target_table, render_pass);
     return resource_cache.framebuffers.request(key, [&render_target_table, &render_pass]() {

@@ -29,5 +29,9 @@
         std::cout << vktFmt("[vkt][{}] " f "\n", l, ##__VA_ARGS__) << std::flush; \
     } while (0)
 
-#define LogE(f, ...) vktLog("E", f, ##__VA_ARGS__)
 #define LogW(f, ...) vktLog("W", f, ##__VA_ARGS__)
+// #define LogE(f, ...) vktLog("E", f, ##__VA_ARGS__)
+#define LogE(f, ...)                                                                                     \
+    do {                                                                                                 \
+        std::cout << vktFmt("[vkt][E({}:{})] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__) << std::flush; \
+    } while (0)
