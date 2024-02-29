@@ -16,7 +16,7 @@ struct ShaderModule : public BuiltResource<VkShaderModule, VK_OBJECT_TYPE_SHADER
 
 struct ShaderInfo : public BuilderInfo {
     VkShaderStageFlagBits stage = VK_SHADER_STAGE_VERTEX_BIT;
-    std::string name = "shader.glsl";
+    std::string filename = "shader.glsl";
     std::string code = "";
     std::string entry = "main";
 };
@@ -31,8 +31,8 @@ public:
         , device(device) {}
     virtual Built build() override;
 
-    Self setName(const std::string& name);
-    Self setCode(const std::string&& code, VkShaderStageFlagBits stage);
+    Self setFilename(const std::string& filename);
+    Self setCode(std::string&& code, VkShaderStageFlagBits stage);
     // Self defMacro(const std::string& macro);
     Self setEntry(const std::string& entry);
 

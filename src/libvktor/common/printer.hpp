@@ -4,14 +4,10 @@
     // Implement printer with cstdio
     #include <cstdio>
 
-    #ifndef VKT_PRINTER
-        #define VKT_PRINTER stdout
-    #endif
-
-    #define vktOut(f, ...)                                             \
-        do {                                                           \
-            std::fprintf(VKT_PRINTER, "[vkt] " f "\n", ##__VA_ARGS__); \
-            std::fflush(VKT_PRINTER);                                  \
+    #define vktOut(f, ...)                                        \
+        do {                                                      \
+            std::fprintf(stdout, "[vkt] " f "\n", ##__VA_ARGS__); \
+            std::fflush(stdout);                                  \
         } while (0)
 #endif
 

@@ -10,6 +10,11 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
+/**
+ * @brief Render frame
+ *
+ * One render frame hold descriptors, command buffers for each thread.
+ */
 class RenderFrame : private NonCopyable {
 private:
     const BaseApi& api;

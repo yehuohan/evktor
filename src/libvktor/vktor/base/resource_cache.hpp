@@ -13,8 +13,6 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
-#define LOCK_RESOURCE_STATE(rs) std::lock_guard<std::mutex> guard((rs).mtx)
-
 template <typename T>
 class ResourceState {
 private:
@@ -34,7 +32,7 @@ public:
      * @brief Request resource that stored in `map`
      */
     inline Res<Ref<T>> request(size_t key, std::function<Res<T>()> fn) {
-        LOCK_RESOURCE_STATE(*this);
+        std::lock_guard<std::mutex> guard(mtx);
 
         T* ptr;
         {

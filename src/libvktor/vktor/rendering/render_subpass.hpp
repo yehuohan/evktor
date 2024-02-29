@@ -28,7 +28,7 @@ public:
     }
 };
 
-NAMESPACE_END(std)
+NAMESPACE_END(vkt)
 
 NAMESPACE_BEGIN(std)
 

@@ -45,12 +45,12 @@ ShaderModule::~ShaderModule() {
     handle = nullptr;
 }
 
-Self ShaderModuleBuilder::setName(const std::string& name) {
-    info.name = name;
+Self ShaderModuleBuilder::setFilename(const std::string& filename) {
+    info.filename = filename;
     return *this;
 }
 
-Self ShaderModuleBuilder::setCode(const std::string&& code, VkShaderStageFlagBits stage) {
+Self ShaderModuleBuilder::setCode(std::string&& code, VkShaderStageFlagBits stage) {
     info.code = std::move(code);
     info.stage = stage;
     return *this;
@@ -64,7 +64,7 @@ Self ShaderModuleBuilder::setEntry(const std::string& entry) {
 Res<Vector<uint32_t>> ShaderModuleBuilder::glsl2spv() {
     const char* shader_strings[] = {info.code.c_str()};
     const int shader_lengths[] = {(int)info.code.size()};
-    const char* shader_filenames[] = {info.name.c_str()};
+    const char* shader_filenames[] = {info.filename.c_str()};
 
     EShMessages messages = static_cast<EShMessages>(EShMessages::EShMsgDefault | EShMessages::EShMsgVulkanRules |
                                                     EShMessages::EShMsgSpvRules);
@@ -83,7 +83,7 @@ Res<Vector<uint32_t>> ShaderModuleBuilder::glsl2spv() {
     if (!shader.parse(GetDefaultResources(), 100, false, messages)) {
         LogE("{}", shader.getInfoLog());
         LogE("{}", shader.getInfoDebugLog());
-        return Er("Failed to parse shader: {}", info.name);
+        return Er("Failed to parse shader: {}", info.filename);
     }
 
     glslang::TProgram program;
@@ -91,7 +91,7 @@ Res<Vector<uint32_t>> ShaderModuleBuilder::glsl2spv() {
     if (!program.link(messages)) {
         LogE("{}", program.getInfoLog());
         LogE("{}", program.getInfoDebugLog());
-        return Er("Failed to link shader: {}", info.name);
+        return Er("Failed to link shader: {}", info.filename);
     }
     glslang::TIntermediate* intermediate = program.getIntermediate(language);
 
@@ -112,7 +112,9 @@ ShaderModuleBuilder::Built ShaderModuleBuilder::build() {
     shader_ci.pCode = spirv.data();
 
     ShaderModule shader_module(device, std::move(info.__name));
-    OnRet(vkCreateShaderModule(device, &shader_ci, nullptr, shader_module), "Failed to create shader module for {}", info.name);
+    OnRet(vkCreateShaderModule(device, &shader_ci, nullptr, shader_module),
+          "Failed to create shader module for {}",
+          info.filename);
     OnName(shader_module);
     shader_module.entry = std::move(info.entry);
     shader_module.stage = info.stage;

@@ -11,5 +11,5 @@
 
 #define VKT_CORE_VERBOSE true
 
-#define VKt_CORE_QUEUE_PRIORITY 1.0f
-#define VKt_CORE_MAX_SETS       16
+#define VKT_CORE_QUEUE_PRIORITY 1.0f
+#define VKT_CORE_MAX_SETS       16

@@ -36,7 +36,7 @@ Device::~Device() {
 DeviceBuilder::Built DeviceBuilder::build() {
     Device device(instance, physical_device, std::move(info.__name));
 
-    const float queue_priority = VKt_CORE_QUEUE_PRIORITY;
+    const float queue_priority = VKT_CORE_QUEUE_PRIORITY;
     Vector<VkDeviceQueueCreateInfo> queues_ci;
     for (const auto& q : physical_device.queue_family_props) {
         auto dev_queue_ci = Itor::DeviceQueueCreateInfo();

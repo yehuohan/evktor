@@ -8,4 +8,4 @@ RenderSubpass::RenderSubpass(RenderSubpass&& rhs) {
     info = std::move(rhs.info);
 };
 
-NAMESPACE_END(std)
+NAMESPACE_END(vkt)

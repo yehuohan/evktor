@@ -7,19 +7,6 @@ NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
 /**
- * @brief Panic on non-success Vulkan result
- *
- * 'r' must not be '__ret__'
- */
-#define OnPanic(r, f, ...)                                                                    \
-    {                                                                                         \
-        VkResult __ret__ = (r);                                                               \
-        if (__ret__ != VK_SUCCESS) {                                                          \
-            throw ErrorFormat("[VkResult = {}] " f, VkStr(VkResult, __ret__), ##__VA_ARGS__); \
-        }                                                                                     \
-    }
-
-/**
  * @brief Return Er on non-success Vulkan result
  *
  * 'r' must not be '__ret__'
@@ -63,6 +50,8 @@ typedef std::string Name;
 
 /**
  * @brief Base built type that builder to build
+ *
+ * Use struct for internal accessing members conveniently
  */
 struct BuilderBuilt : private NonCopyable {
     Name __name = ""; /**< Debug name */
