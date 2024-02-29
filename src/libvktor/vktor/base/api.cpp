@@ -41,6 +41,19 @@ Res<Ref<Queue>> BaseApi::transferQueue() const {
     }
 }
 
+Res<Ref<ShaderModule>> BaseApi::requestShaderModule(const Shader& shader) {
+    Check(dev, "Device is invalid");
+
+    size_t key = hash(shader);
+    return resource_cache.shader_modules.request(key, [this, &shader]() {
+        ShaderModuleBuilder builder(*dev);
+        builder.setFilename(shader.getFilename());
+        builder.setCode(std::string(shader.getCode()), shader.getStage());
+        builder.setEntry("main");
+        return builder();
+    });
+}
+
 Res<Ref<RenderPass>> BaseApi::requestRenderPass(const RenderTargetTable& render_target_table,
                                                 const RenderPipeline& render_pipeline) {
     Check(dev, "Device is invalid");

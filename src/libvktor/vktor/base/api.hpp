@@ -1,5 +1,6 @@
 #pragma once
 #include "resource_cache.hpp"
+#include "shader.hpp"
 #include "vktor/core/device.hpp"
 #include "vktor/core/instance.hpp"
 #include "vktor/core/physical_device.hpp"
@@ -60,6 +61,7 @@ public:
     Res<Ref<Queue>> transferQueue() const;
 
     /* Resource cache */
+    Res<Ref<ShaderModule>> requestShaderModule(const Shader& shader);
     Res<Ref<RenderPass>> requestRenderPass(const RenderTargetTable& render_target_table, const RenderPipeline& render_pipeline);
     Res<Ref<Framebuffer>> requestFramebuffer(const RenderTargetTable& render_target_table, const RenderPass& render_pass);
 };
