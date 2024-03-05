@@ -62,6 +62,7 @@ public:
 
     /* Resource cache */
     Res<Ref<ShaderModule>> requestShaderModule(const Shader& shader);
+    Res<Ref<DescriptorSetLayout>> requestDescriptorSetLayout(const uint32_t set, const Vector<const Shader*>& shaders);
     Res<Ref<RenderPass>> requestRenderPass(const RenderTargetTable& render_target_table, const RenderPipeline& render_pipeline);
     Res<Ref<Framebuffer>> requestFramebuffer(const RenderTargetTable& render_target_table, const RenderPass& render_pass);
 };

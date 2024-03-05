@@ -16,9 +16,9 @@ static Res<VkShaderStageFlagBits> getShaderStage(const std::string& filename) {
     } else if ("frag" == suffix) {
         stage = VK_SHADER_STAGE_FRAGMENT_BIT;
     } else if ("geom" == suffix) {
-        stage = VK_SHADER_STAGE_COMPUTE_BIT;
-    } else if ("comp" == suffix) {
         stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+    } else if ("comp" == suffix) {
+        stage = VK_SHADER_STAGE_COMPUTE_BIT;
     } else {
         return Er("Unrecognized shader type: {}", suffix);
     }
@@ -37,6 +37,7 @@ Shader::Shader(Shader&& rhs) {
     filename = std::move(rhs.filename);
     code = std::move(rhs.code);
     stage = rhs.stage;
+    descriptors = std::move(rhs.descriptors);
 }
 
 Res<Shader> Shader::load(const std::string& filename) {

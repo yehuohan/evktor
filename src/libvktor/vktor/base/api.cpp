@@ -54,6 +54,36 @@ Res<Ref<ShaderModule>> BaseApi::requestShaderModule(const Shader& shader) {
     });
 }
 
+Res<Ref<DescriptorSetLayout>> BaseApi::requestDescriptorSetLayout(const uint32_t set, const Vector<const Shader*>& shaders) {
+    Check(dev, "Device is invalid");
+
+    size_t key = hash(set, shaders);
+    return resource_cache.descriptor_setlayouts.request(key, [this, set, &shaders]() -> Res<DescriptorSetLayout> {
+        DescriptorSetLayoutBuilder builder(*dev);
+        for (const auto s : shaders) {
+            if (!s) {
+                continue;
+            }
+            switch (s->getStage()) {
+            case VK_SHADER_STAGE_VERTEX_BIT:
+            case VK_SHADER_STAGE_FRAGMENT_BIT:
+            case VK_SHADER_STAGE_COMPUTE_BIT:
+                for (const auto& d : s->getDescriptors()) {
+                    if (set == d.set) {
+                        builder.addBinding(d.binding, static_cast<VkDescriptorType>(d.type), d.count, s->getStage());
+                    }
+                }
+                break;
+            default:
+                return Er("Request with unsupported shader ({}) stage: {}",
+                          s->getFilename(),
+                          VkStr(VkShaderStageFlags, s->getStage()));
+            }
+        }
+        return builder();
+    });
+}
+
 Res<Ref<RenderPass>> BaseApi::requestRenderPass(const RenderTargetTable& render_target_table,
                                                 const RenderPipeline& render_pipeline) {
     Check(dev, "Device is invalid");
