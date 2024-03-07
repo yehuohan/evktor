@@ -36,6 +36,7 @@ static Res<std::string> readShader(const std::string& filename) {
 Shader::Shader(Shader&& rhs) {
     filename = std::move(rhs.filename);
     code = std::move(rhs.code);
+    id = rhs.id;
     stage = rhs.stage;
     descriptors = std::move(rhs.descriptors);
 }
@@ -49,6 +50,7 @@ Res<Shader> Shader::load(const std::string& filename) {
     auto code = readShader(filename);
     OnErr(code);
     shader.code = std::move(code.unwrap());
+    shader.id = hash(shader.code);
     shader.filename = filename;
 
     return Ok(std::move(shader));

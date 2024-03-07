@@ -13,7 +13,7 @@ struct DescriptorSetLayout : public BuiltResource<VkDescriptorSetLayout, VK_OBJE
      * The VkDescriptorSetLayoutBinding::binding members of the elements of the pBindings array must each have different values.
      * So we can take VkDescriptorSetLayoutBinding::binding as map key.
      */
-    HashMap<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
+    Map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
 
     DescriptorSetLayout(const Device& device, Name&& name) : BuiltResource(device, std::move(name)) {}
     DescriptorSetLayout(DescriptorSetLayout&&);
@@ -22,7 +22,7 @@ struct DescriptorSetLayout : public BuiltResource<VkDescriptorSetLayout, VK_OBJE
 
 struct DescriptorSetLayoutInfo : public BuilderInfo {
     VkDescriptorSetLayoutCreateFlags flags = 0;
-    HashMap<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
+    Map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
 };
 
 class DescriptorSetLayoutBuilder : public Builder<DescriptorSetLayoutBuilder, DescriptorSetLayout, DescriptorSetLayoutInfo> {

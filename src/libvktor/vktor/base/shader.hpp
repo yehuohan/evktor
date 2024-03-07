@@ -34,8 +34,9 @@ struct ShaderDescriptor {
 
 class Shader : private NonCopyable {
 private:
-    std::string filename;
-    std::string code;
+    std::string filename{""};
+    std::string code{""};
+    size_t id = 0; /**< id = hash(code) */
     VkShaderStageFlagBits stage;
     Vector<ShaderDescriptor> descriptors{};
 
@@ -50,6 +51,9 @@ public:
     }
     inline const std::string& getCode() const {
         return code;
+    }
+    inline size_t getId() const {
+        return id;
     }
     inline VkShaderStageFlagBits getStage() const {
         return stage;
@@ -72,7 +76,7 @@ template <>
 struct hash<vkt::Shader> {
     size_t operator()(const vkt::Shader& shader) const {
         size_t res = 0;
-        vkt::hashCombine(res, shader.getFilename());
+        vkt::hashCombine(res, shader.getId());
         return res;
     }
 };
