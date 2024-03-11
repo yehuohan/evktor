@@ -1,4 +1,5 @@
 #pragma once
+#include "vktor/base/shader.hpp"
 #include "vktor/core/render_pass.hpp"
 
 NAMESPACE_BEGIN(vkt)
@@ -7,13 +8,21 @@ using namespace core;
 
 class RenderSubpass : private NonCopyable {
 private:
+    Shader vert;
+    Shader frag;
     // By default the output attachments is attachment 0
     RenderSubpassInfo info{{}, {0}, VK_ATTACHMENT_UNUSED};
 
 public:
-    explicit RenderSubpass() {}
+    explicit RenderSubpass(Shader&& vert, Shader&& frag) : vert(std::move(vert)), frag(std::move(frag)) {}
     RenderSubpass(RenderSubpass&&);
 
+    inline const Shader& vertShader() const {
+        return vert;
+    }
+    inline const Shader& fragShader() const {
+        return frag;
+    }
     inline void setInputAttachments(Vector<uint32_t>&& inputs) {
         info.inputs = std::move(inputs);
     }
