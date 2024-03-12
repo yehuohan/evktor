@@ -1,4 +1,5 @@
 #include "vktor.hpp"
+#include <set>
 
 NAMESPACE_BEGIN(vkt)
 
@@ -31,9 +32,13 @@ Res<Ref<DescriptorSetLayout>> Vktor::requestDescriptorSetLayout(const uint32_t s
             case VK_SHADER_STAGE_VERTEX_BIT:
             case VK_SHADER_STAGE_FRAGMENT_BIT:
             case VK_SHADER_STAGE_COMPUTE_BIT:
-                for (const auto& d : s->getDescriptors()) {
-                    if (set == d.set) {
-                        builder.addBinding(d.binding, static_cast<VkDescriptorType>(d.type), d.count, s->getStage());
+                {
+                    const auto& desc_sets = s->getDescriptorSets();
+                    auto item = desc_sets.find(set);
+                    if (item != desc_sets.end()) {
+                        for (const auto& d : item->second) {
+                            builder.addBinding(d.binding, static_cast<VkDescriptorType>(d.type), d.count, s->getStage());
+                        }
                     }
                 }
                 break;
@@ -42,6 +47,28 @@ Res<Ref<DescriptorSetLayout>> Vktor::requestDescriptorSetLayout(const uint32_t s
                           s->getFilename(),
                           VkStr(VkShaderStageFlags, s->getStage()));
             }
+        }
+        return builder();
+    });
+}
+
+Res<Ref<PipelineLayout>> Vktor::requestPipelineLayout(const Vector<const Shader*>& shaders) {
+    size_t key = hash(shaders);
+    return resource_cache.pipeline_layouts.request(key, [this, &shaders]() -> Res<PipelineLayout> {
+        // Collect all set index
+        std::set<uint32_t> sets{};
+        for (const auto& s : shaders) {
+            const auto& desc_sets = s->getDescriptorSets();
+            for (const auto& item : desc_sets) {
+                sets.insert(item.first);
+            }
+        }
+        // Collect all descriptor sets
+        PipelineLayoutBuilder builder(api);
+        for (const auto& s : sets) {
+            auto res = requestDescriptorSetLayout(s, shaders);
+            OnErr(res);
+            builder.addDescriptorSetLayout(res.unwrap().get());
         }
         return builder();
     });

@@ -32,13 +32,16 @@ struct ShaderDescriptor {
         , count(count) {}
 };
 
+class ShaderVariant : private NonCopyable {};
+
 class Shader : private NonCopyable {
 private:
     std::string filename{""};
     std::string code{""};
     size_t id = 0; /**< id = hash(code) */
     VkShaderStageFlagBits stage;
-    Vector<ShaderDescriptor> descriptors{};
+    /** Map descriptor set index to it's all descriptor */
+    HashMap<uint32_t, Vector<ShaderDescriptor>> desc_sets{};
 
 private:
     Shader(){};
@@ -59,10 +62,10 @@ public:
         return stage;
     }
     inline void addDescriptor(ShaderDescriptor::Type type, uint32_t binding, uint32_t set = 0, uint32_t count = 1) {
-        descriptors.push_back(ShaderDescriptor(type, set, binding, count));
+        desc_sets[set].push_back(ShaderDescriptor(type, set, binding, count));
     }
-    inline const Vector<ShaderDescriptor>& getDescriptors() const {
-        return descriptors;
+    inline const HashMap<uint32_t, Vector<ShaderDescriptor>>& getDescriptorSets() const {
+        return desc_sets;
     }
 
     static Res<Shader> load(const std::string& filename);
@@ -83,6 +86,7 @@ struct hash<vkt::Shader> {
 
 template <>
 struct hash<vkt::Vector<const vkt::Shader*>> {
+    // C++ doesn't support store Shader& in Vector, so use Shader* instead.
     size_t operator()(const vkt::Vector<const vkt::Shader*>& shaders) const {
         size_t res = 0;
         for (const auto s : shaders) {

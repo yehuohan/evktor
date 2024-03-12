@@ -38,7 +38,7 @@ Shader::Shader(Shader&& rhs) {
     code = std::move(rhs.code);
     id = rhs.id;
     stage = rhs.stage;
-    descriptors = std::move(rhs.descriptors);
+    desc_sets = std::move(rhs.desc_sets);
 }
 
 Res<Shader> Shader::load(const std::string& filename) {
