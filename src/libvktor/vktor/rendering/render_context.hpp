@@ -1,7 +1,6 @@
 #pragma once
 #include "render_frame.hpp"
 #include "vktor/base/api.hpp"
-#include "vktor/core/swapchain.hpp"
 
 NAMESPACE_BEGIN(vkt)
 

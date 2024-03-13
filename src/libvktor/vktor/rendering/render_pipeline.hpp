@@ -2,7 +2,6 @@
 #include "render_subpass.hpp"
 #include "render_target.hpp"
 #include "vktor/base/api.hpp"
-#include "vktor/core/render_pass.hpp"
 
 NAMESPACE_BEGIN(vkt)
 

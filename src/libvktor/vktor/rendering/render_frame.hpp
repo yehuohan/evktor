@@ -1,10 +1,5 @@
 #pragma once
 #include "vktor/base/api.hpp"
-#include "vktor/core/command_pool.hpp"
-#include "vktor/core/descriptor_pool.hpp"
-#include "vktor/core/descriptor_set.hpp"
-#include "vktor/core/descriptor_setlayout.hpp"
-#include "vktor/core/queue.hpp"
 
 NAMESPACE_BEGIN(vkt)
 

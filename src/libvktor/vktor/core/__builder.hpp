@@ -124,7 +124,8 @@ struct BuilderInfo {
  *      auto tyb = TypeBuilder();
  *      tyb.set().add();
  *      auto ty1 = tyb.build().unwrap();
- *      tyb.set().add(); // Should re-set/add again, but not re-use the builder
+ *      tyb = TypeBuilder(); // Should re-construct then re-set/add again, but not re-use the builder
+ *      tyb.set().add();
  *      auto ty2 = tyb.build().unwrap();
  * ```
  */
