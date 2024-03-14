@@ -19,8 +19,6 @@ NAMESPACE_BEGIN(core)
         }                                                                             \
     }
 
-#define OnName(r) OnRet(r.setDebugName(), "Failed to set debug name: {}", r.__name)
-
 /**
  * @brief Conversion constructor
  *
@@ -44,6 +42,8 @@ NAMESPACE_BEGIN(core)
     operator const Type*() const { \
         return &Var;               \
     }
+
+#define OnName(r) OnRet(r.setDebugName(), "Failed to set debug name: {}", r.__name)
 
 /** A lite string as name */
 typedef std::string Name;
