@@ -1,5 +1,5 @@
 #pragma once
-#include "__builder.hpp"
+#include "__core.hpp"
 #include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
@@ -38,12 +38,12 @@ struct DescriptorArrayInfo {
 /**
  * @brief Descriptor set
  *
- * `DescriptorSet` should be allocated with `DescriptorPool::allocate()`.
+ * `DescriptorSet` should be allocated with `DescriptorPool::allocate()` as `vkAllocateDescriptorSets` need `VkDescriptorPool`.
  */
-struct DescriptorSet : public BuiltResource<VkDescriptorSet, VK_OBJECT_TYPE_DESCRIPTOR_SET, Device> {
-    const DescriptorPool& desc_pool;
+struct DescriptorSet : public CoreResource<VkDescriptorSet, VK_OBJECT_TYPE_DESCRIPTOR_SET, Device> {
+    DescriptorPool& desc_pool;
 
-    DescriptorSet(const DescriptorPool& pool, Name&& name = "DescriptorSet");
+    DescriptorSet(DescriptorPool& pool);
     DescriptorSet(DescriptorSet&&);
     ~DescriptorSet();
     /**

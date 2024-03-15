@@ -4,17 +4,18 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-DescriptorSet::DescriptorSet(const DescriptorPool& pool, Name&& name)
-    : BuiltResource(pool.device, std::move(name))
-    , desc_pool(pool) {}
+DescriptorSet::DescriptorSet(DescriptorPool& pool) : CoreResource(pool.device), desc_pool(pool) {}
 
-DescriptorSet::DescriptorSet(DescriptorSet&& rhs) : BuiltResource(rhs.device, std::move(rhs.__name)), desc_pool(rhs.desc_pool) {
+DescriptorSet::DescriptorSet(DescriptorSet&& rhs) : CoreResource(rhs.device), desc_pool(rhs.desc_pool) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
 }
 
 DescriptorSet::~DescriptorSet() {
-    // Descriptor set will be freed along with `vkDestroyDescriptorPool`
+    // Still need check null handle to skip destructor resulted from move constructor
+    if (handle) {
+        desc_pool.free(*this);
+    }
     handle = VK_NULL_HANDLE;
 }
 

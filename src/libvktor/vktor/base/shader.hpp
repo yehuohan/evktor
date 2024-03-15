@@ -32,7 +32,9 @@ struct ShaderDescriptor {
         , count(count) {}
 };
 
-class ShaderVariant : private NonCopyable {};
+class ShaderVariant : private NonCopyable {
+    // Self defMacro(const std::string& macro);
+};
 
 class Shader : private NonCopyable {
 private:

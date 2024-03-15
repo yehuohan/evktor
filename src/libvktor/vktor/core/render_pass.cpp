@@ -4,9 +4,45 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-using Self = RenderPassBuilder::Self;
+using Self = RenderPassState::Self;
 
-RenderPass::RenderPass(RenderPass&& rhs) : BuiltResource(rhs.device, std::move(rhs.__name)) {
+Self RenderPassState::addAttachment(VkFormat format,
+                                    VkSampleCountFlagBits samples,
+                                    AttachmentOps ops,
+                                    AttachmentOps stencil_ops,
+                                    AttachmentLayouts layouts) {
+    VkAttachmentDescription desc{};
+    desc.format = format;
+    desc.samples = samples;
+    desc.loadOp = ops.load;
+    desc.storeOp = ops.store;
+    desc.stencilLoadOp = stencil_ops.load;
+    desc.stencilStoreOp = stencil_ops.store;
+    desc.initialLayout = layouts.initial;
+    desc.finalLayout = layouts.final;
+    attm_descs.push_back(desc);
+    return *this;
+}
+
+Self RenderPassState::addSubpass(Vector<uint32_t>&& input, Vector<uint32_t>&& color, uint32_t depthstencil) {
+    RenderSubpassInfo subpass{};
+    subpass.inputs = std::move(input);
+    subpass.colors = std::move(color);
+    subpass.depthstencil = depthstencil;
+    subpasses.push_back(std::move(subpass));
+    return *this;
+}
+
+Self RenderPassState::addSubpass(const RenderSubpassInfo& subpass) {
+    subpasses.push_back(subpass);
+    return *this;
+}
+
+Res<RenderPass> RenderPassState::into(const Device& device) const {
+    return RenderPass::from(device, *this);
+}
+
+RenderPass::RenderPass(RenderPass&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
 }
@@ -18,39 +54,7 @@ RenderPass::~RenderPass() {
     handle = VK_NULL_HANDLE;
 }
 
-Self RenderPassBuilder::addAttachment(VkFormat format,
-                                      VkSampleCountFlagBits samples,
-                                      AttachmentOps ops,
-                                      AttachmentOps stencil_ops,
-                                      AttachmentLayouts layouts) {
-    VkAttachmentDescription desc{};
-    desc.format = format;
-    desc.samples = samples;
-    desc.loadOp = ops.load;
-    desc.storeOp = ops.store;
-    desc.stencilLoadOp = stencil_ops.load;
-    desc.stencilStoreOp = stencil_ops.store;
-    desc.initialLayout = layouts.initial;
-    desc.finalLayout = layouts.final;
-    info.attm_descs.push_back(desc);
-    return *this;
-}
-
-Self RenderPassBuilder::addSubpass(Vector<uint32_t>&& input, Vector<uint32_t>&& color, uint32_t depthstencil) {
-    RenderSubpassInfo subpass{};
-    subpass.inputs = std::move(input);
-    subpass.colors = std::move(color);
-    subpass.depthstencil = depthstencil;
-    info.subpasses.push_back(std::move(subpass));
-    return *this;
-}
-
-Self RenderPassBuilder::addSubpass(const RenderSubpassInfo& subpass) {
-    info.subpasses.push_back(subpass);
-    return *this;
-}
-
-RenderPassBuilder::Built RenderPassBuilder::build() {
+Res<RenderPass> RenderPass::from(const Device& device, const RenderPassState& info) {
     uint32_t subpass_count = u32(info.subpasses.size());
     if (subpass_count == 0) {
         return Er("There must be at least one subpass for render pass");
@@ -133,9 +137,9 @@ RenderPassBuilder::Built RenderPassBuilder::build() {
     render_pass_ci.dependencyCount = u32(dependencies.size());
     render_pass_ci.pDependencies = dependencies.data();
 
-    RenderPass render_pass(device, std::move(info.__name));
+    RenderPass render_pass(device);
     OnRet(vkCreateRenderPass(device, &render_pass_ci, nullptr, render_pass), "Failed to create render pass");
-    OnName(render_pass);
+    OnName(render_pass, info.__name);
 
     return Ok(std::move(render_pass));
 }

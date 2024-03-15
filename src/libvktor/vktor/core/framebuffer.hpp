@@ -1,37 +1,26 @@
 #pragma once
-#include "__builder.hpp"
-#include "render_pass.hpp"
+#include "__core.hpp"
+#include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-struct Framebuffer : public BuiltResource<VkFramebuffer, VK_OBJECT_TYPE_FRAMEBUFFER, Device> {
-    const RenderPass& render_pass;
+struct Framebuffer;
 
-    Framebuffer(const RenderPass& render_pass, Name&& name)
-        : BuiltResource(render_pass.device, std::move(name))
-        , render_pass(render_pass) {}
-    Framebuffer(Framebuffer&&);
-    ~Framebuffer();
-};
+class FramebufferState : public CoreStater<FramebufferState> {
+    friend struct Framebuffer;
 
-struct FramebufferInfo : public BuilderInfo {
+private:
+    VkRenderPass render_pass;
     Vector<VkImageView> imageviews{};
     uint32_t width = 0;
     uint32_t height = 0;
     uint32_t layers = 0;
-};
-
-class FramebufferBuilder : public Builder<FramebufferBuilder, Framebuffer, FramebufferInfo> {
-private:
-    const RenderPass& render_pass;
 
 public:
-    explicit FramebufferBuilder(const RenderPass& render_pass, Name&& name = "Framebuffer")
-        : Builder(std::move(name))
-        , render_pass(render_pass) {}
-    virtual Built build() override;
+    explicit FramebufferState(Name&& name = "Framebuffer") : CoreStater(std::move(name)) {}
 
+    Self setRenderPass(VkRenderPass render_pass);
     Self addAttachment(VkImageView imageview);
     Self addAttachments(const Vector<VkImageView>& imageviews);
     Self setExtent(uint32_t width, uint32_t height, uint32_t layers = 1);
@@ -41,6 +30,16 @@ public:
     inline Self setExtent(const VkExtent3D& extent) {
         return setExtent(extent.width, extent.height, extent.depth);
     }
+
+    Res<Framebuffer> into(const Device& device) const;
+};
+
+struct Framebuffer : public CoreResource<VkFramebuffer, VK_OBJECT_TYPE_FRAMEBUFFER, Device> {
+    Framebuffer(const Device& device) : CoreResource(device) {}
+    Framebuffer(Framebuffer&&);
+    ~Framebuffer();
+
+    static Res<Framebuffer> from(const Device& device, const FramebufferState& info);
 };
 
 NAMESPACE_END(core)

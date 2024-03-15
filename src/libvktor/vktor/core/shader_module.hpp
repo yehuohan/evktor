@@ -1,43 +1,43 @@
 #pragma once
-#include "__builder.hpp"
+#include "__core.hpp"
 #include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-struct ShaderModule : public BuiltResource<VkShaderModule, VK_OBJECT_TYPE_SHADER_MODULE, Device> {
-    VkShaderStageFlagBits stage = VK_SHADER_STAGE_VERTEX_BIT;
-    std::string entry = "main";
+struct ShaderModule;
 
-    ShaderModule(const Device& device, Name&& name) : BuiltResource(device, std::move(name)) {}
-    ShaderModule(ShaderModule&&);
-    ~ShaderModule();
-};
+class ShaderModuleState : public CoreStater<ShaderModuleState> {
+    friend struct ShaderModule;
 
-struct ShaderInfo : public BuilderInfo {
+private:
     VkShaderStageFlagBits stage = VK_SHADER_STAGE_VERTEX_BIT;
     std::string filename = "shader.glsl";
     std::string code = "";
     std::string entry = "main";
-};
 
-class ShaderModuleBuilder : public Builder<ShaderModuleBuilder, ShaderModule, ShaderInfo> {
 private:
-    const Device& device;
+    Res<Vector<uint32_t>> glsl2spv() const;
 
 public:
-    explicit ShaderModuleBuilder(const Device& device, Name&& name = "ShaderModule")
-        : Builder(std::move(name))
-        , device(device) {}
-    virtual Built build() override;
+    explicit ShaderModuleState(Name&& name = "ShaderModule") : CoreStater(std::move(name)) {}
 
     Self setFilename(const std::string& filename);
     Self setCode(std::string&& code, VkShaderStageFlagBits stage);
-    // Self defMacro(const std::string& macro);
     Self setEntry(const std::string& entry);
 
-private:
-    Res<Vector<uint32_t>> glsl2spv();
+    Res<ShaderModule> into(const Device& device) const;
+};
+
+struct ShaderModule : public CoreResource<VkShaderModule, VK_OBJECT_TYPE_SHADER_MODULE, Device> {
+    VkShaderStageFlagBits stage = VK_SHADER_STAGE_VERTEX_BIT;
+    std::string entry = "main";
+
+    ShaderModule(const Device& device) : CoreResource(device) {}
+    ShaderModule(ShaderModule&&);
+    ~ShaderModule();
+
+    static Res<ShaderModule> from(const Device& device, const ShaderModuleState& info);
 };
 
 NAMESPACE_END(core)

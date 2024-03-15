@@ -3,11 +3,35 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-using Self = FramebufferBuilder::Self;
+using Self = FramebufferState::Self;
 
-Framebuffer::Framebuffer(Framebuffer&& rhs)
-    : BuiltResource(rhs.render_pass.device, std::move(rhs.__name))
-    , render_pass(rhs.render_pass) {
+Self FramebufferState::setRenderPass(VkRenderPass _render_pass) {
+    render_pass = _render_pass;
+    return *this;
+}
+
+Self FramebufferState::addAttachment(VkImageView imageview) {
+    imageviews.push_back(imageview);
+    return *this;
+}
+
+Self FramebufferState::addAttachments(const Vector<VkImageView>& _imageviews) {
+    imageviews.insert(imageviews.end(), _imageviews.begin(), _imageviews.end());
+    return *this;
+}
+
+Self FramebufferState::setExtent(uint32_t _width, uint32_t _height, uint32_t _layers) {
+    width = _width;
+    height = _height;
+    layers = _layers;
+    return *this;
+}
+
+Res<Framebuffer> FramebufferState::into(const Device& device) const {
+    return Framebuffer::from(device, *this);
+}
+
+Framebuffer::Framebuffer(Framebuffer&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
 }
@@ -19,36 +43,19 @@ Framebuffer::~Framebuffer() {
     handle = VK_NULL_HANDLE;
 }
 
-Self FramebufferBuilder::addAttachment(VkImageView imageview) {
-    info.imageviews.push_back(imageview);
-    return *this;
-}
-
-Self FramebufferBuilder::addAttachments(const Vector<VkImageView>& imageviews) {
-    info.imageviews.insert(info.imageviews.end(), imageviews.begin(), imageviews.end());
-    return *this;
-}
-
-Self FramebufferBuilder::setExtent(uint32_t width, uint32_t height, uint32_t layers) {
-    info.width = width;
-    info.height = height;
-    info.layers = layers;
-    return *this;
-}
-
-FramebufferBuilder::Built FramebufferBuilder::build() {
-    Framebuffer framebuffer(render_pass, std::move(info.__name));
+Res<Framebuffer> Framebuffer::from(const Device& device, const FramebufferState& info) {
+    Framebuffer framebuffer(device);
 
     auto framebuffer_ci = Itor::FramebufferCreateInfo();
-    framebuffer_ci.renderPass = render_pass;
+    framebuffer_ci.renderPass = info.render_pass;
     framebuffer_ci.attachmentCount = u32(info.imageviews.size());
     framebuffer_ci.pAttachments = info.imageviews.data();
     framebuffer_ci.width = info.width;
     framebuffer_ci.height = info.height;
     framebuffer_ci.layers = info.layers;
 
-    OnRet(vkCreateFramebuffer(render_pass.device, &framebuffer_ci, nullptr, framebuffer), "Failed to create framebuffer");
-    OnName(framebuffer);
+    OnRet(vkCreateFramebuffer(device, &framebuffer_ci, nullptr, framebuffer), "Failed to create framebuffer");
+    OnName(framebuffer, info.__name);
 
     return Ok(std::move(framebuffer));
 }

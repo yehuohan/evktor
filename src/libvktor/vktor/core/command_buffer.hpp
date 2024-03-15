@@ -1,5 +1,5 @@
 #pragma once
-#include "__builder.hpp"
+#include "__core.hpp"
 #include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
@@ -10,9 +10,9 @@ struct CommandPool;
 /**
  * @brief Command buffer
  *
- * `CommandBuffer` must be allocated with `CommandPool::requestCommandBuffer()`.
+ * `CommandBuffer` must be allocated with `CommandPool::allocate()`.
  */
-struct CommandBuffer : public BuiltResource<VkCommandBuffer, VK_OBJECT_TYPE_COMMAND_BUFFER, Device> {
+struct CommandBuffer : public CoreResource<VkCommandBuffer, VK_OBJECT_TYPE_COMMAND_BUFFER, Device> {
     const CommandPool& command_pool;
 
     enum class Level {
@@ -20,7 +20,7 @@ struct CommandBuffer : public BuiltResource<VkCommandBuffer, VK_OBJECT_TYPE_COMM
         Secondary = VK_COMMAND_BUFFER_LEVEL_SECONDARY,
     };
 
-    CommandBuffer(const CommandPool& command_pool, Name&& name = "CommandBuffer");
+    CommandBuffer(const CommandPool& command_pool);
     CommandBuffer(CommandBuffer&&);
     ~CommandBuffer();
 

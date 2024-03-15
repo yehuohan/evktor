@@ -1,16 +1,12 @@
 #pragma once
-#include "__builder.hpp"
+#include "__core.hpp"
 #include "device.hpp"
 #include "swapchain.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-struct RenderPass : public BuiltResource<VkRenderPass, VK_OBJECT_TYPE_RENDER_PASS, Device> {
-    RenderPass(const Device& device, Name&& name) : BuiltResource(device, std::move(name)) {}
-    RenderPass(RenderPass&&);
-    ~RenderPass();
-};
+struct RenderPass;
 
 struct AttachmentOps {
     VkAttachmentLoadOp load = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -61,19 +57,16 @@ struct RenderSubpassInfo {
     uint32_t depthstencil = VK_ATTACHMENT_UNUSED;
 };
 
-struct RenderPassInfo : public BuilderInfo {
+class RenderPassState : public CoreStater<RenderPassState> {
+    friend struct RenderPass;
+
+private:
     /** All attachment description for all subpasses of render pass */
     Vector<VkAttachmentDescription> attm_descs{};
     Vector<RenderSubpassInfo> subpasses{};
-};
-
-class RenderPassBuilder : public Builder<RenderPassBuilder, RenderPass, RenderPassInfo> {
-private:
-    const Device& device;
 
 public:
-    explicit RenderPassBuilder(const Device& device, Name&& name = "RenderPass") : Builder(std::move(name)), device(device) {}
-    virtual Built build() override;
+    explicit RenderPassState(Name&& name = "RenderPass") : CoreStater(std::move(name)) {}
 
     Self addAttachment(VkFormat format,
                        VkSampleCountFlagBits samples,
@@ -98,6 +91,16 @@ public:
     }
     Self addSubpass(Vector<uint32_t>&& input, Vector<uint32_t>&& color, uint32_t depthstencil = VK_ATTACHMENT_UNUSED);
     Self addSubpass(const RenderSubpassInfo& subpass);
+
+    Res<RenderPass> into(const Device& device) const;
+};
+
+struct RenderPass : public CoreResource<VkRenderPass, VK_OBJECT_TYPE_RENDER_PASS, Device> {
+    RenderPass(const Device& device) : CoreResource(device) {}
+    RenderPass(RenderPass&&);
+    ~RenderPass();
+
+    static Res<RenderPass> from(const Device& device, const RenderPassState& info);
 };
 
 NAMESPACE_END(core)

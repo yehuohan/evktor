@@ -1,5 +1,5 @@
 #pragma once
-#include "__builder.hpp"
+#include "__core.hpp"
 #include "instance.hpp"
 #include "physical_device.hpp"
 #include "queue.hpp"
@@ -8,7 +8,21 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-struct Device : public BuiltHandle<VkDevice> {
+struct Device;
+
+class DeviceState : public CoreStater<DeviceState> {
+    friend struct Device;
+
+private:
+    VkResult createMemAllocator(Device& device) const;
+
+public:
+    explicit DeviceState(Name&& name = "Device") : CoreStater(std::move(name)) {}
+
+    Res<Device> into(const Instance& instance, const PhysicalDevice& phy_dev);
+};
+
+struct Device : public CoreHandle<VkDevice> {
     const Instance& instance;
     const PhysicalDevice& physical_device;
 
@@ -16,31 +30,14 @@ struct Device : public BuiltHandle<VkDevice> {
     HashMap<uint32_t, Vector<Queue>> queue_indices{}; /**< Map queue family index to corresponding queue array */
     VmaAllocator mem_allocator = VK_NULL_HANDLE;
 
-    Device(const Instance& instance, const PhysicalDevice& physical_device, Name&& name)
-        : BuiltHandle(std::move(name))
-        , instance(instance)
+    Device(const Instance& instance, const PhysicalDevice& physical_device)
+        : instance(instance)
         , physical_device(physical_device) {}
     Device(Device&&);
     ~Device();
     OnConstType(VmaAllocator, mem_allocator);
-};
 
-struct DeviceInfo : public BuilderInfo {};
-
-class DeviceBuilder : public Builder<DeviceBuilder, Device, DeviceInfo> {
-private:
-    const Instance& instance;
-    const PhysicalDevice& physical_device;
-
-public:
-    explicit DeviceBuilder(const Instance& instance, const PhysicalDevice& phy_dev, Name&& name = "Device")
-        : Builder(std::move(name))
-        , instance(instance)
-        , physical_device(phy_dev) {}
-    virtual Built build() override;
-
-private:
-    VkResult createMemAllocator(Device& device);
+    static Res<Device> from(const Instance& instance, const PhysicalDevice& phy_dev, DeviceState& info);
 };
 
 NAMESPACE_END(core)

@@ -5,29 +5,7 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-using Self = PhysicalDeviceSelector::Self;
-
-PhysicalDevice::PhysicalDevice(PhysicalDevice&& rhs) : BuiltHandle(std::move(rhs.__name)) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    queue_families = std::move(rhs.queue_families);
-    queue_family_props = std::move(rhs.queue_family_props);
-    extensions = std::move(rhs.extensions);
-    // features = std::move(rhs.features);
-}
-
-PhysicalDevice::~PhysicalDevice() {
-    handle = VK_NULL_HANDLE;
-    queue_families.clear();
-    queue_family_props.clear();
-    extensions.clear();
-}
-
-bool PhysicalDevice::isExtensionEnabled(const char* extension) const {
-    return std::find_if(extensions.begin(), extensions.end(), [&extension](auto& ext) {
-               return std::strcmp(extension, ext) == 0;
-           }) != extensions.end();
-}
+using Self = PhysicalDeviceState::Self;
 
 void PhysicalDeviceDetails::collect(PhysicalDeviceDetails& details) {
     details.queue_family_props = enumerate<VkQueueFamilyProperties>(vkGetPhysicalDeviceQueueFamilyProperties,
@@ -96,54 +74,157 @@ void PhysicalDeviceDetails::print(const PhysicalDeviceDetails& details) {
            vec2str(details.transfer_indices));
 }
 
-Self PhysicalDeviceSelector::preferDiscreteGPU() {
-    info.preferred_type = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
+Self PhysicalDeviceState::preferDiscreteGPU() {
+    preferred_type = VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
     return *this;
 }
 
-Self PhysicalDeviceSelector::preferIntegratedGPU() {
-    info.preferred_type = VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU;
+Self PhysicalDeviceState::preferIntegratedGPU() {
+    preferred_type = VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU;
     return *this;
 }
 
-Self PhysicalDeviceSelector::requirePresentQueue(VkSurfaceKHR surface, bool require) {
-    info.surface = surface;
-    info.require_present_queue = require;
+Self PhysicalDeviceState::requirePresentQueue(VkSurfaceKHR _surface, bool require) {
+    surface = _surface;
+    require_present_queue = require;
     return *this;
 }
 
-Self PhysicalDeviceSelector::requireGraphicsQueue(bool require) {
-    info.require_graphics_queue = require;
+Self PhysicalDeviceState::requireGraphicsQueue(bool require) {
+    require_graphics_queue = require;
     return *this;
 }
 
-Self PhysicalDeviceSelector::requireComputeQueue(bool require) {
-    info.require_compute_queue = require;
+Self PhysicalDeviceState::requireComputeQueue(bool require) {
+    require_compute_queue = require;
     return *this;
 }
 
-Self PhysicalDeviceSelector::requireTransferQueue(bool require) {
-    info.require_transfer_queue = require;
+Self PhysicalDeviceState::requireTransferQueue(bool require) {
+    require_transfer_queue = require;
     return *this;
 }
 
-Self PhysicalDeviceSelector::addRequiredExtension(const char* extension) {
-    info.required_extensions.push_back(extension);
+Self PhysicalDeviceState::addRequiredExtension(const char* extension) {
+    required_extensions.push_back(extension);
     return *this;
 }
 
-Self PhysicalDeviceSelector::addRequiredExtensions(const Vector<const char*> extensions) {
-    info.required_extensions.insert(info.required_extensions.end(), extensions.begin(), extensions.end());
+Self PhysicalDeviceState::addRequiredExtensions(const Vector<const char*> extensions) {
+    required_extensions.insert(required_extensions.end(), extensions.begin(), extensions.end());
     return *this;
 }
 
-PhysicalDeviceSelector::Built PhysicalDeviceSelector::select() {
+bool PhysicalDeviceState::checkSuitable(const PhysicalDeviceDetails& details) {
+    if (require_present_queue && details.present_indices.size() == 0) {
+        return false;
+    }
+    if (require_graphics_queue && details.graphics_indices.size() == 0) {
+        return false;
+    }
+    if (require_compute_queue && details.compute_indices.size() == 0) {
+        return false;
+    }
+    if (require_transfer_queue && details.transfer_indices.size() == 0) {
+        return false;
+    }
+    if (!checkDeviceExtensions(details.physical_device, required_extensions)) {
+        return false;
+    }
+
+    return true;
+}
+
+PhysicalDevice PhysicalDeviceState::pickBestSuitable(const Vector<PhysicalDeviceDetails> details) {
+    const PhysicalDeviceDetails* pd = nullptr;
+    for (const auto& d : details) {
+        VkPhysicalDeviceProperties props;
+        vkGetPhysicalDeviceProperties(d.physical_device, &props);
+        if (preferred_type == props.deviceType) {
+            pd = &d;
+            break;
+        }
+    }
+    if (!pd) {
+        pd = &details.at(0);
+    }
+    VkPhysicalDeviceProperties props;
+    vkGetPhysicalDeviceProperties(pd->physical_device, &props);
+
+    std::string str(vktFmt("{} is selected {{\n", props.deviceName));
+    PhysicalDevice phy_dev{};
+    phy_dev.handle = pd->physical_device;
+
+    // Select the first queue family index by default
+    if (require_present_queue) {
+        uint32_t index = pd->present_indices[0];
+        phy_dev.queue_families.present = index;
+        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
+        phy_dev.queue_family_props[index].present = true;
+        str += vktFmt("    present index: {}\n", index);
+    }
+    if (require_graphics_queue) {
+        uint32_t index = pd->graphics_indices[0];
+        phy_dev.queue_families.graphics = index;
+        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
+        phy_dev.queue_family_props[index].graphics = true;
+        str += vktFmt("    graphics index: {}\n", index);
+    }
+    if (require_compute_queue) {
+        uint32_t index = pd->compute_indices[0];
+        phy_dev.queue_families.compute = index;
+        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
+        phy_dev.queue_family_props[index].compute = true;
+        str += vktFmt("    compute index: {}\n", index);
+    }
+    if (require_transfer_queue) {
+        uint32_t index = pd->transfer_indices[0];
+        phy_dev.queue_families.transfer = index;
+        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
+        phy_dev.queue_family_props[index].transfer = true;
+        str += vktFmt("    transfer index: {}\n", index);
+    }
+
+    str += "}";
+    vktOut("{}", str);
+    phy_dev.extensions = std::move(required_extensions);
+
+    return std::move(phy_dev);
+}
+
+Res<PhysicalDevice> PhysicalDeviceState::into(const Instance& instance) {
+    return PhysicalDevice::from(instance, *this);
+}
+
+PhysicalDevice::PhysicalDevice(PhysicalDevice&& rhs) {
+    handle = rhs.handle;
+    rhs.handle = VK_NULL_HANDLE;
+    queue_families = std::move(rhs.queue_families);
+    queue_family_props = std::move(rhs.queue_family_props);
+    extensions = std::move(rhs.extensions);
+    // features = std::move(rhs.features);
+}
+
+PhysicalDevice::~PhysicalDevice() {
+    handle = VK_NULL_HANDLE;
+    queue_families.clear();
+    queue_family_props.clear();
+    extensions.clear();
+}
+
+bool PhysicalDevice::isExtensionEnabled(const char* extension) const {
+    return std::find_if(extensions.begin(), extensions.end(), [&extension](auto& ext) {
+               return std::strcmp(extension, ext) == 0;
+           }) != extensions.end();
+}
+
+Res<PhysicalDevice> PhysicalDevice::from(const Instance& instance, PhysicalDeviceState& info) {
     // Add required extensions for memory allocator
     if (instance.api_version >= VK_API_VERSION_1_1) {
-        addRequiredExtension(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
-        addRequiredExtension(VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME);
-        addRequiredExtension(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
-        addRequiredExtension(VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
+        info.addRequiredExtension(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
+        info.addRequiredExtension(VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME);
+        info.addRequiredExtension(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
+        info.addRequiredExtension(VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
         std::sort(info.required_extensions.begin(), info.required_extensions.end(), strLess);
         auto new_end = std::unique(info.required_extensions.begin(), info.required_extensions.end());
         info.required_extensions.erase(new_end, info.required_extensions.end());
@@ -168,7 +249,7 @@ PhysicalDeviceSelector::Built PhysicalDeviceSelector::select() {
         if (info.__verbose) {
             PhysicalDeviceDetails::print(details);
         }
-        if (checkSuitable(details)) {
+        if (info.checkSuitable(details)) {
             suitables.push_back(details);
         }
     }
@@ -177,85 +258,8 @@ PhysicalDeviceSelector::Built PhysicalDeviceSelector::select() {
     }
 
     // Pick the best suitable
-    PhysicalDevice phy_dev = pickBestSuitable(suitables);
+    PhysicalDevice phy_dev = info.pickBestSuitable(suitables);
     return Ok(std::move(phy_dev));
-}
-
-bool PhysicalDeviceSelector::checkSuitable(const PhysicalDeviceDetails& details) {
-    if (info.require_present_queue && details.present_indices.size() == 0) {
-        return false;
-    }
-    if (info.require_graphics_queue && details.graphics_indices.size() == 0) {
-        return false;
-    }
-    if (info.require_compute_queue && details.compute_indices.size() == 0) {
-        return false;
-    }
-    if (info.require_transfer_queue && details.transfer_indices.size() == 0) {
-        return false;
-    }
-    if (!checkDeviceExtensions(details.physical_device, info.required_extensions)) {
-        return false;
-    }
-
-    return true;
-}
-
-PhysicalDevice PhysicalDeviceSelector::pickBestSuitable(const Vector<PhysicalDeviceDetails> details) {
-    const PhysicalDeviceDetails* pd = nullptr;
-    for (const auto& d : details) {
-        VkPhysicalDeviceProperties props;
-        vkGetPhysicalDeviceProperties(d.physical_device, &props);
-        if (info.preferred_type == props.deviceType) {
-            pd = &d;
-            break;
-        }
-    }
-    if (!pd) {
-        pd = &details.at(0);
-    }
-    VkPhysicalDeviceProperties props;
-    vkGetPhysicalDeviceProperties(pd->physical_device, &props);
-
-    std::string str(vktFmt("{} is selected {{\n", props.deviceName));
-    PhysicalDevice phy_dev(std::move(info.__name));
-    phy_dev.handle = pd->physical_device;
-
-    // Select the first queue family index by default
-    if (info.require_present_queue) {
-        uint32_t index = pd->present_indices[0];
-        phy_dev.queue_families.present = index;
-        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
-        phy_dev.queue_family_props[index].present = true;
-        str += vktFmt("    present index: {}\n", index);
-    }
-    if (info.require_graphics_queue) {
-        uint32_t index = pd->graphics_indices[0];
-        phy_dev.queue_families.graphics = index;
-        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
-        phy_dev.queue_family_props[index].graphics = true;
-        str += vktFmt("    graphics index: {}\n", index);
-    }
-    if (info.require_compute_queue) {
-        uint32_t index = pd->compute_indices[0];
-        phy_dev.queue_families.compute = index;
-        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
-        phy_dev.queue_family_props[index].compute = true;
-        str += vktFmt("    compute index: {}\n", index);
-    }
-    if (info.require_transfer_queue) {
-        uint32_t index = pd->transfer_indices[0];
-        phy_dev.queue_families.transfer = index;
-        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
-        phy_dev.queue_family_props[index].transfer = true;
-        str += vktFmt("    transfer index: {}\n", index);
-    }
-
-    str += "}";
-    vktOut("{}", str);
-    phy_dev.extensions = std::move(info.required_extensions);
-
-    return std::move(phy_dev);
 }
 
 NAMESPACE_END(core)

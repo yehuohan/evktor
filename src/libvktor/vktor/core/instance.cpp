@@ -5,9 +5,73 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-using Self = InstanceBuilder::Self;
+using Self = InstanceState::Self;
 
-Instance::Instance(Instance&& rhs) : BuiltHandle(std::move(rhs.__name)) {
+Self InstanceState::setAppName(const char* name) {
+    app_info.pApplicationName = name;
+    return *this;
+}
+
+Self InstanceState::setAppVerion(uint32_t version) {
+    app_info.applicationVersion = version;
+    return *this;
+}
+
+Self InstanceState::setEngineName(const char* name) {
+    app_info.pEngineName = name;
+    return *this;
+}
+
+Self InstanceState::setEngineVersion(uint32_t version) {
+    app_info.engineVersion = version;
+    return *this;
+}
+
+Self InstanceState::setApiVerion(uint32_t version) {
+    app_info.apiVersion = version;
+    return *this;
+}
+
+Self InstanceState::addLayer(const char* layer) {
+    layers.push_back(layer);
+    return *this;
+}
+
+Self InstanceState::addLayers(const Vector<const char*> _layers) {
+    layers.insert(layers.end(), _layers.begin(), _layers.end());
+    return *this;
+}
+
+Self InstanceState::addExtension(const char* extension) {
+    extensions.push_back(extension);
+    return *this;
+}
+
+Self InstanceState::addExtensions(const Vector<const char*>& _extensions) {
+    extensions.insert(extensions.end(), _extensions.begin(), _extensions.end());
+    return *this;
+}
+
+Self InstanceState::enableValidationLayers(bool enable) {
+    if (enable) {
+        layers.push_back("VK_LAYER_KHRONOS_validation");
+    }
+    return *this;
+}
+
+Self InstanceState::enableDebugUtils(bool enable, PFN_vkDebugUtilsMessengerCallbackEXT _debug_callback) {
+    enable_debug_utils = enable;
+    if (_debug_callback) {
+        debug_callback = _debug_callback;
+    }
+    return *this;
+}
+
+Res<Instance> InstanceState::into() {
+    return Instance::from(*this);
+}
+
+Instance::Instance(Instance&& rhs) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     debug_messenger = rhs.debug_messenger;
@@ -42,77 +106,17 @@ bool Instance::isExtensionEnabled(const char* extension) const {
            }) != extensions.end();
 }
 
-Self InstanceBuilder::setAppName(const char* name) {
-    info.app_info.pApplicationName = name;
-    return *this;
-}
-
-Self InstanceBuilder::setAppVerion(uint32_t version) {
-    info.app_info.applicationVersion = version;
-    return *this;
-}
-
-Self InstanceBuilder::setEngineName(const char* name) {
-    info.app_info.pEngineName = name;
-    return *this;
-}
-
-Self InstanceBuilder::setEngineVersion(uint32_t version) {
-    info.app_info.engineVersion = version;
-    return *this;
-}
-
-Self InstanceBuilder::setApiVerion(uint32_t version) {
-    info.app_info.apiVersion = version;
-    return *this;
-}
-
-Self InstanceBuilder::addLayer(const char* layer) {
-    info.layers.push_back(layer);
-    return *this;
-}
-
-Self InstanceBuilder::addLayers(const Vector<const char*> layers) {
-    info.layers.insert(info.layers.end(), layers.begin(), layers.end());
-    return *this;
-}
-
-Self InstanceBuilder::addExtension(const char* extension) {
-    info.extensions.push_back(extension);
-    return *this;
-}
-
-Self InstanceBuilder::addExtensions(const Vector<const char*>& extensions) {
-    info.extensions.insert(info.extensions.end(), extensions.begin(), extensions.end());
-    return *this;
-}
-
-Self InstanceBuilder::enableValidationLayers(bool enable) {
-    if (enable) {
-        info.layers.push_back("VK_LAYER_KHRONOS_validation");
-    }
-    return *this;
-}
-
-Self InstanceBuilder::enableDebugUtils(bool enable, PFN_vkDebugUtilsMessengerCallbackEXT debug_callback) {
-    info.enable_debug_utils = enable;
-    if (debug_callback) {
-        info.debug_callback = debug_callback;
-    }
-    return *this;
-}
-
-InstanceBuilder::Built InstanceBuilder::build() {
+Res<Instance> Instance::from(InstanceState& info) {
     // Initialize Vulkan loader
     OnRet(volkInitialize(), "Unable to initialize Vulkan loader");
 
     if (info.app_info.apiVersion >= VK_API_VERSION_1_1) {
         // Add required extensions for memory allocator
-        addExtension(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+        info.addExtension(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
     }
     if (info.enable_debug_utils) {
         // VK_EXT_debug_utils combines the functionality of both VK_EXT_debug_report and VK_EXT_debug_marker
-        addExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+        info.addExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
     std::sort(info.extensions.begin(), info.extensions.end(), strLess);
     auto new_end = std::unique(info.extensions.begin(), info.extensions.end());
@@ -141,7 +145,7 @@ InstanceBuilder::Built InstanceBuilder::build() {
         printInstanceExtensions(info.extensions);
     }
 
-    Instance instance(std::move(info.__name));
+    Instance instance{};
     OnRet(vkCreateInstance(&instance_ci, nullptr, instance), "Failed to create instance");
     instance.api_version = info.app_info.apiVersion;
     instance.layers = std::move(info.layers);

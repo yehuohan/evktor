@@ -5,16 +5,16 @@ NAMESPACE_BEGIN(vkt)
 using namespace core;
 
 Res<RenderPass> RenderPipeline::createRenderPass(const RenderTargetTable& render_target_table) const {
-    RenderPassBuilder builder(api);
+    RenderPassState rso{};
 
     for (const auto& rt : render_target_table.getTargets()) {
-        builder.addAttachment(rt.format, rt.samples, rt.ops, rt.stencil_ops, rt.layouts);
+        rso.addAttachment(rt.format, rt.samples, rt.ops, rt.stencil_ops, rt.layouts);
     }
     for (const auto& subpass : subpasses) {
-        builder.addSubpass(subpass.getInfo());
+        rso.addSubpass(subpass.getInfo());
     }
 
-    return builder();
+    return rso.into(api);
 }
 
 NAMESPACE_END(vkt)

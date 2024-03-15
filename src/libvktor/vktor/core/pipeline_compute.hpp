@@ -1,40 +1,37 @@
 #pragma once
-#include "__builder.hpp"
+#include "__core.hpp"
 #include "device.hpp"
-#include "pipeline_layout.hpp"
 #include "shader_module.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-struct ComputePipeline : public BuiltResource<VkPipeline, VK_OBJECT_TYPE_PIPELINE, Device> {
-    const PipelineLayout& pipeline_layout;
+struct ComputePipeline;
 
-    ComputePipeline(const PipelineLayout& layout, Name&& name)
-        : BuiltResource(layout.device, std::move(name))
-        , pipeline_layout(layout) {}
-    ComputePipeline(ComputePipeline&&);
-    ~ComputePipeline();
-    OnConstType(VkPipelineLayout, pipeline_layout.handle);
-};
+class ComputePipelineState : public CoreStater<ComputePipelineState> {
+    friend struct ComputePipeline;
 
-struct ComputePipelineInfo : public BuilderInfo {
+private:
     VkPipelineCreateFlags flags = 0;
     Opt<ShaderModule> shader{};
-};
-
-class ComputePipelineBuilder : public Builder<ComputePipelineBuilder, ComputePipeline, ComputePipelineInfo> {
-private:
-    const PipelineLayout& pipeline_layout;
+    VkPipelineLayout layout = VK_NULL_HANDLE;
 
 public:
-    explicit ComputePipelineBuilder(const PipelineLayout& layout, Name&& name = "GraphicsPipeline")
-        : Builder(std::move(name))
-        , pipeline_layout(layout) {}
-    virtual Built build() override;
+    explicit ComputePipelineState(Name&& name = "GraphicsPipeline") : CoreStater(std::move(name)) {}
 
     Self setFlags(VkPipelineCreateFlags flags);
     Self setShader(ShaderModule&& shader);
+    Self setPipelineLayout(VkPipelineLayout layout);
+
+    Res<ComputePipeline> into(const Device& device) const;
+};
+
+struct ComputePipeline : public CoreResource<VkPipeline, VK_OBJECT_TYPE_PIPELINE, Device> {
+    ComputePipeline(const Device& device) : CoreResource(device) {}
+    ComputePipeline(ComputePipeline&&);
+    ~ComputePipeline();
+
+    static Res<ComputePipeline> from(const Device& device, const ComputePipelineState& info);
 };
 
 NAMESPACE_END(core)

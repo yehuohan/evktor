@@ -1,33 +1,36 @@
 #pragma once
-#include "__builder.hpp"
+#include "__core.hpp"
 #include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-struct Sampler : BuiltResource<VkSampler, VK_OBJECT_TYPE_SAMPLER, Device> {
-    Sampler(const Device& device, Name&& name) : BuiltResource(device, std::move(name)) {}
-    Sampler(Sampler&&);
-    ~Sampler();
-};
+struct Sampler;
 
-struct SamplerInfo : public BuilderInfo {
-    VkSamplerCreateInfo sampler_ci;
-};
+class SamplerState : public CoreStater<SamplerState> {
+    friend struct Sampler;
 
-class SamplerBuilder : public Builder<SamplerBuilder, Sampler, SamplerInfo> {
 private:
-    const Device& device;
+    VkSamplerCreateInfo sampler_ci;
 
 public:
-    explicit SamplerBuilder(const Device& device, Name&& name = "Sampler") : Builder(std::move(name)), device(device) {
-        info.sampler_ci = Itor::SamplerCreateInfo();
+    explicit SamplerState(Name&& name = "Sampler") : CoreStater(std::move(name)) {
+        sampler_ci = Itor::SamplerCreateInfo();
         setNearest();
     }
-    virtual Built build() override;
 
     Self setNearest();
     Self setLinear();
+
+    Res<Sampler> into(const Device& device) const;
+};
+
+struct Sampler : CoreResource<VkSampler, VK_OBJECT_TYPE_SAMPLER, Device> {
+    Sampler(const Device& device) : CoreResource(device) {}
+    Sampler(Sampler&&);
+    ~Sampler();
+
+    static Res<Sampler> from(const Device& device, const SamplerState& info);
 };
 
 NAMESPACE_END(core)

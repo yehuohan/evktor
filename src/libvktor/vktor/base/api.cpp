@@ -9,6 +9,30 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
+Res<Ref<Instance>> BaseApi::init(InstanceState& info) {
+    auto res = info.into();
+    OnErr(res);
+    instance.reset();
+    instance = newBox<Instance>(res.unwrap());
+    return Ok(newRef(*instance));
+}
+
+Res<Ref<PhysicalDevice>> BaseApi::init(PhysicalDeviceState& info) {
+    auto res = info.into(*this);
+    OnErr(res);
+    phy_dev.reset();
+    phy_dev = newBox<PhysicalDevice>(res.unwrap());
+    return Ok(newRef(*phy_dev));
+}
+
+Res<Ref<Device>> BaseApi::init(DeviceState& info) {
+    auto res = info.into(*this, *this);
+    OnErr(res);
+    dev.reset();
+    dev = newBox<Device>(res.unwrap());
+    return Ok(newRef(*dev));
+}
+
 Res<Ref<Queue>> BaseApi::presentQueue() const {
     Check(dev, "Device is invalid");
     if (dev->queues.present) {

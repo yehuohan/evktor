@@ -3,9 +3,33 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-using Self = BufferBuilder::Self;
+using Self = BufferState::Self;
 
-Buffer::Buffer(Buffer&& rhs) : BuiltResource(rhs.device, std::move(rhs.__name)) {
+Self BufferState::setSize(VkDeviceSize size) {
+    buffer_ci.size = size;
+    return *this;
+}
+
+Self BufferState::setUsage(VkBufferUsageFlags flags) {
+    buffer_ci.usage = flags;
+    return *this;
+}
+
+Self BufferState::setMemoryFlags(VmaAllocationCreateFlags flags) {
+    memory_flags = flags;
+    return *this;
+}
+
+Self BufferState::setMemoryUsage(VmaMemoryUsage usage) {
+    memory_usage = usage;
+    return *this;
+}
+
+Res<Buffer> BufferState::into(const Device& device) const {
+    return Buffer::from(device, *this);
+}
+
+Buffer::Buffer(Buffer&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     size = rhs.size;
@@ -73,28 +97,8 @@ void Buffer::copyTo(const CommandBuffer& cmdbuf, const Image& dst, const VkDevic
     device.queues.transfer->waitIdle();
 }
 
-Self BufferBuilder::setSize(VkDeviceSize size) {
-    info.buffer_ci.size = size;
-    return *this;
-}
-
-Self BufferBuilder::setUsage(VkBufferUsageFlags flags) {
-    info.buffer_ci.usage = flags;
-    return *this;
-}
-
-Self BufferBuilder::setMemoryFlags(VmaAllocationCreateFlags flags) {
-    info.memory_flags = flags;
-    return *this;
-}
-
-Self BufferBuilder::setMemoryUsage(VmaMemoryUsage usage) {
-    info.memory_usage = usage;
-    return *this;
-}
-
-BufferBuilder::Built BufferBuilder::build() {
-    Buffer buffer(device, std::move(info.__name));
+Res<Buffer> Buffer::from(const Device& device, const BufferState& info) {
+    Buffer buffer(device);
 
     VmaAllocationCreateInfo allocation_ci{};
     allocation_ci.flags = info.memory_flags;
@@ -103,18 +107,18 @@ BufferBuilder::Built BufferBuilder::build() {
 
     OnRet(vmaCreateBuffer(device, &info.buffer_ci, &allocation_ci, buffer, &buffer.allocation, &allocation_info),
           "Failed to create buffer");
-    OnName(buffer);
+    OnName(buffer, info.__name);
     buffer.size = info.buffer_ci.size;
     buffer.memory = allocation_info.deviceMemory;
 
     return Ok(std::move(buffer));
 }
 
-BufferBuilder::Built BufferBuilder::build_native(VkMemoryPropertyFlags memory_props) {
-    Buffer buffer(device, std::move(info.__name));
+Res<Buffer> Buffer::native_from(const Device& device, const BufferState& info, VkMemoryPropertyFlags memory_props) {
+    Buffer buffer(device);
 
     OnRet(vkCreateBuffer(device, &info.buffer_ci, nullptr, buffer), "Failed to create buffer");
-    OnName(buffer);
+    OnName(buffer, info.__name);
     buffer.size = info.buffer_ci.size;
 
     // Allocate memory for buffer

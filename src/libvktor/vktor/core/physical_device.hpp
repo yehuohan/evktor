@@ -1,33 +1,12 @@
 #pragma once
-#include "__builder.hpp"
+#include "__core.hpp"
 #include "instance.hpp"
 #include "queue.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-struct PhysicalDevice : public BuiltHandle<VkPhysicalDevice> {
-    QueueFamilies queue_families{};
-    HashMap<uint32_t, QueueFamilyProps> queue_family_props{}; /**< Map queue family index to it's properties */
-    Vector<const char*> extensions{};                         /**< Enabled extensions for device */
-    // VkPhysicalDeviceFeatures features{};
-
-    PhysicalDevice(Name&& name) : BuiltHandle(std::move(name)) {}
-    PhysicalDevice(PhysicalDevice&&);
-    ~PhysicalDevice();
-    bool isExtensionEnabled(const char* extension) const;
-};
-
-struct PhysicalDeviceInfo : public BuilderInfo {
-    VkSurfaceKHR surface = VK_NULL_HANDLE;
-    VkPhysicalDeviceType preferred_type = VK_PHYSICAL_DEVICE_TYPE_MAX_ENUM;
-    bool require_present_queue = false;
-    bool require_graphics_queue = false;
-    bool require_compute_queue = false;
-    bool require_transfer_queue = false;
-    Vector<const char*> required_extensions{};
-    // VkPhysicalDeviceFeatures required_features{};
-};
+struct PhysicalDevice;
 
 /**
  * @brief Details of physical device for helping pick best suitable one
@@ -47,18 +26,27 @@ struct PhysicalDeviceDetails {
     static void print(const PhysicalDeviceDetails& details);
 };
 
-class PhysicalDeviceSelector : public Builder<PhysicalDeviceSelector, PhysicalDevice, PhysicalDeviceInfo> {
+class PhysicalDeviceState : public CoreStater<PhysicalDeviceState> {
+    friend struct PhysicalDevice;
+
 private:
-    const Instance& instance;
+    VkSurfaceKHR surface = VK_NULL_HANDLE;
+    VkPhysicalDeviceType preferred_type = VK_PHYSICAL_DEVICE_TYPE_MAX_ENUM;
+    bool require_present_queue = false;
+    bool require_graphics_queue = false;
+    bool require_compute_queue = false;
+    bool require_transfer_queue = false;
+    Vector<const char*> required_extensions{};
+    // VkPhysicalDeviceFeatures required_features{};
+
+private:
+    /** Check required items */
+    bool checkSuitable(const PhysicalDeviceDetails& details);
+    /** Check preferred items */
+    PhysicalDevice pickBestSuitable(const Vector<PhysicalDeviceDetails> details);
 
 public:
-    explicit PhysicalDeviceSelector(const Instance& instance, Name&& name = "PhysicalDevice")
-        : Builder(std::move(name))
-        , instance(instance) {}
-    virtual Built build() override {
-        return select();
-    }
-    Built select();
+    explicit PhysicalDeviceState(Name&& name = "PhysicalDevice") : CoreStater(std::move(name)) {}
 
     Self preferDiscreteGPU();
     Self preferIntegratedGPU();
@@ -74,11 +62,21 @@ public:
     Self addRequiredExtensions(const Vector<const char*> extensions);
     // Self setRequiredFeatures(const VkPhysicalDeviceFeatures& features);
 
-private:
-    /** Check required items */
-    bool checkSuitable(const PhysicalDeviceDetails& details);
-    /** Check preferred items */
-    PhysicalDevice pickBestSuitable(const Vector<PhysicalDeviceDetails> details);
+    Res<PhysicalDevice> into(const Instance& instance);
+};
+
+struct PhysicalDevice : public CoreHandle<VkPhysicalDevice> {
+    QueueFamilies queue_families{};
+    HashMap<uint32_t, QueueFamilyProps> queue_family_props{}; /**< Map queue family index to it's properties */
+    Vector<const char*> extensions{};                         /**< Enabled extensions for device */
+    // VkPhysicalDeviceFeatures features{};
+
+    PhysicalDevice() {}
+    PhysicalDevice(PhysicalDevice&&);
+    ~PhysicalDevice();
+    bool isExtensionEnabled(const char* extension) const;
+
+    static Res<PhysicalDevice> from(const Instance& instance, PhysicalDeviceState& info);
 };
 
 NAMESPACE_END(core)

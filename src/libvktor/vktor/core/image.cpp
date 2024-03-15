@@ -3,7 +3,7 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-using Self = ImageBuilder::Self;
+using Self = ImageState::Self;
 
 static VkImageType getType(const VkExtent3D& extent) {
     uint32_t dim = 0;
@@ -26,7 +26,68 @@ static VkImageType getType(const VkExtent3D& extent) {
     return type;
 }
 
-Image::Image(Image&& rhs) : BuiltResource(rhs.device, std::move(rhs.__name)) {
+Self ImageState::setFormat(VkFormat format) {
+    image_ci.format = format;
+    return *this;
+}
+
+Self ImageState::setExtent(const VkExtent3D& extent) {
+    image_ci.extent = extent;
+    image_ci.imageType = getType(extent);
+    return *this;
+}
+
+Self ImageState::setMipLevels(uint32_t mip_levels) {
+    image_ci.mipLevels = mip_levels;
+    return *this;
+}
+
+Self ImageState::setArrayLayers(uint32_t array_layers) {
+    image_ci.arrayLayers = array_layers;
+    return *this;
+}
+
+Self ImageState::setSamples(VkSampleCountFlagBits samples) {
+    image_ci.samples = samples;
+    return *this;
+}
+
+Self ImageState::setTiling(VkImageTiling tiling) {
+    image_ci.tiling = tiling;
+    return *this;
+}
+
+Self ImageState::setUsage(VkImageUsageFlags usage) {
+    image_ci.usage = usage;
+    return *this;
+}
+
+Self ImageState::setLayout(VkImageLayout layout) {
+    image_ci.initialLayout = layout;
+    return *this;
+}
+
+Self ImageState::setMemoryFlags(VmaAllocationCreateFlags flags) {
+    if ((flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT) ||
+        (flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT)) {
+        if (image_ci.tiling != VK_IMAGE_TILING_LINEAR) {
+            LogW("Image should use linear tiling for host access");
+        }
+    }
+    memory_flags = flags;
+    return *this;
+}
+
+Self ImageState::setMemoryUsage(VmaMemoryUsage usage) {
+    memory_usage = usage;
+    return *this;
+}
+
+Res<Image> ImageState::into(const Device& device) const {
+    return Image::from(device, *this);
+}
+
+Image::Image(Image&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     memory = rhs.memory;
@@ -46,35 +107,12 @@ Image::Image(Image&& rhs) : BuiltResource(rhs.device, std::move(rhs.__name)) {
 
 Image::~Image() {
     if (handle && allocation) {
-        // If allocation is VK_NULL_HANDLE, means this image is not created from ImageBuilder, but from Image::build().
+        // If allocation is VK_NULL_HANDLE, means this image is not created from ImageState, but from Image::build().
         vmaDestroyImage(device, handle, allocation);
     }
     handle = VK_NULL_HANDLE;
     memory = VK_NULL_HANDLE;
     allocation = VK_NULL_HANDLE;
-}
-
-Image Image::build(const Device& device,
-                   const VkImage _image,
-                   VkFormat _format,
-                   VkExtent3D _extent,
-                   uint32_t _mip_levels,
-                   uint32_t _array_layers,
-                   VkSampleCountFlagBits _samples,
-                   VkImageTiling _tiling,
-                   VkImageUsageFlags _usage,
-                   Name&& name) {
-    Image image(device, std::move(name));
-    image.handle = _image;
-    image.type = getType(_extent);
-    image.format = _format;
-    image.extent = _extent;
-    image.mip_levels = _mip_levels;
-    image.array_layers = _array_layers;
-    image.samples = _samples;
-    image.tiling = _tiling;
-    image.usage = _usage;
-    return std::move(image);
 }
 
 void Image::copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size) const {
@@ -149,65 +187,8 @@ void Image::genMipmaps(const CommandBuffer& cmdbuf) const {
     device.queues.transfer->waitIdle();
 }
 
-Self ImageBuilder::setFormat(VkFormat format) {
-    info.image_ci.format = format;
-    return *this;
-}
-
-Self ImageBuilder::setExtent(const VkExtent3D& extent) {
-    info.image_ci.extent = extent;
-    info.image_ci.imageType = getType(extent);
-    return *this;
-}
-
-Self ImageBuilder::setMipLevels(uint32_t mip_levels) {
-    info.image_ci.mipLevels = mip_levels;
-    return *this;
-}
-
-Self ImageBuilder::setArrayLayers(uint32_t array_layers) {
-    info.image_ci.arrayLayers = array_layers;
-    return *this;
-}
-
-Self ImageBuilder::setSamples(VkSampleCountFlagBits samples) {
-    info.image_ci.samples = samples;
-    return *this;
-}
-
-Self ImageBuilder::setTiling(VkImageTiling tiling) {
-    info.image_ci.tiling = tiling;
-    return *this;
-}
-
-Self ImageBuilder::setUsage(VkImageUsageFlags usage) {
-    info.image_ci.usage = usage;
-    return *this;
-}
-
-Self ImageBuilder::setLayout(VkImageLayout layout) {
-    info.image_ci.initialLayout = layout;
-    return *this;
-}
-
-Self ImageBuilder::setMemoryFlags(VmaAllocationCreateFlags flags) {
-    if ((flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT) ||
-        (flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT)) {
-        if (info.image_ci.tiling != VK_IMAGE_TILING_LINEAR) {
-            LogW("Image should use linear tiling for host access");
-        }
-    }
-    info.memory_flags = flags;
-    return *this;
-}
-
-Self ImageBuilder::setMemoryUsage(VmaMemoryUsage usage) {
-    info.memory_usage = usage;
-    return *this;
-}
-
-ImageBuilder::Built ImageBuilder::build() {
-    Image image(device, std::move(info.__name));
+Res<Image> Image::from(const Device& device, const ImageState& info) {
+    Image image(device);
 
     VmaAllocationCreateInfo allocation_ci{};
     allocation_ci.flags = info.memory_flags;
@@ -216,7 +197,7 @@ ImageBuilder::Built ImageBuilder::build() {
 
     OnRet(vmaCreateImage(device, &info.image_ci, &allocation_ci, image, &image.allocation, &allocation_info),
           "Failed to create image");
-    OnName(image);
+    OnName(image, info.__name);
     image.type = info.image_ci.imageType;
     image.format = info.image_ci.format;
     image.extent = info.image_ci.extent;
@@ -229,6 +210,28 @@ ImageBuilder::Built ImageBuilder::build() {
     image.memory = allocation_info.deviceMemory;
 
     return Ok(std::move(image));
+}
+
+Image Image::from(const Device& device,
+                  const VkImage _image,
+                  VkFormat _format,
+                  VkExtent3D _extent,
+                  uint32_t _mip_levels,
+                  uint32_t _array_layers,
+                  VkSampleCountFlagBits _samples,
+                  VkImageTiling _tiling,
+                  VkImageUsageFlags _usage) {
+    Image image(device);
+    image.handle = _image;
+    image.type = getType(_extent);
+    image.format = _format;
+    image.extent = _extent;
+    image.mip_levels = _mip_levels;
+    image.array_layers = _array_layers;
+    image.samples = _samples;
+    image.tiling = _tiling;
+    image.usage = _usage;
+    return std::move(image);
 }
 
 bool isDepthOnlyFormat(VkFormat format) {

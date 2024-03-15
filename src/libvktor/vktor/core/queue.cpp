@@ -5,7 +5,7 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-Queue::Queue(Queue&& rhs) : BuiltHandle(std::move(rhs.__name)), family_index(rhs.family_index), index(rhs.index) {
+Queue::Queue(Queue&& rhs) : family_index(rhs.family_index), index(rhs.index) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
 }

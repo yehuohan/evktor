@@ -4,14 +4,9 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-CommandBuffer::CommandBuffer(const CommandPool& command_pool, Name&& name)
-    : BuiltResource(command_pool.device, std::move(name))
-    , command_pool(command_pool) {}
+CommandBuffer::CommandBuffer(const CommandPool& command_pool) : CoreResource(command_pool.device), command_pool(command_pool) {}
 
-CommandBuffer::CommandBuffer(CommandBuffer&& rhs)
-    : BuiltResource(rhs.device, std::move(rhs.__name))
-    , command_pool(rhs.command_pool) {
-    __name = std::move(rhs.__name);
+CommandBuffer::CommandBuffer(CommandBuffer&& rhs) : CoreResource(rhs.device), command_pool(rhs.command_pool) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
 }

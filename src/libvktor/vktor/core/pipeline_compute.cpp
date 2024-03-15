@@ -3,11 +3,28 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-using Self = ComputePipelineBuilder::Self;
+using Self = ComputePipelineState::Self;
 
-ComputePipeline::ComputePipeline(ComputePipeline&& rhs)
-    : BuiltResource(rhs.device, std::move(rhs.__name))
-    , pipeline_layout(rhs.pipeline_layout) {
+Self ComputePipelineState::setFlags(VkPipelineCreateFlags _flags) {
+    flags = _flags;
+    return *this;
+}
+
+Self ComputePipelineState::setShader(ShaderModule&& _shader) {
+    shader.emplace(std::move(_shader));
+    return *this;
+}
+
+Self ComputePipelineState::setPipelineLayout(VkPipelineLayout _layout) {
+    layout = _layout;
+    return *this;
+}
+
+Res<ComputePipeline> ComputePipelineState::into(const Device& device) const {
+    return ComputePipeline::from(device, *this);
+}
+
+ComputePipeline::ComputePipeline(ComputePipeline&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
 }
@@ -19,18 +36,8 @@ ComputePipeline::~ComputePipeline() {
     handle = VK_NULL_HANDLE;
 }
 
-Self ComputePipelineBuilder::setFlags(VkPipelineCreateFlags flags) {
-    info.flags = flags;
-    return *this;
-}
-
-Self ComputePipelineBuilder::setShader(ShaderModule&& shader) {
-    info.shader.emplace(std::move(shader));
-    return *this;
-}
-
-ComputePipelineBuilder::Built ComputePipelineBuilder::build() {
-    ComputePipeline pipeline(pipeline_layout, std::move(info.__name));
+Res<ComputePipeline> ComputePipeline::from(const Device& device, const ComputePipelineState& info) {
+    ComputePipeline pipeline(device);
     auto pipeline_ci = Itor::ComputePipelineCreateInfo();
     pipeline_ci.flags = info.flags;
     pipeline_ci.stage = Itor::PipelineShaderStageCreateInfo();
@@ -40,13 +47,13 @@ ComputePipelineBuilder::Built ComputePipelineBuilder::build() {
         pipeline_ci.stage.module = s;
         pipeline_ci.stage.pName = s.entry.c_str();
     }
-    pipeline_ci.layout = pipeline_layout;
+    pipeline_ci.layout = info.layout;
     pipeline_ci.basePipelineHandle = VK_NULL_HANDLE;
     pipeline_ci.basePipelineIndex = -1;
 
-    OnRet(vkCreateComputePipelines(pipeline_layout.device, VK_NULL_HANDLE, 1, &pipeline_ci, nullptr, pipeline),
+    OnRet(vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &pipeline_ci, nullptr, pipeline),
           "Failed to create compute pipeline");
-    OnName(pipeline);
+    OnName(pipeline, info.__name);
 
     return Ok(std::move(pipeline));
 }

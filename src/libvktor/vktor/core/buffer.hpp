@@ -1,5 +1,5 @@
 #pragma once
-#include "__builder.hpp"
+#include "__core.hpp"
 #include "command_buffer.hpp"
 #include "device.hpp"
 #include "image.hpp"
@@ -7,12 +7,43 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-struct Buffer : public BuiltResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
+struct Buffer;
+
+class BufferState : public CoreStater<BufferState> {
+    friend struct Buffer;
+
+private:
+    VkBufferCreateInfo buffer_ci;
+    VmaAllocationCreateFlags memory_flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
+    VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO;
+
+public:
+    explicit BufferState(Name&& name = "Buffer") : CoreStater(std::move(name)) {
+        buffer_ci = Itor::BufferCreateInfo();
+        buffer_ci.flags = 0;
+        buffer_ci.size = 0;
+        buffer_ci.usage = VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT;
+        // TODO: Support exclusive and concurrent mode
+        buffer_ci.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        buffer_ci.queueFamilyIndexCount = 0;
+        buffer_ci.pQueueFamilyIndices = nullptr;
+    }
+
+    Self setSize(VkDeviceSize size);
+    Self setUsage(VkBufferUsageFlags flags);
+
+    Self setMemoryFlags(VmaAllocationCreateFlags flags);
+    Self setMemoryUsage(VmaMemoryUsage usage);
+
+    Res<Buffer> into(const Device& device) const;
+};
+
+struct Buffer : public CoreResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
     VkDeviceSize size = 0;
     VkDeviceMemory memory = VK_NULL_HANDLE;
     VmaAllocation allocation = VK_NULL_HANDLE;
 
-    Buffer(const Device& device, Name&& name) : BuiltResource(device, std::move(name)) {}
+    Buffer(const Device& device) : CoreResource(device) {}
     Buffer(Buffer&&);
     ~Buffer();
     OnConstType(VkDeviceMemory, memory);
@@ -47,40 +78,14 @@ struct Buffer : public BuiltResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
      * @param dst_size Give 0 to use `size`
      */
     void copyTo(const CommandBuffer& cmdbuf, const Image& dst, const VkDeviceSize dst_size = 0) const;
-};
 
-struct BufferInfo : public BuilderInfo {
-    VkBufferCreateInfo buffer_ci;
-    VmaAllocationCreateFlags memory_flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
-    VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO;
-};
-
-class BufferBuilder : public Builder<BufferBuilder, Buffer, BufferInfo> {
-private:
-    const Device& device;
-
-public:
-    explicit BufferBuilder(const Device& device, Name&& name = "Buffer") : Builder(std::move(name)), device(device) {
-        info.buffer_ci = Itor::BufferCreateInfo();
-        info.buffer_ci.flags = 0;
-        info.buffer_ci.size = 0;
-        info.buffer_ci.usage = VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT;
-        // TODO: Support exclusive and concurrent mode
-        info.buffer_ci.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        info.buffer_ci.queueFamilyIndexCount = 0;
-        info.buffer_ci.pQueueFamilyIndices = nullptr;
-    }
-    virtual Built build() override;
+    static Res<Buffer> from(const Device& device, const BufferState& info);
     /**
-     * @brief Build buffer with native Vulkan api without device.mem_allocator for reference
+     * @brief Create buffer with native Vulkan api without device.mem_allocator for reference
      */
-    Built build_native(VkMemoryPropertyFlags memory_props = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-    Self setSize(VkDeviceSize size);
-    Self setUsage(VkBufferUsageFlags flags);
-
-    Self setMemoryFlags(VmaAllocationCreateFlags flags);
-    Self setMemoryUsage(VmaMemoryUsage usage);
+    static Res<Buffer> native_from(const Device& device,
+                                   const BufferState& info,
+                                   VkMemoryPropertyFlags memory_props = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 };
 
 NAMESPACE_END(core)

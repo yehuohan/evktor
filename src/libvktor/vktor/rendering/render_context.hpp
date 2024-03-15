@@ -21,7 +21,7 @@ public:
     /* Swapchain */
     OnConstType(VkSwapchainKHR, swapchain->handle);
 
-    void add(Swapchain&& _swapchain);
+    Res<Ref<Swapchain>> add(SwapchainState& info);
     inline const Swapchain& getSwapchain() const {
         Check(swapchain, "Swapchain is invalid");
         return *swapchain;

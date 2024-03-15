@@ -3,10 +3,19 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-using Self = DescriptorPoolBuilder::Self;
+using Self = DescriptorPoolState::Self;
+
+Self DescriptorPoolState::setMaxsets(uint32_t _maxsets) {
+    maxsets = _maxsets;
+    return *this;
+}
+
+Res<DescriptorPool> DescriptorPoolState::into(const DescriptorSetLayout& setlayout) const {
+    return DescriptorPool::from(setlayout, *this);
+}
 
 DescriptorPool::DescriptorPool(DescriptorPool&& rhs)
-    : BuiltResource(rhs.device, std::move(rhs.__name))
+    : CoreResource(rhs.device)
     , desc_setlayout(rhs.desc_setlayout)
     , maxsets(rhs.maxsets) {
     handle = rhs.handle;
@@ -22,34 +31,44 @@ DescriptorPool::~DescriptorPool() {
     count = 0;
 }
 
-Res<DescriptorSet> DescriptorPool::allocate() {
+Res<DescriptorSet> DescriptorPool::allocate(const Name& name) {
     auto descset = DescriptorSet(*this);
     auto descset_ai = Itor::DescriptorSetAllocateInfo();
     descset_ai.descriptorPool = *this;
     descset_ai.descriptorSetCount = 1;
     descset_ai.pSetLayouts = desc_setlayout;
     OnRet(vkAllocateDescriptorSets(device, &descset_ai, descset), "Failed to allocate descriptor set");
-    OnName(descset);
+    OnName(descset, name);
 
     count++;
     return Ok(std::move(descset));
+}
+
+bool DescriptorPool::free(const DescriptorSet& descset) {
+    if (descset.handle) {
+        auto res = vkFreeDescriptorSets(device, *this, 1, &descset.handle);
+        if (res == VK_SUCCESS) {
+            count--;
+            return true;
+        } else {
+            LogE("Failed to free descriptor set: {}", fmt::ptr(descset.handle));
+        }
+    } else {
+        LogW("Try to free a null descriptor set");
+    }
+    return false;
 }
 
 bool DescriptorPool::available() const {
     return count < maxsets;
 }
 
-Self DescriptorPoolBuilder::setMaxsets(uint32_t maxsets) {
-    info.maxsets = maxsets;
-    return *this;
-}
-
-DescriptorPoolBuilder::Built DescriptorPoolBuilder::build() {
-    DescriptorPool descriptor_pool(desc_setlayout, info.maxsets, std::move(info.__name));
+Res<DescriptorPool> DescriptorPool::from(const DescriptorSetLayout& setlayout, const DescriptorPoolState& info) {
+    DescriptorPool descriptor_pool(setlayout, info.maxsets);
 
     // Get poolsize from setlayout
     HashMap<VkDescriptorType, uint32_t> desc_types{};
-    for (const auto& item : desc_setlayout.bindings) {
+    for (const auto& item : setlayout.bindings) {
         const auto& binding = item.second;
         // HashMap operator[] will invoke uint32_t's default construct that will give 0
         desc_types[binding.descriptorType] += binding.descriptorCount;
@@ -66,9 +85,8 @@ DescriptorPoolBuilder::Built DescriptorPoolBuilder::build() {
     descpool_ci.maxSets = info.maxsets;
     descpool_ci.poolSizeCount = u32(poolsizes.size());
     descpool_ci.pPoolSizes = poolsizes.data();
-    OnRet(vkCreateDescriptorPool(desc_setlayout.device, &descpool_ci, nullptr, descriptor_pool),
-          "Failed to create descriptor pool");
-    OnName(descriptor_pool);
+    OnRet(vkCreateDescriptorPool(setlayout.device, &descpool_ci, nullptr, descriptor_pool), "Failed to create descriptor pool");
+    OnName(descriptor_pool, info.__name);
 
     return Ok(std::move(descriptor_pool));
 }
@@ -83,7 +101,7 @@ DescriptorPooler::~DescriptorPooler() {
 
 Res<Ref<DescriptorPool>> DescriptorPooler::get() {
     if (desc_pools.empty() || !desc_pools.back().available()) {
-        auto res = DescriptorPoolBuilder(desc_setlayout).setMaxsets(VKT_CORE_MAX_SETS).build();
+        auto res = DescriptorPoolState().setMaxsets(VKT_CORE_MAX_SETS).into(desc_setlayout);
         OnErr(res);
         desc_pools.push_back(res.unwrap());
     }

@@ -1,8 +1,52 @@
 #pragma once
-#include "__builder.hpp"
+#include "debug.hpp"
+#include "vktor/config.hpp"
+#include <string>
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
+
+/**
+ * @brief Return Er on non-success Vulkan result
+ *
+ * 'r' must not be '__ret__'
+ */
+#define OnRet(r, f, ...)                                                              \
+    {                                                                                 \
+        VkResult __ret__ = (r);                                                       \
+        if (__ret__ != VK_SUCCESS) {                                                  \
+            return Er("[VkResult = {}] " f, VkStr(VkResult, __ret__), ##__VA_ARGS__); \
+        }                                                                             \
+    }
+
+/**
+ * @brief Conversion constructor
+ *
+ * This is mainly for the Vulkan handle
+ */
+#define OnType(Type, Var)   \
+    OnConstType(Type, Var); \
+    operator Type*() {      \
+        return &Var;        \
+    }
+
+/**
+ * @brief Const conversion constructor
+ *
+ * This is mainly for the const Vulkan handle
+ */
+#define OnConstType(Type, Var)     \
+    operator const Type() const {  \
+        return Var;                \
+    }                              \
+    operator const Type*() const { \
+        return &Var;               \
+    }
+
+#define OnName(r, n) OnRet(r.setDebugName(n), "Failed to set debug name: {}", n)
+
+/** A lite string as name */
+typedef std::string Name;
 
 /**
  * @brief Vulkan core handle type

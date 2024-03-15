@@ -3,11 +3,74 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-using Self = GraphicsPipelineBuilder::Self;
+using Self = GraphicsPipelineState::Self;
 
-GraphicsPipeline::GraphicsPipeline(GraphicsPipeline&& rhs)
-    : BuiltResource(rhs.device, std::move(rhs.__name))
-    , pipeline_layout(rhs.pipeline_layout) {
+Self GraphicsPipelineState::setFlags(VkPipelineCreateFlags _flags) {
+    flags = _flags;
+    return *this;
+}
+
+Self GraphicsPipelineState::addShader(ShaderModule&& shader) {
+    shaders.push_back(std::move(shader));
+    return *this;
+}
+
+Self GraphicsPipelineState::addVertexInputBinding(const VkVertexInputBindingDescription& binding) {
+    vert_input_bindings.push_back(binding);
+    return *this;
+}
+
+Self GraphicsPipelineState::addVertexInputBindings(const Vector<VkVertexInputBindingDescription>& bindings) {
+    vert_input_bindings.insert(vert_input_bindings.end(), bindings.begin(), bindings.end());
+    return *this;
+}
+
+Self GraphicsPipelineState::addVertexInputAttribute(const VkVertexInputAttributeDescription& attribute) {
+    vert_input_attributes.push_back(attribute);
+    return *this;
+}
+
+Self GraphicsPipelineState::addVertexInputAttributes(const Vector<VkVertexInputAttributeDescription>& attributes) {
+    vert_input_attributes.insert(vert_input_attributes.end(), attributes.begin(), attributes.end());
+    return *this;
+}
+
+Self GraphicsPipelineState::addViewport(const VkViewport& viewport) {
+    viewports.push_back(viewport);
+    return *this;
+}
+
+Self GraphicsPipelineState::addViewport(float x, float y, float width, float height, float min_depth, float max_depth) {
+    viewports.push_back(VkViewport{x, y, width, height, min_depth, max_depth});
+    return *this;
+}
+
+Self GraphicsPipelineState::addScissor(const VkRect2D& rect) {
+    scissors.push_back(rect);
+    return *this;
+}
+
+Self GraphicsPipelineState::addScissor(int32_t x, int32_t y, uint32_t width, uint32_t height) {
+    scissors.push_back(VkRect2D{x, y, width, height});
+    return *this;
+}
+
+Self GraphicsPipelineState::setRenderPass(VkRenderPass _render_pass, uint32_t subpass_index) {
+    render_pass = _render_pass;
+    subpass = subpass_index;
+    return *this;
+}
+
+Self GraphicsPipelineState::setPipelineLayout(VkPipelineLayout _layout) {
+    layout = _layout;
+    return *this;
+}
+
+Res<GraphicsPipeline> GraphicsPipelineState::into(const Device& device) const {
+    return GraphicsPipeline::from(device, *this);
+}
+
+GraphicsPipeline::GraphicsPipeline(GraphicsPipeline&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
 }
@@ -19,63 +82,7 @@ GraphicsPipeline::~GraphicsPipeline() {
     handle = VK_NULL_HANDLE;
 }
 
-Self GraphicsPipelineBuilder::setFlags(VkPipelineCreateFlags flags) {
-    info.flags = flags;
-    return *this;
-}
-
-Self GraphicsPipelineBuilder::addShader(ShaderModule&& shader) {
-    info.shaders.push_back(std::move(shader));
-    return *this;
-}
-
-Self GraphicsPipelineBuilder::addVertexInputBinding(const VkVertexInputBindingDescription& binding) {
-    info.vert_input_bindings.push_back(binding);
-    return *this;
-}
-
-Self GraphicsPipelineBuilder::addVertexInputBindings(const Vector<VkVertexInputBindingDescription>& bindings) {
-    info.vert_input_bindings.insert(info.vert_input_bindings.end(), bindings.begin(), bindings.end());
-    return *this;
-}
-
-Self GraphicsPipelineBuilder::addVertexInputAttribute(const VkVertexInputAttributeDescription& attribute) {
-    info.vert_input_attributes.push_back(attribute);
-    return *this;
-}
-
-Self GraphicsPipelineBuilder::addVertexInputAttributes(const Vector<VkVertexInputAttributeDescription>& attributes) {
-    info.vert_input_attributes.insert(info.vert_input_attributes.end(), attributes.begin(), attributes.end());
-    return *this;
-}
-
-Self GraphicsPipelineBuilder::addViewport(const VkViewport& viewport) {
-    info.viewports.push_back(viewport);
-    return *this;
-}
-
-Self GraphicsPipelineBuilder::addViewport(float x, float y, float width, float height, float min_depth, float max_depth) {
-    info.viewports.push_back(VkViewport{x, y, width, height, min_depth, max_depth});
-    return *this;
-}
-
-Self GraphicsPipelineBuilder::addScissor(const VkRect2D& rect) {
-    info.scissors.push_back(rect);
-    return *this;
-}
-
-Self GraphicsPipelineBuilder::addScissor(int32_t x, int32_t y, uint32_t width, uint32_t height) {
-    info.scissors.push_back(VkRect2D{x, y, width, height});
-    return *this;
-}
-
-Self GraphicsPipelineBuilder::setRenderPass(VkRenderPass render_pass, uint32_t subpass_index) {
-    info.render_pass = render_pass;
-    info.subpass = subpass_index;
-    return *this;
-}
-
-GraphicsPipelineBuilder::Built GraphicsPipelineBuilder::build() {
+Res<GraphicsPipeline> GraphicsPipeline::from(const Device& device, const GraphicsPipelineState& info) {
     // Setup shader stages
     Vector<VkPipelineShaderStageCreateInfo> shader_stages{};
     for (auto& s : info.shaders) {
@@ -164,7 +171,7 @@ GraphicsPipelineBuilder::Built GraphicsPipelineBuilder::build() {
     dynamic_sci.pDynamicStates = dynamics.data();
 
     // Create graphics pipeline
-    GraphicsPipeline pipeline(pipeline_layout, std::move(info.__name));
+    GraphicsPipeline pipeline(device);
     auto pipeline_ci = Itor::GraphicsPipelineCreateInfo();
     pipeline_ci.flags = info.flags;
     pipeline_ci.stageCount = u32(shader_stages.size());
@@ -178,15 +185,15 @@ GraphicsPipelineBuilder::Built GraphicsPipelineBuilder::build() {
     pipeline_ci.pDepthStencilState = nullptr; //&depth_stencil_sci;
     pipeline_ci.pColorBlendState = &color_blend_sci;
     pipeline_ci.pDynamicState = nullptr; //&dynamic_sci;
-    pipeline_ci.layout = pipeline_layout;
+    pipeline_ci.layout = info.layout;
     pipeline_ci.renderPass = info.render_pass;
     pipeline_ci.subpass = info.subpass;
     pipeline_ci.basePipelineHandle = VK_NULL_HANDLE;
     pipeline_ci.basePipelineIndex = -1;
 
-    OnRet(vkCreateGraphicsPipelines(pipeline_layout.device, VK_NULL_HANDLE, 1, &pipeline_ci, nullptr, pipeline),
+    OnRet(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipeline_ci, nullptr, pipeline),
           "Failed to create graphics pipeline");
-    OnName(pipeline);
+    OnName(pipeline, info.__name);
 
     return Ok(std::move(pipeline));
 }

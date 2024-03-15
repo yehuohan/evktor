@@ -25,15 +25,15 @@ void RenderFrame::reset() {
 }
 
 void RenderFrame::freeDescriptorSets(size_t thread_index) {
-    if (thread_index < desc_poolers.size()) {
-        desc_poolers[thread_index].clear();
-    } else {
-        LogW("The thread index to free is out of descriptor pooler array");
-    }
     if (thread_index < desc_sets.size()) {
         desc_sets[thread_index].clear();
     } else {
         LogW("The thread index to free is out of descriptor set array");
+    }
+    if (thread_index < desc_poolers.size()) {
+        desc_poolers[thread_index].clear();
+    } else {
+        LogW("The thread index to free is out of descriptor pooler array");
     }
 }
 
@@ -50,17 +50,17 @@ Res<Ref<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, si
         if (item != cmdpools.end()) {
             cmdpool = &item->second;
         } else {
-            auto res = CommandPoolBuilder(api)
+            auto res = CommandPoolState()
                            .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
                            .setQueueIndex(queue.family_index)
-                           .build();
+                           .into(api);
             OnErr(res);
             auto iter = cmdpools.insert({queue.family_index, res.unwrap()}).first;
             cmdpool = &iter->second;
         }
     }
 
-    return cmdpool->allocateCommandBuffer(CommandBuffer::Level::Primary);
+    return cmdpool->allocate(CommandBuffer::Level::Primary);
 }
 
 Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,

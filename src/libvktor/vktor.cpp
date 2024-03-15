@@ -12,18 +12,18 @@ void Vktor::addRenderContext() {
 Res<Ref<ShaderModule>> Vktor::requestShaderModule(const Shader& shader) {
     size_t key = hash(shader);
     return resource_cache.shader_modules.request(key, [this, &shader]() {
-        ShaderModuleBuilder builder(api);
-        builder.setFilename(shader.getFilename());
-        builder.setCode(std::string(shader.getCode()), shader.getStage());
-        builder.setEntry("main");
-        return builder();
+        ShaderModuleState sso{};
+        sso.setFilename(shader.getFilename());
+        sso.setCode(std::string(shader.getCode()), shader.getStage());
+        sso.setEntry("main");
+        return api.create(sso);
     });
 }
 
 Res<Ref<DescriptorSetLayout>> Vktor::requestDescriptorSetLayout(const uint32_t set, const Vector<const Shader*>& shaders) {
     size_t key = hash(set, shaders);
     return resource_cache.descriptor_setlayouts.request(key, [this, set, &shaders]() -> Res<DescriptorSetLayout> {
-        DescriptorSetLayoutBuilder builder(api);
+        DescriptorSetLayoutState dso{};
         for (const auto s : shaders) {
             if (!s) {
                 continue;
@@ -37,7 +37,7 @@ Res<Ref<DescriptorSetLayout>> Vktor::requestDescriptorSetLayout(const uint32_t s
                     auto item = desc_sets.find(set);
                     if (item != desc_sets.end()) {
                         for (const auto& d : item->second) {
-                            builder.addBinding(d.binding, static_cast<VkDescriptorType>(d.type), d.count, s->getStage());
+                            dso.addBinding(d.binding, static_cast<VkDescriptorType>(d.type), d.count, s->getStage());
                         }
                     }
                 }
@@ -48,7 +48,7 @@ Res<Ref<DescriptorSetLayout>> Vktor::requestDescriptorSetLayout(const uint32_t s
                           VkStr(VkShaderStageFlags, s->getStage()));
             }
         }
-        return builder();
+        return dso.into(api);
     });
 }
 
@@ -64,13 +64,13 @@ Res<Ref<PipelineLayout>> Vktor::requestPipelineLayout(const Vector<const Shader*
             }
         }
         // Collect all descriptor sets
-        PipelineLayoutBuilder builder(api);
+        PipelineLayoutState pso{};
         for (const auto& s : sets) {
             auto res = requestDescriptorSetLayout(s, shaders);
             OnErr(res);
-            builder.addDescriptorSetLayout(res.unwrap().get());
+            pso.addDescriptorSetLayout(res.unwrap().get());
         }
-        return builder();
+        return pso.into(api);
     });
 }
 
@@ -84,11 +84,12 @@ Res<Ref<RenderPass>> Vktor::requestRenderPass(const RenderTargetTable& render_ta
 
 Res<Ref<Framebuffer>> Vktor::requestFramebuffer(const RenderTargetTable& render_target_table, const RenderPass& render_pass) {
     size_t key = hash(render_target_table, render_pass);
-    return resource_cache.framebuffers.request(key, [&render_target_table, &render_pass]() {
-        FramebufferBuilder builder(render_pass);
-        builder.addAttachments(render_target_table.getImageViews());
-        builder.setExtent(render_target_table.getExtent());
-        return builder();
+    return resource_cache.framebuffers.request(key, [this, &render_target_table, &render_pass]() {
+        FramebufferState fso{};
+        fso.setRenderPass(render_pass);
+        fso.addAttachments(render_target_table.getImageViews());
+        fso.setExtent(render_target_table.getExtent());
+        return fso.into(api);
     });
 }
 

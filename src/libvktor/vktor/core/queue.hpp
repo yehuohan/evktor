@@ -1,5 +1,5 @@
 #pragma once
-#include "__builder.hpp"
+#include "__core.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -7,19 +7,16 @@ NAMESPACE_BEGIN(core)
 struct Swapchain;
 struct CommandBuffer;
 
-struct Queue : public BuiltHandle<VkQueue> {
+struct Queue : public CoreHandle<VkQueue> {
     const uint32_t family_index;
     const uint32_t index;
 
-    Queue(uint32_t family_index = 0, uint32_t index = 0, Name&& name = "Queue")
-        : BuiltHandle(std::move(name))
-        , family_index(family_index)
-        , index(index) {}
+    Queue(uint32_t family_index = 0, uint32_t index = 0) : family_index(family_index), index(index) {}
     Queue(Queue&&);
     ~Queue();
 
-    inline VkResult setDebugName(VkDevice device) const {
-        return core::setDebugName(device, VK_OBJECT_TYPE_QUEUE, u64(reinterpret_cast<uint64_t>(handle)), __name.c_str());
+    inline VkResult setDebugName(VkDevice device, const Name& name) const {
+        return core::setDebugName(device, VK_OBJECT_TYPE_QUEUE, u64(reinterpret_cast<uint64_t>(handle)), name.c_str());
     }
 
     VkResult submit(const std::vector<VkSubmitInfo>& submits, VkFence fence = VK_NULL_HANDLE) const;

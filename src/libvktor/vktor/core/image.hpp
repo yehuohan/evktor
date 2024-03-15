@@ -1,81 +1,39 @@
 #pragma once
-#include "__builder.hpp"
+#include "__core.hpp"
 #include "command_buffer.hpp"
 #include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-struct Image : public BuiltResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
-    VkImageType type = VK_IMAGE_TYPE_2D;
-    VkFormat format = VK_FORMAT_UNDEFINED;
-    VkExtent3D extent{};
-    uint32_t mip_levels = 1;
-    uint32_t array_layers = 1;
-    VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
-    VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
-    VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT;
-    VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
+struct Image;
 
-    VkDeviceMemory memory = VK_NULL_HANDLE;
-    VmaAllocation allocation = VK_NULL_HANDLE;
+class ImageState : public CoreStater<ImageState> {
+    friend struct Image;
 
-    Image(const Device& device, Name&& name) : BuiltResource(device, std::move(name)) {}
-    Image(Image&&);
-    ~Image();
-    OnConstType(VkDeviceMemory, memory);
-
-    /** Copy data `src` from cpu to image memory at `src_size` */
-    void copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size) const;
-    inline void copyFrom(const void* src, const VkDeviceSize src_size = 0) const {
-        copyFrom(0, src, src_size);
-    }
-    void genMipmaps(const CommandBuffer& cmdbuf) const;
-
-    /**
-     * @brief Build image with already allocated handle
-     */
-    static Image build(const Device& device,
-                       const VkImage image,
-                       VkFormat format,
-                       VkExtent3D extent,
-                       uint32_t mip_levels = 1,
-                       uint32_t array_layers = 1,
-                       VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT,
-                       VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL,
-                       VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT,
-                       Name&& name = "Image");
-};
-
-struct ImageInfo : public BuilderInfo {
+private:
     VkImageCreateInfo image_ci;
     VmaAllocationCreateFlags memory_flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
     VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO;
-};
-
-class ImageBuilder : public Builder<ImageBuilder, Image, ImageInfo> {
-private:
-    const Device& device;
 
 public:
-    explicit ImageBuilder(const Device& device, Name&& name = "Image") : Builder(std::move(name)), device(device) {
-        info.image_ci = Itor::ImageCreateInfo();
-        info.image_ci.flags = 0;
-        info.image_ci.imageType = VK_IMAGE_TYPE_2D;
-        info.image_ci.format = VK_FORMAT_UNDEFINED;
-        info.image_ci.extent = VkExtent3D{0, 0, 0};
-        info.image_ci.mipLevels = 1;
-        info.image_ci.arrayLayers = 1;
-        info.image_ci.samples = VK_SAMPLE_COUNT_1_BIT;
-        info.image_ci.tiling = VK_IMAGE_TILING_OPTIMAL;
-        info.image_ci.usage = VK_IMAGE_USAGE_SAMPLED_BIT;
-        info.image_ci.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    explicit ImageState(Name&& name = "Image") : CoreStater(std::move(name)) {
+        image_ci = Itor::ImageCreateInfo();
+        image_ci.flags = 0;
+        image_ci.imageType = VK_IMAGE_TYPE_2D;
+        image_ci.format = VK_FORMAT_UNDEFINED;
+        image_ci.extent = VkExtent3D{0, 0, 0};
+        image_ci.mipLevels = 1;
+        image_ci.arrayLayers = 1;
+        image_ci.samples = VK_SAMPLE_COUNT_1_BIT;
+        image_ci.tiling = VK_IMAGE_TILING_OPTIMAL;
+        image_ci.usage = VK_IMAGE_USAGE_SAMPLED_BIT;
+        image_ci.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         // TODO: Support exclusive and concurrent mode
-        info.image_ci.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        info.image_ci.queueFamilyIndexCount = 0;
-        info.image_ci.pQueueFamilyIndices = nullptr;
+        image_ci.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        image_ci.queueFamilyIndexCount = 0;
+        image_ci.pQueueFamilyIndices = nullptr;
     }
-    virtual Built build() override;
 
     Self setFormat(VkFormat format);
     Self setExtent(const VkExtent3D& extent);
@@ -91,6 +49,49 @@ public:
 
     Self setMemoryFlags(VmaAllocationCreateFlags flags);
     Self setMemoryUsage(VmaMemoryUsage usage);
+
+    Res<Image> into(const Device& device) const;
+};
+
+struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
+    VkImageType type = VK_IMAGE_TYPE_2D;
+    VkFormat format = VK_FORMAT_UNDEFINED;
+    VkExtent3D extent{};
+    uint32_t mip_levels = 1;
+    uint32_t array_layers = 1;
+    VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
+    VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
+    VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT;
+    VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+    VkDeviceMemory memory = VK_NULL_HANDLE;
+    VmaAllocation allocation = VK_NULL_HANDLE;
+
+    Image(const Device& device) : CoreResource(device) {}
+    Image(Image&&);
+    ~Image();
+    OnConstType(VkDeviceMemory, memory);
+
+    /** Copy data `src` from cpu to image memory at `src_size` */
+    void copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size) const;
+    inline void copyFrom(const void* src, const VkDeviceSize src_size = 0) const {
+        copyFrom(0, src, src_size);
+    }
+    void genMipmaps(const CommandBuffer& cmdbuf) const;
+
+    static Res<Image> from(const Device& device, const ImageState& info);
+    /**
+     * @brief Create image with already allocated handle
+     */
+    static Image from(const Device& device,
+                      const VkImage image,
+                      VkFormat format,
+                      VkExtent3D extent,
+                      uint32_t mip_levels = 1,
+                      uint32_t array_layers = 1,
+                      VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT,
+                      VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL,
+                      VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT);
 };
 
 /**

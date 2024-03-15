@@ -1,5 +1,5 @@
 #pragma once
-#include "__builder.hpp"
+#include "__core.hpp"
 #include "descriptor_set.hpp"
 #include "descriptor_setlayout.hpp"
 #include "device.hpp"
@@ -7,7 +7,23 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-struct DescriptorPool : public BuiltResource<VkDescriptorPool, VK_OBJECT_TYPE_DESCRIPTOR_POOL, Device> {
+struct DescriptorPool;
+
+class DescriptorPoolState : public CoreStater<DescriptorPoolState> {
+    friend struct DescriptorPool;
+
+private:
+    uint32_t maxsets = 1;
+
+public:
+    explicit DescriptorPoolState(Name&& name = "DescriptorPool") : CoreStater(std::move(name)) {}
+
+    Self setMaxsets(uint32_t maxsets);
+
+    Res<DescriptorPool> into(const DescriptorSetLayout& setlayout) const;
+};
+
+struct DescriptorPool : public CoreResource<VkDescriptorPool, VK_OBJECT_TYPE_DESCRIPTOR_POOL, Device> {
     /** Descriptor set layout for pool (Must destroy this pool before free `desc_setlayout`) */
     const DescriptorSetLayout& desc_setlayout;
     const uint32_t maxsets;
@@ -15,8 +31,8 @@ struct DescriptorPool : public BuiltResource<VkDescriptorPool, VK_OBJECT_TYPE_DE
     /** Counter for allocated descriptor set from this pool */
     uint32_t count = 0;
 
-    DescriptorPool(const DescriptorSetLayout& setlayout, const uint32_t maxsets, Name&& name)
-        : BuiltResource(setlayout.device, std::move(name))
+    DescriptorPool(const DescriptorSetLayout& setlayout, const uint32_t maxsets)
+        : CoreResource(setlayout.device)
         , desc_setlayout(setlayout)
         , maxsets(maxsets) {}
     DescriptorPool(DescriptorPool&&);
@@ -27,41 +43,33 @@ struct DescriptorPool : public BuiltResource<VkDescriptorPool, VK_OBJECT_TYPE_DE
      *
      * This `DescriptorPool` doesn't store allocated `DescriptorSet`, so return DescriptorSet.
      */
-    Res<DescriptorSet> allocate();
+    Res<DescriptorSet> allocate(const Name& name = "DescriptorSet");
+    bool free(const DescriptorSet& descset);
     bool available() const;
-};
 
-struct DescriptorPoolInfo : public BuilderInfo {
-    uint32_t maxsets = 1;
-};
-
-class DescriptorPoolBuilder : public Builder<DescriptorPoolBuilder, DescriptorPool, DescriptorPoolInfo> {
-private:
-    const DescriptorSetLayout& desc_setlayout;
-
-public:
-    explicit DescriptorPoolBuilder(const DescriptorSetLayout& setlayout, Name&& name = "DescriptorPool")
-        : Builder(std::move(name))
-        , desc_setlayout(setlayout) {}
-    virtual Built build() override;
-
-    Self setMaxsets(uint32_t maxsets);
+    /**
+     * @brief Create descriptor set pool
+     *
+     * This need DescriptorSetLayout::bindings, so get Device from DescriptorSetLayout for creation
+     */
+    static Res<DescriptorPool> from(const DescriptorSetLayout& setlayout, const DescriptorPoolState& info);
 };
 
 /**
- * @brief A array-like struct to provide DescriptorPool
+ * @brief A array-like DescriptorPool provider
  */
-struct DescriptorPooler : private NonCopyable {
+class DescriptorPooler : private NonCopyable {
+private:
+    Vector<DescriptorPool> desc_pools{};
+
+public:
     const DescriptorSetLayout& desc_setlayout;
 
-    DescriptorPooler(const DescriptorSetLayout& setlayout) : desc_setlayout(setlayout) {}
+    explicit DescriptorPooler(const DescriptorSetLayout& setlayout) : desc_setlayout(setlayout) {}
     DescriptorPooler(DescriptorPooler&&);
     ~DescriptorPooler();
 
     Res<Ref<DescriptorPool>> get();
-
-private:
-    Vector<DescriptorPool> desc_pools{};
 };
 
 NAMESPACE_END(core)

@@ -41,7 +41,7 @@ public:
     OnConstType(VkInstance, instance->handle);
     OnConstType(VkPhysicalDevice, phy_dev->handle);
     OnConstType(VkDevice, dev->handle);
-    operator Instance&() const {
+    operator const Instance&() const {
         Check(instance, "Instance device is invalid");
         return *instance;
     }
@@ -49,81 +49,62 @@ public:
         Check(phy_dev, "Physical device is invalid");
         return *phy_dev;
     }
-    operator Device&() const {
+    operator const Device&() const {
         Check(dev, "Device is invalid");
         return *dev;
     }
 
-    inline void add(Instance&& _instance) {
-        instance.reset();
-        instance = newBox<struct Instance>(std::move(_instance));
-    }
-    inline void add(PhysicalDevice&& _phy_dev) {
-        phy_dev.reset();
-        phy_dev = newBox<struct PhysicalDevice>(std::move(_phy_dev));
-    }
-    inline void add(Device&& _dev) {
-        dev.reset();
-        dev = newBox<struct Device>(std::move(_dev));
-    }
-
+    Res<Ref<Instance>> init(InstanceState& info);
+    Res<Ref<PhysicalDevice>> init(PhysicalDeviceState& info);
+    Res<Ref<Device>> init(DeviceState& info);
     Res<Ref<Queue>> presentQueue() const;
     Res<Ref<Queue>> graphicsQueue() const;
     Res<Ref<Queue>> computeQueue() const;
     Res<Ref<Queue>> transferQueue() const;
 
 public:
-    inline InstanceBuilder Instance() {
-        return InstanceBuilder();
+    // Alias core state object `into` function
+    inline Res<Swapchain> create(SwapchainState& info) const {
+        return info.into(*this);
     }
-    inline PhysicalDeviceSelector PhysicalDevice() {
-        return PhysicalDeviceSelector(*this);
+    inline Res<ShaderModule> create(const ShaderModuleState& info) const {
+        return info.into(*this);
     }
-    inline DeviceBuilder Device() {
-        return DeviceBuilder(*this, *this);
+    inline Res<Buffer> create(const BufferState& info) const {
+        return info.into(*this);
     }
-    inline SwapchainBuilder Swapchain(const VkSurfaceKHR& surface) {
-        return SwapchainBuilder(*this, surface);
+    inline Res<Image> create(const ImageState& info) const {
+        return info.into(*this);
     }
-
-    inline ShaderModuleBuilder ShaderModule() {
-        return ShaderModuleBuilder(*this);
+    inline Res<ImageView> create(const ImageViewState& info) const {
+        return info.into();
     }
-    inline BufferBuilder Buffer() {
-        return BufferBuilder(*this);
+    inline Res<Sampler> create(const SamplerState& info) const {
+        return info.into(*this);
     }
-    inline ImageBuilder Image() {
-        return ImageBuilder(*this);
+    inline Res<DescriptorSetLayout> create(const DescriptorSetLayoutState& info) const {
+        return info.into(*this);
     }
-    inline ImageViewBuilder ImageView(const core::Image& image) {
-        return ImageViewBuilder(image);
+    inline Res<DescriptorPool> create(const DescriptorPoolState& info, const core::DescriptorSetLayout& setlayout) const {
+        return info.into(setlayout);
     }
-    inline SamplerBuilder Sampler() {
-        return SamplerBuilder(*this);
+    inline Res<PipelineLayout> create(const PipelineLayoutState& info) const {
+        return info.into(*this);
     }
-    inline DescriptorSetLayoutBuilder DescriptorSetLayout() {
-        return DescriptorSetLayoutBuilder(*this);
+    inline Res<GraphicsPipeline> create(const GraphicsPipelineState& info) const {
+        return info.into(*this);
     }
-    inline DescriptorPoolBuilder DescriptorPool(const core::DescriptorSetLayout& setlayout) {
-        return DescriptorPoolBuilder(setlayout);
+    inline Res<ComputePipeline> create(const ComputePipelineState& info) const {
+        return info.into(*this);
     }
-    inline PipelineLayoutBuilder PipelineLayout() {
-        return PipelineLayoutBuilder(*this);
+    inline Res<RenderPass> create(const RenderPassState& info) const {
+        return info.into(*this);
     }
-    inline GraphicsPipelineBuilder GraphicsPipeline(const core::PipelineLayout& layout) {
-        return GraphicsPipelineBuilder(layout);
+    inline Res<Framebuffer> create(const FramebufferState& info) const {
+        return info.into(*this);
     }
-    inline ComputePipelineBuilder ComputePipeline(const core::PipelineLayout& layout) {
-        return ComputePipelineBuilder(layout);
-    }
-    inline RenderPassBuilder RenderPass() {
-        return RenderPassBuilder(*this);
-    }
-    inline FramebufferBuilder Framebuffer(const core::RenderPass& render_pass) {
-        return FramebufferBuilder(render_pass);
-    }
-    inline CommandPoolBuilder CommandPool() {
-        return CommandPoolBuilder(*this);
+    inline Res<CommandPool> create(const CommandPoolState& info) const {
+        return info.into(*this);
     }
 };
 

@@ -4,12 +4,15 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
-void RenderContext::add(Swapchain&& _swapchain) {
+Res<Ref<Swapchain>> RenderContext::add(SwapchainState& info) {
+    auto res = info.into(api);
+    OnErr(res);
     swapchain.reset();
-    swapchain = newBox<Swapchain>(std::move(_swapchain));
+    swapchain = newBox<Swapchain>(res.unwrap());
     for (uint32_t k = 0; k < swapchain->image_count; k++) {
         frames.push_back(RenderFrame(api, thread_count));
     }
+    return Ok(newRef(*swapchain));
 }
 
 void RenderContext::activateRenderFrame(uint32_t index) {

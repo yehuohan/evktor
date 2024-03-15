@@ -29,9 +29,71 @@ inline static bool getShaderLanguage(EShLanguage& lang, const VkShaderStageFlagB
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-using Self = ShaderModuleBuilder::Self;
+using Self = ShaderModuleState::Self;
 
-ShaderModule::ShaderModule(ShaderModule&& rhs) : BuiltResource(rhs.device, std::move(rhs.__name)) {
+Self ShaderModuleState::setFilename(const std::string& _filename) {
+    filename = _filename;
+    return *this;
+}
+
+Self ShaderModuleState::setCode(std::string&& _code, VkShaderStageFlagBits _stage) {
+    code = std::move(_code);
+    stage = _stage;
+    return *this;
+}
+
+Self ShaderModuleState::setEntry(const std::string& _entry) {
+    entry = _entry;
+    return *this;
+}
+
+Res<Vector<uint32_t>> ShaderModuleState::glsl2spv() const {
+    const char* shader_strings[] = {code.c_str()};
+    const int shader_lengths[] = {(int)code.size()};
+    const char* shader_filenames[] = {filename.c_str()};
+
+    EShMessages messages = static_cast<EShMessages>(EShMessages::EShMsgDefault | EShMessages::EShMsgVulkanRules |
+                                                    EShMessages::EShMsgSpvRules);
+    EShLanguage language;
+    if (!getShaderLanguage(language, stage)) {
+        return Er("Stage = {} is not expected to get an EShLanguage", VkStr(VkShaderStageFlags, stage));
+    }
+
+    glslang::InitializeProcess();
+
+    glslang::TShader shader(language);
+    shader.setStringsWithLengthsAndNames(shader_strings, shader_lengths, shader_filenames, 1);
+    shader.setEntryPoint(entry.c_str());
+    shader.setSourceEntryPoint(entry.c_str());
+    shader.setEnvTarget(glslang::EShTargetLanguage::EShTargetSpv, glslang::EShTargetLanguageVersion::EShTargetSpv_1_0);
+    if (!shader.parse(GetDefaultResources(), 100, false, messages)) {
+        LogE("{}", shader.getInfoLog());
+        LogE("{}", shader.getInfoDebugLog());
+        return Er("Failed to parse shader: {}", filename);
+    }
+
+    glslang::TProgram program;
+    program.addShader(&shader);
+    if (!program.link(messages)) {
+        LogE("{}", program.getInfoLog());
+        LogE("{}", program.getInfoDebugLog());
+        return Er("Failed to link shader: {}", filename);
+    }
+    glslang::TIntermediate* intermediate = program.getIntermediate(language);
+
+    Vector<uint32_t> spirv;
+    glslang::GlslangToSpv(*intermediate, spirv);
+
+    glslang::FinalizeProcess();
+
+    return Ok(std::move(spirv));
+}
+
+Res<ShaderModule> ShaderModuleState::into(const Device& device) const {
+    return ShaderModule::from(device, *this);
+}
+
+ShaderModule::ShaderModule(ShaderModule&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     stage = rhs.stage;
@@ -45,77 +107,19 @@ ShaderModule::~ShaderModule() {
     handle = nullptr;
 }
 
-Self ShaderModuleBuilder::setFilename(const std::string& filename) {
-    info.filename = filename;
-    return *this;
-}
-
-Self ShaderModuleBuilder::setCode(std::string&& code, VkShaderStageFlagBits stage) {
-    info.code = std::move(code);
-    info.stage = stage;
-    return *this;
-}
-
-Self ShaderModuleBuilder::setEntry(const std::string& entry) {
-    info.entry = entry;
-    return *this;
-}
-
-Res<Vector<uint32_t>> ShaderModuleBuilder::glsl2spv() {
-    const char* shader_strings[] = {info.code.c_str()};
-    const int shader_lengths[] = {(int)info.code.size()};
-    const char* shader_filenames[] = {info.filename.c_str()};
-
-    EShMessages messages = static_cast<EShMessages>(EShMessages::EShMsgDefault | EShMessages::EShMsgVulkanRules |
-                                                    EShMessages::EShMsgSpvRules);
-    EShLanguage language;
-    if (!getShaderLanguage(language, info.stage)) {
-        return Er("Stage = {} is not expected to get an EShLanguage", VkStr(VkShaderStageFlags, info.stage));
-    }
-
-    glslang::InitializeProcess();
-
-    glslang::TShader shader(language);
-    shader.setStringsWithLengthsAndNames(shader_strings, shader_lengths, shader_filenames, 1);
-    shader.setEntryPoint(info.entry.c_str());
-    shader.setSourceEntryPoint(info.entry.c_str());
-    shader.setEnvTarget(glslang::EShTargetLanguage::EShTargetSpv, glslang::EShTargetLanguageVersion::EShTargetSpv_1_0);
-    if (!shader.parse(GetDefaultResources(), 100, false, messages)) {
-        LogE("{}", shader.getInfoLog());
-        LogE("{}", shader.getInfoDebugLog());
-        return Er("Failed to parse shader: {}", info.filename);
-    }
-
-    glslang::TProgram program;
-    program.addShader(&shader);
-    if (!program.link(messages)) {
-        LogE("{}", program.getInfoLog());
-        LogE("{}", program.getInfoDebugLog());
-        return Er("Failed to link shader: {}", info.filename);
-    }
-    glslang::TIntermediate* intermediate = program.getIntermediate(language);
-
-    Vector<uint32_t> spirv;
-    glslang::GlslangToSpv(*intermediate, spirv);
-
-    glslang::FinalizeProcess();
-
-    return Ok(std::move(spirv));
-}
-
-ShaderModuleBuilder::Built ShaderModuleBuilder::build() {
-    auto res = glsl2spv();
+Res<ShaderModule> ShaderModule::from(const Device& device, const ShaderModuleState& info) {
+    auto res = info.glsl2spv();
     OnErr(res);
     auto spirv = res.unwrap();
     auto shader_ci = Itor::ShaderModuleCreateInfo();
     shader_ci.codeSize = spirv.size() * sizeof(uint32_t);
     shader_ci.pCode = spirv.data();
 
-    ShaderModule shader_module(device, std::move(info.__name));
+    ShaderModule shader_module(device);
     OnRet(vkCreateShaderModule(device, &shader_ci, nullptr, shader_module),
           "Failed to create shader module for {}",
           info.filename);
-    OnName(shader_module);
+    OnName(shader_module, info.__name);
     shader_module.entry = std::move(info.entry);
     shader_module.stage = info.stage;
 
