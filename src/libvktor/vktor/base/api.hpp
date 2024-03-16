@@ -6,6 +6,8 @@
 #include "vktor/core/descriptor_set.hpp"
 #include "vktor/core/descriptor_setlayout.hpp"
 #include "vktor/core/device.hpp"
+#include "vktor/core/event.hpp"
+#include "vktor/core/fence.hpp"
 #include "vktor/core/framebuffer.hpp"
 #include "vktor/core/image.hpp"
 #include "vktor/core/image_view.hpp"
@@ -17,6 +19,7 @@
 #include "vktor/core/queue.hpp"
 #include "vktor/core/render_pass.hpp"
 #include "vktor/core/sampler.hpp"
+#include "vktor/core/semaphore.hpp"
 #include "vktor/core/shader_module.hpp"
 #include "vktor/core/swapchain.hpp"
 
@@ -104,6 +107,15 @@ public:
         return info.into(*this);
     }
     inline Res<CommandPool> create(const CommandPoolState& info) const {
+        return info.into(*this);
+    }
+    inline Res<Fence> create(const FenceState& info) const {
+        return info.into(*this);
+    }
+    inline Res<Semaphore> create(const SemaphoreState& info) const {
+        return info.into(*this);
+    }
+    inline Res<Event> create(const EventState& info) const {
         return info.into(*this);
     }
 };
