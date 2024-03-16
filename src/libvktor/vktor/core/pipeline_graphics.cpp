@@ -5,6 +5,33 @@ NAMESPACE_BEGIN(core)
 
 using Self = GraphicsPipelineState::Self;
 
+GraphicsPipelineState::GraphicsPipelineState(Name&& name) : CoreStater(std::move(name)) {
+    input_assembly = Itor::PipelineInputAssemblyStateCreateInfo();
+    input_assembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    input_assembly.primitiveRestartEnable = VK_FALSE;
+    tessellation = Itor::PipelineTessellationStateCreateInfo();
+    rasterization = Itor::PipelineRasterizationStateCreateInfo();
+    rasterization.depthClampEnable = VK_FALSE;
+    rasterization.rasterizerDiscardEnable = VK_FALSE;
+    rasterization.polygonMode = VK_POLYGON_MODE_FILL;
+    rasterization.cullMode = VK_CULL_MODE_BACK_BIT;
+    rasterization.frontFace = VK_FRONT_FACE_CLOCKWISE;
+    rasterization.depthBiasEnable = VK_FALSE;
+    rasterization.lineWidth = 1.0f;
+    multisample = Itor::PipelineMultisampleStateCreateInfo();
+    multisample.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+    multisample.sampleShadingEnable = VK_FALSE;
+    multisample.minSampleShading = 1.0f;
+    multisample.pSampleMask = nullptr;
+    multisample.alphaToCoverageEnable = VK_FALSE;
+    multisample.alphaToOneEnable = VK_FALSE;
+    depth_stencil = Itor::PipelineDepthStencilStateCreateInfo();
+    depth_stencil.depthTestEnable = VK_FALSE;
+    depth_stencil.depthWriteEnable = VK_FALSE;
+    depth_stencil.depthBoundsTestEnable = VK_FALSE;
+    depth_stencil.stencilTestEnable = VK_FALSE;
+}
+
 Self GraphicsPipelineState::setFlags(VkPipelineCreateFlags _flags) {
     flags = _flags;
     return *this;
@@ -16,22 +43,28 @@ Self GraphicsPipelineState::addShader(ShaderModule&& shader) {
 }
 
 Self GraphicsPipelineState::addVertexInputBinding(const VkVertexInputBindingDescription& binding) {
-    vert_input_bindings.push_back(binding);
+    vertex_input.bindings.push_back(binding);
     return *this;
 }
 
 Self GraphicsPipelineState::addVertexInputBindings(const Vector<VkVertexInputBindingDescription>& bindings) {
-    vert_input_bindings.insert(vert_input_bindings.end(), bindings.begin(), bindings.end());
+    vertex_input.bindings.insert(vertex_input.bindings.end(), bindings.begin(), bindings.end());
     return *this;
 }
 
 Self GraphicsPipelineState::addVertexInputAttribute(const VkVertexInputAttributeDescription& attribute) {
-    vert_input_attributes.push_back(attribute);
+    vertex_input.attributes.push_back(attribute);
     return *this;
 }
 
 Self GraphicsPipelineState::addVertexInputAttributes(const Vector<VkVertexInputAttributeDescription>& attributes) {
-    vert_input_attributes.insert(vert_input_attributes.end(), attributes.begin(), attributes.end());
+    vertex_input.attributes.insert(vertex_input.attributes.end(), attributes.begin(), attributes.end());
+    return *this;
+}
+
+Self GraphicsPipelineState::setInputAssembly(VkPrimitiveTopology topology, VkBool32 enable_primitive_restart) {
+    input_assembly.topology = topology;
+    input_assembly.primitiveRestartEnable = enable_primitive_restart;
     return *this;
 }
 
@@ -55,14 +88,118 @@ Self GraphicsPipelineState::addScissor(int32_t x, int32_t y, uint32_t width, uin
     return *this;
 }
 
-Self GraphicsPipelineState::setRenderPass(VkRenderPass _render_pass, uint32_t subpass_index) {
-    render_pass = _render_pass;
-    subpass = subpass_index;
+Self GraphicsPipelineState::setRasterizationDepthClamp(VkBool32 enable_depth_clamp) {
+    rasterization.depthClampEnable = enable_depth_clamp;
+    return *this;
+}
+
+Self GraphicsPipelineState::setRasterizationDiscard(VkBool32 enable_rasterizer_discard) {
+    rasterization.rasterizerDiscardEnable = enable_rasterizer_discard;
+    return *this;
+}
+
+Self GraphicsPipelineState::setRasterizationPolygonMode(VkPolygonMode polygon_mode) {
+    rasterization.polygonMode = polygon_mode;
+    return *this;
+}
+
+Self GraphicsPipelineState::setRasterizationCullMode(VkCullModeFlags cull_mode) {
+    rasterization.cullMode = cull_mode;
+    return *this;
+}
+
+Self GraphicsPipelineState::setRasterizationFrontFace(VkFrontFace front_face) {
+    rasterization.frontFace = front_face;
+    return *this;
+}
+
+Self GraphicsPipelineState::setRasterizationDepthBias(VkBool32 enable, float constant, float clamp, float slope) {
+    rasterization.depthBiasEnable = enable;
+    rasterization.depthBiasConstantFactor = constant;
+    rasterization.depthBiasClamp = clamp;
+    rasterization.depthBiasSlopeFactor = clamp;
+    return *this;
+}
+
+Self GraphicsPipelineState::setRasterizationLineWith(float line_width) {
+    rasterization.lineWidth = line_width;
+    return *this;
+}
+
+Self GraphicsPipelineState::setMultisampleCount(VkSampleCountFlagBits sample_count) {
+    multisample.rasterizationSamples = sample_count;
+    return *this;
+}
+
+Self GraphicsPipelineState::setMultisampleShading(VkBool32 enable, float min_sample_shading) {
+    multisample.sampleShadingEnable = enable;
+    multisample.minSampleShading = min_sample_shading;
+    return *this;
+}
+
+Self GraphicsPipelineState::setDepthTest(VkBool32 enable_test, VkBool32 enable_write, VkCompareOp op) {
+    depth_stencil.depthTestEnable = enable_test;
+    depth_stencil.depthWriteEnable = enable_write;
+    depth_stencil.depthCompareOp = op;
+    return *this;
+}
+
+Self GraphicsPipelineState::setDepthBoundsTest(VkBool32 enable, float min_depth, float max_depth) {
+    depth_stencil.depthBoundsTestEnable = enable;
+    depth_stencil.minDepthBounds = min_depth;
+    depth_stencil.maxDepthBounds = max_depth;
+    return *this;
+}
+
+Self GraphicsPipelineState::setStencilTest(VkBool32 enable, const VkStencilOpState& front, const VkStencilOpState& back) {
+    depth_stencil.stencilTestEnable = enable;
+    depth_stencil.front = front;
+    depth_stencil.back = back;
+    return *this;
+}
+
+Self GraphicsPipelineState::setColorBlendLogicOp(VkBool32 enable, VkLogicOp op) {
+    color_blend.enable_logic_op = enable;
+    color_blend.logic_op = op;
+    return *this;
+}
+
+Self GraphicsPipelineState::addColorBlendAttachment(const VkPipelineColorBlendAttachmentState& attachment) {
+    color_blend.attachments.push_back(attachment);
+    return *this;
+}
+
+Self GraphicsPipelineState::addColorBlendAttachments(const Vector<VkPipelineColorBlendAttachmentState>& attachments) {
+    color_blend.attachments.insert(color_blend.attachments.begin(), attachments.begin(), attachments.end());
+    return *this;
+}
+
+Self GraphicsPipelineState::setColorBlendConstants(float c0, float c1, float c2, float c3) {
+    color_blend.constants[0] = c0;
+    color_blend.constants[1] = c1;
+    color_blend.constants[2] = c2;
+    color_blend.constants[3] = c3;
+    return *this;
+}
+
+Self GraphicsPipelineState::addDynamic(VkDynamicState dynamic) {
+    dynamics.push_back(dynamic);
+    return *this;
+}
+
+Self GraphicsPipelineState::addDynamics(const Vector<VkDynamicState>& _dynamics) {
+    dynamics.insert(dynamics.end(), _dynamics.begin(), _dynamics.end());
     return *this;
 }
 
 Self GraphicsPipelineState::setPipelineLayout(VkPipelineLayout _layout) {
     layout = _layout;
+    return *this;
+}
+
+Self GraphicsPipelineState::setRenderPass(VkRenderPass _render_pass, uint32_t subpass_index) {
+    render_pass = _render_pass;
+    subpass = subpass_index;
     return *this;
 }
 
@@ -83,7 +220,7 @@ GraphicsPipeline::~GraphicsPipeline() {
 }
 
 Res<GraphicsPipeline> GraphicsPipeline::from(const Device& device, const GraphicsPipelineState& info) {
-    // Setup shader stages
+    // Shader stages
     Vector<VkPipelineShaderStageCreateInfo> shader_stages{};
     for (auto& s : info.shaders) {
         auto stage = Itor::PipelineShaderStageCreateInfo();
@@ -95,18 +232,16 @@ Res<GraphicsPipeline> GraphicsPipeline::from(const Device& device, const Graphic
 
     // State: vertex input
     auto vertex_input_sci = Itor::PipelineVertexInputStateCreateInfo();
-    vertex_input_sci.vertexBindingDescriptionCount = u32(info.vert_input_bindings.size());
-    vertex_input_sci.pVertexBindingDescriptions = info.vert_input_bindings.data();
-    vertex_input_sci.vertexAttributeDescriptionCount = u32(info.vert_input_attributes.size());
-    vertex_input_sci.pVertexAttributeDescriptions = info.vert_input_attributes.data();
+    vertex_input_sci.vertexBindingDescriptionCount = u32(info.vertex_input.bindings.size());
+    vertex_input_sci.pVertexBindingDescriptions = info.vertex_input.bindings.data();
+    vertex_input_sci.vertexAttributeDescriptionCount = u32(info.vertex_input.attributes.size());
+    vertex_input_sci.pVertexAttributeDescriptions = info.vertex_input.attributes.data();
 
     // State: input assembly
-    auto input_assembly_sci = Itor::PipelineInputAssemblyStateCreateInfo();
-    input_assembly_sci.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-    input_assembly_sci.primitiveRestartEnable = VK_FALSE;
+    const auto& input_assembly_sci = info.input_assembly;
 
     // State: tessellation state
-    auto tessellation_sci = Itor::PipelineTessellationStateCreateInfo();
+    const auto& tessellation_sci = info.tessellation;
 
     // State: viewport and scissor
     auto viewport_sci = Itor::PipelineViewportStateCreateInfo();
@@ -116,59 +251,29 @@ Res<GraphicsPipeline> GraphicsPipeline::from(const Device& device, const Graphic
     viewport_sci.pScissors = info.scissors.data();
 
     // State: rasterization
-    auto rasterization_sci = Itor::PipelineRasterizationStateCreateInfo();
-    // Specify if clamp fragments that are beyond the near and far planes to the planes
-    rasterization_sci.depthClampEnable = VK_FALSE;
-    rasterization_sci.rasterizerDiscardEnable = VK_FALSE;
-    // Specify how fragments are generated for geometry
-    rasterization_sci.polygonMode = VK_POLYGON_MODE_FILL;
-    rasterization_sci.cullMode = VK_CULL_MODE_NONE; // VK_CULL_MODE_BACK_BIT,
-    rasterization_sci.frontFace = VK_FRONT_FACE_CLOCKWISE;
-    // Specify how to alter(修正，映射) depth values
-    rasterization_sci.depthBiasEnable = VK_FALSE;
-    rasterization_sci.depthBiasConstantFactor = 0.0f;
-    rasterization_sci.depthBiasClamp = 0.0f;
-    rasterization_sci.depthBiasSlopeFactor = 0.0f;
-    rasterization_sci.lineWidth = 1.0f;
+    const auto& rasterization_sci = info.rasterization;
 
     // State: multisample
-    auto multisample_sci = Itor::PipelineMultisampleStateCreateInfo();
-    multisample_sci.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-    multisample_sci.sampleShadingEnable = VK_FALSE;
-    multisample_sci.minSampleShading = 1.0f;
-    multisample_sci.pSampleMask = nullptr;
-    multisample_sci.alphaToCoverageEnable = VK_FALSE;
-    multisample_sci.alphaToOneEnable = VK_FALSE;
+    const auto& multisample_sci = info.multisample;
 
     // State: depth stencil
-    auto depth_stencil_sci = Itor::PipelineDepthStencilStateCreateInfo();
+    const auto& depth_stencil_sci = info.depth_stencil;
 
     // State: color blend
-    VkPipelineColorBlendAttachmentState color_blend_attm{};
-    color_blend_attm.blendEnable = VK_FALSE;
-    color_blend_attm.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-    color_blend_attm.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
-    color_blend_attm.colorBlendOp = VK_BLEND_OP_ADD;
-    color_blend_attm.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-    color_blend_attm.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-    color_blend_attm.alphaBlendOp = VK_BLEND_OP_ADD;
-    color_blend_attm.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
-                                      VK_COLOR_COMPONENT_A_BIT;
     auto color_blend_sci = Itor::PipelineColorBlendStateCreateInfo();
-    color_blend_sci.logicOpEnable = VK_FALSE;
-    color_blend_sci.logicOp = VK_LOGIC_OP_COPY;
-    color_blend_sci.attachmentCount = 1;
-    color_blend_sci.pAttachments = &color_blend_attm;
-    color_blend_sci.blendConstants[0] = 0.0f;
-    color_blend_sci.blendConstants[1] = 0.0f;
-    color_blend_sci.blendConstants[2] = 0.0f;
-    color_blend_sci.blendConstants[3] = 0.0f;
+    color_blend_sci.logicOpEnable = info.color_blend.enable_logic_op;
+    color_blend_sci.logicOp = info.color_blend.logic_op;
+    color_blend_sci.attachmentCount = u32(info.color_blend.attachments.size());
+    color_blend_sci.pAttachments = info.color_blend.attachments.data();
+    color_blend_sci.blendConstants[0] = info.color_blend.constants[0];
+    color_blend_sci.blendConstants[1] = info.color_blend.constants[1];
+    color_blend_sci.blendConstants[2] = info.color_blend.constants[2];
+    color_blend_sci.blendConstants[3] = info.color_blend.constants[3];
 
     // State: dynamic
-    Vector<VkDynamicState> dynamics{VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
     auto dynamic_sci = Itor::PipelineDynamicStateCreateInfo();
-    dynamic_sci.dynamicStateCount = u32(dynamics.size());
-    dynamic_sci.pDynamicStates = dynamics.data();
+    dynamic_sci.dynamicStateCount = u32(info.dynamics.size());
+    dynamic_sci.pDynamicStates = info.dynamics.data();
 
     // Create graphics pipeline
     GraphicsPipeline pipeline(device);
@@ -178,13 +283,13 @@ Res<GraphicsPipeline> GraphicsPipeline::from(const Device& device, const Graphic
     pipeline_ci.pStages = shader_stages.data();
     pipeline_ci.pVertexInputState = &vertex_input_sci;
     pipeline_ci.pInputAssemblyState = &input_assembly_sci;
-    pipeline_ci.pTessellationState = nullptr; //&tessellation_sci;
+    pipeline_ci.pTessellationState = &tessellation_sci;
     pipeline_ci.pViewportState = &viewport_sci;
     pipeline_ci.pRasterizationState = &rasterization_sci;
     pipeline_ci.pMultisampleState = &multisample_sci;
-    pipeline_ci.pDepthStencilState = nullptr; //&depth_stencil_sci;
+    pipeline_ci.pDepthStencilState = &depth_stencil_sci;
     pipeline_ci.pColorBlendState = &color_blend_sci;
-    pipeline_ci.pDynamicState = nullptr; //&dynamic_sci;
+    pipeline_ci.pDynamicState = &dynamic_sci;
     pipeline_ci.layout = info.layout;
     pipeline_ci.renderPass = info.render_pass;
     pipeline_ci.subpass = info.subpass;
