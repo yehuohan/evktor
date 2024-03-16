@@ -1,7 +1,9 @@
 #pragma once
+#include "vktor/core/descriptor_setlayout.hpp"
 #include "vktor/core/framebuffer.hpp"
 #include "vktor/core/pipeline_compute.hpp"
 #include "vktor/core/pipeline_graphics.hpp"
+#include "vktor/core/pipeline_layout.hpp"
 #include "vktor/core/render_pass.hpp"
 #include "vktor/core/shader_module.hpp"
 #include <functional>

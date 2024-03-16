@@ -4,13 +4,23 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
-RenderFrame::RenderFrame(const BaseApi& api, size_t thread_count) : api(api), thread_count(thread_count) {
+RenderFrame::RenderFrame(const BaseApi& api, size_t thread_count)
+    : api(api)
+    , fence_pool(api)
+    , semaphore_pool(api)
+    , event_pool(api)
+    , thread_count(thread_count) {
     cmd_pools.resize(thread_count);
     desc_poolers.resize(thread_count);
     desc_sets.resize(thread_count);
 }
 
-RenderFrame::RenderFrame(RenderFrame&& rhs) : api(rhs.api), thread_count(rhs.thread_count) {
+RenderFrame::RenderFrame(RenderFrame&& rhs)
+    : api(rhs.api)
+    , fence_pool(rhs.api)
+    , semaphore_pool(rhs.api)
+    , event_pool(rhs.api)
+    , thread_count(rhs.thread_count) {
     cmd_pools = std::move(rhs.cmd_pools);
     desc_poolers = std::move(rhs.desc_poolers);
     desc_sets = std::move(rhs.desc_sets);
@@ -22,6 +32,9 @@ void RenderFrame::reset() {
             iter.second.resetCommandPool();
         }
     }
+    fence_pool.resetPool();
+    semaphore_pool.resetPool();
+    event_pool.resetPool();
 }
 
 void RenderFrame::freeDescriptorSets(size_t thread_index) {

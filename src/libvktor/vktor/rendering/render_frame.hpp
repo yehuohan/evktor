@@ -21,6 +21,9 @@ private:
     Vector<HashMap<size_t, DescriptorPooler>> desc_poolers{};
     /** Map DescriptorSetLayout + DescriptorPool + DescriptorInfo to DescriptorSet */
     Vector<HashMap<size_t, DescriptorSet>> desc_sets{};
+    FencePool fence_pool;
+    SemaphorePool semaphore_pool;
+    EventPool event_pool;
 
 public:
     explicit RenderFrame(const BaseApi& api, size_t thread_count);
@@ -49,6 +52,16 @@ public:
     Res<Ref<DescriptorSet>> requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
                                                  const DescriptorArrayInfo& desc_info,
                                                  size_t thread_index = 0);
+
+    inline Res<Ref<Fence>> requestFence() {
+        return fence_pool.request();
+    }
+    inline Res<Ref<Semaphore>> requestSemaphore() {
+        return semaphore_pool.request();
+    }
+    inline Res<Ref<Event>> requestEvent() {
+        return event_pool.request();
+    }
 
 private:
     Res<Ref<DescriptorPool>> requestDescriptorPool(const DescriptorSetLayout& desc_setlayout, size_t thread_index);

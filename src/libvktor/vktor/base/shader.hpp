@@ -94,6 +94,8 @@ struct hash<vkt::Vector<const vkt::Shader*>> {
         for (const auto s : shaders) {
             if (s) {
                 vkt::hashCombine(res, *s);
+            } else {
+                LogW("Try to compute a null shader hash");
             }
         }
         return res;
