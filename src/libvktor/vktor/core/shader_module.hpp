@@ -13,18 +13,18 @@ class ShaderModuleState : public CoreStater<ShaderModuleState> {
 private:
     VkShaderStageFlagBits stage = VK_SHADER_STAGE_VERTEX_BIT;
     std::string filename = "shader.glsl";
-    std::string code = "";
     std::string entry = "main";
-
-private:
-    Res<Vector<uint32_t>> glsl2spv() const;
+    const uint32_t* code = nullptr;
+    size_t code_size = 0;
 
 public:
     explicit ShaderModuleState(Name&& name = "ShaderModule") : CoreStater(std::move(name)) {}
 
+    Self setStage(VkShaderStageFlagBits stage);
     Self setFilename(const std::string& filename);
-    Self setCode(std::string&& code, VkShaderStageFlagBits stage);
     Self setEntry(const std::string& entry);
+    Self setCode(const uint32_t* code, size_t code_size);
+    Self setCode(const Vector<uint32_t>& code);
 
     Res<ShaderModule> into(const Device& device) const;
 };

@@ -3,6 +3,35 @@
 
 NAMESPACE_BEGIN(vkt)
 
+class Shader;
+
+// class ShaderVariant : private NonCopyable {
+//     Self defMacro(const std::string& macro);
+// };
+
+class ShaderSource : private NonCopyable {
+    friend class Shader;
+
+private:
+    VkShaderStageFlagBits stage;
+    std::string filename{""};
+    std::string entry = "main";
+    std::string code{""};
+    size_t id = 0; /**< id = hash(code) */
+
+private:
+    ShaderSource(){};
+
+public:
+    ShaderSource(ShaderSource&&);
+
+    inline size_t getId() const {
+        return id;
+    }
+
+    static Res<ShaderSource> load(const std::string& filename);
+};
+
 struct ShaderDescriptor {
     /** Supported descriptor type */
     enum Type {
@@ -32,36 +61,38 @@ struct ShaderDescriptor {
         , count(count) {}
 };
 
-class ShaderVariant : private NonCopyable {
-    // Self defMacro(const std::string& macro);
-};
-
 class Shader : private NonCopyable {
 private:
-    std::string filename{""};
-    std::string code{""};
-    size_t id = 0; /**< id = hash(code) */
     VkShaderStageFlagBits stage;
+    std::string filename{""};
+    std::string entry = "main";
+    Vector<uint32_t> spv_code{};
+    size_t id = 0; /**< id = hash(spv_code) */
     /** Map descriptor set index to it's all descriptor */
     HashMap<uint32_t, Vector<ShaderDescriptor>> desc_sets{};
 
 private:
     Shader(){};
 
+    Res<Vector<uint32_t>> glsl2spv(const std::string& code);
+
 public:
     Shader(Shader&&);
 
+    inline VkShaderStageFlagBits getStage() const {
+        return stage;
+    }
     inline const std::string& getFilename() const {
         return filename;
     }
-    inline const std::string& getCode() const {
-        return code;
+    inline const std::string& getEntry() const {
+        return entry;
+    }
+    inline const Vector<uint32_t>& getSpvCode() const {
+        return spv_code;
     }
     inline size_t getId() const {
         return id;
-    }
-    inline VkShaderStageFlagBits getStage() const {
-        return stage;
     }
     inline void addDescriptor(ShaderDescriptor::Type type, uint32_t binding, uint32_t set = 0, uint32_t count = 1) {
         desc_sets[set].push_back(ShaderDescriptor(type, set, binding, count));
@@ -70,12 +101,21 @@ public:
         return desc_sets;
     }
 
-    static Res<Shader> load(const std::string& filename);
+    static Res<Shader> load(const ShaderSource& source);
 };
 
 NAMESPACE_END(vkt)
 
 NAMESPACE_BEGIN(std)
+
+template <>
+struct hash<vkt::ShaderSource> {
+    size_t operator()(const vkt::ShaderSource& shader_source) const {
+        size_t res = 0;
+        vkt::hashCombine(res, shader_source.getId());
+        return res;
+    }
+};
 
 template <>
 struct hash<vkt::Shader> {

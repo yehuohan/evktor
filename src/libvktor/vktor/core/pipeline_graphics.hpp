@@ -94,6 +94,7 @@ template <>
 struct hash<vkt::core::GraphicsPipelineState> {
     size_t operator()(const vkt::core::GraphicsPipelineState& pso) const {
         size_t res = 0;
+        // TODO
         // vkt::hashCombine(res, )
         return res;
     }

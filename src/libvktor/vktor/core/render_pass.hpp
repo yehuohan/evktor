@@ -48,12 +48,32 @@ struct AttachmentLayouts {
 };
 
 struct RenderSubpassInfo {
-    /** Input attachment indices for `attm_descs` (layout(location) in) */
+    /** Input attachment indices for `attm_descs` (layout(input_attachment_index) in)
+     *
+     * Example:
+     * ```
+     * inputs[0] = x: attm_descs[x] bind to input_attachment_index = 0
+     * inputs[1] = y: attm_descs[y] bind to input_attachment_index = 1
+     * ```
+     */
     Vector<uint32_t> inputs{};
-    /** Color attachment indices for `attm_descs` (layout(location) out) */
+    /** Color attachment indices for `attm_descs` (layout(location) out)
+     *
+     * Example:
+     * ```
+     * colors[0] = x: attm_descs[x] bind to location = 0
+     * colors[1] = y: attm_descs[y] bind to location = 1
+     * ```
+     */
     Vector<uint32_t> colors{};
     // Vector<uint32_t> resolves{};
-    /** Depth-stencil attachment index for `attm_descs` (There are only one depth-stencil at most) */
+    /** Depth-stencil attachment index for `attm_descs` (There is only one depth-stencil at most)
+     *
+     * Example:
+     * ```
+     * depthstencil = x: attm_descs[x] is for depth test
+     * ```
+     */
     uint32_t depthstencil = VK_ATTACHMENT_UNUSED;
 };
 

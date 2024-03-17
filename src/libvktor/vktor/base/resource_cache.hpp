@@ -1,4 +1,5 @@
 #pragma once
+#include "shader.hpp"
 #include "vktor/core/descriptor_setlayout.hpp"
 #include "vktor/core/framebuffer.hpp"
 #include "vktor/core/pipeline_compute.hpp"
@@ -63,7 +64,7 @@ private:
 };
 
 struct ResourceCache {
-    ResourceState<ShaderModule> shader_modules{};
+    ResourceState<Shader> shaders{};
     ResourceState<DescriptorSetLayout> descriptor_setlayouts{};
     ResourceState<PipelineLayout> pipeline_layouts{};
     ResourceState<GraphicsPipeline> graphics_pipelines{};

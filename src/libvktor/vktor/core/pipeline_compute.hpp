@@ -36,3 +36,17 @@ struct ComputePipeline : public CoreResource<VkPipeline, VK_OBJECT_TYPE_PIPELINE
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)
+
+NAMESPACE_BEGIN(std)
+
+template <>
+struct hash<vkt::core::ComputePipelineState> {
+    size_t operator()(const vkt::core::ComputePipelineState& pso) const {
+        size_t res = 0;
+        // TODO
+        // vkt::hashCombine(res, )
+        return res;
+    }
+};
+
+NAMESPACE_END(std)

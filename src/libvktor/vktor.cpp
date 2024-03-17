@@ -9,14 +9,10 @@ void Vktor::addRenderContext() {
     render_context = newBox<RenderContext>(api);
 }
 
-Res<Ref<ShaderModule>> Vktor::requestShaderModule(const Shader& shader) {
-    size_t key = hash(shader);
-    return resource_cache.shader_modules.request(key, [this, &shader]() {
-        ShaderModuleState sso{};
-        sso.setFilename(shader.getFilename());
-        sso.setCode(std::string(shader.getCode()), shader.getStage());
-        sso.setEntry("main");
-        return api.create(sso);
+Res<Ref<Shader>> Vktor::requestShader(const ShaderSource& shader_source) {
+    size_t key = hash(shader_source);
+    return resource_cache.shaders.request(key, [this, &shader_source]() {
+        return Shader::load(shader_source);
     });
 }
 
@@ -70,6 +66,20 @@ Res<Ref<PipelineLayout>> Vktor::requestPipelineLayout(const Vector<const Shader*
             OnErr(res);
             pso.addDescriptorSetLayout(res.unwrap().get());
         }
+        return pso.into(api);
+    });
+}
+
+Res<Ref<GraphicsPipeline>> Vktor::requestGraphicsPipeline(const GraphicsPipelineState& pso) {
+    size_t key = hash(pso);
+    return resource_cache.graphics_pipelines.request(key, [this, &pso]() {
+        return pso.into(api);
+    });
+}
+
+Res<Ref<ComputePipeline>> Vktor::requestComputePipeline(const ComputePipelineState& pso) {
+    size_t key = hash(pso);
+    return resource_cache.compute_pipelines.request(key, [this, &pso]() {
         return pso.into(api);
     });
 }

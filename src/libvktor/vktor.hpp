@@ -29,11 +29,11 @@ private:
 public:
     void addRenderContext();
 
-    Res<Ref<ShaderModule>> requestShaderModule(const Shader& shader);
+    Res<Ref<Shader>> requestShader(const ShaderSource& shader_source);
     Res<Ref<DescriptorSetLayout>> requestDescriptorSetLayout(const uint32_t set, const Vector<const Shader*>& shaders);
     Res<Ref<PipelineLayout>> requestPipelineLayout(const Vector<const Shader*>& shaders);
-    Res<Ref<GraphicsPipeline>> requestGraphicsPipeline(const GraphicsPipelineState& state);
-    Res<Ref<ComputePipeline>> requestComputePipeline(const ComputePipelineState& state);
+    Res<Ref<GraphicsPipeline>> requestGraphicsPipeline(const GraphicsPipelineState& pso);
+    Res<Ref<ComputePipeline>> requestComputePipeline(const ComputePipelineState& pso);
     Res<Ref<RenderPass>> requestRenderPass(const RenderTargetTable& render_target_table, const RenderPipeline& render_pipeline);
     Res<Ref<Framebuffer>> requestFramebuffer(const RenderTargetTable& render_target_table, const RenderPass& render_pass);
 };
