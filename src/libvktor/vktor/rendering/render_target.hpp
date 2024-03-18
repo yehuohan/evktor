@@ -70,8 +70,8 @@ public:
     }
     Vector<VkImageView> getImageViews() const;
 
-    static Res<RenderTargetTable> build(Vector<RenderTarget>&& targets);
-    static Res<RenderTargetTable> build(std::initializer_list<MovedRenderTarget> moved_targets);
+    static Res<RenderTargetTable> from(Vector<RenderTarget>&& targets);
+    static Res<RenderTargetTable> from(std::initializer_list<MovedRenderTarget> moved_targets);
 };
 
 NAMESPACE_END(vkt)

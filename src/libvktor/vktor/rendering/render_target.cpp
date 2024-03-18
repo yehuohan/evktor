@@ -65,7 +65,7 @@ Vector<VkImageView> RenderTargetTable::getImageViews() const {
     return std::move(views);
 }
 
-Res<RenderTargetTable> RenderTargetTable::build(Vector<RenderTarget>&& targets) {
+Res<RenderTargetTable> RenderTargetTable::from(Vector<RenderTarget>&& targets) {
     if (targets.empty()) {
         return Er("There should be at least one RenderTarget for RenderTargetTable");
     }
@@ -97,13 +97,13 @@ Res<RenderTargetTable> RenderTargetTable::build(Vector<RenderTarget>&& targets) 
     return Ok(std::move(rtt));
 }
 
-Res<RenderTargetTable> RenderTargetTable::build(std::initializer_list<MovedRenderTarget> moved_targets) {
+Res<RenderTargetTable> RenderTargetTable::from(std::initializer_list<MovedRenderTarget> moved_targets) {
     Vector<RenderTarget> rts;
     for (auto item = moved_targets.begin(); item != moved_targets.end(); ++item) {
         // The `item` is const pointer. So move RenderTarget with pointer-to-pointer.
         rts.push_back(std::move(**item));
     }
-    return RenderTargetTable::build(std::move(rts));
+    return RenderTargetTable::from(std::move(rts));
 }
 
 NAMESPACE_END(vkt)

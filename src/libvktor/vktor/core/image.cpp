@@ -107,7 +107,8 @@ Image::Image(Image&& rhs) : CoreResource(rhs.device) {
 
 Image::~Image() {
     if (handle && allocation) {
-        // If allocation is VK_NULL_HANDLE, means this image is not created from ImageState, but from Image::build().
+        // If allocation is VK_NULL_HANDLE, means this image is not created from `ImageState`, but from already created
+        // VkImage with `Image::from()`.
         vmaDestroyImage(device, handle, allocation);
     }
     handle = VK_NULL_HANDLE;
