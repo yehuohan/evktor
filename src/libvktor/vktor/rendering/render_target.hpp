@@ -5,8 +5,6 @@
 
 NAMESPACE_BEGIN(vkt)
 
-using namespace core;
-
 class RenderTargetTable;
 
 /**
@@ -19,25 +17,25 @@ class RenderTarget : private NonCopyable {
     friend class RenderPipeline;
 
 protected:
-    ImageView imageview;
+    core::ImageView imageview;
     const VkFormat format;               /**< Alias to imageview.image.format */
     const VkSampleCountFlagBits samples; /**< Alias to imageview.image.samples */
     const VkImageUsageFlags usage;       /**< Alias to imageview.image.usage */
 
-    AttachmentOps ops = AttachmentOps::ignore();
-    AttachmentOps stencil_ops = AttachmentOps::ignore();
-    AttachmentLayouts layouts = AttachmentLayouts::color();
+    core::AttachmentOps ops = core::AttachmentOps::ignore();
+    core::AttachmentOps stencil_ops = core::AttachmentOps::ignore();
+    core::AttachmentLayouts layouts = core::AttachmentLayouts::color();
     VkClearValue clear{};
 
 public:
     using Self = RenderTarget&;
 
-    RenderTarget(ImageView&& _imageview);
+    RenderTarget(core::ImageView&& _imageview);
     RenderTarget(RenderTarget&& rhs);
 
-    Self set(const AttachmentOps& ops);
-    Self set(const AttachmentOps& ops, const AttachmentOps& stencil_ops);
-    Self set(const AttachmentLayouts& layouts);
+    Self set(const core::AttachmentOps& ops);
+    Self set(const core::AttachmentOps& ops, const core::AttachmentOps& stencil_ops);
+    Self set(const core::AttachmentLayouts& layouts);
     Self set(const VkImageLayout final_layout);
     Self set(const VkClearColorValue& color);
     Self set(const VkClearDepthStencilValue& depthstencil);
@@ -84,7 +82,7 @@ NAMESPACE_BEGIN(std)
  * @brief RenderTarget hash functor
  *
  * Hashing RenderTarget will NOT include imageview's Vulkan handle
- * (This is mainly for `vkt::RenderPass`)
+ * (This is mainly for `vkt::core::RenderPass`)
  */
 template <>
 struct hash<vkt::RenderTarget> {
@@ -118,7 +116,7 @@ struct hash<vkt::Vector<vkt::RenderTarget>> {
  * @brief RenderTargetTable hash functor
  *
  * Hashing RenderTargetTable will ONLY include imageview's and image's Vulkan handle
- * (This is mainly for `vkt::Framebuffer`)
+ * (This is mainly for `vkt::core::Framebuffer`)
  */
 template <>
 struct hash<vkt::RenderTargetTable> {

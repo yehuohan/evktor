@@ -4,14 +4,12 @@
 
 NAMESPACE_BEGIN(vkt)
 
-using namespace core;
-
 class RenderSubpass : private NonCopyable {
 private:
     Shader vert;
     Shader frag;
     // By default the output attachments is attachment 0
-    RenderSubpassInfo info{{}, {0}, VK_ATTACHMENT_UNUSED};
+    core::RenderSubpassInfo info{{}, {0}, VK_ATTACHMENT_UNUSED};
 
 public:
     explicit RenderSubpass(Shader&& vert, Shader&& frag) : vert(std::move(vert)), frag(std::move(frag)) {}
@@ -32,7 +30,7 @@ public:
     inline void setDepthStencilAttachment(uint32_t depthstencil) {
         info.depthstencil = depthstencil;
     }
-    inline const RenderSubpassInfo& getInfo() const {
+    inline const core::RenderSubpassInfo& getInfo() const {
         return info;
     }
 };

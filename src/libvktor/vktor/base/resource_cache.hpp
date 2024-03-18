@@ -12,8 +12,6 @@
 
 NAMESPACE_BEGIN(vkt)
 
-using namespace core;
-
 template <typename T>
 class ResourceState {
 private:
@@ -65,12 +63,12 @@ private:
 
 struct ResourceCache {
     ResourceState<Shader> shaders{};
-    ResourceState<DescriptorSetLayout> descriptor_setlayouts{};
-    ResourceState<PipelineLayout> pipeline_layouts{};
-    ResourceState<GraphicsPipeline> graphics_pipelines{};
-    ResourceState<ComputePipeline> compute_pipelines{};
-    ResourceState<RenderPass> render_passes{};
-    ResourceState<Framebuffer> framebuffers{};
+    ResourceState<core::DescriptorSetLayout> descriptor_setlayouts{};
+    ResourceState<core::PipelineLayout> pipeline_layouts{};
+    ResourceState<core::GraphicsPipeline> graphics_pipelines{};
+    ResourceState<core::ComputePipeline> compute_pipelines{};
+    ResourceState<core::RenderPass> render_passes{};
+    ResourceState<core::Framebuffer> framebuffers{};
 };
 
 NAMESPACE_END(vkt)

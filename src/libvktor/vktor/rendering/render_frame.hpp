@@ -3,8 +3,6 @@
 
 NAMESPACE_BEGIN(vkt)
 
-using namespace core;
-
 /**
  * @brief Render frame
  *
@@ -16,14 +14,14 @@ private:
 
     const size_t thread_count = 1;
     /** Map queue family index to command pool */
-    Vector<HashMap<uint32_t, CommandPool>> cmd_pools{};
+    Vector<HashMap<uint32_t, core::CommandPool>> cmd_pools{};
     /** Map DescriptorSetLayout to DescriptorPooler */
-    Vector<HashMap<size_t, DescriptorPooler>> desc_poolers{};
+    Vector<HashMap<size_t, core::DescriptorPooler>> desc_poolers{};
     /** Map DescriptorSetLayout + DescriptorPool + DescriptorInfo to DescriptorSet */
-    Vector<HashMap<size_t, DescriptorSet>> desc_sets{};
-    FencePool fence_pool;
-    SemaphorePool semaphore_pool;
-    EventPool event_pool;
+    Vector<HashMap<size_t, core::DescriptorSet>> desc_sets{};
+    core::FencePool fence_pool;
+    core::SemaphorePool semaphore_pool;
+    core::EventPool event_pool;
 
 public:
     explicit RenderFrame(const BaseApi& api, size_t thread_count);
@@ -39,38 +37,38 @@ public:
      *
      * Reset command buffer via vkResetCommandBuffer or vkBeginCommandBuffer
      */
-    Res<Ref<CommandBuffer>> requestCommandBuffer(const Queue& queue, size_t thread_index = 0);
+    Res<Ref<core::CommandBuffer>> requestCommandBuffer(const core::Queue& queue, size_t thread_index = 0);
     /**
      * @brief Request one descriptor set from an available descriptor pool that is got from pooler
      */
-    Res<Ref<DescriptorSet>> requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
-                                                 const DescriptorInfo& desc_info,
-                                                 size_t thread_index = 0);
+    Res<Ref<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
+                                                       const core::DescriptorInfo& desc_info,
+                                                       size_t thread_index = 0);
     /**
      * @brief Request one descriptor set from an available descriptor pool that is got from pooler
      */
-    Res<Ref<DescriptorSet>> requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
-                                                 const DescriptorArrayInfo& desc_info,
-                                                 size_t thread_index = 0);
+    Res<Ref<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
+                                                       const core::DescriptorArrayInfo& desc_info,
+                                                       size_t thread_index = 0);
 
-    inline Res<Ref<Fence>> requestFence() {
+    inline Res<Ref<core::Fence>> requestFence() {
         return fence_pool.request();
     }
-    inline Res<Ref<Semaphore>> requestSemaphore() {
+    inline Res<Ref<core::Semaphore>> requestSemaphore() {
         return semaphore_pool.request();
     }
-    inline Res<Ref<Event>> requestEvent() {
+    inline Res<Ref<core::Event>> requestEvent() {
         return event_pool.request();
     }
 
 private:
-    Res<Ref<DescriptorPool>> requestDescriptorPool(const DescriptorSetLayout& desc_setlayout, size_t thread_index);
+    Res<Ref<core::DescriptorPool>> requestDescriptorPool(const core::DescriptorSetLayout& desc_setlayout, size_t thread_index);
     /** T should be DescriptorInfo or DescriptorArrayInfo */
     template <typename T>
-    Res<Ref<DescriptorSet>> requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
-                                                 const T& desc_info,
-                                                 DescriptorPool& desc_pool,
-                                                 size_t thread_index);
+    Res<Ref<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
+                                                       const T& desc_info,
+                                                       core::DescriptorPool& desc_pool,
+                                                       size_t thread_index);
 };
 
 NAMESPACE_END(vkt)

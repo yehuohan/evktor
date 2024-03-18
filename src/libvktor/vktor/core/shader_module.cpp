@@ -15,14 +15,17 @@ Self ShaderModuleState::setFilename(const std::string& _filename) {
     return *this;
 }
 
-Self ShaderModuleState::setCode(const uint32_t* _code, size_t _code_size) {
+Self ShaderModuleState::setCode(const uint32_t* _code, size_t _code_size, size_t _code_id) {
     code = _code;
     code_size = _code_size;
+    code_id = _code_id;
     return *this;
 }
-Self ShaderModuleState::setCode(const Vector<uint32_t>& _code) {
+
+Self ShaderModuleState::setCode(const Vector<uint32_t>& _code, size_t _code_id) {
     code = _code.data();
     code_size = _code.size() * sizeof(uint32_t);
+    code_id = _code_id;
     return *this;
 }
 

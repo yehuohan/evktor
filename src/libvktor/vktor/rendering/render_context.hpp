@@ -4,14 +4,12 @@
 
 NAMESPACE_BEGIN(vkt)
 
-using namespace core;
-
 class RenderContext : private NonCopyable {
 private:
     const BaseApi& api;
 
     const size_t thread_count = 1;
-    Box<Swapchain> swapchain = nullptr;
+    Box<core::Swapchain> swapchain = nullptr;
     Vector<RenderFrame> frames{};
     uint32_t frame_index = 0;
 
@@ -21,8 +19,8 @@ public:
     /* Swapchain */
     OnConstType(VkSwapchainKHR, swapchain->handle);
 
-    Res<Ref<Swapchain>> add(SwapchainState& info);
-    inline const Swapchain& getSwapchain() const {
+    Res<Ref<core::Swapchain>> add(core::SwapchainState& info);
+    inline const core::Swapchain& getSwapchain() const {
         Check(swapchain, "Swapchain is invalid");
         return *swapchain;
     }

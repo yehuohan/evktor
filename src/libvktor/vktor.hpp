@@ -16,8 +16,6 @@
 
 NAMESPACE_BEGIN(vkt)
 
-using namespace core;
-
 class Vktor {
 public:
     BaseApi api{};
@@ -30,12 +28,14 @@ public:
     void addRenderContext();
 
     Res<Ref<Shader>> requestShader(const ShaderSource& shader_source);
-    Res<Ref<DescriptorSetLayout>> requestDescriptorSetLayout(const uint32_t set, const Vector<const Shader*>& shaders);
-    Res<Ref<PipelineLayout>> requestPipelineLayout(const Vector<const Shader*>& shaders);
-    Res<Ref<GraphicsPipeline>> requestGraphicsPipeline(const GraphicsPipelineState& pso);
-    Res<Ref<ComputePipeline>> requestComputePipeline(const ComputePipelineState& pso);
-    Res<Ref<RenderPass>> requestRenderPass(const RenderTargetTable& render_target_table, const RenderPipeline& render_pipeline);
-    Res<Ref<Framebuffer>> requestFramebuffer(const RenderTargetTable& render_target_table, const RenderPass& render_pass);
+    Res<Ref<core::DescriptorSetLayout>> requestDescriptorSetLayout(const uint32_t set, const Vector<const Shader*>& shaders);
+    Res<Ref<core::PipelineLayout>> requestPipelineLayout(const Vector<const Shader*>& shaders);
+    Res<Ref<core::GraphicsPipeline>> requestGraphicsPipeline(const core::GraphicsPipelineState& pso);
+    Res<Ref<core::ComputePipeline>> requestComputePipeline(const core::ComputePipelineState& pso);
+    Res<Ref<core::RenderPass>> requestRenderPass(const RenderTargetTable& render_target_table,
+                                                 const RenderPipeline& render_pipeline);
+    Res<Ref<core::Framebuffer>> requestFramebuffer(const RenderTargetTable& render_target_table,
+                                                   const core::RenderPass& render_pass);
 };
 
 NAMESPACE_END(vkt)

@@ -7,6 +7,8 @@
 
 NAMESPACE_BEGIN(vkt)
 
+using namespace core;
+
 static Res<VkShaderStageFlagBits> getShaderStage(const std::string& filename) {
     std::string::size_type n = filename.rfind('.');
     if (n == std::string::npos) {
@@ -131,6 +133,15 @@ Res<Vector<uint32_t>> Shader::glsl2spv(const std::string& code) {
     glslang::FinalizeProcess();
 
     return Ok(std::move(spirv));
+}
+
+Res<core::ShaderModule> Shader::into(const core::Device& device) const {
+    return ShaderModuleState("VertShaderModule")
+        .setStage(stage)
+        .setFilename(filename)
+        .setCode(spv_code, id)
+        .setEntry(entry)
+        .into(device);
 }
 
 Res<Shader> Shader::load(const ShaderSource& source) {

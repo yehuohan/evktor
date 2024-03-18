@@ -25,8 +25,6 @@
 
 NAMESPACE_BEGIN(vkt)
 
-using namespace core;
-
 class RenderPipeline;
 
 /**
@@ -34,9 +32,9 @@ class RenderPipeline;
  */
 class BaseApi : private NonCopyable {
 private:
-    Box<Instance> instance = nullptr;
-    Box<PhysicalDevice> phy_dev = nullptr;
-    Box<Device> dev = nullptr;
+    Box<core::Instance> instance = nullptr;
+    Box<core::PhysicalDevice> phy_dev = nullptr;
+    Box<core::Device> dev = nullptr;
 
 public:
     explicit BaseApi() {}
@@ -44,78 +42,79 @@ public:
     OnConstType(VkInstance, instance->handle);
     OnConstType(VkPhysicalDevice, phy_dev->handle);
     OnConstType(VkDevice, dev->handle);
-    operator const Instance&() const {
+    operator const core::Instance&() const {
         Check(instance, "Instance device is invalid");
         return *instance;
     }
-    operator const PhysicalDevice&() const {
+    operator const core::PhysicalDevice&() const {
         Check(phy_dev, "Physical device is invalid");
         return *phy_dev;
     }
-    operator const Device&() const {
+    operator const core::Device&() const {
         Check(dev, "Device is invalid");
         return *dev;
     }
 
-    Res<Ref<Instance>> init(InstanceState& info);
-    Res<Ref<PhysicalDevice>> init(PhysicalDeviceState& info);
-    Res<Ref<Device>> init(DeviceState& info);
-    Res<Ref<Queue>> presentQueue() const;
-    Res<Ref<Queue>> graphicsQueue() const;
-    Res<Ref<Queue>> computeQueue() const;
-    Res<Ref<Queue>> transferQueue() const;
+    Res<Ref<core::Instance>> init(core::InstanceState& info);
+    Res<Ref<core::PhysicalDevice>> init(core::PhysicalDeviceState& info);
+    Res<Ref<core::Device>> init(core::DeviceState& info);
+    Res<Ref<core::Queue>> presentQueue() const;
+    Res<Ref<core::Queue>> graphicsQueue() const;
+    Res<Ref<core::Queue>> computeQueue() const;
+    Res<Ref<core::Queue>> transferQueue() const;
 
 public:
     // Alias core state object `into` function
-    inline Res<Swapchain> create(SwapchainState& info) const {
+    inline Res<core::Swapchain> create(core::SwapchainState& info) const {
         return info.into(*this);
     }
-    inline Res<ShaderModule> create(const ShaderModuleState& info) const {
+    inline Res<core::ShaderModule> create(const core::ShaderModuleState& info) const {
         return info.into(*this);
     }
-    inline Res<Buffer> create(const BufferState& info) const {
+    inline Res<core::Buffer> create(const core::BufferState& info) const {
         return info.into(*this);
     }
-    inline Res<Image> create(const ImageState& info) const {
+    inline Res<core::Image> create(const core::ImageState& info) const {
         return info.into(*this);
     }
-    inline Res<ImageView> create(const ImageViewState& info) const {
+    inline Res<core::ImageView> create(const core::ImageViewState& info) const {
         return info.into();
     }
-    inline Res<Sampler> create(const SamplerState& info) const {
+    inline Res<core::Sampler> create(const core::SamplerState& info) const {
         return info.into(*this);
     }
-    inline Res<DescriptorSetLayout> create(const DescriptorSetLayoutState& info) const {
+    inline Res<core::DescriptorSetLayout> create(const core::DescriptorSetLayoutState& info) const {
         return info.into(*this);
     }
-    inline Res<DescriptorPool> create(const DescriptorPoolState& info, const core::DescriptorSetLayout& setlayout) const {
+    inline Res<core::DescriptorPool> create(const core::DescriptorPoolState& info,
+                                            const core::DescriptorSetLayout& setlayout) const {
         return info.into(setlayout);
     }
-    inline Res<PipelineLayout> create(const PipelineLayoutState& info) const {
+    inline Res<core::PipelineLayout> create(const core::PipelineLayoutState& info) const {
         return info.into(*this);
     }
-    inline Res<GraphicsPipeline> create(const GraphicsPipelineState& info) const {
+    inline Res<core::GraphicsPipeline> create(const core::GraphicsPipelineState& info) const {
         return info.into(*this);
     }
-    inline Res<ComputePipeline> create(const ComputePipelineState& info) const {
+    inline Res<core::ComputePipeline> create(const core::ComputePipelineState& info) const {
         return info.into(*this);
     }
-    inline Res<RenderPass> create(const RenderPassState& info) const {
+    inline Res<core::RenderPass> create(const core::RenderPassState& info) const {
         return info.into(*this);
     }
-    inline Res<Framebuffer> create(const FramebufferState& info) const {
+    inline Res<core::Framebuffer> create(const core::FramebufferState& info) const {
         return info.into(*this);
     }
-    inline Res<CommandPool> create(const CommandPoolState& info) const {
+    inline Res<core::CommandPool> create(const core::CommandPoolState& info) const {
         return info.into(*this);
     }
-    inline Res<Fence> create(const FenceState& info) const {
+    inline Res<core::Fence> create(const core::FenceState& info) const {
         return info.into(*this);
     }
-    inline Res<Semaphore> create(const SemaphoreState& info) const {
+    inline Res<core::Semaphore> create(const core::SemaphoreState& info) const {
         return info.into(*this);
     }
-    inline Res<Event> create(const EventState& info) const {
+    inline Res<core::Event> create(const core::EventState& info) const {
         return info.into(*this);
     }
 };

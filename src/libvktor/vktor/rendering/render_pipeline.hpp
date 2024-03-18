@@ -5,8 +5,6 @@
 
 NAMESPACE_BEGIN(vkt)
 
-using namespace core;
-
 class RenderPipeline : private NonCopyable {
 private:
     const BaseApi& api;
@@ -22,7 +20,7 @@ public:
     inline const Vector<RenderSubpass>& getSubpasses() const {
         return subpasses;
     }
-    Res<RenderPass> createRenderPass(const RenderTargetTable& render_target_table) const;
+    Res<core::RenderPass> createRenderPass(const RenderTargetTable& render_target_table) const;
 };
 
 NAMESPACE_END(vkt)

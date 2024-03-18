@@ -9,6 +9,9 @@ class Shader;
 //     Self defMacro(const std::string& macro);
 // };
 
+/**
+ * @brief Shader glsl source code
+ */
 class ShaderSource : private NonCopyable {
     friend class Shader;
 
@@ -61,6 +64,9 @@ struct ShaderDescriptor {
         , count(count) {}
 };
 
+/**
+ * @brief Shader spir-v code
+ */
 class Shader : private NonCopyable {
 private:
     VkShaderStageFlagBits stage;
@@ -79,6 +85,7 @@ private:
 public:
     Shader(Shader&&);
 
+    Res<core::ShaderModule> into(const core::Device& device) const;
     inline VkShaderStageFlagBits getStage() const {
         return stage;
     }
@@ -108,6 +115,9 @@ NAMESPACE_END(vkt)
 
 NAMESPACE_BEGIN(std)
 
+/**
+ * @brief Hash `vkt::ShaderSource` for unique `vkt::Shader`
+ */
 template <>
 struct hash<vkt::ShaderSource> {
     size_t operator()(const vkt::ShaderSource& shader_source) const {
@@ -117,6 +127,9 @@ struct hash<vkt::ShaderSource> {
     }
 };
 
+/**
+ * @brief Hash `vkt::Shader` for unique `vkt::core::ShaderModule`
+ */
 template <>
 struct hash<vkt::Shader> {
     size_t operator()(const vkt::Shader& shader) const {
