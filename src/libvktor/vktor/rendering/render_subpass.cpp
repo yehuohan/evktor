@@ -4,7 +4,8 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
-RenderSubpass::RenderSubpass(RenderSubpass&& rhs) : vert(std::move(rhs.vert)), frag(std::move(rhs.frag)) {
+RenderSubpass::RenderSubpass(RenderSubpass&& rhs) {
+    shaders = std::move(rhs.shaders);
     info = std::move(rhs.info);
 };
 

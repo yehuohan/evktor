@@ -6,20 +6,29 @@ NAMESPACE_BEGIN(vkt)
 
 class RenderSubpass : private NonCopyable {
 private:
-    Shader vert;
-    Shader frag;
+    enum {
+        VERT,
+        FRAG,
+    };
+    Vector<Shader> shaders{};
     // By default the output attachments is attachment 0
     core::RenderSubpassInfo info{{}, {0}, VK_ATTACHMENT_UNUSED};
 
 public:
-    explicit RenderSubpass(Shader&& vert, Shader&& frag) : vert(std::move(vert)), frag(std::move(frag)) {}
+    explicit RenderSubpass(Shader&& vert, Shader&& frag) {
+        shaders.push_back(std::move(vert));
+        shaders.push_back(std::move(frag));
+    }
     RenderSubpass(RenderSubpass&&);
 
+    inline const Vector<Shader>& Shaders() const {
+        return shaders;
+    }
     inline const Shader& vertShader() const {
-        return vert;
+        return shaders[VERT];
     }
     inline const Shader& fragShader() const {
-        return frag;
+        return shaders[FRAG];
     }
     inline void setInputAttachments(Vector<uint32_t>&& inputs) {
         info.inputs = std::move(inputs);

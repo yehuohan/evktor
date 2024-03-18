@@ -1,6 +1,6 @@
 /**
  * @file vktor.hpp
- * @brief Graphics builder framework based on Vulkan
+ * @brief Vulkan graphics framework
  *
  * @author yehuohan@qq.com
  */
@@ -28,8 +28,8 @@ public:
     void addRenderContext();
 
     Res<Ref<Shader>> requestShader(const ShaderSource& shader_source);
-    Res<Ref<core::DescriptorSetLayout>> requestDescriptorSetLayout(const uint32_t set, const Vector<const Shader*>& shaders);
-    Res<Ref<core::PipelineLayout>> requestPipelineLayout(const Vector<const Shader*>& shaders);
+    Res<Ref<core::DescriptorSetLayout>> requestDescriptorSetLayout(const uint32_t set, const Vector<Shader>& shaders);
+    Res<Ref<core::PipelineLayout>> requestPipelineLayout(const Vector<Shader>& shaders);
     Res<Ref<core::GraphicsPipeline>> requestGraphicsPipeline(const core::GraphicsPipelineState& pso);
     Res<Ref<core::ComputePipeline>> requestComputePipeline(const core::ComputePipelineState& pso);
     Res<Ref<core::RenderPass>> requestRenderPass(const RenderTargetTable& render_target_table,
