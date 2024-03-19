@@ -21,9 +21,7 @@ DemoFilter::DemoFilter(int width, int height)
     tex_wid = 512;
     tex_hei = 512;
     img = loadTexture(Assets::getTex("lena.jpg"));
-    glBindImageTexture(0, img, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8); // bind img to TEXTURE0
     tex = createTexture(tex_wid, tex_hei);
-    glBindImageTexture(1, tex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8); // bind tex to TEXTURE1
 
     // load shader
     shader.load(GLSL_VERT_MESH_DATA, GLSL_FRAG_MESH_DATA);
@@ -61,11 +59,8 @@ void DemoFilter::tick(float cur_time, float delta_time) {
 }
 
 void DemoFilter::drawFilter(float time) {
-    // launch compute shader
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, img); // bind img to TEXTURE0 for compute shader
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, tex); // bind tex to TEXTURE1 for compute shader
+    glBindImageTexture(0, img, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8); // bind img to binding = 0
+    glBindImageTexture(1, tex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8); // bind tex to binding = 1
     shader_filter.use();
     shader_filter.setInt("imgWidth", tex_wid);
     shader_filter.setInt("imgHeight", tex_hei);
