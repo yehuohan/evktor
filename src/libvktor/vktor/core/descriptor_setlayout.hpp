@@ -62,7 +62,7 @@ NAMESPACE_BEGIN(std)
 
 template <>
 struct hash<vkt::core::DescriptorSetLayout> {
-    size_t operator()(const vkt::core::DescriptorSetLayout& desc_setlayout) const {
+    inline size_t operator()(const vkt::core::DescriptorSetLayout& desc_setlayout) const {
         return hash<VkDescriptorSetLayout>{}(desc_setlayout);
     }
 };

@@ -48,7 +48,7 @@ NAMESPACE_BEGIN(std)
 
 template <>
 struct hash<vkt::core::ImageView> {
-    size_t operator()(const vkt::core::ImageView& imageview) const {
+    inline size_t operator()(const vkt::core::ImageView& imageview) const {
         return hash<VkImageView>{}(imageview);
     }
 };

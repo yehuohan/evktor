@@ -1,5 +1,6 @@
 #pragma once
 #include "__core.hpp"
+#include "__hash.hpp"
 #include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
@@ -63,16 +64,10 @@ struct hash<vkt::core::DescriptorInfo> {
     size_t operator()(const vkt::core::DescriptorInfo& desc_info) const {
         size_t res = 0;
         for (const auto& item : desc_info.bufs) {
-            const auto& buf = item.second;
-            vkt::hashCombine(res, buf.buffer);
-            vkt::hashCombine(res, buf.offset);
-            vkt::hashCombine(res, buf.range);
+            vkt::hashCombine(res, item.second);
         }
         for (const auto& item : desc_info.imgs) {
-            const auto& img = item.second;
-            vkt::hashCombine(res, img.sampler);
-            vkt::hashCombine(res, img.imageView);
-            vkt::hashCombine(res, img.imageLayout);
+            vkt::hashCombine(res, item.second);
         }
         return res;
     }
@@ -84,16 +79,12 @@ struct hash<vkt::core::DescriptorArrayInfo> {
         size_t res = 0;
         for (const auto& item : desc_arrinfo.bufs) {
             for (const auto& buf : item.second) {
-                vkt::hashCombine(res, buf.buffer);
-                vkt::hashCombine(res, buf.offset);
-                vkt::hashCombine(res, buf.range);
+                vkt::hashCombine(res, buf);
             }
         }
         for (const auto& item : desc_arrinfo.imgs) {
             for (const auto& img : item.second) {
-                vkt::hashCombine(res, img.sampler);
-                vkt::hashCombine(res, img.imageView);
-                vkt::hashCombine(res, img.imageLayout);
+                vkt::hashCombine(res, img);
             }
         }
         return res;

@@ -120,10 +120,8 @@ NAMESPACE_BEGIN(std)
  */
 template <>
 struct hash<vkt::ShaderSource> {
-    size_t operator()(const vkt::ShaderSource& shader_source) const {
-        size_t res = 0;
-        vkt::hashCombine(res, shader_source.getId());
-        return res;
+    inline size_t operator()(const vkt::ShaderSource& shader_source) const {
+        return shader_source.getId();
     }
 };
 
@@ -132,17 +130,15 @@ struct hash<vkt::ShaderSource> {
  */
 template <>
 struct hash<vkt::Shader> {
-    size_t operator()(const vkt::Shader& shader) const {
-        size_t res = 0;
-        vkt::hashCombine(res, shader.getId());
-        return res;
+    inline size_t operator()(const vkt::Shader& shader) const {
+        return shader.getId();
     }
 };
 
 template <>
 struct hash<vkt::Vector<vkt::Shader>> {
     // C++ doesn't support store Shader& in Vector, so use Shader* instead.
-    size_t operator()(const vkt::Vector<vkt::Shader>& shaders) const {
+    inline size_t operator()(const vkt::Vector<vkt::Shader>& shaders) const {
         size_t res = 0;
         for (const auto& s : shaders) {
             vkt::hashCombine(res, s);

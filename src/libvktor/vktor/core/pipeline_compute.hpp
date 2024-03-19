@@ -10,6 +10,7 @@ struct ComputePipeline;
 
 class ComputePipelineState : public CoreStater<ComputePipelineState> {
     friend struct ComputePipeline;
+    friend struct std::hash<ComputePipelineState>;
 
 private:
     VkPipelineCreateFlags flags = 0;
@@ -43,8 +44,10 @@ template <>
 struct hash<vkt::core::ComputePipelineState> {
     size_t operator()(const vkt::core::ComputePipelineState& pso) const {
         size_t res = 0;
-        // TODO
-        // vkt::hashCombine(res, )
+        if (pso.shader.has_value()) {
+            vkt::hashCombine(res, pso.shader.value());
+        }
+        vkt::hashCombine(res, pso.layout);
         return res;
     }
 };

@@ -1,5 +1,6 @@
 #pragma once
 #include "__core.hpp"
+#include "__hash.hpp"
 #include "device.hpp"
 #include "shader_module.hpp"
 
@@ -94,8 +95,41 @@ NAMESPACE_BEGIN(std)
 template <>
 struct hash<vkt::core::GraphicsPipelineState> {
     size_t operator()(const vkt::core::GraphicsPipelineState& pso) const {
+        // TODO: Hash according to what contained in `GraphicsPipelineState::dynamics`
         size_t res = 0;
         vkt::hashCombine(res, pso.shaders);
+        for (const auto& item : pso.vertex_input.bindings) {
+            vkt::hashCombine(res, item);
+        }
+        for (const auto& item : pso.vertex_input.attributes) {
+            vkt::hashCombine(res, item);
+        }
+        vkt::hashCombine(res, pso.input_assembly);
+        // vkt::hashCombine(res, pso.tessellation);
+        for (const auto& item : pso.viewports) {
+            vkt::hashCombine(res, item);
+        }
+        for (const auto& item : pso.scissors) {
+            vkt::hashCombine(res, item);
+        }
+        vkt::hashCombine(res, pso.rasterization);
+        vkt::hashCombine(res, pso.multisample);
+        vkt::hashCombine(res, pso.depth_stencil);
+        vkt::hashCombine(res, pso.color_blend.enable_logic_op);
+        vkt::hashCombine(res, pso.color_blend.logic_op);
+        for (const auto& item : pso.color_blend.attachments) {
+            vkt::hashCombine(res, item);
+        }
+        vkt::hashCombine(res, pso.color_blend.constants[0]);
+        vkt::hashCombine(res, pso.color_blend.constants[1]);
+        vkt::hashCombine(res, pso.color_blend.constants[2]);
+        vkt::hashCombine(res, pso.color_blend.constants[3]);
+        for (const auto& item : pso.dynamics) {
+            vkt::hashCombine(res, item);
+        }
+        vkt::hashCombine(res, pso.layout);
+        vkt::hashCombine(res, pso.render_pass);
+        vkt::hashCombine(res, pso.subpass);
         return res;
     }
 };

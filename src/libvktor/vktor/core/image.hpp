@@ -111,7 +111,7 @@ NAMESPACE_BEGIN(std)
 
 template <>
 struct hash<vkt::core::Image> {
-    size_t operator()(const vkt::core::Image& image) const {
+    inline size_t operator()(const vkt::core::Image& image) const {
         return hash<VkImage>{}(image);
     }
 };

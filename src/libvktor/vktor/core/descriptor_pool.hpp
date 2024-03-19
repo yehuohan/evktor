@@ -79,7 +79,7 @@ NAMESPACE_BEGIN(std)
 
 template <>
 struct hash<vkt::core::DescriptorPool> {
-    size_t operator()(const vkt::core::DescriptorPool& desc_pool) const {
+    inline size_t operator()(const vkt::core::DescriptorPool& desc_pool) const {
         return hash<VkDescriptorPool>{}(desc_pool);
     }
 };

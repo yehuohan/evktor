@@ -130,7 +130,7 @@ NAMESPACE_BEGIN(std)
 
 template <>
 struct hash<vkt::core::RenderPass> {
-    size_t operator()(const vkt::core::RenderPass& render_pass) const {
+    inline size_t operator()(const vkt::core::RenderPass& render_pass) const {
         return hash<VkRenderPass>{}(render_pass);
     }
 };

@@ -52,14 +52,14 @@ NAMESPACE_BEGIN(std)
  */
 template <>
 struct hash<vkt::core::ShaderModule> {
-    size_t operator()(const vkt::core::ShaderModule& shader_module) const {
-        return hash<size_t>{}(shader_module.code_id);
+    inline size_t operator()(const vkt::core::ShaderModule& shader_module) const {
+        return shader_module.code_id;
     }
 };
 
 template <>
 struct hash<vkt::Vector<vkt::core::ShaderModule>> {
-    size_t operator()(const vkt::Vector<vkt::core::ShaderModule>& shader_modules) const {
+    inline size_t operator()(const vkt::Vector<vkt::core::ShaderModule>& shader_modules) const {
         size_t res = 0;
         for (const auto& s : shader_modules) {
             vkt::hashCombine(res, s);
