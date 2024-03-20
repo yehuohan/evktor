@@ -107,8 +107,8 @@ Image::Image(Image&& rhs) : CoreResource(rhs.device) {
 
 Image::~Image() {
     if (handle && allocation) {
-        // If allocation is VK_NULL_HANDLE, means this image is not created from `ImageState`, but from already created
-        // VkImage with `Image::from()`.
+        // If allocation is VK_NULL_HANDLE, means this image is not created from ImageState, but from already created
+        // VkImage with Image::from().
         vmaDestroyImage(device, handle, allocation);
     }
     handle = VK_NULL_HANDLE;
@@ -222,6 +222,9 @@ Image Image::from(const Device& device,
                   VkSampleCountFlagBits _samples,
                   VkImageTiling _tiling,
                   VkImageUsageFlags _usage) {
+    if (VK_NULL_HANDLE == _image) {
+        LogW("Create Image should from a existed & valid VkImage");
+    }
     Image image(device);
     image.handle = _image;
     image.type = getType(_extent);

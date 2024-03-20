@@ -81,7 +81,7 @@ struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
 
     static Res<Image> from(const Device& device, const ImageState& info);
     /**
-     * @brief Create image with already allocated handle
+     * @brief Create image with already allocated handle (e.g. for swapchain images)
      */
     static Image from(const Device& device,
                       const VkImage image,
