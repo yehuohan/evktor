@@ -1,5 +1,5 @@
-#include <common/result.hpp>
 #include <iostream>
+#include <share/result.hpp>
 
 class Vec {
 public:

@@ -21,6 +21,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(CMsg)
 include(FindDeps)
 
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/libvkt_share)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/libvktor)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/libmisc)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/main)

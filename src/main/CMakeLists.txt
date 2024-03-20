@@ -15,7 +15,6 @@ target_link_libraries(${PROJECT_NAME}
     vktor
     misc
     glfw
-    glm::glm
     imgui::imgui
     Freetype::Freetype
     assimp::assimp)

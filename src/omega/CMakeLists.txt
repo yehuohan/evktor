@@ -11,10 +11,10 @@ add_executable(${PROJECT_NAME}
     ${SRC_LIB})
 
 target_link_libraries(${PROJECT_NAME}
+    vkt_share
     misc
     glad
     glfw
-    glm::glm
     imgui::imgui
     Freetype::Freetype
     assimp::assimp

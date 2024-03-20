@@ -15,9 +15,11 @@
 #include <iostream>
 #include <cstdint>
 #include <memory>
-#include "camera.h"
+#include "camera.hpp"
 #include "utils.h"
 
+
+using namespace vkt;
 
 class LnGL : public XWin {
 public:
