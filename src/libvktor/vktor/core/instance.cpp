@@ -128,8 +128,8 @@ Res<Instance> Instance::from(InstanceState& info) {
         if (!checkInstanceLayers(info.layers)) {
             return Er("Not all the required layers are supported");
         }
-        // Note: To debug issue in `vkCreateInstance` and `vkDestroyInstance` calls,
-        // pass a `VkDebugUtilsMessengerCreateInfoEXT` struct to instance_ci.pNext.
+        // Note: To debug issue in vkCreateInstance and vkDestroyInstance calls,
+        // pass a VkDebugUtilsMessengerCreateInfoEXT struct to `instance_ci.pNext`.
         instance_ci.enabledLayerCount = u32(info.layers.size());
         instance_ci.ppEnabledLayerNames = info.layers.data();
     }
@@ -153,7 +153,7 @@ Res<Instance> Instance::from(InstanceState& info) {
 
     volkLoadInstance(instance);
 
-    // Setup debug messenger that works after `vkCreateInstance` and before `vkDestroyInstance`
+    // Setup debug messenger that works after vkCreateInstance and before vkDestroyInstance
     if (info.enable_debug_utils) {
         OnRet(createDebugUtils(instance, info.debug_callback, &instance.debug_messenger),
               "Failed to create debug utils messenger");

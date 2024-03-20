@@ -24,7 +24,7 @@ struct Err {
 };
 
 /**
- * @brief A simplified `Result` like rust's `std::Result`
+ * @brief A simplified Result like rust's std::Result
  *
  * Code is studied from https://github.com/p-ranav/result
  */
@@ -72,7 +72,7 @@ public:
      * @brief Unwrap a result, then yield the content of an Ok, or throw if the value is an Err
      *
      * `unwrap` will move out the value, so DO NOT unwrap a result more than once.
-     * And unwrap CAN NOT mark as a const function to perform `std::move`.
+     * And unwrap CAN NOT mark as a const function to perform std::move.
      */
     auto unwrap() {
         if (isOk()) {
@@ -86,7 +86,7 @@ public:
      * @brief Unwrap a result, then yield the content of an Err, or throw if the value is an Ok
      *
      * `unwrapErr` will move out the value, so DO NOT unwrap a result more than once.
-     * And unwrap CAN NOT mark as a const function to perform `std::move`.
+     * And unwrap CAN NOT mark as a const function to perform std::move.
      */
     auto unwrapErr() {
         if (isErr()) {

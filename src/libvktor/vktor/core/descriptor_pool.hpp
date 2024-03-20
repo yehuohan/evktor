@@ -41,7 +41,7 @@ struct DescriptorPool : public CoreResource<VkDescriptorPool, VK_OBJECT_TYPE_DES
     /**
      * @brief Allocate once descriptor set
      *
-     * This `DescriptorPool` doesn't store allocated `DescriptorSet`, so return DescriptorSet.
+     * This DescriptorPool doesn't store allocated DescriptorSet, so return DescriptorSet.
      */
     Res<DescriptorSet> allocate(const Name& name = "DescriptorSet");
     bool free(const DescriptorSet& descset);

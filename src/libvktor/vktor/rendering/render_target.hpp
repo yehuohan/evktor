@@ -30,7 +30,7 @@ protected:
 public:
     using Self = RenderTarget&;
 
-    RenderTarget(core::ImageView&& _imageview);
+    explicit RenderTarget(core::ImageView&& imageview);
     RenderTarget(RenderTarget&& rhs);
 
     Self set(const core::AttachmentOps& ops);
@@ -82,7 +82,7 @@ NAMESPACE_BEGIN(std)
  * @brief RenderTarget hash functor
  *
  * Hashing RenderTarget will NOT include imageview's Vulkan handle
- * (This is mainly for `vkt::core::RenderPass`)
+ * (This is mainly for core::RenderPass)
  */
 template <>
 struct hash<vkt::RenderTarget> {
@@ -116,7 +116,7 @@ struct hash<vkt::Vector<vkt::RenderTarget>> {
  * @brief RenderTargetTable hash functor
  *
  * Hashing RenderTargetTable will ONLY include imageview's and image's Vulkan handle
- * (This is mainly for `vkt::core::Framebuffer`)
+ * (This is mainly for core::Framebuffer)
  */
 template <>
 struct hash<vkt::RenderTargetTable> {

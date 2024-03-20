@@ -16,7 +16,7 @@ private:
     std::string entry = "main";
     const uint32_t* code = nullptr;
     size_t code_size = 0; /**< Size of spir-v `code` in bytes */
-    size_t code_id = 0;   /**< Hash of spir-v `code` for unique `ShaderModule` */
+    size_t code_id = 0;   /**< Hash of spir-v `code` for unique ShaderModule */
 
 public:
     explicit ShaderModuleState(Name&& name = "ShaderModule") : CoreStater(std::move(name)) {}
@@ -48,7 +48,7 @@ NAMESPACE_END(vkt)
 NAMESPACE_BEGIN(std)
 
 /**
- * @brief Hash `vkt::core::ShaderModule` with `vkt::Shader::id`
+ * @brief Hash vkt::core::ShaderModule with vkt::Shader::id
  */
 template <>
 struct hash<vkt::core::ShaderModule> {

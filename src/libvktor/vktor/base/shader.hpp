@@ -116,7 +116,7 @@ NAMESPACE_END(vkt)
 NAMESPACE_BEGIN(std)
 
 /**
- * @brief Hash `vkt::ShaderSource` for unique `vkt::Shader`
+ * @brief Hash vkt::ShaderSource for unique vkt::Shader
  */
 template <>
 struct hash<vkt::ShaderSource> {
@@ -126,7 +126,7 @@ struct hash<vkt::ShaderSource> {
 };
 
 /**
- * @brief Hash `vkt::Shader` for unique `vkt::core::ShaderModule`
+ * @brief Hash vkt::Shader for unique vkt::core::ShaderModule
  */
 template <>
 struct hash<vkt::Shader> {

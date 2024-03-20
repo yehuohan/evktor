@@ -24,7 +24,7 @@ DescriptorPool::DescriptorPool(DescriptorPool&& rhs)
 
 DescriptorPool::~DescriptorPool() {
     if (handle) {
-        // Descriptor set will be freed along with `vkDestroyDescriptorPool`
+        // Descriptor set will be freed along with vkDestroyDescriptorPool
         vkDestroyDescriptorPool(device, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;

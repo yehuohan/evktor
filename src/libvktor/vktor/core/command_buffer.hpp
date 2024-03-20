@@ -10,7 +10,7 @@ struct CommandPool;
 /**
  * @brief Command buffer
  *
- * `CommandBuffer` must be allocated with `CommandPool::allocate()`.
+ * CommandBuffer must be allocated with CommandPool::allocate().
  */
 struct CommandBuffer : public CoreResource<VkCommandBuffer, VK_OBJECT_TYPE_COMMAND_BUFFER, Device> {
     const CommandPool& command_pool;

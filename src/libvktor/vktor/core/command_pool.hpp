@@ -36,8 +36,8 @@ struct CommandPool : public CoreResource<VkCommandPool, VK_OBJECT_TYPE_COMMAND_P
     /**
      * @brief Allocate one command buffer
      *
-     * Store allocated `CommandBuffer` within this `CommandPool`, so return the referrence of the `CommandBuffer`.
-     * And free `CommandBuffer` by removing `CommandBuffer` from `primaries` or `secondaries`.
+     * Store allocated CommandBuffer within this CommandPool, so return the referrence of the CommandBuffer.
+     * And free CommandBuffer by removing CommandBuffer from `primaries` or `secondaries`.
      */
     Res<Ref<CommandBuffer>> allocate(CommandBuffer::Level level, const Name& name = "CommandBuffer");
     void resetCommandPool();

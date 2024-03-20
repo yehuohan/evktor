@@ -95,7 +95,7 @@ NAMESPACE_BEGIN(std)
 template <>
 struct hash<vkt::core::GraphicsPipelineState> {
     size_t operator()(const vkt::core::GraphicsPipelineState& pso) const {
-        // TODO: Hash according to what contained in `GraphicsPipelineState::dynamics`
+        // TODO: Hash according to what contained in GraphicsPipelineState::dynamics
         size_t res = 0;
         vkt::hashCombine(res, pso.shaders);
         for (const auto& item : pso.vertex_input.bindings) {

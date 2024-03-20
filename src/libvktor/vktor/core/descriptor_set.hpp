@@ -39,7 +39,7 @@ struct DescriptorArrayInfo {
 /**
  * @brief Descriptor set
  *
- * `DescriptorSet` should be allocated with `DescriptorPool::allocate()` as `vkAllocateDescriptorSets` need `VkDescriptorPool`.
+ * DescriptorSet should be allocated with DescriptorPool::allocate() as vkAllocateDescriptorSets need VkDescriptorPool.
  */
 struct DescriptorSet : public CoreResource<VkDescriptorSet, VK_OBJECT_TYPE_DESCRIPTOR_SET, Device> {
     DescriptorPool& desc_pool;
