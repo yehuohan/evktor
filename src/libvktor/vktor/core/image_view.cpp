@@ -79,7 +79,7 @@ ImageView::ImageView(ImageView&& rhs) : CoreResource(rhs.device), image(rhs.imag
 }
 
 ImageView::~ImageView() {
-    if (handle) {
+    if (!__borrowed && handle) {
         vkDestroyImageView(device, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;

@@ -106,10 +106,13 @@ Image::Image(Image&& rhs) : CoreResource(rhs.device) {
 }
 
 Image::~Image() {
-    if (handle && allocation) {
-        // If allocation is VK_NULL_HANDLE, means this image is not created from ImageState, but from already created
-        // VkImage with Image::from().
-        vmaDestroyImage(device, handle, allocation);
+    if (!__borrowed && handle) {
+        if (allocation) {
+            vmaDestroyImage(device, handle, allocation);
+        } else {
+            vkFreeMemory(device, memory, nullptr);
+            vkDestroyImage(device, handle, nullptr);
+        }
     }
     handle = VK_NULL_HANDLE;
     memory = VK_NULL_HANDLE;
@@ -231,6 +234,7 @@ Image Image::borrow(const Device& device,
         LogW("Create Image should from a existed & valid VkImage");
     }
     Image image(device);
+    image.__borrowed = true;
     image.handle = _image;
     image.type = getType(_extent);
     image.format = _format;

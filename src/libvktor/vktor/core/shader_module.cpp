@@ -46,7 +46,7 @@ ShaderModule::ShaderModule(ShaderModule&& rhs) : CoreResource(rhs.device) {
 }
 
 ShaderModule::~ShaderModule() {
-    if (handle) {
+    if (!__borrowed && handle) {
         vkDestroyShaderModule(device, handle, nullptr);
     }
     handle = nullptr;

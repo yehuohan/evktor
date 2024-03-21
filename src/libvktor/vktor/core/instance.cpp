@@ -82,7 +82,7 @@ Instance::Instance(Instance&& rhs) {
 }
 
 Instance::~Instance() {
-    if (handle) {
+    if (!__borrowed && handle) {
         if (debug_messenger) {
             destroyDebugUtils(handle, debug_messenger);
         }

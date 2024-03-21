@@ -72,7 +72,7 @@ Swapchain::Swapchain(Swapchain&& rhs) : CoreResource(rhs.device) {
 }
 
 Swapchain::~Swapchain() {
-    if (handle) {
+    if (!__borrowed && handle) {
         vkDestroySwapchainKHR(device, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;

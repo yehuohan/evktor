@@ -56,7 +56,16 @@ typedef std::string Name;
  */
 template <typename T>
 struct CoreHandle : public NonCopyable {
-    T handle = VK_NULL_HANDLE; /**< Vulkan handle */
+protected:
+    /** Vulkan handle is borrowed or not
+     *
+     * If it's borrowed, CoreHandle must not destory the handle
+     */
+    bool __borrowed = false;
+
+public:
+    /** Vulkan handle */
+    T handle = VK_NULL_HANDLE;
 
     virtual ~CoreHandle() {}
     OnType(T, this->handle);
@@ -114,7 +123,6 @@ public:
 
     Name __name = ""; /**< Debug name */
     bool __verbose = VKT_CORE_VERBOSE;
-    // bool __movable = true;
 
     inline Self setDebugName(Name&& name) {
         __name = std::move(name);

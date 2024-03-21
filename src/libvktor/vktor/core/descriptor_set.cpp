@@ -13,7 +13,7 @@ DescriptorSet::DescriptorSet(DescriptorSet&& rhs) : CoreResource(rhs.device), de
 
 DescriptorSet::~DescriptorSet() {
     // Still need check null handle to skip destructor resulted from move constructor
-    if (handle) {
+    if (!__borrowed && handle) {
         desc_pool.free(*this);
     }
     handle = VK_NULL_HANDLE;

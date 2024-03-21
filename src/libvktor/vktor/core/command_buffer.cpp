@@ -12,7 +12,7 @@ CommandBuffer::CommandBuffer(CommandBuffer&& rhs) : CoreResource(rhs.device), co
 }
 
 CommandBuffer::~CommandBuffer() {
-    if (handle) {
+    if (!__borrowed && handle) {
         vkFreeCommandBuffers(command_pool.device, command_pool, 1, &handle);
     }
     handle = VK_NULL_HANDLE;

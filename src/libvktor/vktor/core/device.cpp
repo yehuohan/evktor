@@ -81,7 +81,7 @@ Device::~Device() {
     if (mem_allocator) {
         vmaDestroyAllocator(mem_allocator);
     }
-    if (handle) {
+    if (!__borrowed && handle) {
         vkDestroyDevice(handle, nullptr);
     }
     queues.clear();

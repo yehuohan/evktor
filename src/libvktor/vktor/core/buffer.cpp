@@ -40,7 +40,7 @@ Buffer::Buffer(Buffer&& rhs) : CoreResource(rhs.device) {
 }
 
 Buffer::~Buffer() {
-    if (handle) {
+    if (!__borrowed && handle) {
         if (allocation) {
             vmaDestroyBuffer(device, handle, allocation);
         } else {

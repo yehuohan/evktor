@@ -53,7 +53,7 @@ Sampler::Sampler(Sampler&& rhs) : CoreResource(rhs.device) {
 }
 
 Sampler::~Sampler() {
-    if (handle) {
+    if (!__borrowed && handle) {
         vkDestroySampler(device, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;

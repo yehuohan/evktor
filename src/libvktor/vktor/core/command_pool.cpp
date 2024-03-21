@@ -32,7 +32,7 @@ CommandPool::CommandPool(CommandPool&& rhs) : CoreResource(rhs.device) {
 CommandPool::~CommandPool() {
     primaries.clear();
     secondaries.clear();
-    if (handle) {
+    if (!__borrowed && handle) {
         vkDestroyCommandPool(device, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;

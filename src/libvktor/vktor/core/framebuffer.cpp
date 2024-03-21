@@ -37,7 +37,7 @@ Framebuffer::Framebuffer(Framebuffer&& rhs) : CoreResource(rhs.device) {
 }
 
 Framebuffer::~Framebuffer() {
-    if (handle) {
+    if (!__borrowed && handle) {
         vkDestroyFramebuffer(device, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;

@@ -20,7 +20,7 @@ Semaphore::Semaphore(Semaphore&& rhs) : CoreResource(rhs.device) {
 }
 
 Semaphore::~Semaphore() {
-    if (handle) {
+    if (!__borrowed && handle) {
         vkDestroySemaphore(device, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;

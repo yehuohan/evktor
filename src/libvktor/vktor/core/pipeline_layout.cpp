@@ -30,7 +30,7 @@ PipelineLayout::PipelineLayout(PipelineLayout&& rhs) : PipelineLayout(rhs.device
 }
 
 PipelineLayout::~PipelineLayout() {
-    if (handle) {
+    if (!__borrowed && handle) {
         vkDestroyPipelineLayout(device, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;

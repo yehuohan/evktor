@@ -30,7 +30,7 @@ ComputePipeline::ComputePipeline(ComputePipeline&& rhs) : CoreResource(rhs.devic
 }
 
 ComputePipeline::~ComputePipeline() {
-    if (handle) {
+    if (!__borrowed && handle) {
         vkDestroyPipeline(device, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;

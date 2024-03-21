@@ -20,7 +20,7 @@ Fence::Fence(Fence&& rhs) : CoreResource(rhs.device) {
 }
 
 Fence::~Fence() {
-    if (handle) {
+    if (!__borrowed && handle) {
         vkDestroyFence(device, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;

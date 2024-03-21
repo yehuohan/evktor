@@ -20,7 +20,7 @@ Event::Event(Event&& rhs) : CoreResource(rhs.device) {
 }
 
 Event::~Event() {
-    if (handle) {
+    if (!__borrowed && handle) {
         vkDestroyEvent(device, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;

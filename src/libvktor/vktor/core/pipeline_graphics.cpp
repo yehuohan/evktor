@@ -213,7 +213,7 @@ GraphicsPipeline::GraphicsPipeline(GraphicsPipeline&& rhs) : CoreResource(rhs.de
 }
 
 GraphicsPipeline::~GraphicsPipeline() {
-    if (handle) {
+    if (!__borrowed && handle) {
         vkDestroyPipeline(device, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
