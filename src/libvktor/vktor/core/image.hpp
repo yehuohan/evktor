@@ -72,26 +72,29 @@ struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
     ~Image();
     OnConstType(VkDeviceMemory, memory);
 
-    /** Copy data `src` from cpu to image memory at `src_size` */
-    void copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size) const;
-    inline void copyFrom(const void* src, const VkDeviceSize src_size = 0) const {
-        copyFrom(0, src, src_size);
-    }
+    /**
+     * @brief Copy data from cpu memory `src` to gpu image memory
+     *
+     * TODO: how to compute image memory size with different format?
+     *
+     * @param src_size Data `src` size in bytes
+     */
+    bool copyFrom(const void* src, const VkDeviceSize src_size) const;
     void genMipmaps(const CommandBuffer& cmdbuf) const;
 
     static Res<Image> from(const Device& device, const ImageState& info);
     /**
      * @brief Create image with already allocated handle (e.g. for swapchain images)
      */
-    static Image from(const Device& device,
-                      const VkImage image,
-                      VkFormat format,
-                      VkExtent3D extent,
-                      uint32_t mip_levels = 1,
-                      uint32_t array_layers = 1,
-                      VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT,
-                      VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL,
-                      VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT);
+    static Image borrow(const Device& device,
+                        const VkImage image,
+                        VkFormat format,
+                        VkExtent3D extent,
+                        uint32_t mip_levels = 1,
+                        uint32_t array_layers = 1,
+                        VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT,
+                        VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL,
+                        VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT);
 };
 
 /**

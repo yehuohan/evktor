@@ -53,15 +53,20 @@ Buffer::~Buffer() {
     allocation = VK_NULL_HANDLE;
 }
 
-void Buffer::copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size) const {
+bool Buffer::copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size) const {
     VkDeviceSize copy_size = src_size > 0 ? src_size : size;
     void* data;
-    vmaMapMemory(device, allocation, &data);
+    auto ret = vmaMapMemory(device, allocation, &data);
+    if (VK_SUCCESS != ret) {
+        LogE("Failed to map buffer memory: {}", VkStr(VkResult, ret));
+        return false;
+    }
     std::memcpy((uint8_t*)data + dst_offset, src, (size_t)copy_size);
     vmaUnmapMemory(device, allocation);
+    return true;
 }
 
-void Buffer::copyTo(const CommandBuffer& cmdbuf, const Buffer& dst, const VkDeviceSize dst_size) const {
+void Buffer::copyInto(const CommandBuffer& cmdbuf, const Buffer& dst, const VkDeviceSize dst_size) const {
     VkDeviceSize copy_size = dst_size > 0 ? dst_size : size;
 
     cmdbuf.begin();
@@ -76,7 +81,7 @@ void Buffer::copyTo(const CommandBuffer& cmdbuf, const Buffer& dst, const VkDevi
     device.queues.transfer->waitIdle();
 }
 
-void Buffer::copyTo(const CommandBuffer& cmdbuf, const Image& dst, const VkDeviceSize dst_size) const {
+void Buffer::copyInto(const CommandBuffer& cmdbuf, const Image& dst, const VkDeviceSize dst_size) const {
     VkDeviceSize copy_size = dst_size > 0 ? dst_size : size;
 
     cmdbuf.begin();

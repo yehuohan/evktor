@@ -49,16 +49,16 @@ struct Buffer : public CoreResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
     OnConstType(VkDeviceMemory, memory);
 
     /**
-     * @brief Copy data `src` from cpu to buffer memory at `src_size`
+     * @brief Copy data from cpu memory `src` to gpu buffer memory
      *
-     * There should be `src_size` <= `size`
+     * There should be `src_size` <= Buffer::size
      *
-     * @param dst_offset The buffer offset to copy into
-     * @param src_size Give 0 to use `size`
+     * @param dst_offset The buffer memory offset to copy into
+     * @param src_size Data `src` size in bytes. Give 0 to use Buffer::size.
      */
-    void copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size = 0) const;
-    inline void copyFrom(const void* src, const VkDeviceSize src_size = 0) const {
-        copyFrom(0, src, src_size);
+    bool copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size = 0) const;
+    inline bool copyFrom(const void* src, const VkDeviceSize src_size = 0) const {
+        return copyFrom(0, src, src_size);
     }
 
     /**
@@ -68,7 +68,7 @@ struct Buffer : public CoreResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
      *
      * @param dst_size Give 0 to use `size`
      */
-    void copyTo(const CommandBuffer& cmdbuf, const Buffer& dst, const VkDeviceSize dst_size = 0) const;
+    void copyInto(const CommandBuffer& cmdbuf, const Buffer& dst, const VkDeviceSize dst_size = 0) const;
 
     /**
      * @brief Copy buffer to image `dst` at `dst_size`
@@ -77,7 +77,7 @@ struct Buffer : public CoreResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
      *
      * @param dst_size Give 0 to use `size`
      */
-    void copyTo(const CommandBuffer& cmdbuf, const Image& dst, const VkDeviceSize dst_size = 0) const;
+    void copyInto(const CommandBuffer& cmdbuf, const Image& dst, const VkDeviceSize dst_size = 0) const;
 
     static Res<Buffer> from(const Device& device, const BufferState& info);
     /**

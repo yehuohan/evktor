@@ -181,15 +181,15 @@ Res<Swapchain> Swapchain::from(const Device& device, SwapchainState& info) {
     OnRet(enumerate(images, vkGetSwapchainImagesKHR, device, swapchain), "Failed get images from swapchain");
     Check(u32(images.size()) == swapchain.image_count, "Get wrong image count from swapchain");
     for (uint32_t k = 0; k < images.size(); k++) {
-        swapchain.images.push_back(Image::from(device,
-                                               images[k],
-                                               swapchain.image_format,
-                                               VkExtent3D{swapchain.image_extent.width, swapchain.image_extent.height, 1},
-                                               1,
-                                               swapchain.image_layers,
-                                               VK_SAMPLE_COUNT_1_BIT,
-                                               VK_IMAGE_TILING_OPTIMAL,
-                                               swapchain.image_usage));
+        swapchain.images.push_back(Image::borrow(device,
+                                                 images[k],
+                                                 swapchain.image_format,
+                                                 VkExtent3D{swapchain.image_extent.width, swapchain.image_extent.height, 1},
+                                                 1,
+                                                 swapchain.image_layers,
+                                                 VK_SAMPLE_COUNT_1_BIT,
+                                                 VK_IMAGE_TILING_OPTIMAL,
+                                                 swapchain.image_usage));
         OnName(swapchain.images.back(), "SwapchainImage" + std::to_string(k));
     }
 

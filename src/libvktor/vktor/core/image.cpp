@@ -116,12 +116,17 @@ Image::~Image() {
     allocation = VK_NULL_HANDLE;
 }
 
-void Image::copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size) const {
+bool Image::copyFrom(const void* src, const VkDeviceSize src_size) const {
     VkDeviceSize copy_size = src_size;
     void* data;
-    vmaMapMemory(device, allocation, &data);
-    std::memcpy((uint8_t*)data + dst_offset, src, (size_t)copy_size);
+    auto ret = vmaMapMemory(device, allocation, &data);
+    if (VK_SUCCESS != ret) {
+        LogE("Failed to map image memory: {}", VkStr(VkResult, ret));
+        return false;
+    }
+    std::memcpy((uint8_t*)data, src, (size_t)copy_size);
     vmaUnmapMemory(device, allocation);
+    return true;
 }
 
 void Image::genMipmaps(const CommandBuffer& cmdbuf) const {
@@ -213,15 +218,15 @@ Res<Image> Image::from(const Device& device, const ImageState& info) {
     return Ok(std::move(image));
 }
 
-Image Image::from(const Device& device,
-                  const VkImage _image,
-                  VkFormat _format,
-                  VkExtent3D _extent,
-                  uint32_t _mip_levels,
-                  uint32_t _array_layers,
-                  VkSampleCountFlagBits _samples,
-                  VkImageTiling _tiling,
-                  VkImageUsageFlags _usage) {
+Image Image::borrow(const Device& device,
+                    const VkImage _image,
+                    VkFormat _format,
+                    VkExtent3D _extent,
+                    uint32_t _mip_levels,
+                    uint32_t _array_layers,
+                    VkSampleCountFlagBits _samples,
+                    VkImageTiling _tiling,
+                    VkImageUsageFlags _usage) {
     if (VK_NULL_HANDLE == _image) {
         LogW("Create Image should from a existed & valid VkImage");
     }
