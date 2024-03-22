@@ -103,6 +103,7 @@ Image::Image(Image&& rhs) : CoreResource(rhs.device) {
     samples = rhs.samples;
     tiling = rhs.tiling;
     usage = rhs.usage;
+    layout = rhs.layout;
 }
 
 Image::~Image() {

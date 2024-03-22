@@ -12,13 +12,13 @@ class ImageViewState : public CoreStater<ImageViewState> {
     friend struct ImageView;
 
 private:
-    const Image& image;
-
     VkImageViewCreateInfo imageview_ci;
 
 public:
-    explicit ImageViewState(const Image& image, Name&& name = "ImageView");
+    explicit ImageViewState(Name&& name = "ImageView") : CoreStater(std::move(name)) {}
 
+    Self setFromImage(const Image& image);
+    Self setImage(VkImage image);
     Self setType(VkImageViewType type);
     Self setFormat(VkFormat format);
     Self setSwizzleRGBA(VkComponentSwizzle r, VkComponentSwizzle g, VkComponentSwizzle b, VkComponentSwizzle a);
@@ -26,19 +26,18 @@ public:
     Self setMipRange(uint32_t base, uint32_t count);
     Self setArrayRange(uint32_t base, uint32_t count);
 
-    Res<ImageView> into() const;
+    Res<ImageView> into(const Device& device) const;
 };
 
 struct ImageView : public CoreResource<VkImageView, VK_OBJECT_TYPE_IMAGE_VIEW, Device> {
-    const Image& image;
-
+    VkImage image = VK_NULL_HANDLE; /**< Store the image that this image view created for */
     VkImageSubresourceRange subresource_range{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
 
-    ImageView(const Image& image) : CoreResource(image.device), image(image) {}
+    ImageView(const Device& device) : CoreResource(device) {}
     ImageView(ImageView&&);
     ~ImageView();
 
-    static Res<ImageView> from(const ImageViewState& info);
+    static Res<ImageView> from(const Device& device, const ImageViewState& info);
 };
 
 NAMESPACE_END(core)

@@ -78,7 +78,7 @@ public:
         return info.into(*this);
     }
     inline Res<core::ImageView> create(const core::ImageViewState& info) const {
-        return info.into();
+        return info.into(*this);
     }
     inline Res<core::Sampler> create(const core::SamplerState& info) const {
         return info.into(*this);

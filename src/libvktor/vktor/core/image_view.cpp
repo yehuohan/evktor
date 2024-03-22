@@ -5,7 +5,7 @@ NAMESPACE_BEGIN(core)
 
 using Self = ImageViewState::Self;
 
-ImageViewState::ImageViewState(const Image& image, Name&& name) : CoreStater(std::move(name)), image(image) {
+Self ImageViewState::setFromImage(const Image& image) {
     imageview_ci = Itor::ImageViewCreateInfo();
     imageview_ci.flags = 0;
     imageview_ci.image = image;
@@ -32,6 +32,12 @@ ImageViewState::ImageViewState(const Image& image, Name&& name) : CoreStater(std
     imageview_ci.subresourceRange.levelCount = image.mip_levels;
     imageview_ci.subresourceRange.baseArrayLayer = 0;
     imageview_ci.subresourceRange.layerCount = image.array_layers;
+    return *this;
+}
+
+Self ImageViewState::setImage(VkImage image) {
+    imageview_ci.image = image;
+    return *this;
 }
 
 Self ImageViewState::setType(VkImageViewType type) {
@@ -69,13 +75,16 @@ Self ImageViewState::setArrayRange(uint32_t base, uint32_t count) {
     return *this;
 }
 
-Res<ImageView> ImageViewState::into() const {
-    return ImageView::from(*this);
+Res<ImageView> ImageViewState::into(const Device& device) const {
+    return ImageView::from(device, *this);
 }
 
-ImageView::ImageView(ImageView&& rhs) : CoreResource(rhs.device), image(rhs.image) {
+ImageView::ImageView(ImageView&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    image = rhs.image;
+    rhs.image = VK_NULL_HANDLE;
+    subresource_range = rhs.subresource_range;
 }
 
 ImageView::~ImageView() {
@@ -83,13 +92,15 @@ ImageView::~ImageView() {
         vkDestroyImageView(device, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
+    image = VK_NULL_HANDLE;
 }
 
-Res<ImageView> ImageView::from(const ImageViewState& info) {
-    ImageView imageview(info.image);
+Res<ImageView> ImageView::from(const Device& device, const ImageViewState& info) {
+    ImageView imageview(device);
 
-    OnRet(vkCreateImageView(info.image.device, &info.imageview_ci, nullptr, imageview), "Failed to create image view");
+    OnRet(vkCreateImageView(device, &info.imageview_ci, nullptr, imageview), "Failed to create image view");
     OnName(imageview, info.__name);
+    imageview.image = info.imageview_ci.image;
     imageview.subresource_range = info.imageview_ci.subresourceRange;
 
     return Ok(std::move(imageview));

@@ -91,13 +91,14 @@ Vector<ImageView> Swapchain::createImageViews() const {
 }
 
 Res<ImageView> Swapchain::createImageView(uint32_t index) const {
-    ImageViewState iso(images[index], "SwapchainImageView" + std::to_string(index));
-    return iso.setType(VK_IMAGE_VIEW_TYPE_2D)
+    ImageViewState iso("SwapchainImageView" + std::to_string(index));
+    return iso.setFromImage(images[index])
+        .setType(VK_IMAGE_VIEW_TYPE_2D)
         .setFormat(image_format)
         .setAspect(VK_IMAGE_ASPECT_COLOR_BIT)
         .setMipRange(0, 1)
         .setArrayRange(0, image_layers)
-        .into();
+        .into(device);
 }
 
 Res<Swapchain> Swapchain::from(const Device& device, SwapchainState& info) {

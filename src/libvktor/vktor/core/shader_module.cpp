@@ -43,6 +43,7 @@ ShaderModule::ShaderModule(ShaderModule&& rhs) : CoreResource(rhs.device) {
     rhs.handle = VK_NULL_HANDLE;
     stage = rhs.stage;
     entry = std::move(rhs.entry);
+    code_id = rhs.code_id;
 }
 
 ShaderModule::~ShaderModule() {
