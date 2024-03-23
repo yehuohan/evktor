@@ -1,6 +1,5 @@
 #pragma once
 #include "__core.hpp"
-#include "command_buffer.hpp"
 #include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
@@ -80,7 +79,6 @@ struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
      * @param src_size Data `src` size in bytes
      */
     bool copyFrom(const void* src, const VkDeviceSize src_size) const;
-    void genMipmaps(const CommandBuffer& cmdbuf) const;
 
     static Res<Image> from(const Device& device, const ImageState& info);
     /**

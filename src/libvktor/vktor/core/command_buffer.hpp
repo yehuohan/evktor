@@ -1,6 +1,7 @@
 #pragma once
 #include "__core.hpp"
 #include "device.hpp"
+#include "image.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -26,6 +27,37 @@ struct CommandBuffer : public CoreResource<VkCommandBuffer, VK_OBJECT_TYPE_COMMA
 
     VkResult begin(VkCommandBufferUsageFlags flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT) const;
     VkResult end() const;
+
+    /**
+     * @brief Blit image
+     *
+     * Only blit VkImageSubresourceLayers::mipLevel = 0.
+     * Always start blit from VkImageSubresourceLayers::baseArrayLayer = 0.
+     */
+    void cmdBlitImage(const Image& src,
+                      const Image& dst,
+                      VkImageLayout src_layout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                      VkImageLayout dst_layout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                      VkFilter filter = VK_FILTER_NEAREST) const;
+    /**
+     * @brief Blit image's mip
+     *
+     * Blit image `mip` level to `mip + 1` level for all array layers.
+     * Make sure:
+     *  - `mip` layout is VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+     *  - `mip + 1` layout is VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL.
+     *
+     * @param mip The image mip level to copy from
+     * @param extent The extent of image `mip` level
+     */
+    void cmdBlitImageMip(const Image& img, uint32_t mip, VkExtent2D extent, VkFilter filter = VK_FILTER_NEAREST) const;
+    /**
+     * @brief Generate image's mipmaps for all array layers
+     *
+     * Make sure `img` all mip levels are VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL.
+     * After generate mipmaps, `img` transit to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL.
+     */
+    void cmdGenImageMips(const Image& img, VkFilter filter = VK_FILTER_NEAREST) const;
 
     void cmdMemoryBarrier(VkPipelineStageFlags src_stage_mask,
                           VkPipelineStageFlags dst_stage_mask,
