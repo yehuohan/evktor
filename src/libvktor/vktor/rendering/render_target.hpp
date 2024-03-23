@@ -1,7 +1,7 @@
 #pragma once
-#include "vktor/core/image.hpp"
-#include "vktor/core/image_view.hpp"
+#include "vktor/base/texture.hpp"
 #include "vktor/core/render_pass.hpp"
+#include "vktor/core/swapchain.hpp"
 
 NAMESPACE_BEGIN(vkt)
 
@@ -17,11 +17,7 @@ class RenderTarget : private NonCopyable {
     friend class RenderPipeline;
 
 protected:
-    core::ImageView imageview;
-    const VkFormat format;               /**< Alias to imageview.image.format */
-    const VkSampleCountFlagBits samples; /**< Alias to imageview.image.samples */
-    const VkImageUsageFlags usage;       /**< Alias to imageview.image.usage */
-
+    Texture texture;
     core::AttachmentOps ops = core::AttachmentOps::ignore();
     core::AttachmentOps stencil_ops = core::AttachmentOps::ignore();
     core::AttachmentLayouts layouts = core::AttachmentLayouts::color();
@@ -30,15 +26,23 @@ protected:
 public:
     using Self = RenderTarget&;
 
-    explicit RenderTarget(core::ImageView&& imageview);
-    RenderTarget(RenderTarget&& rhs);
+    explicit RenderTarget(Texture&& texture);
+    RenderTarget(RenderTarget&&);
 
+    inline const core::Image& getImage() const {
+        return texture.getImage();
+    }
+    inline const core::ImageView& getImageView() const {
+        return texture.getImageView();
+    }
     Self set(const core::AttachmentOps& ops);
     Self set(const core::AttachmentOps& ops, const core::AttachmentOps& stencil_ops);
     Self set(const core::AttachmentLayouts& layouts);
     Self set(const VkImageLayout final_layout);
     Self set(const VkClearColorValue& color);
     Self set(const VkClearDepthStencilValue& depthstencil);
+
+    static Res<RenderTarget> from(const core::Swapchain& swapchain, uint32_t index);
 };
 
 /**
@@ -88,9 +92,10 @@ template <>
 struct hash<vkt::RenderTarget> {
     size_t operator()(const vkt::RenderTarget& render_target) const {
         size_t res = 0;
-        vkt::hashCombine(res, render_target.format);
-        vkt::hashCombine(res, render_target.samples);
-        vkt::hashCombine(res, render_target.usage);
+        auto& image = render_target.getImage();
+        vkt::hashCombine(res, image.format);
+        vkt::hashCombine(res, image.samples);
+        vkt::hashCombine(res, image.usage);
         vkt::hashCombine(res, render_target.ops.load);
         vkt::hashCombine(res, render_target.ops.store);
         vkt::hashCombine(res, render_target.stencil_ops.load);
@@ -123,8 +128,8 @@ struct hash<vkt::RenderTargetTable> {
     size_t operator()(const vkt::RenderTargetTable& render_target_table) const {
         size_t res = 0;
         for (const auto& rt : render_target_table.getTargets()) {
-            vkt::hashCombine(res, rt.imageview);
-            vkt::hashCombine(res, rt.imageview.image);
+            vkt::hashCombine(res, rt.getImage());
+            vkt::hashCombine(res, rt.getImageView());
         }
         return res;
     }

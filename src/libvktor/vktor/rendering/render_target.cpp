@@ -6,16 +6,12 @@ using namespace core;
 
 using Self = RenderTarget::Self;
 
-RenderTarget::RenderTarget(ImageView&& _imageview)
-    : imageview(std::move(_imageview))
-    , format(_imageview.image.format)
-    , samples(_imageview.image.samples)
-    , usage(_imageview.image.usage) {
-    layouts.initial = _imageview.image.layout;
+RenderTarget::RenderTarget(Texture&& _texture) : texture(std::move(_texture)) {
+    layouts.initial = texture.getImage().layout;
     layouts.final = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 }
 
-RenderTarget::RenderTarget(RenderTarget&& rhs) : RenderTarget(std::move(rhs.imageview)) {
+RenderTarget::RenderTarget(RenderTarget&& rhs) : RenderTarget(std::move(rhs.texture)) {
     ops = rhs.ops;
     stencil_ops = rhs.stencil_ops;
     layouts = rhs.layouts;
@@ -52,6 +48,18 @@ Self RenderTarget::set(const VkClearDepthStencilValue& depthstencil) {
     return *this;
 }
 
+Res<RenderTarget> RenderTarget::from(const core::Swapchain& swapchain, uint32_t index) {
+    auto image = swapchain.createImage(index);
+    OnErr(image);
+    auto imageview = swapchain.createImageView(index);
+    OnErr(imageview);
+    RenderTarget rt(Texture(image.unwrap(), imageview.unwrap()));
+    rt.set(AttachmentOps::color());
+    rt.set(AttachmentLayouts::present());
+    rt.set({0.0f, 0.0f, 0.0f, 1.0f});
+    return Ok(std::move(rt));
+}
+
 RenderTargetTable::RenderTargetTable(RenderTargetTable&& rhs) {
     extent = rhs.extent;
     targets = std::move(rhs.targets);
@@ -60,7 +68,7 @@ RenderTargetTable::RenderTargetTable(RenderTargetTable&& rhs) {
 Vector<VkImageView> RenderTargetTable::getImageViews() const {
     Vector<VkImageView> views{};
     for (const auto& rt : targets) {
-        views.push_back(rt.imageview);
+        views.push_back(rt.getImageView());
     }
     return std::move(views);
 }
@@ -72,18 +80,18 @@ Res<RenderTargetTable> RenderTargetTable::from(Vector<RenderTarget>&& targets) {
 
     RenderTargetTable rtt;
 
-    static const auto getExtent = [](const ImageView& view) {
-        const VkExtent3D e = view.image.extent;
-        const uint32_t m = view.subresource_range.baseMipLevel;
+    static const auto getExtent = [](const RenderTarget& rt) {
+        const VkExtent3D e = rt.getImage().extent;
+        const uint32_t m = rt.getImageView().subresource_range.baseMipLevel;
         return VkExtent2D{e.width >> m, e.height >> m};
     };
 
     if (targets.size() == 1) {
-        rtt.extent = getExtent(targets[0].imageview);
+        rtt.extent = getExtent(targets[0]);
     } else {
         Vector<VkExtent2D> extents{};
         for (const auto& rt : targets) {
-            extents.push_back(getExtent(rt.imageview));
+            extents.push_back(getExtent(rt));
         }
         rtt.extent = extents[0];
         for (const auto& e : extents) {

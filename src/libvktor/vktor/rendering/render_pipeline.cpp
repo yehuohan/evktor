@@ -8,7 +8,8 @@ Res<RenderPass> RenderPipeline::createRenderPass(const RenderTargetTable& render
     RenderPassState rso{};
 
     for (const auto& rt : render_target_table.getTargets()) {
-        rso.addAttachment(rt.format, rt.samples, rt.ops, rt.stencil_ops, rt.layouts);
+        auto& image = rt.getImage();
+        rso.addAttachment(image.format, image.samples, rt.ops, rt.stencil_ops, rt.layouts);
     }
     for (const auto& subpass : subpasses) {
         rso.addSubpass(subpass.getInfo());

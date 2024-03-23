@@ -79,6 +79,42 @@ Swapchain::~Swapchain() {
     images.clear(); // The images will be destroyed along with swapchain's destruction
 }
 
+Res<Image> Swapchain::createImage(uint32_t index) const {
+    Image image = Image::borrow(device,
+                                images[index],
+                                image_format,
+                                VkExtent3D{image_extent.width, image_extent.height, 1},
+                                1,
+                                image_layers,
+                                VK_SAMPLE_COUNT_1_BIT,
+                                VK_IMAGE_TILING_OPTIMAL,
+                                image_usage);
+    OnName(image, "SwapchainImage" + std::to_string(index));
+    return Ok(std::move(image));
+}
+
+Vector<Image> Swapchain::createImages() const {
+    Vector<Image> swapchain_images{};
+    for (uint32_t k = 0; k < images.size(); k++) {
+        auto res = createImage(k);
+        if (res.isOk()) {
+            swapchain_images.push_back(res.unwrap());
+        }
+    }
+    return std::move(swapchain_images);
+}
+
+Res<ImageView> Swapchain::createImageView(uint32_t index) const {
+    return ImageViewState("SwapchainImageView" + std::to_string(index))
+        .setImage(images[index])
+        .setType(VK_IMAGE_VIEW_TYPE_2D)
+        .setFormat(image_format)
+        .setAspect(VK_IMAGE_ASPECT_COLOR_BIT)
+        .setMipRange(0, 1)
+        .setArrayRange(0, image_layers)
+        .into(device);
+}
+
 Vector<ImageView> Swapchain::createImageViews() const {
     Vector<ImageView> views{};
     for (uint32_t k = 0; k < images.size(); k++) {
@@ -88,17 +124,6 @@ Vector<ImageView> Swapchain::createImageViews() const {
         }
     }
     return std::move(views);
-}
-
-Res<ImageView> Swapchain::createImageView(uint32_t index) const {
-    ImageViewState iso("SwapchainImageView" + std::to_string(index));
-    return iso.setFromImage(images[index])
-        .setType(VK_IMAGE_VIEW_TYPE_2D)
-        .setFormat(image_format)
-        .setAspect(VK_IMAGE_ASPECT_COLOR_BIT)
-        .setMipRange(0, 1)
-        .setArrayRange(0, image_layers)
-        .into(device);
 }
 
 Res<Swapchain> Swapchain::from(const Device& device, SwapchainState& info) {
@@ -178,21 +203,8 @@ Res<Swapchain> Swapchain::from(const Device& device, SwapchainState& info) {
     }
 
     // Retrieve handles of swapchain images
-    Vector<VkImage> images; /**< Handles of images in swapchain */
-    OnRet(enumerate(images, vkGetSwapchainImagesKHR, device, swapchain), "Failed get images from swapchain");
-    Check(u32(images.size()) == swapchain.image_count, "Get wrong image count from swapchain");
-    for (uint32_t k = 0; k < images.size(); k++) {
-        swapchain.images.push_back(Image::borrow(device,
-                                                 images[k],
-                                                 swapchain.image_format,
-                                                 VkExtent3D{swapchain.image_extent.width, swapchain.image_extent.height, 1},
-                                                 1,
-                                                 swapchain.image_layers,
-                                                 VK_SAMPLE_COUNT_1_BIT,
-                                                 VK_IMAGE_TILING_OPTIMAL,
-                                                 swapchain.image_usage));
-        OnName(swapchain.images.back(), "SwapchainImage" + std::to_string(k));
-    }
+    OnRet(enumerate(swapchain.images, vkGetSwapchainImagesKHR, device, swapchain), "Failed get images from swapchain");
+    Check(u32(swapchain.images.size()) == swapchain.image_count, "Get wrong image count from swapchain");
 
     return Ok(std::move(swapchain));
 }
