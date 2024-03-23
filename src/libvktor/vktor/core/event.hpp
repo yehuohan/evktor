@@ -11,7 +11,7 @@ class EventState : public CoreStater<EventState> {
     friend struct Event;
 
 private:
-    VkEventCreateInfo event_ci;
+    VkEventCreateInfo event_ci{};
 
 public:
     explicit EventState(Name&& name = "Event") : CoreStater(std::move(name)) {

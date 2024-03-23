@@ -13,7 +13,7 @@ class BufferState : public CoreStater<BufferState> {
     friend struct Buffer;
 
 private:
-    VkBufferCreateInfo buffer_ci;
+    VkBufferCreateInfo buffer_ci{};
     VmaAllocationCreateFlags memory_flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
     VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO;
 

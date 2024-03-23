@@ -11,7 +11,7 @@ class FenceState : public CoreStater<FenceState> {
     friend struct Fence;
 
 private:
-    VkFenceCreateInfo fence_ci;
+    VkFenceCreateInfo fence_ci{};
 
 public:
     explicit FenceState(Name&& name = "Fence") : CoreStater(std::move(name)) {
