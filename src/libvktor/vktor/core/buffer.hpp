@@ -1,8 +1,6 @@
 #pragma once
 #include "__core.hpp"
-#include "command_buffer.hpp"
 #include "device.hpp"
-#include "image.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -60,24 +58,6 @@ struct Buffer : public CoreResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
     inline bool copyFrom(const void* src, const VkDeviceSize src_size = 0) const {
         return copyFrom(0, src, src_size);
     }
-
-    /**
-     * @brief Copy buffer to buffer `dst` at `dst_size`
-     *
-     * There should be `size` <= `dst_size`
-     *
-     * @param dst_size Give 0 to use `size`
-     */
-    void copyInto(const CommandBuffer& cmdbuf, const Buffer& dst, const VkDeviceSize dst_size = 0) const;
-
-    /**
-     * @brief Copy buffer to image `dst` at `dst_size`
-     *
-     * There should be `size` <= `dst_size`
-     *
-     * @param dst_size Give 0 to use `size`
-     */
-    void copyInto(const CommandBuffer& cmdbuf, const Image& dst, const VkDeviceSize dst_size = 0) const;
 
     static Res<Buffer> from(const Device& device, const BufferState& info);
     /**

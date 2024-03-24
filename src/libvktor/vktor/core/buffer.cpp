@@ -66,42 +66,6 @@ bool Buffer::copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSi
     return true;
 }
 
-void Buffer::copyInto(const CommandBuffer& cmdbuf, const Buffer& dst, const VkDeviceSize dst_size) const {
-    VkDeviceSize copy_size = dst_size > 0 ? dst_size : size;
-
-    cmdbuf.begin();
-    VkBufferCopy copy{};
-    copy.srcOffset = 0;
-    copy.dstOffset = 0;
-    copy.size = copy_size;
-    vkCmdCopyBuffer(cmdbuf, handle, dst, 1, &copy);
-    cmdbuf.end();
-
-    device.queues.transfer->submit(cmdbuf);
-    device.queues.transfer->waitIdle();
-}
-
-void Buffer::copyInto(const CommandBuffer& cmdbuf, const Image& dst, const VkDeviceSize dst_size) const {
-    VkDeviceSize copy_size = dst_size > 0 ? dst_size : size;
-
-    cmdbuf.begin();
-    VkBufferImageCopy copy{};
-    copy.bufferOffset = 0;
-    copy.bufferRowLength = 0;
-    copy.bufferImageHeight = 0;
-    copy.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    copy.imageSubresource.mipLevel = 0;
-    copy.imageSubresource.baseArrayLayer = 0;
-    copy.imageSubresource.layerCount = 1;
-    copy.imageOffset = VkOffset3D{0, 0, 0};
-    copy.imageExtent = VkExtent3D{dst.extent.width, dst.extent.height, 1};
-    vkCmdCopyBufferToImage(cmdbuf, handle, dst, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copy);
-    cmdbuf.end();
-
-    device.queues.transfer->submit(cmdbuf);
-    device.queues.transfer->waitIdle();
-}
-
 Res<Buffer> Buffer::from(const Device& device, const BufferState& info) {
     Buffer buffer(device);
 
@@ -148,7 +112,7 @@ Res<Buffer> Buffer::native_from(const Device& device, const BufferState& info, V
     OnRet(vkAllocateMemory(device, &memory_ai, nullptr, &buffer.memory), "Failed to allocate buffer memory");
     vkBindBufferMemory(device, buffer, buffer.memory, 0);
 
-    // vkMapMemory(device, memory, 0, copy_size, 0, &data);
+    // vkMapMemory(device, memory, 0, size, 0, &data);
     // vkUnmapMemory(device, memory);
 
     return Ok(std::move(buffer));

@@ -31,6 +31,15 @@ VkResult CommandBuffer::end() const {
 
 void CommandBuffer::cmdBlitImage(const Image& src,
                                  const Image& dst,
+                                 const Vector<VkImageBlit>& regions,
+                                 VkImageLayout src_layout,
+                                 VkImageLayout dst_layout,
+                                 VkFilter filter) const {
+    vkCmdBlitImage(handle, src, src_layout, dst, dst_layout, u32(regions.size()), regions.data(), filter);
+}
+
+void CommandBuffer::cmdBlitImage(const Image& src,
+                                 const Image& dst,
                                  VkImageLayout src_layout,
                                  VkImageLayout dst_layout,
                                  VkFilter filter) const {
@@ -128,6 +137,92 @@ void CommandBuffer::cmdGenImageMips(const Image& img, VkFilter filter) const {
     barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     barrier.subresourceRange.baseMipLevel = img.mip_levels - 1;
     cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 1, &barrier);
+}
+
+void CommandBuffer::cmdCopyImage(const Image& src,
+                                 const Image& dst,
+                                 const Vector<VkImageCopy>& regions,
+                                 VkImageLayout src_layout,
+                                 VkImageLayout dst_layout) const {
+    vkCmdCopyImage(handle, src, src_layout, dst, dst_layout, u32(regions.size()), regions.data());
+}
+
+void CommandBuffer::cmdCopyImage(const Image& src, const Image& dst, VkImageLayout src_layout, VkImageLayout dst_layout) const {
+    const uint32_t layer_count = std::min<uint32_t>(src.array_layers, dst.array_layers);
+    VkImageCopy copy{};
+    copy.srcSubresource.aspectMask = isDepthStencilFormat(src.format) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+    copy.srcSubresource.mipLevel = 0;
+    copy.srcSubresource.baseArrayLayer = 0;
+    copy.srcSubresource.layerCount = layer_count;
+    copy.srcOffset = VkOffset3D{0, 0, 0};
+    copy.dstSubresource.aspectMask = isDepthStencilFormat(dst.format) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+    copy.dstSubresource.mipLevel = 0;
+    copy.dstSubresource.baseArrayLayer = 0;
+    copy.dstSubresource.layerCount = layer_count;
+    copy.dstOffset = VkOffset3D{0, 0, 0};
+    copy.extent.width = std::min<uint32_t>(src.extent.width, dst.extent.width);
+    copy.extent.height = std::min<uint32_t>(src.extent.height, dst.extent.height);
+    copy.extent.depth = std::min<uint32_t>(src.extent.depth, dst.extent.depth);
+    vkCmdCopyImage(handle, src, src_layout, dst, dst_layout, 1, &copy);
+}
+
+void CommandBuffer::cmdCopyBuffer(const Buffer& src, const Buffer& dst, const Vector<VkBufferCopy>& regions) const {
+    vkCmdCopyBuffer(handle, src, dst, u32(regions.size()), regions.data());
+}
+
+void CommandBuffer::cmdCopyBuffer(const Buffer& src,
+                                  const Buffer& dst,
+                                  VkDeviceSize src_offset,
+                                  VkDeviceSize dst_offset,
+                                  VkDeviceSize copy_size) const {
+    VkDeviceSize size = copy_size > 0 ? copy_size : std::min<VkDeviceSize>(src.size, dst.size);
+    VkBufferCopy copy{};
+    copy.srcOffset = src_offset;
+    copy.dstOffset = dst_offset;
+    copy.size = size;
+    vkCmdCopyBuffer(handle, src, dst, 1, &copy);
+}
+
+void CommandBuffer::cmdCopyImageToBuffer(const Image& img,
+                                         const Buffer& buf,
+                                         const Vector<VkBufferImageCopy> regions,
+                                         VkImageLayout img_layout) const {
+    vkCmdCopyImageToBuffer(handle, img, img_layout, buf, u32(regions.size()), regions.data());
+}
+
+void CommandBuffer::cmdCopyImageToBuffer(const Image& img, const Buffer& buf, VkImageLayout img_layout) const {
+    VkBufferImageCopy copy{};
+    copy.imageSubresource.aspectMask = isDepthStencilFormat(img.format) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+    copy.imageSubresource.mipLevel = 0;
+    copy.imageSubresource.baseArrayLayer = 0;
+    copy.imageSubresource.layerCount = 1;
+    copy.imageOffset = VkOffset3D{0, 0, 0};
+    copy.imageExtent = img.extent;
+    copy.bufferOffset = 0;
+    copy.bufferRowLength = 0;
+    copy.bufferImageHeight = 0;
+    vkCmdCopyImageToBuffer(handle, img, img_layout, buf, 1, &copy);
+};
+
+void CommandBuffer::cmdCopyBufferToImage(const Buffer& buf,
+                                         const Image& img,
+                                         const Vector<VkBufferImageCopy> regions,
+                                         VkImageLayout img_layout) const {
+    vkCmdCopyBufferToImage(handle, buf, img, img_layout, u32(regions.size()), regions.data());
+}
+
+void CommandBuffer::cmdCopyBufferToImage(const Buffer& buf, const Image& img, VkImageLayout img_layout) const {
+    VkBufferImageCopy copy{};
+    copy.bufferOffset = 0;
+    copy.bufferRowLength = 0;
+    copy.bufferImageHeight = 0;
+    copy.imageSubresource.aspectMask = isDepthStencilFormat(img.format) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+    copy.imageSubresource.mipLevel = 0;
+    copy.imageSubresource.baseArrayLayer = 0;
+    copy.imageSubresource.layerCount = 1;
+    copy.imageOffset = VkOffset3D{0, 0, 0};
+    copy.imageExtent = img.extent;
+    vkCmdCopyBufferToImage(handle, buf, img, img_layout, 1, &copy);
 }
 
 void CommandBuffer::cmdMemoryBarrier(VkPipelineStageFlags src_stage_mask,
