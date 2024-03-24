@@ -93,7 +93,7 @@ struct CommandBuffer : public CoreResource<VkCommandBuffer, VK_OBJECT_TYPE_COMMA
                        VkDeviceSize copy_size = 0) const;
     void cmdCopyImageToBuffer(const Image& img,
                               const Buffer& buf,
-                              const Vector<VkBufferImageCopy> regions,
+                              const Vector<VkBufferImageCopy>& regions,
                               VkImageLayout img_layout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) const;
     /**
      * @brief Copy image memory to buffer memory
@@ -106,7 +106,7 @@ struct CommandBuffer : public CoreResource<VkCommandBuffer, VK_OBJECT_TYPE_COMMA
                               VkImageLayout img_layout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) const;
     void cmdCopyBufferToImage(const Buffer& buf,
                               const Image& img,
-                              const Vector<VkBufferImageCopy> regions,
+                              const Vector<VkBufferImageCopy>& regions,
                               VkImageLayout img_layout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) const;
     /**
      * @brief Copy buffer memory to image memory
@@ -118,20 +118,17 @@ struct CommandBuffer : public CoreResource<VkCommandBuffer, VK_OBJECT_TYPE_COMMA
                               const Image& img,
                               VkImageLayout img_layout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) const;
 
-    void cmdMemoryBarrier(VkPipelineStageFlags src_stage_mask,
-                          VkPipelineStageFlags dst_stage_mask,
-                          uint32_t barrier_count,
-                          const VkMemoryBarrier* barriers,
+    void cmdMemoryBarrier(VkPipelineStageFlags src_stage,
+                          VkPipelineStageFlags dst_stage,
+                          const Vector<VkMemoryBarrier>& barriers,
                           VkDependencyFlags flags = 0) const;
-    void cmdBufferMemoryBarrier(VkPipelineStageFlags src_stage_mask,
-                                VkPipelineStageFlags dst_stage_mask,
-                                uint32_t barrier_count,
-                                const VkBufferMemoryBarrier* barriers,
+    void cmdBufferMemoryBarrier(VkPipelineStageFlags src_stage,
+                                VkPipelineStageFlags dst_stage,
+                                const Vector<VkBufferMemoryBarrier>& barriers,
                                 VkDependencyFlags flags = 0) const;
-    void cmdImageMemoryBarrier(VkPipelineStageFlags src_stage_mask,
-                               VkPipelineStageFlags dst_stage_mask,
-                               uint32_t barrier_count,
-                               const VkImageMemoryBarrier* barriers,
+    void cmdImageMemoryBarrier(VkPipelineStageFlags src_stage,
+                               VkPipelineStageFlags dst_stage,
+                               const Vector<VkImageMemoryBarrier>& barriers,
                                VkDependencyFlags flags = 0) const;
 };
 

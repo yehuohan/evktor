@@ -102,11 +102,13 @@ void CommandBuffer::cmdBlitImageMip(const Image& img, uint32_t mip, VkExtent2D e
 void CommandBuffer::cmdGenImageMips(const Image& img, VkFilter filter) const {
     uint32_t mip_wid = img.extent.width;
     uint32_t mip_hei = img.extent.height;
-    auto barrier = Itor::ImageMemoryBarrier();
+    Vector<VkImageMemoryBarrier> barriers{Itor::ImageMemoryBarrier()};
+    auto& barrier = barriers[0];
     barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.image = img;
-    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.aspectMask = isDepthStencilFormat(img.format) ? VK_IMAGE_ASPECT_DEPTH_BIT
+                                                                           : VK_IMAGE_ASPECT_COLOR_BIT;
     barrier.subresourceRange.baseArrayLayer = 0;
     barrier.subresourceRange.layerCount = img.array_layers;
     barrier.subresourceRange.levelCount = 1;
@@ -117,7 +119,7 @@ void CommandBuffer::cmdGenImageMips(const Image& img, VkFilter filter) const {
         barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
         barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
         barrier.subresourceRange.baseMipLevel = mip;
-        cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 1, &barrier);
+        cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, barriers);
         cmdBlitImageMip(img, mip, VkExtent2D{mip_wid, mip_hei}, filter);
         if (mip_wid > 1) {
             mip_wid >>= 1;
@@ -129,14 +131,14 @@ void CommandBuffer::cmdGenImageMips(const Image& img, VkFilter filter) const {
         barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
         barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
         barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 1, &barrier);
+        cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, barriers);
     }
     barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
     barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
     barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
     barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     barrier.subresourceRange.baseMipLevel = img.mip_levels - 1;
-    cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 1, &barrier);
+    cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, barriers);
 }
 
 void CommandBuffer::cmdCopyImage(const Image& src,
@@ -185,7 +187,7 @@ void CommandBuffer::cmdCopyBuffer(const Buffer& src,
 
 void CommandBuffer::cmdCopyImageToBuffer(const Image& img,
                                          const Buffer& buf,
-                                         const Vector<VkBufferImageCopy> regions,
+                                         const Vector<VkBufferImageCopy>& regions,
                                          VkImageLayout img_layout) const {
     vkCmdCopyImageToBuffer(handle, img, img_layout, buf, u32(regions.size()), regions.data());
 }
@@ -206,7 +208,7 @@ void CommandBuffer::cmdCopyImageToBuffer(const Image& img, const Buffer& buf, Vk
 
 void CommandBuffer::cmdCopyBufferToImage(const Buffer& buf,
                                          const Image& img,
-                                         const Vector<VkBufferImageCopy> regions,
+                                         const Vector<VkBufferImageCopy>& regions,
                                          VkImageLayout img_layout) const {
     vkCmdCopyBufferToImage(handle, buf, img, img_layout, u32(regions.size()), regions.data());
 }
@@ -225,28 +227,25 @@ void CommandBuffer::cmdCopyBufferToImage(const Buffer& buf, const Image& img, Vk
     vkCmdCopyBufferToImage(handle, buf, img, img_layout, 1, &copy);
 }
 
-void CommandBuffer::cmdMemoryBarrier(VkPipelineStageFlags src_stage_mask,
-                                     VkPipelineStageFlags dst_stage_mask,
-                                     uint32_t barrier_count,
-                                     const VkMemoryBarrier* barriers,
+void CommandBuffer::cmdMemoryBarrier(VkPipelineStageFlags src_stage,
+                                     VkPipelineStageFlags dst_stage,
+                                     const Vector<VkMemoryBarrier>& barriers,
                                      VkDependencyFlags flags) const {
-    vkCmdPipelineBarrier(handle, src_stage_mask, dst_stage_mask, flags, barrier_count, barriers, 0, nullptr, 0, nullptr);
+    vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, u32(barriers.size()), barriers.data(), 0, nullptr, 0, nullptr);
 }
 
-void CommandBuffer::cmdBufferMemoryBarrier(VkPipelineStageFlags src_stage_mask,
-                                           VkPipelineStageFlags dst_stage_mask,
-                                           uint32_t barrier_count,
-                                           const VkBufferMemoryBarrier* barriers,
+void CommandBuffer::cmdBufferMemoryBarrier(VkPipelineStageFlags src_stage,
+                                           VkPipelineStageFlags dst_stage,
+                                           const Vector<VkBufferMemoryBarrier>& barriers,
                                            VkDependencyFlags flags) const {
-    vkCmdPipelineBarrier(handle, src_stage_mask, dst_stage_mask, flags, 0, nullptr, barrier_count, barriers, 0, nullptr);
+    vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, u32(barriers.size()), barriers.data(), 0, nullptr);
 }
 
-void CommandBuffer::cmdImageMemoryBarrier(VkPipelineStageFlags src_stage_mask,
-                                          VkPipelineStageFlags dst_stage_mask,
-                                          uint32_t barrier_count,
-                                          const VkImageMemoryBarrier* barriers,
+void CommandBuffer::cmdImageMemoryBarrier(VkPipelineStageFlags src_stage,
+                                          VkPipelineStageFlags dst_stage,
+                                          const Vector<VkImageMemoryBarrier>& barriers,
                                           VkDependencyFlags flags) const {
-    vkCmdPipelineBarrier(handle, src_stage_mask, dst_stage_mask, flags, 0, nullptr, 0, nullptr, barrier_count, barriers);
+    vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, 0, nullptr, u32(barriers.size()), barriers.data());
 }
 
 NAMESPACE_END(core)
