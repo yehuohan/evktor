@@ -93,13 +93,14 @@ Device::~Device() {
 Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev, DeviceState& info) {
     Device device(instance, phy_dev);
 
-    const float queue_priority = VKT_CORE_QUEUE_PRIORITY;
-    Vector<VkDeviceQueueCreateInfo> queues_ci;
+    Vector<VkDeviceQueueCreateInfo> queues_ci{};
+    Vector<Vector<float>> priorities(phy_dev.queue_family_props.size());
     for (const auto& q : phy_dev.queue_family_props) {
+        priorities.push_back(Vector<float>(q.second.count, VKT_CORE_QUEUE_PRIORITY));
         auto dev_queue_ci = Itor::DeviceQueueCreateInfo();
         dev_queue_ci.queueFamilyIndex = q.first;
         dev_queue_ci.queueCount = q.second.count;
-        dev_queue_ci.pQueuePriorities = &queue_priority;
+        dev_queue_ci.pQueuePriorities = priorities.back().data();
         queues_ci.push_back(dev_queue_ci);
     }
 

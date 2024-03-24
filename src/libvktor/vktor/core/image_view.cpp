@@ -6,8 +6,6 @@ NAMESPACE_BEGIN(core)
 using Self = ImageViewState::Self;
 
 Self ImageViewState::setFromImage(const Image& image) {
-    imageview_ci = Itor::ImageViewCreateInfo();
-    imageview_ci.flags = 0;
     imageview_ci.image = image;
     imageview_ci.components = VkComponentMapping{
         VK_COMPONENT_SWIZZLE_R,

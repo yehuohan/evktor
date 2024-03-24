@@ -161,28 +161,28 @@ PhysicalDevice PhysicalDeviceState::pickBestSuitable(const Vector<PhysicalDevice
         phy_dev.queue_families.present = index;
         phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
         phy_dev.queue_family_props[index].present = true;
-        str += vktFmt("    present index: {}\n", index);
+        str += vktFmt("    present: index = {}, count = {}\n", index, pd->queue_family_props[index].queueCount);
     }
     if (require_graphics_queue) {
         uint32_t index = pd->graphics_indices[0];
         phy_dev.queue_families.graphics = index;
         phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
         phy_dev.queue_family_props[index].graphics = true;
-        str += vktFmt("    graphics index: {}\n", index);
+        str += vktFmt("    graphics: index = {}, count = {}\n", index, pd->queue_family_props[index].queueCount);
     }
     if (require_compute_queue) {
         uint32_t index = pd->compute_indices[0];
         phy_dev.queue_families.compute = index;
         phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
         phy_dev.queue_family_props[index].compute = true;
-        str += vktFmt("    compute index: {}\n", index);
+        str += vktFmt("    compute: index = {}, count = {}\n", index, pd->queue_family_props[index].queueCount);
     }
     if (require_transfer_queue) {
         uint32_t index = pd->transfer_indices[0];
         phy_dev.queue_families.transfer = index;
         phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
         phy_dev.queue_family_props[index].transfer = true;
-        str += vktFmt("    transfer index: {}\n", index);
+        str += vktFmt("    transfer: index = {}, count = {}\n", index, pd->queue_family_props[index].queueCount);
     }
 
     str += "}";

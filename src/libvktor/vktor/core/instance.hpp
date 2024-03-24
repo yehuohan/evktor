@@ -10,7 +10,7 @@ struct InstanceState : public CoreStater<InstanceState> {
     friend struct Instance;
 
 private:
-    VkApplicationInfo app_info;
+    VkApplicationInfo app_info{};
     Vector<const char*> layers{};
     Vector<const char*> extensions{};
     bool enable_debug_utils = false;
@@ -18,6 +18,7 @@ private:
 
 public:
     explicit InstanceState(Name&& name = "Instance") : CoreStater(std::move(name)) {
+        app_info = Itor::ApplicationInfo();
         app_info.pApplicationName = "vktor";
         app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         app_info.pEngineName = "vktor";
