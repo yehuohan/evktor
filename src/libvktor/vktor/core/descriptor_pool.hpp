@@ -13,11 +13,13 @@ class DescriptorPoolState : public CoreStater<DescriptorPoolState> {
     friend struct DescriptorPool;
 
 private:
+    VkDescriptorPoolCreateFlags flags = 0;
     uint32_t maxsets = 1;
 
 public:
     explicit DescriptorPoolState(Name&& name = "DescriptorPool") : CoreStater(std::move(name)) {}
 
+    Self setFlags(VkDescriptorPoolCreateFlags flags);
     Self setMaxsets(uint32_t maxsets);
 
     Res<DescriptorPool> into(const DescriptorSetLayout& setlayout) const;

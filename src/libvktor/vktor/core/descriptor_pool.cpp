@@ -5,6 +5,11 @@ NAMESPACE_BEGIN(core)
 
 using Self = DescriptorPoolState::Self;
 
+Self DescriptorPoolState::setFlags(VkDescriptorPoolCreateFlags _flags) {
+    flags = _flags;
+    return *this;
+}
+
 Self DescriptorPoolState::setMaxsets(uint32_t _maxsets) {
     maxsets = _maxsets;
     return *this;
@@ -82,6 +87,7 @@ Res<DescriptorPool> DescriptorPool::from(const DescriptorSetLayout& setlayout, c
     // VkDescriptorPoolSize: `descriptorCount` specifies the total number of `type` can be allocated from the pool;
     // VkDescriptorPoolCreateInfo: `maxSets` specifies the number of descriptor set can be allocated from the pool;
     auto descpool_ci = Itor::DescriptorPoolCreateInfo();
+    descpool_ci.flags = info.flags;
     descpool_ci.maxSets = info.maxsets;
     descpool_ci.poolSizeCount = u32(poolsizes.size());
     descpool_ci.pPoolSizes = poolsizes.data();
@@ -101,7 +107,11 @@ DescriptorPooler::~DescriptorPooler() {
 
 Res<Ref<DescriptorPool>> DescriptorPooler::get() {
     if (desc_pools.empty() || !desc_pools.back().available()) {
-        auto res = DescriptorPoolState().setMaxsets(VKT_CORE_MAX_SETS).into(desc_setlayout);
+        auto res = DescriptorPoolState()
+                       // Enable vkFreeDescriptorSets to free descriptor set
+                       .setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT)
+                       .setMaxsets(VKT_CORE_MAX_SETS)
+                       .into(desc_setlayout);
         OnErr(res);
         desc_pools.push_back(res.unwrap());
     }
