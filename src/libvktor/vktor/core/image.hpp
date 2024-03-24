@@ -52,6 +52,22 @@ public:
     Res<Image> into(const Device& device) const;
 };
 
+/**
+ * @brief Vulkan image
+ *
+ * Image memory layout with different depth, mip level and array layer:
+ * ```
+ *         Image3D     Image2DArray
+ * level   0     1     0  1 0  1
+ * layer   0     0     0    1
+ * depth   0  1  0 1   0    0
+ *         ## ## % %   ## % ## %
+ *         ## ##       ##   ##
+ * ```
+ * Note that:
+ *  - Image3D: array layers must be 1
+ *  - Image2DArray: depth must be 1
+ */
 struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
     VkImageType type = VK_IMAGE_TYPE_2D;
     VkFormat format = VK_FORMAT_UNDEFINED;
@@ -71,14 +87,30 @@ struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
     ~Image();
     OnConstType(VkDeviceMemory, memory);
 
+    VkSubresourceLayout getSubresourceLayout(uint32_t mip = 0, uint32_t layer = 0) const;
     /**
-     * @brief Copy data from cpu memory `src` to gpu image memory
+     * @brief Copy data from cpu memory `src` into gpu image memory
      *
-     * TODO: how to compute image memory size with different format?
+     * Compute image pixel size according to VkFormat. Note that 3-channel format takes 4-channel memory.
+     * Examples:
+     *  - R8_UNORM          : w * h * 1 * sizeof(uint8)
+     *  - R16G16_SINT       : w * h * 2 * sizeof(uint16)
+     *  - R32G32B32_SFLOAT  : w * h * 4 * sizeof(uint32)
+     *  - R32G32B32A32_UINT : w * h * 4 * sizeof(uint32)
      *
-     * @param src_size Data `src` size in bytes
+     * @param src_size The `src` size in bytes
+     * @param mip The image mip level to copy into
+     * @param layer The image array layer to copy into
      */
-    bool copyFrom(const void* src, const VkDeviceSize src_size) const;
+    bool copyFrom(const void* src, const VkDeviceSize src_size, uint32_t mip = 0, uint32_t layer = 0) const;
+    /**
+     * @brief Copy data from gpu image memory to cpu memory `dst`
+     *
+     * @param dst_size The `dst` size in bytes
+     * @param mip The image mip level to copy from
+     * @param layer The image array layer to copy from
+     */
+    bool copyInto(void* dst, const VkDeviceSize dst_size, uint32_t mip = 0, uint32_t layer = 0) const;
 
     static Res<Image> from(const Device& device, const ImageState& info);
     /**

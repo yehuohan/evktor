@@ -1,4 +1,5 @@
 #include "image.hpp"
+#include <algorithm>
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -120,15 +121,42 @@ Image::~Image() {
     allocation = VK_NULL_HANDLE;
 }
 
-bool Image::copyFrom(const void* src, const VkDeviceSize src_size) const {
-    VkDeviceSize copy_size = src_size;
+VkSubresourceLayout Image::getSubresourceLayout(uint32_t mip, uint32_t layer) const {
+    VkImageAspectFlags aspect = isDepthStencilFormat(format) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+    VkImageSubresource subresource{aspect, mip, layer};
+    VkSubresourceLayout subresource_layout;
+    vkGetImageSubresourceLayout(device, handle, &subresource, &subresource_layout);
+    return subresource_layout;
+}
+
+bool Image::copyFrom(const void* src, const VkDeviceSize src_size, uint32_t mip, uint32_t layer) const {
+    VkSubresourceLayout subresource_layout = getSubresourceLayout(mip, layer);
+    VkDeviceSize mem_size = std::min<VkDeviceSize>(src_size, subresource_layout.size);
+    VkDeviceSize offset = subresource_layout.offset;
+
     void* data;
     auto ret = vmaMapMemory(device, allocation, &data);
     if (VK_SUCCESS != ret) {
         LogE("Failed to map image memory: {}", VkStr(VkResult, ret));
         return false;
     }
-    std::memcpy((uint8_t*)data, src, (size_t)copy_size);
+    std::memcpy((uint8_t*)data + offset, src, (size_t)mem_size);
+    vmaUnmapMemory(device, allocation);
+    return true;
+}
+
+bool Image::copyInto(void* dst, const VkDeviceSize dst_size = 0, uint32_t mip, uint32_t layer) const {
+    VkSubresourceLayout subresource_layout = getSubresourceLayout(mip, layer);
+    VkDeviceSize mem_size = std::min<VkDeviceSize>(dst_size, subresource_layout.size);
+    VkDeviceSize offset = subresource_layout.offset;
+
+    void* data;
+    auto ret = vmaMapMemory(device, allocation, &data);
+    if (VK_SUCCESS != ret) {
+        LogE("Failed to map image memory: {}", VkStr(VkResult, ret));
+        return false;
+    }
+    std::memcpy(dst, (uint8_t*)data + offset, (size_t)mem_size);
     vmaUnmapMemory(device, allocation);
     return true;
 }

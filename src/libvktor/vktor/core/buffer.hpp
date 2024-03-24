@@ -47,17 +47,23 @@ struct Buffer : public CoreResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
     OnConstType(VkDeviceMemory, memory);
 
     /**
-     * @brief Copy data from cpu memory `src` to gpu buffer memory
+     * @brief Copy data from cpu memory `src` into gpu buffer memory
      *
-     * There should be `src_size` <= Buffer::size
+     * There should be `copy_size` <= Buffer::size - `dst_offset`
      *
-     * @param dst_offset The buffer memory offset to copy into
-     * @param src_size Data `src` size in bytes. Give 0 to use Buffer::size.
+     * @param copy_size The copy size in bytes. Give 0 to use Buffer::size.
+     * @param offset The buffer memory offset to copy into
      */
-    bool copyFrom(VkDeviceSize dst_offset, const void* src, const VkDeviceSize src_size = 0) const;
-    inline bool copyFrom(const void* src, const VkDeviceSize src_size = 0) const {
-        return copyFrom(0, src, src_size);
-    }
+    bool copyFrom(const void* src, const VkDeviceSize copy_size = 0, VkDeviceSize offset = 0) const;
+    /**
+     * @brief Copy data from gpu buffer memory into cpu memory `dst`
+     *
+     * There should be `copy_size` <= Buffer::size - `dst_offset`
+     *
+     * @param copy_size The copy size in bytes. Give 0 to use Buffer::size.
+     * @param offset The buffer memory offset to copy from
+     */
+    bool copyInto(void* dst, const VkDeviceSize copy_size = 0, VkDeviceSize offset = 0) const;
 
     static Res<Buffer> from(const Device& device, const BufferState& info);
     /**
