@@ -79,6 +79,16 @@ bool Buffer::copyInto(void* dst, const VkDeviceSize copy_size, VkDeviceSize offs
     return true;
 }
 
+Res<void*> Buffer::map() const {
+    void* data;
+    OnRet(vmaMapMemory(device, allocation, &data), "Failed to map buffer memory");
+    return Ok(data);
+}
+
+void Buffer::unmap() const {
+    vmaUnmapMemory(device, allocation);
+}
+
 Res<Buffer> Buffer::from(const Device& device, const BufferState& info) {
     Buffer buffer(device);
 

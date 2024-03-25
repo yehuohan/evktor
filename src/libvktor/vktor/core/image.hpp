@@ -111,6 +111,8 @@ struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
      * @param layer The image array layer to copy from
      */
     bool copyInto(void* dst, const VkDeviceSize dst_size, uint32_t mip = 0, uint32_t layer = 0) const;
+    Res<void*> map() const;
+    void unmap() const;
 
     static Res<Image> from(const Device& device, const ImageState& info);
     /**

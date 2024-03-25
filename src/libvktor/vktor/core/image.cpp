@@ -161,6 +161,15 @@ bool Image::copyInto(void* dst, const VkDeviceSize dst_size = 0, uint32_t mip, u
     return true;
 }
 
+Res<void*> Image::map() const {
+    void* data;
+    OnRet(vmaMapMemory(device, allocation, &data), "Failed to map image memory");
+    return Ok(data);
+}
+void Image::unmap() const {
+    vmaUnmapMemory(device, allocation);
+}
+
 Res<Image> Image::from(const Device& device, const ImageState& info) {
     Image image(device);
 

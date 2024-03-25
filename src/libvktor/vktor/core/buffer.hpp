@@ -64,6 +64,8 @@ struct Buffer : public CoreResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
      * @param offset The buffer memory offset to copy from
      */
     bool copyInto(void* dst, const VkDeviceSize copy_size = 0, VkDeviceSize offset = 0) const;
+    Res<void*> map() const;
+    void unmap() const;
 
     static Res<Buffer> from(const Device& device, const BufferState& info);
     /**
