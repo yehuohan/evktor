@@ -130,6 +130,10 @@ struct CommandBuffer : public CoreResource<VkCommandBuffer, VK_OBJECT_TYPE_COMMA
                                VkPipelineStageFlags dst_stage,
                                const Vector<VkImageMemoryBarrier>& barriers,
                                VkDependencyFlags flags = 0) const;
+    bool cmdTransitImageLayout(const Image& img,
+                               VkImageLayout old_layout,
+                               VkImageLayout new_layout,
+                               VkDependencyFlags flags = 0) const;
 };
 
 NAMESPACE_END(core)

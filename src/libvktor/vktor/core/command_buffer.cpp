@@ -250,5 +250,77 @@ void CommandBuffer::cmdImageMemoryBarrier(VkPipelineStageFlags src_stage,
     vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, 0, nullptr, u32(barriers.size()), barriers.data());
 }
 
+bool CommandBuffer::cmdTransitImageLayout(const Image& img,
+                                          VkImageLayout old_layout,
+                                          VkImageLayout new_layout,
+                                          VkDependencyFlags flags) const {
+    VkPipelineStageFlags src_stage;
+    VkAccessFlags src_access;
+    switch (old_layout) {
+    case VK_IMAGE_LAYOUT_UNDEFINED:
+        src_stage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+        src_access = 0;
+        break;
+    // case VK_IMAGE_LAYOUT_GENERAL:
+    // case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+    // case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+    // case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:
+    // case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+    case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+        src_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        src_access = VK_ACCESS_TRANSFER_READ_BIT;
+        break;
+    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+        src_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        src_access = VK_ACCESS_TRANSFER_WRITE_BIT;
+        break;
+    // case VK_IMAGE_LAYOUT_PREINITIALIZED:
+    default:
+        {
+            vktLogE("Transit image from an unsupported layout: {}", VkStr(VkImageLayout, old_layout));
+            return false;
+        }
+    }
+    VkPipelineStageFlags dst_stage;
+    VkAccessFlags dst_access;
+    switch (new_layout) {
+    // case VK_IMAGE_LAYOUT_GENERAL:
+    // case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+    // case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+    // case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:
+    // case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+    case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+        dst_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        dst_access = VK_ACCESS_TRANSFER_READ_BIT;
+        break;
+    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+        dst_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        dst_access = VK_ACCESS_TRANSFER_WRITE_BIT;
+        break;
+    default:
+        {
+            vktLogE("Transit image into an unsupported layout: {}", VkStr(VkImageLayout, new_layout));
+            return false;
+        }
+    }
+
+    auto barrier = Itor::ImageMemoryBarrier();
+    barrier.srcAccessMask = src_access;
+    barrier.dstAccessMask = dst_access;
+    barrier.oldLayout = old_layout;
+    barrier.newLayout = new_layout;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image = img;
+    barrier.subresourceRange.aspectMask = isDepthStencilFormat(img.format) ? VK_IMAGE_ASPECT_DEPTH_BIT
+                                                                           : VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.baseMipLevel = 0;
+    barrier.subresourceRange.levelCount = img.mip_levels;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    barrier.subresourceRange.layerCount = img.array_layers;
+    vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, 0, nullptr, 1, &barrier);
+    return true;
+}
+
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)
