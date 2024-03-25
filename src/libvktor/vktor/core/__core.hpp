@@ -7,19 +7,6 @@ NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
 /**
- * @brief Return Er on non-success Vulkan result
- *
- * 'r' must not be '__ret__'
- */
-#define OnRet(r, f, ...)                                                              \
-    {                                                                                 \
-        VkResult __ret__ = (r);                                                       \
-        if (__ret__ != VK_SUCCESS) {                                                  \
-            return Er("[VkResult = {}] " f, VkStr(VkResult, __ret__), ##__VA_ARGS__); \
-        }                                                                             \
-    }
-
-/**
  * @brief Conversion constructor
  *
  * This is mainly for the Vulkan handle

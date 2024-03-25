@@ -204,7 +204,7 @@ Res<Swapchain> Swapchain::from(const Device& device, SwapchainState& info) {
 
     // Retrieve handles of swapchain images
     OnRet(enumerate(swapchain.images, vkGetSwapchainImagesKHR, device, swapchain), "Failed get images from swapchain");
-    Check(u32(swapchain.images.size()) == swapchain.image_count, "Get wrong image count from swapchain");
+    OnCheck(u32(swapchain.images.size()) == swapchain.image_count, "Get wrong image count from swapchain");
 
     return Ok(std::move(swapchain));
 }

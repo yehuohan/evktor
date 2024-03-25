@@ -56,10 +56,10 @@ bool DescriptorPool::free(const DescriptorSet& descset) {
             count--;
             return true;
         } else {
-            LogE("Failed to free descriptor set: {}", fmt::ptr(descset.handle));
+            vktLogE("Failed to free descriptor set: {}", fmt::ptr(descset.handle));
         }
     } else {
-        LogW("Try to free a null descriptor set");
+        vktLogW("Try to free a null descriptor set");
     }
     return false;
 }

@@ -34,7 +34,7 @@ Res<Ref<Device>> BaseApi::init(DeviceState& info) {
 }
 
 Res<Ref<Queue>> BaseApi::presentQueue() const {
-    Check(dev, "Device is invalid");
+    OnCheck(dev, "Device is invalid");
     if (dev->queues.present) {
         return Ok(newRef(*dev->queues.present));
     } else {
@@ -43,7 +43,7 @@ Res<Ref<Queue>> BaseApi::presentQueue() const {
 }
 
 Res<Ref<Queue>> BaseApi::graphicsQueue() const {
-    Check(dev, "Device is invalid");
+    OnCheck(dev, "Device is invalid");
     if (dev->queues.graphics) {
         return Ok(newRef(*dev->queues.graphics));
     } else {
@@ -52,7 +52,7 @@ Res<Ref<Queue>> BaseApi::graphicsQueue() const {
 }
 
 Res<Ref<Queue>> BaseApi::computeQueue() const {
-    Check(dev, "Device is invalid");
+    OnCheck(dev, "Device is invalid");
     if (dev->queues.compute) {
         return Ok(newRef(*dev->queues.compute));
     } else {
@@ -61,7 +61,7 @@ Res<Ref<Queue>> BaseApi::computeQueue() const {
 }
 
 Res<Ref<Queue>> BaseApi::transferQueue() const {
-    Check(dev, "Device is invalid");
+    OnCheck(dev, "Device is invalid");
     if (dev->queues.transfer) {
         return Ok(newRef(*dev->queues.transfer));
     } else {

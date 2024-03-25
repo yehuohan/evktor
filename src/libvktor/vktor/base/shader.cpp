@@ -113,16 +113,16 @@ Res<Vector<uint32_t>> Shader::glsl2spv(const std::string& code) {
     shader.setSourceEntryPoint(entry.c_str());
     shader.setEnvTarget(glslang::EShTargetLanguage::EShTargetSpv, glslang::EShTargetLanguageVersion::EShTargetSpv_1_0);
     if (!shader.parse(GetDefaultResources(), 100, false, messages)) {
-        LogE("{}", shader.getInfoLog());
-        LogE("{}", shader.getInfoDebugLog());
+        vktLogE("{}", shader.getInfoLog());
+        vktLogE("{}", shader.getInfoDebugLog());
         return Er("Failed to parse shader: {}", filename);
     }
 
     glslang::TProgram program;
     program.addShader(&shader);
     if (!program.link(messages)) {
-        LogE("{}", program.getInfoLog());
-        LogE("{}", program.getInfoDebugLog());
+        vktLogE("{}", program.getInfoLog());
+        vktLogE("{}", program.getInfoDebugLog());
         return Er("Failed to link shader: {}", filename);
     }
     glslang::TIntermediate* intermediate = program.getIntermediate(language);

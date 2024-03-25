@@ -72,7 +72,7 @@ Self ImageState::setMemoryFlags(VmaAllocationCreateFlags flags) {
     if ((flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT) ||
         (flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT)) {
         if (image_ci.tiling != VK_IMAGE_TILING_LINEAR) {
-            LogW("Image should use linear tiling for host access");
+            vktLogW("Image should use linear tiling for host access");
         }
     }
     memory_flags = flags;
@@ -137,7 +137,7 @@ bool Image::copyFrom(const void* src, const VkDeviceSize src_size, uint32_t mip,
     void* data;
     auto ret = vmaMapMemory(device, allocation, &data);
     if (VK_SUCCESS != ret) {
-        LogE("Failed to map image memory: {}", VkStr(VkResult, ret));
+        vktLogE("Failed to map image memory: {}", VkStr(VkResult, ret));
         return false;
     }
     std::memcpy((uint8_t*)data + offset, src, (size_t)mem_size);
@@ -153,7 +153,7 @@ bool Image::copyInto(void* dst, const VkDeviceSize dst_size = 0, uint32_t mip, u
     void* data;
     auto ret = vmaMapMemory(device, allocation, &data);
     if (VK_SUCCESS != ret) {
-        LogE("Failed to map image memory: {}", VkStr(VkResult, ret));
+        vktLogE("Failed to map image memory: {}", VkStr(VkResult, ret));
         return false;
     }
     std::memcpy(dst, (uint8_t*)data + offset, (size_t)mem_size);
@@ -205,7 +205,7 @@ Image Image::borrow(const Device& device,
                     VkImageTiling _tiling,
                     VkImageUsageFlags _usage) {
     if (VK_NULL_HANDLE == _image) {
-        LogW("Create Image should from a existed & valid VkImage");
+        vktLogW("Create Image should from a existed & valid VkImage");
     }
     Image image(device);
     image.__borrowed = true;

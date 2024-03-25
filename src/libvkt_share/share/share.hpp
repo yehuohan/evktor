@@ -26,28 +26,42 @@
         std::cout << vktFmt("[vkt][{}] " f "\n", l, ##__VA_ARGS__) << std::flush; \
     } while (0)
 
-#define LogW(f, ...) vktLog("W", f, ##__VA_ARGS__)
-// #define LogE(f, ...) vktLog("E", f, ##__VA_ARGS__)
-#define LogE(f, ...)                                                                                     \
+#define vktLogW(f, ...) vktLog("W", f, ##__VA_ARGS__)
+// #define vktLogE(f, ...) vktLog("E", f, ##__VA_ARGS__)
+#define vktLogE(f, ...)                                                                                  \
     do {                                                                                                 \
         std::cout << vktFmt("[vkt][E({}:{})] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__) << std::flush; \
     } while (0)
 
-#define ErrorThrow(f, ...)  std::runtime_error(vktFmt(f, ##__VA_ARGS__))
-#define ErrorFormat(f, ...) ErrorThrow(__FILE__ ":{}:0: error: " f, __LINE__, ##__VA_ARGS__)
-#define Er(f, ...)          Err(ErrorFormat(f, ##__VA_ARGS__))
+#define vktErrorThrow(f, ...)  std::runtime_error(vktFmt(f, ##__VA_ARGS__))
+#define vktErrorFormat(f, ...) vktErrorThrow(__FILE__ ":{}:0: error: " f, __LINE__, ##__VA_ARGS__)
+/** Alias Er to Err<std::runtime_error> */
+#define Er(f, ...) Err(vktErrorFormat(f, ##__VA_ARGS__))
 
-/** Assert with message */
-#define Check(c, f, ...)                                                                                         \
-    {                                                                                                            \
-        if (!(c)) {                                                                                              \
-            std::cout << vktFmt("[vkt][crash({}:{})] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__) << std::flush; \
-            assert(c);                                                                                           \
-        }                                                                                                        \
+/**
+ * @brief Return Er on non-success Vulkan result
+ *
+ * 'r' must not be '__ret__'
+ */
+#define OnRet(r, f, ...)                                                              \
+    {                                                                                 \
+        VkResult __ret__ = (r);                                                       \
+        if (__ret__ != VK_SUCCESS) {                                                  \
+            return Er("[VkResult = {}] " f, VkStr(VkResult, __ret__), ##__VA_ARGS__); \
+        }                                                                             \
     }
 
 /** By pass Result<Err> */
 #define OnErr(r)                     \
     if ((r).isErr()) {               \
         return Err((r).unwrapErr()); \
+    }
+
+/** Assert with message */
+#define OnCheck(c, f, ...)                                                                                       \
+    {                                                                                                            \
+        if (!(c)) {                                                                                              \
+            std::cout << vktFmt("[vkt][crash({}:{})] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__) << std::flush; \
+            assert(c);                                                                                           \
+        }                                                                                                        \
     }

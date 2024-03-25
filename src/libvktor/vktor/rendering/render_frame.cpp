@@ -41,12 +41,12 @@ void RenderFrame::freeDescriptorSets(size_t thread_index) {
     if (thread_index < desc_sets.size()) {
         desc_sets[thread_index].clear();
     } else {
-        LogW("The thread index to free is out of descriptor set array");
+        vktLogW("The thread index to free is out of descriptor set array");
     }
     if (thread_index < desc_poolers.size()) {
         desc_poolers[thread_index].clear();
     } else {
-        LogW("The thread index to free is out of descriptor pooler array");
+        vktLogW("The thread index to free is out of descriptor pooler array");
     }
 }
 

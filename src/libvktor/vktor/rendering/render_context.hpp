@@ -21,7 +21,7 @@ public:
 
     Res<Ref<core::Swapchain>> add(core::SwapchainState& info);
     inline const core::Swapchain& getSwapchain() const {
-        Check(swapchain, "Swapchain is invalid");
+        OnCheck(swapchain, "Swapchain is invalid");
         return *swapchain;
     }
     inline bool hasSwapchain() const {

@@ -43,15 +43,15 @@ public:
     OnConstType(VkPhysicalDevice, phy_dev->handle);
     OnConstType(VkDevice, dev->handle);
     operator const core::Instance&() const {
-        Check(instance, "Instance device is invalid");
+        OnCheck(instance, "Instance device is invalid");
         return *instance;
     }
     operator const core::PhysicalDevice&() const {
-        Check(phy_dev, "Physical device is invalid");
+        OnCheck(phy_dev, "Physical device is invalid");
         return *phy_dev;
     }
     operator const core::Device&() const {
-        Check(dev, "Device is invalid");
+        OnCheck(dev, "Device is invalid");
         return *dev;
     }
 

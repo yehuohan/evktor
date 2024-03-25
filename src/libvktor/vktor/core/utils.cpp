@@ -8,7 +8,7 @@ bool checkInstanceLayers(const Vector<const char*>& layers) {
     Vector<VkLayerProperties> lys{};
     VkResult ret = enumerate(lys, vkEnumerateInstanceLayerProperties);
     if (ret != VK_SUCCESS) {
-        LogE("Failed to get properties of instance layers: {}", VkStr(VkResult, ret));
+        vktLogE("Failed to get properties of instance layers: {}", VkStr(VkResult, ret));
         return false;
     }
 
@@ -24,7 +24,7 @@ bool checkInstanceExtensions(const Vector<const char*>& extensions) {
     Vector<VkExtensionProperties> exts{};
     VkResult ret = enumerate(exts, vkEnumerateInstanceExtensionProperties, nullptr);
     if (ret != VK_SUCCESS) {
-        LogE("Failed to get properties of instance extensions: {}", VkStr(VkResult, ret));
+        vktLogE("Failed to get properties of instance extensions: {}", VkStr(VkResult, ret));
         return false;
     }
 
@@ -40,7 +40,7 @@ bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& devic
     Vector<VkExtensionProperties> exts{};
     VkResult ret = enumerate(exts, vkEnumerateDeviceExtensionProperties, pd, nullptr);
     if (ret != VK_SUCCESS) {
-        LogE("Failed to get properties of device extensions: {}", VkStr(VkResult, ret));
+        vktLogE("Failed to get properties of device extensions: {}", VkStr(VkResult, ret));
         return false;
     }
 
@@ -56,7 +56,7 @@ void printInstanceLayers(const Vector<const char*>& enabled_layers) {
     Vector<VkLayerProperties> lys{};
     VkResult ret = enumerate(lys, vkEnumerateInstanceLayerProperties);
     if (ret != VK_SUCCESS) {
-        LogE("Failed to get properties of instance layers: {}", VkStr(VkResult, ret));
+        vktLogE("Failed to get properties of instance layers: {}", VkStr(VkResult, ret));
         return;
     }
 
@@ -79,7 +79,7 @@ void printInstanceExtensions(const Vector<const char*>& enabled_extensions) {
     Vector<VkExtensionProperties> ext_props{};
     VkResult ret = enumerate(ext_props, vkEnumerateInstanceExtensionProperties, nullptr);
     if (ret != VK_SUCCESS) {
-        LogE("Failed to get properties of instance extensions: {}", VkStr(VkResult, ret));
+        vktLogE("Failed to get properties of instance extensions: {}", VkStr(VkResult, ret));
         return;
     }
 
@@ -102,7 +102,7 @@ void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabl
     Vector<VkExtensionProperties> ext_props{};
     VkResult ret = enumerate(ext_props, vkEnumerateDeviceExtensionProperties, pd, nullptr);
     if (ret != VK_SUCCESS) {
-        LogE("Failed to get properties of device extensions: {}", VkStr(VkResult, ret));
+        vktLogE("Failed to get properties of device extensions: {}", VkStr(VkResult, ret));
         return;
     }
 
