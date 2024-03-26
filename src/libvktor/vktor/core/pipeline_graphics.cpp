@@ -15,7 +15,7 @@ GraphicsPipelineState::GraphicsPipelineState(Name&& name) : CoreStater(std::move
     rasterization.rasterizerDiscardEnable = VK_FALSE;
     rasterization.polygonMode = VK_POLYGON_MODE_FILL;
     rasterization.cullMode = VK_CULL_MODE_BACK_BIT;
-    rasterization.frontFace = VK_FRONT_FACE_CLOCKWISE;
+    rasterization.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     rasterization.depthBiasEnable = VK_FALSE;
     rasterization.lineWidth = 1.0f;
     multisample = Itor::PipelineMultisampleStateCreateInfo();
@@ -103,12 +103,8 @@ Self GraphicsPipelineState::setRasterizationPolygonMode(VkPolygonMode polygon_mo
     return *this;
 }
 
-Self GraphicsPipelineState::setRasterizationCullMode(VkCullModeFlags cull_mode) {
+Self GraphicsPipelineState::setRasterizationCullFace(VkCullModeFlags cull_mode, VkFrontFace front_face) {
     rasterization.cullMode = cull_mode;
-    return *this;
-}
-
-Self GraphicsPipelineState::setRasterizationFrontFace(VkFrontFace front_face) {
     rasterization.frontFace = front_face;
     return *this;
 }

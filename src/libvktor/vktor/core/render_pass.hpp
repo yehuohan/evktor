@@ -22,10 +22,10 @@ struct AttachmentOps {
         return AttachmentOps{VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE};
     };
     static AttachmentOps depth() {
-        return AttachmentOps{VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_STORE};
+        return AttachmentOps{VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE};
     };
     static AttachmentOps stencil() {
-        return AttachmentOps{VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_STORE};
+        return AttachmentOps{VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE};
     };
 };
 

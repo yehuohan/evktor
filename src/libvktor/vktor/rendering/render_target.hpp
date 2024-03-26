@@ -1,5 +1,6 @@
 #pragma once
 #include "vktor/base/texture.hpp"
+#include "vktor/core/device.hpp"
 #include "vktor/core/render_pass.hpp"
 #include "vktor/core/swapchain.hpp"
 
@@ -42,6 +43,7 @@ public:
     Self set(const VkClearColorValue& color);
     Self set(const VkClearDepthStencilValue& depthstencil);
 
+    static Res<RenderTarget> from(const core::Device& device, const VkExtent2D& extent, VkFormat format);
     static Res<RenderTarget> from(const core::Swapchain& swapchain, uint32_t index);
 };
 
@@ -73,6 +75,7 @@ public:
         return targets;
     }
     Vector<VkImageView> getImageViews() const;
+    Vector<VkClearValue> getClearValues() const;
 
     static Res<RenderTargetTable> from(Vector<RenderTarget>&& targets);
     static Res<RenderTargetTable> from(std::initializer_list<MovedRenderTarget> moved_targets);

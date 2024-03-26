@@ -1,4 +1,5 @@
 #include "render_target.hpp"
+#include "vktor/core/utils.hpp"
 
 NAMESPACE_BEGIN(vkt)
 
@@ -48,6 +49,36 @@ Self RenderTarget::set(const VkClearDepthStencilValue& depthstencil) {
     return *this;
 }
 
+Res<RenderTarget> RenderTarget::from(const Device& device, const VkExtent2D& extent, VkFormat format) {
+    bool ds = isDepthStencilFormat(format);
+    auto res_image = ImageState(ds ? "RTDepth" : "RTColor")
+                         .setFormat(format)
+                         .setExtent(extent)
+                         .setUsage(ds ? VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)
+                         .into(device);
+    OnErr(res_image);
+    Image image = res_image.unwrap();
+    auto res_imageview = ImageViewState(ds ? "RTDepthView" : "RTColorView").setFromImage(image).into(device);
+    OnErr(res_imageview);
+    ImageView imageview = res_imageview.unwrap();
+
+    RenderTarget rt(Texture(std::move(image), std::move(imageview)));
+    if (isDepthOnlyFormat(format)) {
+        rt.set(AttachmentOps::depth());
+        rt.set(AttachmentLayouts::depthstencil());
+        rt.set(VkClearDepthStencilValue{1.0, 0});
+    } else if (isDepthStencilFormat(format)) {
+        rt.set(AttachmentOps::depth(), AttachmentOps::stencil());
+        rt.set(AttachmentLayouts::depthstencil());
+        rt.set(VkClearDepthStencilValue{1.0, 0});
+    } else {
+        rt.set(AttachmentOps::color());
+        rt.set(AttachmentLayouts::color());
+        rt.set(VkClearColorValue{0.0f, 0.0f, 0.0f, 1.0f});
+    }
+    return Ok(std::move(rt));
+}
+
 Res<RenderTarget> RenderTarget::from(const core::Swapchain& swapchain, uint32_t index) {
     auto image = swapchain.createImage(index);
     OnErr(image);
@@ -56,7 +87,7 @@ Res<RenderTarget> RenderTarget::from(const core::Swapchain& swapchain, uint32_t 
     RenderTarget rt(Texture(image.unwrap(), imageview.unwrap()));
     rt.set(AttachmentOps::color());
     rt.set(AttachmentLayouts::present());
-    rt.set({0.0f, 0.0f, 0.0f, 1.0f});
+    rt.set(VkClearColorValue{0.0f, 0.0f, 0.0f, 1.0f});
     return Ok(std::move(rt));
 }
 
@@ -71,6 +102,14 @@ Vector<VkImageView> RenderTargetTable::getImageViews() const {
         views.push_back(rt.getImageView());
     }
     return std::move(views);
+}
+
+Vector<VkClearValue> RenderTargetTable::getClearValues() const {
+    Vector<VkClearValue> clears;
+    for (const auto& rt : targets) {
+        clears.push_back(rt.clear);
+    }
+    return std::move(clears);
 }
 
 Res<RenderTargetTable> RenderTargetTable::from(Vector<RenderTarget>&& targets) {
