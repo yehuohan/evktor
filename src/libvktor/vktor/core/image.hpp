@@ -36,6 +36,9 @@ public:
 
     Self setFormat(VkFormat format);
     Self setExtent(const VkExtent3D& extent);
+    Self setExtent(const VkExtent2D& extent) {
+        return setExtent(VkExtent3D{extent.width, extent.height, 1});
+    }
     inline Self setExtent(uint32_t width, uint32_t height, uint32_t depth = 1) {
         return setExtent(VkExtent3D{width, height, depth});
     }
@@ -87,7 +90,12 @@ struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
     ~Image();
     OnConstType(VkDeviceMemory, memory);
 
-    VkSubresourceLayout getSubresourceLayout(uint32_t mip = 0, uint32_t layer = 0) const;
+    /**
+     * @brief Get image subresource layout
+     *
+     * @param aspect The 0 (VK_IMAGE_ASPECT_NONE) means auto select the image aspect
+     */
+    VkSubresourceLayout getSubresourceLayout(uint32_t mip = 0, uint32_t layer = 0, VkImageAspectFlags aspect = 0) const;
     /**
      * @brief Copy data from cpu memory `src` into gpu image memory
      *
@@ -128,16 +136,6 @@ struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
                         VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL,
                         VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT);
 };
-
-/**
- * @brief Check format is depth only
- */
-bool isDepthOnlyFormat(VkFormat format);
-
-/**
- * @brief Check format is depth or stencil
- */
-bool isDepthStencilFormat(VkFormat format);
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)

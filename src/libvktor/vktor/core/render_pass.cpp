@@ -1,5 +1,6 @@
 #include "render_pass.hpp"
 #include "image.hpp"
+#include "utils.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)

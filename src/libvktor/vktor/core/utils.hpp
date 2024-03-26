@@ -62,5 +62,20 @@ void printInstanceLayers(const Vector<const char*>& enabled_layers);
 void printInstanceExtensions(const Vector<const char*>& enabled_extensions);
 void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions);
 
+/**
+ * @brief Check format is depth only
+ */
+bool isDepthOnlyFormat(VkFormat format);
+
+/**
+ * @brief Check format is depth or stencil
+ */
+bool isDepthStencilFormat(VkFormat format);
+
+/**
+ * @brief Get image aspect from format
+ */
+VkImageAspectFlags getAspectMask(VkFormat format);
+
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)

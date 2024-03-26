@@ -1,4 +1,5 @@
 #include "image.hpp"
+#include "utils.hpp"
 #include <algorithm>
 
 NAMESPACE_BEGIN(vkt)
@@ -121,9 +122,11 @@ Image::~Image() {
     allocation = VK_NULL_HANDLE;
 }
 
-VkSubresourceLayout Image::getSubresourceLayout(uint32_t mip, uint32_t layer) const {
-    VkImageAspectFlags aspect = isDepthStencilFormat(format) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
-    VkImageSubresource subresource{aspect, mip, layer};
+VkSubresourceLayout Image::getSubresourceLayout(uint32_t mip, uint32_t layer, VkImageAspectFlags aspect) const {
+    VkImageSubresource subresource;
+    subresource.aspectMask = aspect == 0 ? getAspectMask(format) : aspect;
+    subresource.mipLevel = mip;
+    subresource.arrayLayer = layer;
     VkSubresourceLayout subresource_layout;
     vkGetImageSubresourceLayout(device, handle, &subresource, &subresource_layout);
     return subresource_layout;
@@ -219,15 +222,6 @@ Image Image::borrow(const Device& device,
     image.tiling = _tiling;
     image.usage = _usage;
     return std::move(image);
-}
-
-bool isDepthOnlyFormat(VkFormat format) {
-    return format == VK_FORMAT_D16_UNORM || format == VK_FORMAT_D32_SFLOAT;
-}
-
-bool isDepthStencilFormat(VkFormat format) {
-    return format == VK_FORMAT_D16_UNORM_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT ||
-           format == VK_FORMAT_D32_SFLOAT_S8_UINT || isDepthOnlyFormat(format);
 }
 
 NAMESPACE_END(core)

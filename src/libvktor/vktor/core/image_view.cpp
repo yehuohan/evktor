@@ -1,4 +1,5 @@
 #include "image_view.hpp"
+#include "utils.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -21,11 +22,7 @@ Self ImageViewState::setFromImage(const Image& image) {
     default: break;
     };
     imageview_ci.format = image.format;
-    if (isDepthStencilFormat(image.format)) {
-        imageview_ci.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-    } else {
-        imageview_ci.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    }
+    imageview_ci.subresourceRange.aspectMask = getAspectMask(image.format);
     imageview_ci.subresourceRange.baseMipLevel = 0;
     imageview_ci.subresourceRange.levelCount = image.mip_levels;
     imageview_ci.subresourceRange.baseArrayLayer = 0;

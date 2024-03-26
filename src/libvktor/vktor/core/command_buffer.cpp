@@ -1,5 +1,6 @@
 #include "command_buffer.hpp"
 #include "command_pool.hpp"
+#include "utils.hpp"
 #include <algorithm>
 
 NAMESPACE_BEGIN(vkt)
@@ -50,13 +51,13 @@ void CommandBuffer::cmdBlitImage(const Image& src,
     offset_max.z = std::min<uint32_t>(src.extent.depth, dst.extent.depth);
     const uint32_t layer_count = std::min<uint32_t>(src.array_layers, dst.array_layers);
     VkImageBlit blit{};
-    blit.srcSubresource.aspectMask = isDepthStencilFormat(src.format) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+    blit.srcSubresource.aspectMask = getAspectMask(src.format);
     blit.srcSubresource.mipLevel = 0;
     blit.srcSubresource.baseArrayLayer = 0;
     blit.srcSubresource.layerCount = layer_count;
     blit.srcOffsets[0] = offset_min;
     blit.srcOffsets[1] = offset_max;
-    blit.dstSubresource.aspectMask = isDepthStencilFormat(dst.format) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+    blit.dstSubresource.aspectMask = getAspectMask(dst.format);
     blit.dstSubresource.mipLevel = 0;
     blit.dstSubresource.baseArrayLayer = 0;
     blit.dstSubresource.layerCount = layer_count;
@@ -66,7 +67,7 @@ void CommandBuffer::cmdBlitImage(const Image& src,
 }
 
 void CommandBuffer::cmdBlitImageMip(const Image& img, uint32_t mip, VkExtent2D extent, VkFilter filter) const {
-    const auto aspect_mask = isDepthStencilFormat(img.format) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+    const auto aspect_mask = getAspectMask(img.format);
     const int32_t depth = img.extent.depth;
     int32_t mip_wid = extent.width;
     int32_t mip_hei = extent.height;
@@ -107,8 +108,7 @@ void CommandBuffer::cmdGenImageMips(const Image& img, VkFilter filter) const {
     barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.image = img;
-    barrier.subresourceRange.aspectMask = isDepthStencilFormat(img.format) ? VK_IMAGE_ASPECT_DEPTH_BIT
-                                                                           : VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.aspectMask = getAspectMask(img.format);
     barrier.subresourceRange.baseArrayLayer = 0;
     barrier.subresourceRange.layerCount = img.array_layers;
     barrier.subresourceRange.levelCount = 1;
@@ -154,12 +154,12 @@ void CommandBuffer::cmdCopyImage(const Image& src,
 void CommandBuffer::cmdCopyImage(const Image& src, const Image& dst, VkImageLayout src_layout, VkImageLayout dst_layout) const {
     const uint32_t layer_count = std::min<uint32_t>(src.array_layers, dst.array_layers);
     VkImageCopy copy{};
-    copy.srcSubresource.aspectMask = isDepthStencilFormat(src.format) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+    copy.srcSubresource.aspectMask = getAspectMask(src.format);
     copy.srcSubresource.mipLevel = 0;
     copy.srcSubresource.baseArrayLayer = 0;
     copy.srcSubresource.layerCount = layer_count;
     copy.srcOffset = VkOffset3D{0, 0, 0};
-    copy.dstSubresource.aspectMask = isDepthStencilFormat(dst.format) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+    copy.dstSubresource.aspectMask = getAspectMask(dst.format);
     copy.dstSubresource.mipLevel = 0;
     copy.dstSubresource.baseArrayLayer = 0;
     copy.dstSubresource.layerCount = layer_count;
@@ -196,7 +196,7 @@ void CommandBuffer::cmdCopyImageToBuffer(const Image& img,
 
 void CommandBuffer::cmdCopyImageToBuffer(const Image& img, const Buffer& buf, VkImageLayout img_layout) const {
     VkBufferImageCopy copy{};
-    copy.imageSubresource.aspectMask = isDepthStencilFormat(img.format) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+    copy.imageSubresource.aspectMask = getAspectMask(img.format);
     copy.imageSubresource.mipLevel = 0;
     copy.imageSubresource.baseArrayLayer = 0;
     copy.imageSubresource.layerCount = 1;
@@ -220,7 +220,7 @@ void CommandBuffer::cmdCopyBufferToImage(const Buffer& buf, const Image& img, Vk
     copy.bufferOffset = 0;
     copy.bufferRowLength = 0;
     copy.bufferImageHeight = 0;
-    copy.imageSubresource.aspectMask = isDepthStencilFormat(img.format) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+    copy.imageSubresource.aspectMask = getAspectMask(img.format);
     copy.imageSubresource.mipLevel = 0;
     copy.imageSubresource.baseArrayLayer = 0;
     copy.imageSubresource.layerCount = 1;
@@ -286,7 +286,9 @@ bool CommandBuffer::cmdTransitImageLayout(const Image& img,
     switch (new_layout) {
     // case VK_IMAGE_LAYOUT_GENERAL:
     // case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-    // case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+    case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+        dst_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dst_access = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
     // case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:
     // case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
     case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
@@ -312,8 +314,7 @@ bool CommandBuffer::cmdTransitImageLayout(const Image& img,
     barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.image = img;
-    barrier.subresourceRange.aspectMask = isDepthStencilFormat(img.format) ? VK_IMAGE_ASPECT_DEPTH_BIT
-                                                                           : VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.aspectMask = getAspectMask(img.format);
     barrier.subresourceRange.baseMipLevel = 0;
     barrier.subresourceRange.levelCount = img.mip_levels;
     barrier.subresourceRange.baseArrayLayer = 0;
