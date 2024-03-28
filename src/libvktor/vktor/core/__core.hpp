@@ -121,5 +121,15 @@ public:
     }
 };
 
+/**
+ * @brief CoreHandle/CoreResource argument with extra data
+ */
+template <typename T>
+struct Arg : NonCopyable {
+    const T& a; /**< CoreHandle/CoreResource argument */
+
+    explicit Arg(const T& a) : a(a) {}
+};
+
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)

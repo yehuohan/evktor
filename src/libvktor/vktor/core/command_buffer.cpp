@@ -39,45 +39,37 @@ void CommandBuffer::cmdBlitImage(const Image& src,
     vkCmdBlitImage(handle, src, src_layout, dst, dst_layout, u32(regions.size()), regions.data(), filter);
 }
 
-void CommandBuffer::cmdBlitImage(const Image& src,
-                                 const Image& dst,
+void CommandBuffer::cmdBlitImage(const Arg<Image>& src,
+                                 const Arg<Image>& dst,
                                  VkImageLayout src_layout,
                                  VkImageLayout dst_layout,
                                  VkFilter filter) const {
     const VkOffset3D offset_min{0, 0, 0};
     VkOffset3D offset_max{};
-    offset_max.x = std::min<uint32_t>(src.extent.width, dst.extent.width);
-    offset_max.y = std::min<uint32_t>(src.extent.height, dst.extent.height);
-    offset_max.z = std::min<uint32_t>(src.extent.depth, dst.extent.depth);
-    const uint32_t layer_count = std::min<uint32_t>(src.array_layers, dst.array_layers);
+    offset_max.x = std::min<uint32_t>(src.a.extent.width, dst.a.extent.width);
+    offset_max.y = std::min<uint32_t>(src.a.extent.height, dst.a.extent.height);
+    offset_max.z = std::min<uint32_t>(src.a.extent.depth, dst.a.extent.depth);
     VkImageBlit blit{};
-    blit.srcSubresource.aspectMask = getAspectMask(src.format);
-    blit.srcSubresource.mipLevel = 0;
-    blit.srcSubresource.baseArrayLayer = 0;
-    blit.srcSubresource.layerCount = layer_count;
+    blit.srcSubresource = src;
     blit.srcOffsets[0] = offset_min;
     blit.srcOffsets[1] = offset_max;
-    blit.dstSubresource.aspectMask = getAspectMask(dst.format);
-    blit.dstSubresource.mipLevel = 0;
-    blit.dstSubresource.baseArrayLayer = 0;
-    blit.dstSubresource.layerCount = layer_count;
+    blit.dstSubresource = dst;
     blit.dstOffsets[0] = offset_min;
     blit.dstOffsets[1] = offset_max;
     vkCmdBlitImage(handle, src, src_layout, dst, dst_layout, 1, &blit, filter);
 }
 
-void CommandBuffer::cmdBlitImageMip(const Image& img, uint32_t mip, VkExtent2D extent, VkFilter filter) const {
-    const auto aspect_mask = getAspectMask(img.format);
-    const int32_t depth = img.extent.depth;
+void CommandBuffer::cmdBlitImageMip(const Arg<Image>& img, uint32_t mip, VkExtent2D extent, VkFilter filter) const {
+    const int32_t depth = img.a.extent.depth;
     int32_t mip_wid = extent.width;
     int32_t mip_hei = extent.height;
     VkImageBlit blit{};
     blit.srcOffsets[0] = VkOffset3D{0, 0, 0};
     blit.srcOffsets[1] = VkOffset3D{mip_wid, mip_hei, depth};
-    blit.srcSubresource.aspectMask = aspect_mask;
+    blit.srcSubresource.aspectMask = img.aspect;
     blit.srcSubresource.mipLevel = mip;
-    blit.srcSubresource.baseArrayLayer = 0;
-    blit.srcSubresource.layerCount = img.array_layers;
+    blit.srcSubresource.baseArrayLayer = img.layer;
+    blit.srcSubresource.layerCount = img.layer_count;
     if (mip_wid > 1) {
         mip_wid >>= 1;
     }
@@ -86,10 +78,10 @@ void CommandBuffer::cmdBlitImageMip(const Image& img, uint32_t mip, VkExtent2D e
     }
     blit.dstOffsets[0] = VkOffset3D{0, 0, 0};
     blit.dstOffsets[1] = VkOffset3D{mip_wid, mip_hei, depth};
-    blit.dstSubresource.aspectMask = aspect_mask;
+    blit.dstSubresource.aspectMask = img.aspect;
     blit.dstSubresource.mipLevel = mip + 1;
-    blit.dstSubresource.baseArrayLayer = 0;
-    blit.dstSubresource.layerCount = img.array_layers;
+    blit.dstSubresource.baseArrayLayer = img.layer;
+    blit.dstSubresource.layerCount = img.layer_count;
     vkCmdBlitImage(handle,
                    img,
                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
@@ -100,19 +92,19 @@ void CommandBuffer::cmdBlitImageMip(const Image& img, uint32_t mip, VkExtent2D e
                    filter);
 }
 
-void CommandBuffer::cmdGenImageMips(const Image& img, VkFilter filter) const {
-    uint32_t mip_wid = img.extent.width;
-    uint32_t mip_hei = img.extent.height;
+void CommandBuffer::cmdGenImageMips(const Arg<Image>& img, VkFilter filter) const {
+    uint32_t mip_wid = img.a.extent.width;
+    uint32_t mip_hei = img.a.extent.height;
     Vector<VkImageMemoryBarrier> barriers{Itor::ImageMemoryBarrier()};
     auto& barrier = barriers[0];
     barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.image = img;
-    barrier.subresourceRange.aspectMask = getAspectMask(img.format);
-    barrier.subresourceRange.baseArrayLayer = 0;
-    barrier.subresourceRange.layerCount = img.array_layers;
+    barrier.subresourceRange.aspectMask = img.aspect;
+    barrier.subresourceRange.baseArrayLayer = img.layer;
+    barrier.subresourceRange.layerCount = img.layer_count;
     barrier.subresourceRange.levelCount = 1;
-    for (uint32_t k = 1; k < img.mip_levels; k++) {
+    for (uint32_t k = 1; k < img.a.mip_levels; k++) {
         uint32_t mip = k - 1;
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
@@ -133,12 +125,12 @@ void CommandBuffer::cmdGenImageMips(const Image& img, VkFilter filter) const {
         barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, barriers);
     }
-    if (img.mip_levels >= 1) {
+    if (img.a.mip_levels >= 1) {
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
         barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
         barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
         barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        barrier.subresourceRange.baseMipLevel = img.mip_levels - 1;
+        barrier.subresourceRange.baseMipLevel = img.a.mip_levels - 1;
         cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, barriers);
     }
 }
@@ -151,22 +143,18 @@ void CommandBuffer::cmdCopyImage(const Image& src,
     vkCmdCopyImage(handle, src, src_layout, dst, dst_layout, u32(regions.size()), regions.data());
 }
 
-void CommandBuffer::cmdCopyImage(const Image& src, const Image& dst, VkImageLayout src_layout, VkImageLayout dst_layout) const {
-    const uint32_t layer_count = std::min<uint32_t>(src.array_layers, dst.array_layers);
+void CommandBuffer::cmdCopyImage(const Arg<Image>& src,
+                                 const Arg<Image>& dst,
+                                 VkImageLayout src_layout,
+                                 VkImageLayout dst_layout) const {
     VkImageCopy copy{};
-    copy.srcSubresource.aspectMask = getAspectMask(src.format);
-    copy.srcSubresource.mipLevel = 0;
-    copy.srcSubresource.baseArrayLayer = 0;
-    copy.srcSubresource.layerCount = layer_count;
+    copy.srcSubresource = src;
     copy.srcOffset = VkOffset3D{0, 0, 0};
-    copy.dstSubresource.aspectMask = getAspectMask(dst.format);
-    copy.dstSubresource.mipLevel = 0;
-    copy.dstSubresource.baseArrayLayer = 0;
-    copy.dstSubresource.layerCount = layer_count;
+    copy.dstSubresource = dst;
     copy.dstOffset = VkOffset3D{0, 0, 0};
-    copy.extent.width = std::min<uint32_t>(src.extent.width, dst.extent.width);
-    copy.extent.height = std::min<uint32_t>(src.extent.height, dst.extent.height);
-    copy.extent.depth = std::min<uint32_t>(src.extent.depth, dst.extent.depth);
+    copy.extent.width = std::min<uint32_t>(src.a.extent.width, dst.a.extent.width);
+    copy.extent.height = std::min<uint32_t>(src.a.extent.height, dst.a.extent.height);
+    copy.extent.depth = std::min<uint32_t>(src.a.extent.depth, dst.a.extent.depth);
     vkCmdCopyImage(handle, src, src_layout, dst, dst_layout, 1, &copy);
 }
 
@@ -194,14 +182,11 @@ void CommandBuffer::cmdCopyImageToBuffer(const Image& img,
     vkCmdCopyImageToBuffer(handle, img, img_layout, buf, u32(regions.size()), regions.data());
 }
 
-void CommandBuffer::cmdCopyImageToBuffer(const Image& img, const Buffer& buf, VkImageLayout img_layout) const {
+void CommandBuffer::cmdCopyImageToBuffer(const Arg<Image>& img, const Buffer& buf, VkImageLayout img_layout) const {
     VkBufferImageCopy copy{};
-    copy.imageSubresource.aspectMask = getAspectMask(img.format);
-    copy.imageSubresource.mipLevel = 0;
-    copy.imageSubresource.baseArrayLayer = 0;
-    copy.imageSubresource.layerCount = 1;
+    copy.imageSubresource = img;
     copy.imageOffset = VkOffset3D{0, 0, 0};
-    copy.imageExtent = img.extent;
+    copy.imageExtent = img.a.extent;
     copy.bufferOffset = 0;
     copy.bufferRowLength = 0;
     copy.bufferImageHeight = 0;
@@ -215,17 +200,14 @@ void CommandBuffer::cmdCopyBufferToImage(const Buffer& buf,
     vkCmdCopyBufferToImage(handle, buf, img, img_layout, u32(regions.size()), regions.data());
 }
 
-void CommandBuffer::cmdCopyBufferToImage(const Buffer& buf, const Image& img, VkImageLayout img_layout) const {
+void CommandBuffer::cmdCopyBufferToImage(const Buffer& buf, const Arg<Image>& img, VkImageLayout img_layout) const {
     VkBufferImageCopy copy{};
     copy.bufferOffset = 0;
     copy.bufferRowLength = 0;
     copy.bufferImageHeight = 0;
-    copy.imageSubresource.aspectMask = getAspectMask(img.format);
-    copy.imageSubresource.mipLevel = 0;
-    copy.imageSubresource.baseArrayLayer = 0;
-    copy.imageSubresource.layerCount = 1;
+    copy.imageSubresource = img;
     copy.imageOffset = VkOffset3D{0, 0, 0};
-    copy.imageExtent = img.extent;
+    copy.imageExtent = img.a.extent;
     vkCmdCopyBufferToImage(handle, buf, img, img_layout, 1, &copy);
 }
 
@@ -250,7 +232,7 @@ void CommandBuffer::cmdImageMemoryBarrier(VkPipelineStageFlags src_stage,
     vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, 0, nullptr, u32(barriers.size()), barriers.data());
 }
 
-bool CommandBuffer::cmdTransitImageLayout(const Image& img,
+bool CommandBuffer::cmdTransitImageLayout(const Arg<Image>& img,
                                           VkImageLayout old_layout,
                                           VkImageLayout new_layout,
                                           VkDependencyFlags flags) const {
@@ -314,11 +296,7 @@ bool CommandBuffer::cmdTransitImageLayout(const Image& img,
     barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.image = img;
-    barrier.subresourceRange.aspectMask = getAspectMask(img.format);
-    barrier.subresourceRange.baseMipLevel = 0;
-    barrier.subresourceRange.levelCount = img.mip_levels;
-    barrier.subresourceRange.baseArrayLayer = 0;
-    barrier.subresourceRange.layerCount = img.array_layers;
+    barrier.subresourceRange = img;
     vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, 0, nullptr, 1, &barrier);
     return true;
 }

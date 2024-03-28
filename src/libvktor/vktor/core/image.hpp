@@ -1,6 +1,7 @@
 #pragma once
 #include "__core.hpp"
 #include "device.hpp"
+#include "utils.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -85,7 +86,7 @@ struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
     VkDeviceMemory memory = VK_NULL_HANDLE;
     VmaAllocation allocation = VK_NULL_HANDLE;
 
-    Image(const Device& device) : CoreResource(device) {}
+    explicit Image(const Device& device) : CoreResource(device) {}
     Image(Image&&);
     ~Image();
     OnConstType(VkDeviceMemory, memory);
@@ -135,6 +136,38 @@ struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
                         VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT,
                         VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL,
                         VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT);
+};
+
+template <>
+class Arg<Image> {
+public:
+    VkImageAspectFlags aspect = VK_IMAGE_ASPECT_COLOR_BIT;
+    uint32_t mip = 0; /**< Base mip level or the mip level index */
+    uint32_t mip_count = 1;
+    uint32_t layer = 0; /**< Base layer or the layer index */
+    uint32_t layer_count = 1;
+
+public:
+    const Image& a;
+
+public:
+    explicit Arg(const Image& a) : a(a) {
+        aspect = getAspectMask(a.format);
+        mip = 0;
+        mip_count = a.mip_levels;
+        layer = 0;
+        layer_count = a.array_layers;
+    }
+    OnConstType(VkImage, a.handle);
+    operator VkImageSubresourceRange() const {
+        return VkImageSubresourceRange{aspect, mip, mip_count, layer, layer_count};
+    }
+    operator VkImageSubresourceLayers() const {
+        return VkImageSubresourceLayers{aspect, mip, layer, layer_count};
+    }
+    operator VkImageSubresource() const {
+        return VkImageSubresource{aspect, mip, layer};
+    }
 };
 
 NAMESPACE_END(core)
