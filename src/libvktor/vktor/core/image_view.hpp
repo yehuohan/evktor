@@ -33,7 +33,10 @@ struct ImageView : public CoreResource<VkImageView, VK_OBJECT_TYPE_IMAGE_VIEW, D
     VkImage image = VK_NULL_HANDLE; /**< Store the image that this image view created for */
     VkImageSubresourceRange subresource_range{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
 
-    ImageView(const Device& device) : CoreResource(device) {}
+protected:
+    explicit ImageView(const Device& device) : CoreResource(device) {}
+
+public:
     ImageView(ImageView&&);
     ~ImageView();
 

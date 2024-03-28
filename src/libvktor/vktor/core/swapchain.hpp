@@ -48,7 +48,10 @@ struct Swapchain : public CoreResource<VkSwapchainKHR, VK_OBJECT_TYPE_SWAPCHAIN_
     uint32_t image_layers;         /**< VkImage array layers  */
     VkImageUsageFlags image_usage; /**< VkImage usage */
 
-    Swapchain(const Device& device) : CoreResource(device) {}
+protected:
+    explicit Swapchain(const Device& device) : CoreResource(device) {}
+
+public:
     Swapchain(Swapchain&&);
     ~Swapchain();
 

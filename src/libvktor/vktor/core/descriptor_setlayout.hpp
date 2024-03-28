@@ -48,7 +48,10 @@ struct DescriptorSetLayout : public CoreResource<VkDescriptorSetLayout, VK_OBJEC
      */
     Map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
 
-    DescriptorSetLayout(const Device& device) : CoreResource(device) {}
+protected:
+    explicit DescriptorSetLayout(const Device& device) : CoreResource(device) {}
+
+public:
     DescriptorSetLayout(DescriptorSetLayout&&);
     ~DescriptorSetLayout();
 

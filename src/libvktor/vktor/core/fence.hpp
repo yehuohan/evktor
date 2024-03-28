@@ -24,7 +24,10 @@ public:
 };
 
 struct Fence : public CoreResource<VkFence, VK_OBJECT_TYPE_FENCE, Device> {
-    Fence(const Device& device) : CoreResource(device) {}
+protected:
+    explicit Fence(const Device& device) : CoreResource(device) {}
+
+public:
     Fence(Fence&&);
     ~Fence();
 

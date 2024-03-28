@@ -24,7 +24,10 @@ public:
 };
 
 struct Semaphore : public CoreResource<VkSemaphore, VK_OBJECT_TYPE_SEMAPHORE, Device> {
-    Semaphore(const Device& device) : CoreResource(device) {}
+protected:
+    explicit Semaphore(const Device& device) : CoreResource(device) {}
+
+public:
     Semaphore(Semaphore&&);
     ~Semaphore();
 

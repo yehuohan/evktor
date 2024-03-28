@@ -30,9 +30,12 @@ struct Device : public CoreHandle<VkDevice> {
     HashMap<uint32_t, Vector<Queue>> queue_indices{}; /**< Map queue family index to corresponding queue array */
     VmaAllocator mem_allocator = VK_NULL_HANDLE;
 
-    Device(const Instance& instance, const PhysicalDevice& physical_device)
+protected:
+    explicit Device(const Instance& instance, const PhysicalDevice& physical_device)
         : instance(instance)
         , physical_device(physical_device) {}
+
+public:
     Device(Device&&);
     ~Device();
     OnConstType(VmaAllocator, mem_allocator);

@@ -24,7 +24,10 @@ public:
 };
 
 struct Event : public CoreResource<VkEvent, VK_OBJECT_TYPE_EVENT, Device> {
-    Event(const Device& device) : CoreResource(device) {}
+protected:
+    explicit Event(const Device& device) : CoreResource(device) {}
+
+public:
     Event(Event&&);
     ~Event();
 

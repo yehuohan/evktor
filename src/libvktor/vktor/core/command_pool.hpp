@@ -30,7 +30,10 @@ struct CommandPool : public CoreResource<VkCommandPool, VK_OBJECT_TYPE_COMMAND_P
     uint32_t active_primary_count = 0;
     uint32_t active_secondary_count = 0;
 
-    CommandPool(const Device& device) : CoreResource(device) {}
+protected:
+    explicit CommandPool(const Device& device) : CoreResource(device) {}
+
+public:
     CommandPool(CommandPool&&);
     ~CommandPool();
     /**

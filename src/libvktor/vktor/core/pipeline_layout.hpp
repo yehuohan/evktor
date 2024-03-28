@@ -27,7 +27,10 @@ public:
 };
 
 struct PipelineLayout : public CoreResource<VkPipelineLayout, VK_OBJECT_TYPE_PIPELINE_LAYOUT, Device> {
-    PipelineLayout(const Device& device) : CoreResource(device) {}
+protected:
+    explicit PipelineLayout(const Device& device) : CoreResource(device) {}
+
+public:
     PipelineLayout(PipelineLayout&&);
     ~PipelineLayout();
 

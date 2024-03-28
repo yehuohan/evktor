@@ -86,7 +86,10 @@ struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
     VkDeviceMemory memory = VK_NULL_HANDLE;
     VmaAllocation allocation = VK_NULL_HANDLE;
 
+protected:
     explicit Image(const Device& device) : CoreResource(device) {}
+
+public:
     Image(Image&&);
     ~Image();
     OnConstType(VkDeviceMemory, memory);

@@ -35,7 +35,10 @@ struct ShaderModule : public CoreResource<VkShaderModule, VK_OBJECT_TYPE_SHADER_
     std::string entry = "main";
     size_t code_id = 0;
 
-    ShaderModule(const Device& device) : CoreResource(device) {}
+protected:
+    explicit ShaderModule(const Device& device) : CoreResource(device) {}
+
+public:
     ShaderModule(ShaderModule&&);
     ~ShaderModule();
 

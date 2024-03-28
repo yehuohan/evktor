@@ -38,8 +38,7 @@ typedef std::string Name;
 /**
  * @brief Vulkan core handle type
  *
- * - Derived struct need to process `handle` at copy/move/assign constructor
- * - Use struct for internal accessing members conveniently
+ * Derived struct need to process `handle` at copy/move/assign constructor
  */
 template <typename T>
 struct CoreHandle : public NonCopyable {
@@ -66,7 +65,7 @@ template <typename T, VkObjectType OBJECT_TYPE, typename D>
 struct CoreResource : public CoreHandle<T> {
     const D& device;
 
-    CoreResource(const D& device) : device(device) {}
+    explicit CoreResource(const D& device) : device(device) {}
     virtual ~CoreResource() {}
     /**
      * @brief Set resource name for debug conveniently

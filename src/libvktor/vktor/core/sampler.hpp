@@ -26,7 +26,10 @@ public:
 };
 
 struct Sampler : CoreResource<VkSampler, VK_OBJECT_TYPE_SAMPLER, Device> {
-    Sampler(const Device& device) : CoreResource(device) {}
+protected:
+    explicit Sampler(const Device& device) : CoreResource(device) {}
+
+public:
     Sampler(Sampler&&);
     ~Sampler();
 

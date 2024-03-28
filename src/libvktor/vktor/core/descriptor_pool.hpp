@@ -33,10 +33,13 @@ struct DescriptorPool : public CoreResource<VkDescriptorPool, VK_OBJECT_TYPE_DES
     /** Counter for allocated descriptor set from this pool */
     uint32_t count = 0;
 
-    DescriptorPool(const DescriptorSetLayout& setlayout, const uint32_t maxsets)
+protected:
+    explicit DescriptorPool(const DescriptorSetLayout& setlayout, const uint32_t maxsets)
         : CoreResource(setlayout.device)
         , desc_setlayout(setlayout)
         , maxsets(maxsets) {}
+
+public:
     DescriptorPool(DescriptorPool&&);
     ~DescriptorPool();
     OnConstType(VkDescriptorSetLayout, desc_setlayout.handle);

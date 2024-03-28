@@ -11,7 +11,7 @@ struct Queue : public CoreHandle<VkQueue> {
     const uint32_t family_index;
     const uint32_t index;
 
-    Queue(uint32_t family_index = 0, uint32_t index = 0) : family_index(family_index), index(index) {}
+    explicit Queue(uint32_t family_index = 0, uint32_t index = 0) : family_index(family_index), index(index) {}
     Queue(Queue&&);
     ~Queue();
 

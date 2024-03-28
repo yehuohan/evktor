@@ -47,7 +47,10 @@ struct Instance : public CoreHandle<VkInstance> {
     Vector<const char*> extensions{}; /**< Enabled instance extensions */
     VkDebugUtilsMessengerEXT debug_messenger = nullptr;
 
-    Instance() {}
+protected:
+    explicit Instance() {}
+
+public:
     Instance(Instance&&);
     ~Instance();
     bool isLayerEnabled(const char* layer) const;

@@ -39,7 +39,7 @@ private:
     uint32_t subpass = 0;
 
 public:
-    GraphicsPipelineState(Name&& name = "GraphicsPipeline");
+    explicit GraphicsPipelineState(Name&& name = "GraphicsPipeline");
 
     Self setFlags(VkPipelineCreateFlags flags);
     Self addShader(ShaderModule&& shader);
@@ -79,7 +79,10 @@ public:
 };
 
 struct GraphicsPipeline : public CoreResource<VkPipeline, VK_OBJECT_TYPE_PIPELINE, Device> {
-    GraphicsPipeline(const Device& device) : CoreResource(device) {}
+protected:
+    explicit GraphicsPipeline(const Device& device) : CoreResource(device) {}
+
+public:
     GraphicsPipeline(GraphicsPipeline&&);
     ~GraphicsPipeline();
 

@@ -116,7 +116,10 @@ public:
 };
 
 struct RenderPass : public CoreResource<VkRenderPass, VK_OBJECT_TYPE_RENDER_PASS, Device> {
-    RenderPass(const Device& device) : CoreResource(device) {}
+protected:
+    explicit RenderPass(const Device& device) : CoreResource(device) {}
+
+public:
     RenderPass(RenderPass&&);
     ~RenderPass();
 

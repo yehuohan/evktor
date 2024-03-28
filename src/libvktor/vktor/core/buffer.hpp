@@ -41,7 +41,10 @@ struct Buffer : public CoreResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
     VkDeviceMemory memory = VK_NULL_HANDLE;
     VmaAllocation allocation = VK_NULL_HANDLE;
 
-    Buffer(const Device& device) : CoreResource(device) {}
+protected:
+    explicit Buffer(const Device& device) : CoreResource(device) {}
+
+public:
     Buffer(Buffer&&);
     ~Buffer();
     OnConstType(VkDeviceMemory, memory);

@@ -28,7 +28,10 @@ public:
 };
 
 struct ComputePipeline : public CoreResource<VkPipeline, VK_OBJECT_TYPE_PIPELINE, Device> {
-    ComputePipeline(const Device& device) : CoreResource(device) {}
+protected:
+    explicit ComputePipeline(const Device& device) : CoreResource(device) {}
+
+public:
     ComputePipeline(ComputePipeline&&);
     ~ComputePipeline();
 

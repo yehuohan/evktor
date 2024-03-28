@@ -44,7 +44,7 @@ struct DescriptorArrayInfo {
 struct DescriptorSet : public CoreResource<VkDescriptorSet, VK_OBJECT_TYPE_DESCRIPTOR_SET, Device> {
     DescriptorPool& desc_pool;
 
-    DescriptorSet(DescriptorPool& pool);
+    explicit DescriptorSet(DescriptorPool& pool);
     DescriptorSet(DescriptorSet&&);
     ~DescriptorSet();
     /**

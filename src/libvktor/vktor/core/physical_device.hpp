@@ -71,7 +71,12 @@ struct PhysicalDevice : public CoreHandle<VkPhysicalDevice> {
     Vector<const char*> extensions{};                         /**< Enabled extensions for device */
     // VkPhysicalDeviceFeatures features{};
 
-    PhysicalDevice() {}
+protected:
+    friend struct PhysicalDeviceState;
+
+    explicit PhysicalDevice() {}
+
+public:
     PhysicalDevice(PhysicalDevice&&);
     ~PhysicalDevice();
     bool isExtensionEnabled(const char* extension) const;

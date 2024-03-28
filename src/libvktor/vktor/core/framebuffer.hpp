@@ -35,7 +35,10 @@ public:
 };
 
 struct Framebuffer : public CoreResource<VkFramebuffer, VK_OBJECT_TYPE_FRAMEBUFFER, Device> {
-    Framebuffer(const Device& device) : CoreResource(device) {}
+protected:
+    explicit Framebuffer(const Device& device) : CoreResource(device) {}
+
+public:
     Framebuffer(Framebuffer&&);
     ~Framebuffer();
 
