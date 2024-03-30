@@ -43,7 +43,7 @@ public:
      * And free CommandBuffer by removing CommandBuffer from `primaries` or `secondaries`.
      */
     Res<Ref<CommandBuffer>> allocate(CommandBuffer::Level level, const Name& name = "CommandBuffer");
-    void resetCommandPool();
+    void resetPool();
 
     static Res<CommandPool> from(const Device& device, const CommandPoolState& info);
 };

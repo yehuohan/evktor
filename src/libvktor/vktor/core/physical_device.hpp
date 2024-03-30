@@ -70,6 +70,8 @@ struct PhysicalDevice : public CoreHandle<VkPhysicalDevice> {
     HashMap<uint32_t, QueueFamilyProps> queue_family_props{}; /**< Map queue family index to it's properties */
     Vector<const char*> extensions{};                         /**< Enabled extensions for device */
     // VkPhysicalDeviceFeatures features{};
+    VkPhysicalDeviceProperties properties{};
+    VkPhysicalDeviceMemoryProperties memory_properties{};
 
 protected:
     friend struct PhysicalDeviceState;

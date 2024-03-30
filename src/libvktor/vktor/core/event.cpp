@@ -37,6 +37,8 @@ Res<Event> Event::from(const Device& device, const EventState& info) {
 
 EventPool::EventPool(EventPool&& rhs) : device(rhs.device) {
     events = std::move(rhs.events);
+    active_count = rhs.active_count;
+    rhs.active_count = 0;
 }
 
 EventPool::~EventPool() {

@@ -66,8 +66,8 @@ private:
     /** T should be DescriptorInfo or DescriptorArrayInfo */
     template <typename T>
     Res<Ref<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
-                                                       const T& desc_info,
                                                        core::DescriptorPool& desc_pool,
+                                                       const T& desc_info,
                                                        size_t thread_index);
 };
 

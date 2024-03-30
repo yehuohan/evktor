@@ -80,6 +80,9 @@ Swapchain::~Swapchain() {
 }
 
 Res<Image> Swapchain::createImage(uint32_t index) const {
+    if (index >= images.size()) {
+        return Er("The index {} is out of swapchain images", index);
+    }
     Image image = Image::borrow(device,
                                 images[index],
                                 image_format,
@@ -105,6 +108,9 @@ Vector<Image> Swapchain::createImages() const {
 }
 
 Res<ImageView> Swapchain::createImageView(uint32_t index) const {
+    if (index >= images.size()) {
+        return Er("The index {} is out of swapchain imageviews", index);
+    }
     return ImageViewState("SwapchainImageView" + std::to_string(index))
         .setImage(images[index])
         .setType(VK_IMAGE_VIEW_TYPE_2D)

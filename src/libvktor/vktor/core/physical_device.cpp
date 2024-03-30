@@ -187,8 +187,8 @@ PhysicalDevice PhysicalDeviceState::pickBestSuitable(const Vector<PhysicalDevice
 
     str += "}";
     vktOut("{}", str);
-    phy_dev.extensions = std::move(required_extensions);
 
+    phy_dev.extensions = std::move(required_extensions);
     return std::move(phy_dev);
 }
 
@@ -203,6 +203,8 @@ PhysicalDevice::PhysicalDevice(PhysicalDevice&& rhs) {
     queue_family_props = std::move(rhs.queue_family_props);
     extensions = std::move(rhs.extensions);
     // features = std::move(rhs.features);
+    properties = std::move(rhs.properties);
+    memory_properties = std::move(rhs.memory_properties);
 }
 
 PhysicalDevice::~PhysicalDevice() {
@@ -259,6 +261,8 @@ Res<PhysicalDevice> PhysicalDevice::from(const Instance& instance, PhysicalDevic
 
     // Pick the best suitable
     PhysicalDevice phy_dev = info.pickBestSuitable(suitables);
+    vkGetPhysicalDeviceProperties(phy_dev, &phy_dev.properties);
+    vkGetPhysicalDeviceMemoryProperties(phy_dev, &phy_dev.memory_properties);
     return Ok(std::move(phy_dev));
 }
 

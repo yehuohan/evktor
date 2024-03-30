@@ -17,9 +17,9 @@ RenderFrame::RenderFrame(const BaseApi& api, size_t thread_count)
 
 RenderFrame::RenderFrame(RenderFrame&& rhs)
     : api(rhs.api)
-    , fence_pool(rhs.api)
-    , semaphore_pool(rhs.api)
-    , event_pool(rhs.api)
+    , fence_pool(std::move(rhs.fence_pool))
+    , semaphore_pool(std::move(rhs.semaphore_pool))
+    , event_pool(std::move(rhs.event_pool))
     , thread_count(rhs.thread_count) {
     cmd_pools = std::move(rhs.cmd_pools);
     desc_poolers = std::move(rhs.desc_poolers);
@@ -29,7 +29,7 @@ RenderFrame::RenderFrame(RenderFrame&& rhs)
 void RenderFrame::reset() {
     for (auto& cmdpools : cmd_pools) {
         for (auto& iter : cmdpools) {
-            iter.second.resetCommandPool();
+            iter.second.resetPool();
         }
     }
     fence_pool.resetPool();
@@ -81,9 +81,9 @@ Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLay
                                                           size_t thread_index) {
     auto res = requestDescriptorPool(desc_setlayout, thread_index);
     OnErr(res);
-    auto& pool = res.unwrap().get();
+    auto& desc_pool = res.unwrap().get();
 
-    return requestDescriptorSet(desc_setlayout, desc_info, pool, thread_index);
+    return requestDescriptorSet(desc_setlayout, desc_pool, desc_info, thread_index);
 }
 
 Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
@@ -91,9 +91,9 @@ Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLay
                                                           size_t thread_index) {
     auto res = requestDescriptorPool(desc_setlayout, thread_index);
     OnErr(res);
-    auto& pool = res.unwrap().get();
+    auto& desc_pool = res.unwrap().get();
 
-    return requestDescriptorSet(desc_setlayout, desc_info, pool, thread_index);
+    return requestDescriptorSet(desc_setlayout, desc_pool, desc_info, thread_index);
 }
 
 Res<Ref<DescriptorPool>> RenderFrame::requestDescriptorPool(const DescriptorSetLayout& desc_setlayout, size_t thread_index) {
@@ -116,13 +116,13 @@ Res<Ref<DescriptorPool>> RenderFrame::requestDescriptorPool(const DescriptorSetL
     }
 
     // Get available descriptor pool from pooler
-    return descpooler->get();
+    return descpooler->request();
 }
 
 template <typename T>
 Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
-                                                          const T& desc_info,
                                                           DescriptorPool& desc_pool,
+                                                          const T& desc_info,
                                                           size_t thread_index) {
     if (thread_index >= desc_sets.size()) {
         return Er("Thread index is out of descriptor set array");

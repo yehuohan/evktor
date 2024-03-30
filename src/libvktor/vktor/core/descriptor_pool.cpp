@@ -105,7 +105,7 @@ DescriptorPooler::~DescriptorPooler() {
     desc_pools.clear();
 }
 
-Res<Ref<DescriptorPool>> DescriptorPooler::get() {
+Res<Ref<DescriptorPool>> DescriptorPooler::request() {
     if (desc_pools.empty() || !desc_pools.back().available()) {
         auto res = DescriptorPoolState()
                        // Enable vkFreeDescriptorSets to free descriptor set

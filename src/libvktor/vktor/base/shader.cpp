@@ -66,6 +66,7 @@ ShaderSource::ShaderSource(ShaderSource&& rhs) {
     entry = std::move(rhs.entry);
     code = std::move(rhs.code);
     id = rhs.id;
+    rhs.id = 0;
 }
 
 Res<ShaderSource> ShaderSource::load(const std::string& filename) {
@@ -90,6 +91,7 @@ Shader::Shader(Shader&& rhs) {
     entry = std::move(rhs.entry);
     spv_code = std::move(rhs.spv_code);
     id = rhs.id;
+    rhs.id = 0;
     desc_sets = std::move(rhs.desc_sets);
 }
 

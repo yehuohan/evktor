@@ -45,6 +45,8 @@ Res<Fence> Fence::from(const Device& device, const FenceState& info) {
 
 FencePool::FencePool(FencePool&& rhs) : device(rhs.device) {
     fences = std::move(rhs.fences);
+    active_count = rhs.active_count;
+    rhs.active_count = 0;
 }
 
 FencePool::~FencePool() {

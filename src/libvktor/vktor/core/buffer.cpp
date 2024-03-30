@@ -106,6 +106,7 @@ Res<Buffer> Buffer::from(const Device& device, const BufferState& info) {
     return Ok(std::move(buffer));
 }
 
+#if 0
 Res<Buffer> Buffer::native_from(const Device& device, const BufferState& info, VkMemoryPropertyFlags memory_props) {
     Buffer buffer(device);
 
@@ -140,6 +141,7 @@ Res<Buffer> Buffer::native_from(const Device& device, const BufferState& info, V
 
     return Ok(std::move(buffer));
 }
+#endif
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)

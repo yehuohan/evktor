@@ -245,9 +245,15 @@ bool CommandBuffer::cmdTransitImageLayout(const Arg<Image>& img,
         break;
     // case VK_IMAGE_LAYOUT_GENERAL:
     // case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+    //     src_access = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    //     break;
     // case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+    //     src_access = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+    //     break;
     // case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:
     // case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+    //     src_access = VK_ACCESS_SHADER_READ_BIT;
+    //     break;
     case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
         src_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
         src_access = VK_ACCESS_TRANSFER_READ_BIT;
@@ -257,6 +263,8 @@ bool CommandBuffer::cmdTransitImageLayout(const Arg<Image>& img,
         src_access = VK_ACCESS_TRANSFER_WRITE_BIT;
         break;
     // case VK_IMAGE_LAYOUT_PREINITIALIZED:
+    //     src_access = VK_ACCESS_HOST_WRITE_BIT;
+    //     break;
     default:
         {
             vktLogE("Transit image from an unsupported layout: {}", VkStr(VkImageLayout, old_layout));
@@ -268,6 +276,8 @@ bool CommandBuffer::cmdTransitImageLayout(const Arg<Image>& img,
     switch (new_layout) {
     // case VK_IMAGE_LAYOUT_GENERAL:
     // case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+    //     dst_access = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    //     break;
     case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
         dst_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
         dst_access = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;

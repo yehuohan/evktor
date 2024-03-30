@@ -26,7 +26,9 @@ CommandPool::CommandPool(CommandPool&& rhs) : CoreResource(rhs.device) {
     primaries = std::move(rhs.primaries);
     secondaries = std::move(rhs.secondaries);
     active_primary_count = rhs.active_primary_count;
+    rhs.active_primary_count = 0;
     active_secondary_count = rhs.active_secondary_count;
+    rhs.active_secondary_count = 0;
 }
 
 CommandPool::~CommandPool() {
@@ -87,7 +89,7 @@ Res<Ref<CommandBuffer>> CommandPool::allocate(CommandBuffer::Level level, const 
     return Ok(newRef(*ptr));
 }
 
-void CommandPool::resetCommandPool() {
+void CommandPool::resetPool() {
     active_primary_count = 0;
     active_secondary_count = 0;
 }

@@ -37,6 +37,8 @@ Res<Semaphore> Semaphore::from(const Device& device, const SemaphoreState& info)
 
 SemaphorePool::SemaphorePool(SemaphorePool&& rhs) : device(rhs.device) {
     semaphores = std::move(rhs.semaphores);
+    active_count = rhs.active_count;
+    rhs.active_count = 0;
 }
 
 SemaphorePool::~SemaphorePool() {
