@@ -1,8 +1,7 @@
 #pragma once
-#include "share/share.hpp"
 #include <string>
 
-NAMESPACE_BEGIN(vktdev)
+namespace vktdev {
 
 class Assets {
 public:
@@ -19,4 +18,4 @@ public:
     static std::string getShader(const std::string& filename);
 };
 
-NAMESPACE_END(vktdev)
+} // namespace vktdev

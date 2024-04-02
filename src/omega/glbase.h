@@ -7,7 +7,6 @@
 #define LNGL_BASE_H
 
 #include <glad/gl.h>
-#include <xwin.h>
 #include <glm/glm.hpp>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
@@ -15,11 +14,9 @@
 #include <iostream>
 #include <cstdint>
 #include <memory>
-#include "camera.hpp"
+#include "xwin.h"
 #include "utils.h"
 
-
-using namespace vkt;
 
 class LnGL : public XWin {
 public:

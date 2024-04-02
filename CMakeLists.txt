@@ -24,7 +24,7 @@ include(FindDeps)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/libvktor)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/libvkt_devel)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/main)
-# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/omega)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/omega)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 # Install

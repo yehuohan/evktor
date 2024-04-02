@@ -4,18 +4,20 @@
  */
 #pragma once
 #include <GLFW/glfw3.h>
-#include <camera.hpp>
 #include <cstdint>
 #include <glm/glm.hpp>
 #include <iostream>
 #include <memory>
+#include "camera.hpp"
+
+using namespace vktdev;
 
 class XWin {
 public:
     XWin(int width, int height);
     virtual ~XWin() {}
 
-    void setCameraType(vkt::ICamera::Type type);
+    void setCameraType(ICamera::Type type);
     void setCameraPos(glm::vec3 pos);
     void setFPS(float fps) {
         fps = fps;
@@ -32,7 +34,7 @@ protected:
     GLFWwindow* window;
 
     float fps = 0.0f;
-    static std::shared_ptr<vkt::ICamera> camera; // 使用static类型，便于GLFWscrollfun的lambda函数捕获
+    static std::shared_ptr<ICamera> camera; // 使用static类型，便于GLFWscrollfun的lambda函数捕获
     struct ViewMatrices {
         glm::mat4 view;
         glm::mat4 proj;

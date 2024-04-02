@@ -1,7 +1,7 @@
 #ifndef DEMOS_H
 #define DEMOS_H
 
-#include "assets.h"
+#include "assets.hpp"
 #include "model.h"
 #include "mesh_data.h"
 #include "glbase.h"
@@ -12,13 +12,13 @@
 #define DWID 800
 #define DHEI 600
 
-#define GLSL_VERT_MESH_DATA         "glsl/omega/mesh_data.vert"
-#define GLSL_FRAG_MESH_DATA         "glsl/omega/mesh_data.frag"
-#define GLSL_COMP_FILTER            "glsl/omega/filter.comp"
-#define GLSL_VERT_BASE              "glsl/omega/base.vert"
-#define GLSL_FRAG_BASE              "glsl/omega/base.frag"
-#define GLSL_VERT_LIGHTING          "glsl/omega/lighting.vert"
-#define GLSL_FRAG_LIGHTING          "glsl/omega/lighting.frag"
+#define GLSL_VERT_MESH_DATA         Assets::getShader("omega/mesh_data.vert")
+#define GLSL_FRAG_MESH_DATA         Assets::getShader("omega/mesh_data.frag")
+#define GLSL_COMP_FILTER            Assets::getShader("omega/filter.comp")
+#define GLSL_VERT_BASE              Assets::getShader("omega/base.vert")
+#define GLSL_FRAG_BASE              Assets::getShader("omega/base.frag")
+#define GLSL_VERT_LIGHTING          Assets::getShader("omega/lighting.vert")
+#define GLSL_FRAG_LIGHTING          Assets::getShader("omega/lighting.frag")
 
 
 class DemoFrustum : public LnGL {

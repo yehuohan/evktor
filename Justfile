@@ -27,7 +27,7 @@ evktor: src
 
 omega: src
     @echo [run] evktor/omega...
-    {{dir_install}}/omega {{dir_root}}/../assets
+    {{dir_install}}/omega {{dir_root}}/../assets {{dir_root}}/glsl
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Build src

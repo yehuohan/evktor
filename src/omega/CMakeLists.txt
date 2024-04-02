@@ -3,18 +3,23 @@ project(omega)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/misc)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SRC)
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/lib SRC_LIB)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/lib SRC)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/misc SRC)
 
-add_executable(${PROJECT_NAME}
-    ${SRC}
-    ${SRC_LIB})
+# Borrow 'assets' and 'camera' from libvkt_devel
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libvkt_devel)
+set(SRC_EXT
+    ${CMAKE_CURRENT_SOURCE_DIR}/ ../libvkt_devel/assets.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ ../libvkt_devel/camera.cpp)
+
+add_executable(${PROJECT_NAME} ${SRC} ${SRC_EXT})
 
 target_link_libraries(${PROJECT_NAME}
-    vkt_share
-    misc
     glad
     glfw
+    glm::glm
     imgui::imgui
     Freetype::Freetype
     assimp::assimp

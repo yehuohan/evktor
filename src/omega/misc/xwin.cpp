@@ -1,7 +1,5 @@
 #include "xwin.h"
 
-using namespace vkt;
-
 std::shared_ptr<ICamera> XWin::camera = nullptr;
 
 XWin::XWin(int width, int height)

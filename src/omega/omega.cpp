@@ -1,11 +1,13 @@
 #include <iostream>
-#include "assets.h"
 #include "demos.h"
 
 
 int main(int argc, char *argv[]) {
     if (argc >= 2) {
-        Assets::setDir(argv[1]);
+        Assets::setDirs(argv[1], "./glsl");
+    }
+    if (argc >= 3) {
+        Assets::setDirs(argv[1], argv[2]);
     }
 
     try {

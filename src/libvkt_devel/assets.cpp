@@ -1,6 +1,7 @@
 #include "assets.hpp"
+#include <fmt/core.h>
 
-NAMESPACE_BEGIN(vktdev)
+namespace vktdev {
 
 std::string Assets::assets = std::string(".");
 std::string Assets::shader = std::string(".");
@@ -26,4 +27,4 @@ std::string Assets::getShader(const std::string& filename) {
     return fmt::format("{}/{}", Assets::shader, filename);
 }
 
-NAMESPACE_END(vktdev)
+} // namespace vktdev
