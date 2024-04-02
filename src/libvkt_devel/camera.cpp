@@ -1,6 +1,6 @@
 #include "camera.hpp"
 
-NAMESPACE_BEGIN(vkt)
+namespace vktdev {
 
 void CameraArcball::processCameraMove(Movement dir, float delta_time) {
     float vel = delta_time * speed;
@@ -112,4 +112,4 @@ void CameraFirstPerson::update() {
     center = eye + dir;
 }
 
-NAMESPACE_END(vkt)
+} // namespace vktdev

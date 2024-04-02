@@ -1,9 +1,8 @@
 #pragma once
-#include "share/share.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-NAMESPACE_BEGIN(vkt)
+namespace vktdev {
 
 /**
  * @brief Camera interface
@@ -133,4 +132,4 @@ public:
     virtual void processMouseMove(const glm::vec2& pa, const glm::vec2& pb) override;
 };
 
-NAMESPACE_END(vkt)
+} // namespace vktdev

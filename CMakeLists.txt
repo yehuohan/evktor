@@ -21,15 +21,13 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(CMsg)
 include(FindDeps)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/libvkt_share)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/libvktor)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/libmisc)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/libvkt_devel)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/main)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/omega)
+# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/omega)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 # Install
-install(DIRECTORY ${PROJECT_GLSL} DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(FILES ${PROJECT_BUILD_DIR}/compile_commands.json DESTINATION ${PROJECT_ROOT})
 
 

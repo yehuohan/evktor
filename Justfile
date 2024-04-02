@@ -23,7 +23,7 @@ all: evktor #omega
 
 evktor: src
     @echo [run] evktor...
-    {{dir_install}}/evktor {{dir_root}}/../assets
+    {{dir_install}}/evktor {{dir_root}}/../assets {{dir_root}}/glsl
 
 omega: src
     @echo [run] evktor/omega...
