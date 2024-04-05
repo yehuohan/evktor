@@ -9,61 +9,61 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
-Res<Ref<Instance>> BaseApi::init(InstanceState& info) {
+Res<CRef<Instance>> BaseApi::init(InstanceState& info) {
     auto res = info.into();
     OnErr(res);
     instance.reset();
     instance = newBox<Instance>(res.unwrap());
-    return Ok(newRef(*instance));
+    return Ok(newCRef(*instance));
 }
 
-Res<Ref<PhysicalDevice>> BaseApi::init(PhysicalDeviceState& info) {
+Res<CRef<PhysicalDevice>> BaseApi::init(PhysicalDeviceState& info) {
     auto res = info.into(*this);
     OnErr(res);
     phy_dev.reset();
     phy_dev = newBox<PhysicalDevice>(res.unwrap());
-    return Ok(newRef(*phy_dev));
+    return Ok(newCRef(*phy_dev));
 }
 
-Res<Ref<Device>> BaseApi::init(DeviceState& info) {
+Res<CRef<Device>> BaseApi::init(DeviceState& info) {
     auto res = info.into(*this, *this);
     OnErr(res);
     dev.reset();
     dev = newBox<Device>(res.unwrap());
-    return Ok(newRef(*dev));
+    return Ok(newCRef(*dev));
 }
 
-Res<Ref<Queue>> BaseApi::presentQueue() const {
+Res<CRef<Queue>> BaseApi::presentQueue() const {
     OnCheck(dev, "Device is invalid");
     if (dev->queues.present) {
-        return Ok(newRef(*dev->queues.present));
+        return Ok(newCRef(*dev->queues.present));
     } else {
         return Er("Present queue is not supported");
     }
 }
 
-Res<Ref<Queue>> BaseApi::graphicsQueue() const {
+Res<CRef<Queue>> BaseApi::graphicsQueue() const {
     OnCheck(dev, "Device is invalid");
     if (dev->queues.graphics) {
-        return Ok(newRef(*dev->queues.graphics));
+        return Ok(newCRef(*dev->queues.graphics));
     } else {
         return Er("Graphics queue is not supported");
     }
 }
 
-Res<Ref<Queue>> BaseApi::computeQueue() const {
+Res<CRef<Queue>> BaseApi::computeQueue() const {
     OnCheck(dev, "Device is invalid");
     if (dev->queues.compute) {
-        return Ok(newRef(*dev->queues.compute));
+        return Ok(newCRef(*dev->queues.compute));
     } else {
         return Er("Compute queue is not supported");
     }
 }
 
-Res<Ref<Queue>> BaseApi::transferQueue() const {
+Res<CRef<Queue>> BaseApi::transferQueue() const {
     OnCheck(dev, "Device is invalid");
     if (dev->queues.transfer) {
-        return Ok(newRef(*dev->queues.transfer));
+        return Ok(newCRef(*dev->queues.transfer));
     } else {
         return Er("Transfer queue is not supported");
     }

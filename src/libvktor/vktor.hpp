@@ -19,14 +19,11 @@ NAMESPACE_BEGIN(vkt)
 class Vktor {
 public:
     BaseApi api{};
-    Box<RenderContext> render_context = nullptr;
 
 private:
     ResourceCache resource_cache{};
 
 public:
-    void addRenderContext();
-
     Res<Ref<Shader>> requestShader(const ShaderSource& shader_source);
     Res<Ref<core::DescriptorSetLayout>> requestDescriptorSetLayout(const uint32_t set, const Vector<Shader>& shaders);
     Res<Ref<core::PipelineLayout>> requestPipelineLayout(const Vector<Shader>& shaders);
@@ -36,6 +33,11 @@ public:
                                                  const RenderPipeline& render_pipeline);
     Res<Ref<core::Framebuffer>> requestFramebuffer(const RenderTargetTable& render_target_table,
                                                    const core::RenderPass& render_pass);
+};
+
+class Vkrdg {
+public:
+    BaseApi api{};
 };
 
 NAMESPACE_END(vkt)

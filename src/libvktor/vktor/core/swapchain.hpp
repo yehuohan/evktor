@@ -24,9 +24,9 @@ private:
     VkSwapchainKHR old = VK_NULL_HANDLE;
 
 private:
-    VkSurfaceFormatKHR chooseSurfaceFormat(const Vector<VkSurfaceFormatKHR>& formats);
-    VkPresentModeKHR choosePresentMode(const Vector<VkPresentModeKHR>& modes);
-    VkExtent2D chooseExtent(const VkSurfaceCapabilitiesKHR& capalibities);
+    VkSurfaceFormatKHR chooseSurfaceFormat(const Vector<VkSurfaceFormatKHR>& formats) const;
+    VkPresentModeKHR choosePresentMode(const Vector<VkPresentModeKHR>& modes) const;
+    VkExtent2D chooseExtent(const VkSurfaceCapabilitiesKHR& capalibities) const;
 
 public:
     explicit SwapchainState(const VkSurfaceKHR& surface, Name&& name = "Swapchain")
@@ -37,7 +37,7 @@ public:
     Self addDesiredPresentMode(VkPresentModeKHR mode);
     Self setDesiredExtent(const VkExtent2D& extent);
 
-    Res<Swapchain> into(const Device& device);
+    Res<Swapchain> into(const Device& device) const;
 };
 
 struct Swapchain : public CoreResource<VkSwapchainKHR, VK_OBJECT_TYPE_SWAPCHAIN_KHR, Device> {
@@ -55,6 +55,8 @@ public:
     Swapchain(Swapchain&&);
     ~Swapchain();
 
+    VkResult acquireNextImage(uint32_t& image_index, VkSemaphore semaphore, VkFence fence = VK_NULL_HANDLE) const;
+
     /** Create image from the index-th swapchain image */
     Res<Image> createImage(uint32_t index) const;
     /** Create images from swapchain images*/
@@ -64,7 +66,7 @@ public:
     /** Create image views for swapchain images */
     Vector<ImageView> createImageViews() const;
 
-    static Res<Swapchain> from(const Device& device, SwapchainState& info);
+    static Res<Swapchain> from(const Device& device, const SwapchainState& info);
 };
 
 NAMESPACE_END(core)

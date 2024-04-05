@@ -4,6 +4,10 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
+RenderPipeline::RenderPipeline(RenderPipeline&& rhs) : api(rhs.api) {
+    subpasses = std::move(rhs.subpasses);
+}
+
 Res<RenderPass> RenderPipeline::createRenderPass(const RenderTargetTable& render_target_table) const {
     RenderPassState rso{};
 

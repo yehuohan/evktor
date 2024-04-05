@@ -13,6 +13,7 @@ private:
 
 public:
     explicit RenderPipeline(const BaseApi& api) : api(api) {}
+    RenderPipeline(RenderPipeline&&);
 
     inline void addSubpass(RenderSubpass subpass) {
         subpasses.push_back(std::move(subpass));

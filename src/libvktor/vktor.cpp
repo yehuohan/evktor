@@ -5,14 +5,10 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
-void Vktor::addRenderContext() {
-    render_context = newBox<RenderContext>(api);
-}
-
 Res<Ref<Shader>> Vktor::requestShader(const ShaderSource& shader_source) {
     size_t key = hash(shader_source);
     return resource_cache.shaders.request(key, [this, &shader_source]() {
-        return Shader::load(shader_source);
+        return Shader::from(shader_source);
     });
 }
 

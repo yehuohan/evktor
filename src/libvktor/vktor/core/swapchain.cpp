@@ -22,7 +22,10 @@ Self SwapchainState::setDesiredExtent(const VkExtent2D& extent) {
     return *this;
 }
 
-VkSurfaceFormatKHR SwapchainState::chooseSurfaceFormat(const Vector<VkSurfaceFormatKHR>& formats) {
+VkSurfaceFormatKHR SwapchainState::chooseSurfaceFormat(const Vector<VkSurfaceFormatKHR>& formats) const {
+    if (desired_formats.empty()) {
+        return VkSurfaceFormatKHR{VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR};
+    }
     for (const auto& df : desired_formats) {
         for (const auto& sf : formats) {
             if (df.format == sf.format && df.colorSpace == sf.colorSpace) {
@@ -30,10 +33,14 @@ VkSurfaceFormatKHR SwapchainState::chooseSurfaceFormat(const Vector<VkSurfaceFor
             }
         }
     }
+    vktLogW("Choose the first VkSurfaceFormatKHR as can't find a desired one");
     return formats[0];
 }
 
-VkPresentModeKHR SwapchainState::choosePresentMode(const Vector<VkPresentModeKHR>& modes) {
+VkPresentModeKHR SwapchainState::choosePresentMode(const Vector<VkPresentModeKHR>& modes) const {
+    if (desired_present_modes.empty()) {
+        return VK_PRESENT_MODE_FIFO_KHR;
+    }
     for (const auto& dpm : desired_present_modes) {
         for (const auto& m : modes) {
             if (dpm == m) {
@@ -41,10 +48,11 @@ VkPresentModeKHR SwapchainState::choosePresentMode(const Vector<VkPresentModeKHR
             }
         }
     }
+    vktLogW("Choose VK_PRESENT_MODE_FIFO_KHR as can't find a desired one");
     return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D SwapchainState::chooseExtent(const VkSurfaceCapabilitiesKHR& capalibities) {
+VkExtent2D SwapchainState::chooseExtent(const VkSurfaceCapabilitiesKHR& capalibities) const {
     if (capalibities.currentExtent.width != UINT32_MAX) {
         return capalibities.currentExtent;
     } else {
@@ -56,7 +64,7 @@ VkExtent2D SwapchainState::chooseExtent(const VkSurfaceCapabilitiesKHR& capalibi
     }
 }
 
-Res<Swapchain> SwapchainState::into(const Device& device) {
+Res<Swapchain> SwapchainState::into(const Device& device) const {
     return Swapchain::from(device, *this);
 }
 
@@ -77,6 +85,10 @@ Swapchain::~Swapchain() {
     }
     handle = VK_NULL_HANDLE;
     images.clear(); // The images will be destroyed along with swapchain's destruction
+}
+
+VkResult Swapchain::acquireNextImage(uint32_t& image_index, VkSemaphore semaphore, VkFence fence) const {
+    return vkAcquireNextImageKHR(device, handle, UINT64_MAX, semaphore, fence, &image_index);
 }
 
 Res<Image> Swapchain::createImage(uint32_t index) const {
@@ -132,16 +144,10 @@ Vector<ImageView> Swapchain::createImageViews() const {
     return std::move(views);
 }
 
-Res<Swapchain> Swapchain::from(const Device& device, SwapchainState& info) {
+Res<Swapchain> Swapchain::from(const Device& device, const SwapchainState& info) {
     if ((!device.physical_device.queue_families.present.has_value()) ||
         (!device.physical_device.queue_families.graphics.has_value())) {
         return Er("Swapchain requires valid present and graphics queue family index");
-    }
-    if (info.desired_formats.empty()) {
-        info.desired_formats.push_back(VkSurfaceFormatKHR{VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR});
-    }
-    if (info.desired_present_modes.empty()) {
-        info.desired_present_modes.push_back(VK_PRESENT_MODE_FIFO_KHR);
     }
 
     VkSurfaceCapabilitiesKHR surface_capalibities{};

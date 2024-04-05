@@ -60,16 +60,7 @@ inline static bool getShaderLanguage(EShLanguage& lang, const VkShaderStageFlagB
     return true;
 }
 
-ShaderSource::ShaderSource(ShaderSource&& rhs) {
-    stage = rhs.stage;
-    filename = std::move(rhs.filename);
-    entry = std::move(rhs.entry);
-    code = std::move(rhs.code);
-    id = rhs.id;
-    rhs.id = 0;
-}
-
-Res<ShaderSource> ShaderSource::load(const std::string& filename) {
+Res<ShaderSource> ShaderSource::from(const std::string& filename) {
     ShaderSource shader_source{};
 
     auto stage = getShaderStage(filename);
@@ -83,6 +74,31 @@ Res<ShaderSource> ShaderSource::load(const std::string& filename) {
     shader_source.id = hash(shader_source.code);
 
     return Ok(std::move(shader_source));
+}
+
+ShaderSource::ShaderSource(ShaderSource&& rhs) {
+    stage = rhs.stage;
+    filename = std::move(rhs.filename);
+    entry = std::move(rhs.entry);
+    code = std::move(rhs.code);
+    id = rhs.id;
+    rhs.id = 0;
+}
+
+Res<Shader> Shader::from(const ShaderSource& source) {
+    Shader shader{};
+
+    shader.stage = source.stage;
+    shader.filename = source.filename;
+    shader.entry = source.entry;
+    // Must set stage, filename and entry before glsl2spv()
+    auto res = shader.glsl2spv(source.code);
+    OnErr(res);
+    shader.spv_code = res.unwrap();
+    shader.id = hash(std::string{reinterpret_cast<const char*>(shader.spv_code.data()),
+                                 reinterpret_cast<const char*>(shader.spv_code.data() + shader.spv_code.size())});
+
+    return Ok(std::move(shader));
 }
 
 Shader::Shader(Shader&& rhs) {
@@ -144,22 +160,6 @@ Res<core::ShaderModule> Shader::into(const core::Device& device) const {
         .setCode(spv_code, id)
         .setEntry(entry)
         .into(device);
-}
-
-Res<Shader> Shader::load(const ShaderSource& source) {
-    Shader shader{};
-
-    shader.stage = source.stage;
-    shader.filename = source.filename;
-    shader.entry = source.entry;
-    // Must set stage, filename and entry before glsl2spv()
-    auto res = shader.glsl2spv(source.code);
-    OnErr(res);
-    shader.spv_code = res.unwrap();
-    shader.id = hash(std::string{reinterpret_cast<const char*>(shader.spv_code.data()),
-                                 reinterpret_cast<const char*>(shader.spv_code.data() + shader.spv_code.size())});
-
-    return Ok(std::move(shader));
 }
 
 NAMESPACE_END(vkt)

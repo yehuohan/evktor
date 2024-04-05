@@ -55,17 +55,20 @@ public:
         return *dev;
     }
 
-    Res<Ref<core::Instance>> init(core::InstanceState& info);
-    Res<Ref<core::PhysicalDevice>> init(core::PhysicalDeviceState& info);
-    Res<Ref<core::Device>> init(core::DeviceState& info);
-    Res<Ref<core::Queue>> presentQueue() const;
-    Res<Ref<core::Queue>> graphicsQueue() const;
-    Res<Ref<core::Queue>> computeQueue() const;
-    Res<Ref<core::Queue>> transferQueue() const;
+    /** Initialize instance (the old will be destroyed) */
+    Res<CRef<core::Instance>> init(core::InstanceState& info);
+    /** Initialize physical device (the old will be destroyed) */
+    Res<CRef<core::PhysicalDevice>> init(core::PhysicalDeviceState& info);
+    /** Initialize device (the old will be destroyed) */
+    Res<CRef<core::Device>> init(core::DeviceState& info);
+    Res<CRef<core::Queue>> presentQueue() const;
+    Res<CRef<core::Queue>> graphicsQueue() const;
+    Res<CRef<core::Queue>> computeQueue() const;
+    Res<CRef<core::Queue>> transferQueue() const;
 
 public:
     // Alias core state object `into` function
-    inline Res<core::Swapchain> create(core::SwapchainState& info) const {
+    inline Res<core::Swapchain> create(const core::SwapchainState& info) const {
         return info.into(*this);
     }
     inline Res<core::ShaderModule> create(const core::ShaderModuleState& info) const {

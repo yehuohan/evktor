@@ -26,13 +26,12 @@ private:
     ShaderSource(){};
 
 public:
+    static Res<ShaderSource> from(const std::string& filename);
     ShaderSource(ShaderSource&&);
 
     inline size_t getId() const {
         return id;
     }
-
-    static Res<ShaderSource> load(const std::string& filename);
 };
 
 struct ShaderDescriptor {
@@ -83,6 +82,7 @@ private:
     Res<Vector<uint32_t>> glsl2spv(const std::string& code);
 
 public:
+    static Res<Shader> from(const ShaderSource& source);
     Shader(Shader&&);
 
     Res<core::ShaderModule> into(const core::Device& device) const;
@@ -107,8 +107,6 @@ public:
     inline const HashMap<uint32_t, Vector<ShaderDescriptor>>& getDescriptorSets() const {
         return desc_sets;
     }
-
-    static Res<Shader> load(const ShaderSource& source);
 };
 
 NAMESPACE_END(vkt)
