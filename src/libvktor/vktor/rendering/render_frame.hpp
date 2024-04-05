@@ -51,14 +51,32 @@ public:
                                                        const core::DescriptorArrayInfo& desc_info,
                                                        size_t thread_index = 0);
 
-    inline Res<Ref<core::Fence>> requestFence() {
+    inline Res<CRef<core::Fence>> requestFence() {
         return fence_pool.request();
     }
-    inline Res<Ref<core::Semaphore>> requestSemaphore() {
+    inline Res<core::Fence> acquireFence() {
+        return fence_pool.acquire();
+    }
+    inline void rebackFence(core::Fence&& fence) {
+        return fence_pool.reback(std::move(fence));
+    }
+    inline Res<CRef<core::Semaphore>> requestSemaphore() {
         return semaphore_pool.request();
     }
-    inline Res<Ref<core::Event>> requestEvent() {
+    inline Res<core::Semaphore> acquireSemaphore() {
+        return semaphore_pool.acquire();
+    }
+    inline void rebackSemaphore(core::Semaphore&& semaphore) {
+        return semaphore_pool.reback(std::move(semaphore));
+    }
+    inline Res<CRef<core::Event>> requestEvent() {
         return event_pool.request();
+    }
+    inline Res<core::Event> acquireEvent() {
+        return event_pool.acquire();
+    }
+    inline void rebackEvent(core::Event&& event) {
+        return event_pool.reback(std::move(event));
     }
 
 private:

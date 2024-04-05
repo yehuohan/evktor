@@ -53,20 +53,37 @@ FencePool::~FencePool() {
     fences.clear();
 }
 
-Res<Ref<Fence>> FencePool::request() {
+Res<CRef<Fence>> FencePool::request() {
     if (active_count < fences.size()) {
-        return Ok(newRef(fences[active_count++]));
+        return Ok(newCRef(fences[active_count++]));
     }
 
     auto res = FenceState().into(device);
     OnErr(res);
     fences.push_back(res.unwrap());
     active_count++;
-    return Ok(newRef(fences.back()));
+    return Ok(newCRef(fences.back()));
+}
+
+Res<Fence> FencePool::acquire() {
+    if (active_count < fences.size()) {
+        auto fen = std::move(fences.back());
+        fences.pop_back();
+        return Ok(std::move(fen));
+    }
+    return FenceState().into(device);
+}
+
+void FencePool::reback(Fence&& fence) {
+    fences_cache.push_back(std::move(fence));
 }
 
 void FencePool::resetPool() {
     active_count = 0;
+    for (auto& fen : fences_cache) {
+        fences.push_back(std::move(fen));
+    }
+    fences_cache.clear();
 }
 
 NAMESPACE_END(core)

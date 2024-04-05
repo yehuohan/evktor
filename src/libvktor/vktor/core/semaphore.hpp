@@ -36,8 +36,11 @@ public:
 
 class SemaphorePool : public NonCopyable {
 private:
-    Vector<Semaphore> semaphores{};
     uint32_t active_count = 0;
+    /** Actived semaphores */
+    Vector<Semaphore> semaphores{};
+    /** Cached semaphores */
+    Vector<Semaphore> semaphores_cache{};
 
 public:
     const Device& device;
@@ -46,7 +49,13 @@ public:
     SemaphorePool(SemaphorePool&&);
     ~SemaphorePool();
 
-    Res<Ref<Semaphore>> request();
+    /** Request semaphore without ownership */
+    Res<CRef<Semaphore>> request();
+    /** Acquire semaphore with ownership */
+    Res<Semaphore> acquire();
+    /** Reback acquired semaphore with ownership */
+    void reback(Semaphore&& semaphore);
+    /** Reset actived semaphores and cached semaphores*/
     void resetPool();
 };
 

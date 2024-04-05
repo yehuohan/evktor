@@ -39,8 +39,11 @@ public:
 
 class FencePool : public NonCopyable {
 private:
-    Vector<Fence> fences{};
     uint32_t active_count = 0;
+    /** Actived fences */
+    Vector<Fence> fences{};
+    /** Cached fences */
+    Vector<Fence> fences_cache{};
 
 public:
     const Device& device;
@@ -49,7 +52,13 @@ public:
     FencePool(FencePool&&);
     ~FencePool();
 
-    Res<Ref<Fence>> request();
+    /** Request fence without ownership */
+    Res<CRef<Fence>> request();
+    /** Acquire fence with ownership */
+    Res<Fence> acquire();
+    /** Reback acquired fence with ownership */
+    void reback(Fence&& fence);
+    /** Reset actived fences and cached fences*/
     void resetPool();
 };
 

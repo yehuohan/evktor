@@ -36,8 +36,11 @@ public:
 
 class EventPool : public NonCopyable {
 private:
-    Vector<Event> events{};
     uint32_t active_count = 0;
+    /** Actived events */
+    Vector<Event> events{};
+    /** Cached events */
+    Vector<Event> events_cache{};
 
 public:
     const Device& device;
@@ -46,7 +49,13 @@ public:
     EventPool(EventPool&&);
     ~EventPool();
 
-    Res<Ref<Event>> request();
+    /** Request event without ownership */
+    Res<CRef<Event>> request();
+    /** Acquire event with ownership */
+    Res<Event> acquire();
+    /** Reback acquired event with ownership */
+    void reback(Event&& event);
+    /** Reset actived events and cached events*/
     void resetPool();
 };
 
