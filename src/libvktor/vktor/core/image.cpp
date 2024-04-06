@@ -92,6 +92,7 @@ Res<Image> ImageState::into(const Device& device) const {
 Image::Image(Image&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
     memory = rhs.memory;
     rhs.memory = VK_NULL_HANDLE;
     allocation = rhs.allocation;

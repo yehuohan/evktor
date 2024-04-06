@@ -41,6 +41,7 @@ Res<ShaderModule> ShaderModuleState::into(const Device& device) const {
 ShaderModule::ShaderModule(ShaderModule&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
     stage = rhs.stage;
     entry = std::move(rhs.entry);
     code_id = rhs.code_id;

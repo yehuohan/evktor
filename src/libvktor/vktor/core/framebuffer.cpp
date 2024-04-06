@@ -34,6 +34,7 @@ Res<Framebuffer> FramebufferState::into(const Device& device) const {
 Framebuffer::Framebuffer(Framebuffer&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
 }
 
 Framebuffer::~Framebuffer() {

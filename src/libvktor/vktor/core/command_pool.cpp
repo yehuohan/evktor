@@ -23,6 +23,7 @@ Res<CommandPool> CommandPoolState::into(const Device& device) const {
 CommandPool::CommandPool(CommandPool&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
     primaries = std::move(rhs.primaries);
     secondaries = std::move(rhs.secondaries);
     active_primary_count = rhs.active_primary_count;

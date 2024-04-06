@@ -77,6 +77,7 @@ Res<ImageView> ImageViewState::into(const Device& device) const {
 ImageView::ImageView(ImageView&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
     image = rhs.image;
     rhs.image = VK_NULL_HANDLE;
     subresource_range = rhs.subresource_range;

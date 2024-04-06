@@ -69,6 +69,7 @@ Res<Device> DeviceState::into(const Instance& instance, const PhysicalDevice& ph
 Device::Device(Device&& rhs) : instance(rhs.instance), physical_device(rhs.physical_device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
     queues = std::move(rhs.queues);
     rhs.queues.clear();
     queue_indices = std::move(rhs.queue_indices);

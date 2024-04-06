@@ -9,6 +9,7 @@ DescriptorSet::DescriptorSet(DescriptorPool& pool) : CoreResource(pool.device), 
 DescriptorSet::DescriptorSet(DescriptorSet&& rhs) : CoreResource(rhs.device), desc_pool(rhs.desc_pool) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
 }
 
 DescriptorSet::~DescriptorSet() {

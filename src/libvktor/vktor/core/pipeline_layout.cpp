@@ -27,6 +27,7 @@ Res<PipelineLayout> PipelineLayoutState::into(const Device& device) const {
 PipelineLayout::PipelineLayout(PipelineLayout&& rhs) : PipelineLayout(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
 }
 
 PipelineLayout::~PipelineLayout() {

@@ -32,6 +32,7 @@ Res<Buffer> BufferState::into(const Device& device) const {
 Buffer::Buffer(Buffer&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
     size = rhs.size;
     memory = rhs.memory;
     rhs.memory = VK_NULL_HANDLE;

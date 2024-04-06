@@ -27,6 +27,7 @@ Res<ComputePipeline> ComputePipelineState::into(const Device& device) const {
 ComputePipeline::ComputePipeline(ComputePipeline&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
 }
 
 ComputePipeline::~ComputePipeline() {

@@ -206,6 +206,7 @@ Res<GraphicsPipeline> GraphicsPipelineState::into(const Device& device) const {
 GraphicsPipeline::GraphicsPipeline(GraphicsPipeline&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
 }
 
 GraphicsPipeline::~GraphicsPipeline() {

@@ -8,6 +8,7 @@ NAMESPACE_BEGIN(core)
 Queue::Queue(Queue&& rhs) : family_index(rhs.family_index), index(rhs.index) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
 }
 
 Queue::~Queue() {

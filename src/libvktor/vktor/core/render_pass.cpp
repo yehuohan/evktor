@@ -46,6 +46,7 @@ Res<RenderPass> RenderPassState::into(const Device& device) const {
 RenderPass::RenderPass(RenderPass&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
 }
 
 RenderPass::~RenderPass() {

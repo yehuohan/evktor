@@ -11,6 +11,7 @@ CommandBuffer::CommandBuffer(const CommandPool& command_pool) : CoreResource(com
 CommandBuffer::CommandBuffer(CommandBuffer&& rhs) : CoreResource(rhs.device), command_pool(rhs.command_pool) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
 }
 
 CommandBuffer::~CommandBuffer() {

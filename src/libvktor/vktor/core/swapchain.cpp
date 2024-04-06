@@ -71,6 +71,7 @@ Res<Swapchain> SwapchainState::into(const Device& device) const {
 Swapchain::Swapchain(Swapchain&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
     images = std::move(rhs.images);
     image_count = rhs.image_count;
     image_format = rhs.image_format;

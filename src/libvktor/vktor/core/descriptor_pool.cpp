@@ -25,6 +25,7 @@ DescriptorPool::DescriptorPool(DescriptorPool&& rhs)
     , maxsets(rhs.maxsets) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
 }
 
 DescriptorPool::~DescriptorPool() {

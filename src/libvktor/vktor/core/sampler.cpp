@@ -50,6 +50,7 @@ Res<Sampler> SamplerState::into(const Device& device) const {
 Sampler::Sampler(Sampler&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
 }
 
 Sampler::~Sampler() {

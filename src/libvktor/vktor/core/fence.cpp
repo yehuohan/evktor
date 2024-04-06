@@ -17,6 +17,7 @@ Res<Fence> FenceState::into(const Device& device) const {
 Fence::Fence(Fence&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
 }
 
 Fence::~Fence() {

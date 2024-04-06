@@ -74,6 +74,7 @@ Res<Instance> InstanceState::into() {
 Instance::Instance(Instance&& rhs) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
     debug_messenger = rhs.debug_messenger;
     rhs.debug_messenger = nullptr;
     api_version = rhs.api_version;

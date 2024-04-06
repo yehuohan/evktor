@@ -17,6 +17,7 @@ Res<Event> EventState::into(const Device& device) const {
 Event::Event(Event&& rhs) : CoreResource(rhs.device) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
 }
 
 Event::~Event() {

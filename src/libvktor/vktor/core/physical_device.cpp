@@ -199,6 +199,7 @@ Res<PhysicalDevice> PhysicalDeviceState::into(const Instance& instance) {
 PhysicalDevice::PhysicalDevice(PhysicalDevice&& rhs) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
     queue_families = std::move(rhs.queue_families);
     queue_family_props = std::move(rhs.queue_family_props);
     extensions = std::move(rhs.extensions);
