@@ -34,10 +34,17 @@
         }                                                                             \
     }
 
-/** By pass Result<Err> */
-#define OnErr(r)                     \
-    if ((r).isErr()) {               \
-        return Err((r).unwrapErr()); \
+/**
+ * @brief By pass Result<Err>
+ *
+ * 'r' must not be '__res__'
+ */
+#define OnErr(r)                             \
+    {                                        \
+        auto& __res__ = (r);                 \
+        if (__res__.isErr()) {               \
+            return Err(__res__.unwrapErr()); \
+        }                                    \
     }
 
 /** Assert with message */

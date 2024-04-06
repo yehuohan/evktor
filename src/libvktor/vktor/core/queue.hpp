@@ -21,7 +21,7 @@ struct Queue : public CoreHandle<VkQueue> {
 
     VkResult submit(const std::vector<VkSubmitInfo>& submits, VkFence fence = VK_NULL_HANDLE) const;
     VkResult submit(const CommandBuffer& cmdbuf, VkFence fence = VK_NULL_HANDLE) const;
-    VkResult present(const Swapchain& swapchain, uint32_t image_index, const VkSemaphore* semaphore = nullptr) const;
+    VkResult present(const Swapchain& swapchain, uint32_t image_index, VkSemaphore wait_semaphore = VK_NULL_HANDLE) const;
     VkResult waitIdle() const;
 };
 

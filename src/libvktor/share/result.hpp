@@ -10,7 +10,7 @@ struct Ok {
     T value;
     Ok(const T& val) : value(val) {}
     Ok(T&& val) : value(std::move(val)) {}
-    Ok(const Ok<T>&) = delete; // value should have one owner of Ok
+    Ok(const Ok<T>&) = delete; // Value should have one owner of Ok
     Ok(Ok<T>&&) = default;
 };
 
@@ -19,7 +19,7 @@ struct Err {
     E value;
     Err(const E& val) : value(val) {}
     Err(E&& val) : value(std::move(val)) {}
-    Err(const Err<E>&) = delete; // value should have one owner of Err
+    Err(const Err<E>&) = delete; // Value should have one owner of Err
     Err(Err<E>&&) = default;
 };
 
@@ -37,7 +37,7 @@ public:
     Result(const Err<E>& val) : value(val) {}
     Result(Ok<T>&& val) : value(std::move(val)) {}
     Result(Err<E>&& val) : value(std::move(val)) {}
-    Result(const Result<T, E>&) = delete; // value should have one owner of Result
+    Result(const Result<T, E>&) = delete; // Value should have one owner of Result
     Result(Result<T, E>&&) = default;
 
     bool isOk() const {
@@ -115,7 +115,15 @@ public:
     }
 };
 
+/**
+ * @brief Alias Res with std::runtime_error as Err
+ */
 template <typename T>
 using Res = Result<T, std::runtime_error>;
+
+/**
+ * @brief An empty struct for Res<Void>
+ */
+struct Void {};
 
 } // namespace vkt

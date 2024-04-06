@@ -26,15 +26,18 @@ RenderFrame::RenderFrame(RenderFrame&& rhs)
     desc_sets = std::move(rhs.desc_sets);
 }
 
-void RenderFrame::reset() {
+Res<Void> RenderFrame::resetFrame() {
+    bool okay = true;
     for (auto& cmdpools : cmd_pools) {
         for (auto& iter : cmdpools) {
             iter.second.resetPool();
         }
     }
-    fence_pool.resetPool();
-    semaphore_pool.resetPool();
     event_pool.resetPool();
+    semaphore_pool.resetPool();
+    OnRet(fence_pool.waitPool(), "Failed to wait fence pool");
+    OnRet(fence_pool.resetPool(), "Failed to reset fence pool");
+    return Ok(Void{});
 }
 
 void RenderFrame::freeDescriptorSets(size_t thread_index) {

@@ -25,10 +25,10 @@ VkResult Queue::submit(const CommandBuffer& cmdbuf, VkFence fence) const {
     return vkQueueSubmit(handle, 1, &submit_info, fence);
 }
 
-VkResult Queue::present(const Swapchain& swapchain, uint32_t image_index, const VkSemaphore* semaphore) const {
+VkResult Queue::present(const Swapchain& swapchain, uint32_t image_index, VkSemaphore wait_semaphore) const {
     auto present_info = Itor::PresentInfoKHR();
-    present_info.waitSemaphoreCount = semaphore ? 1 : 0;
-    present_info.pWaitSemaphores = semaphore;
+    present_info.waitSemaphoreCount = wait_semaphore ? 1 : 0;
+    present_info.pWaitSemaphores = &wait_semaphore;
     present_info.swapchainCount = 1;
     present_info.pSwapchains = swapchain;
     present_info.pImageIndices = &image_index;

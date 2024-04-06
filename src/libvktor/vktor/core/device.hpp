@@ -40,6 +40,8 @@ public:
     ~Device();
     OnConstType(VmaAllocator, mem_allocator);
 
+    VkResult waitIdle() const;
+
     static Res<Device> from(const Instance& instance, const PhysicalDevice& phy_dev, DeviceState& info);
 };
 

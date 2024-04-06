@@ -90,6 +90,10 @@ Device::~Device() {
     mem_allocator = VK_NULL_HANDLE;
 }
 
+VkResult Device::waitIdle() const {
+    return vkDeviceWaitIdle(handle);
+}
+
 Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev, DeviceState& info) {
     Device device(instance, phy_dev);
 

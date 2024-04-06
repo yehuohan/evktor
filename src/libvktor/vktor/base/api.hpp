@@ -65,6 +65,10 @@ public:
     Res<CRef<core::Queue>> graphicsQueue() const;
     Res<CRef<core::Queue>> computeQueue() const;
     Res<CRef<core::Queue>> transferQueue() const;
+    inline VkResult waitIdle() const {
+        OnCheck(dev, "Device is invalid");
+        return dev->waitIdle();
+    }
 
 public:
     // Alias core state object `into` function

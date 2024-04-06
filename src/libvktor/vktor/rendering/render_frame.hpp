@@ -27,7 +27,7 @@ public:
     explicit RenderFrame(const BaseApi& api, size_t thread_count);
     RenderFrame(RenderFrame&&);
 
-    void reset();
+    Res<Void> resetFrame();
     /**
      * @brief Free all descriptor pools and sets within thread index
      */

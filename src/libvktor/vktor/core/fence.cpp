@@ -44,9 +44,10 @@ Res<Fence> Fence::from(const Device& device, const FenceState& info) {
 }
 
 FencePool::FencePool(FencePool&& rhs) : device(rhs.device) {
-    fences = std::move(rhs.fences);
     active_count = rhs.active_count;
     rhs.active_count = 0;
+    fences = std::move(rhs.fences);
+    fences_cache = std::move(rhs.fences_cache);
 }
 
 FencePool::~FencePool() {
@@ -78,12 +79,39 @@ void FencePool::reback(Fence&& fence) {
     fences_cache.push_back(std::move(fence));
 }
 
-void FencePool::resetPool() {
+VkResult FencePool::waitPool(uint64_t timeout) {
+    VkResult ret = VK_SUCCESS;
+
+    if (active_count > 0) {
+        Vector<VkFence> actived{};
+        for (uint32_t k = 0; k < active_count; k++) {
+            actived.push_back(fences[k]);
+        }
+        ret = vkWaitForFences(device, active_count, actived.data(), true, timeout);
+    }
+
+    return ret;
+}
+
+VkResult FencePool::resetPool() {
+    VkResult ret = VK_SUCCESS;
+
+    if (active_count > 0) {
+        Vector<VkFence> actived{};
+        for (uint32_t k = 0; k < active_count; k++) {
+            actived.push_back(fences[k]);
+        }
+        // Only reset actived fences.
+        // The cached fences should be reset manually.
+        ret = vkResetFences(device, active_count, actived.data());
+    }
     active_count = 0;
     for (auto& fen : fences_cache) {
         fences.push_back(std::move(fen));
     }
     fences_cache.clear();
+
+    return ret;
 }
 
 NAMESPACE_END(core)

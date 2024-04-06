@@ -58,8 +58,10 @@ public:
     Res<Fence> acquire();
     /** Reback acquired fence with ownership */
     void reback(Fence&& fence);
-    /** Reset actived fences and cached fences*/
-    void resetPool();
+    /** Wait actived fences */
+    VkResult waitPool(uint64_t timeout = UINT64_MAX);
+    /** Reset actived fences and reback cached fences */
+    VkResult resetPool();
 };
 
 NAMESPACE_END(core)
