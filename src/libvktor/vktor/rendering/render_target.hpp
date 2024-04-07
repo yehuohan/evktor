@@ -29,6 +29,11 @@ public:
 
     explicit RenderTarget(Texture&& texture);
     RenderTarget(RenderTarget&&);
+    static Res<RenderTarget> from(const core::Device& device, const VkExtent2D& extent, VkFormat format);
+    /**
+     * @brief Create render target with the swapchain image of Arg<Swapchain>::image_index
+     */
+    static Res<RenderTarget> from(const core::Arg<core::Swapchain>& swapchain);
 
     inline const core::Image& getImage() const {
         return texture.getImage();
@@ -42,9 +47,6 @@ public:
     Self set(const VkImageLayout final_layout);
     Self set(const VkClearColorValue& color);
     Self set(const VkClearDepthStencilValue& depthstencil);
-
-    static Res<RenderTarget> from(const core::Device& device, const VkExtent2D& extent, VkFormat format);
-    static Res<RenderTarget> from(const core::Swapchain& swapchain, uint32_t index);
 };
 
 /**
@@ -68,6 +70,9 @@ private:
 
 public:
     RenderTargetTable(RenderTargetTable&&);
+    static Res<RenderTargetTable> from(Vector<RenderTarget>&& targets);
+    static Res<RenderTargetTable> from(std::initializer_list<MovedRenderTarget> moved_targets);
+
     inline VkExtent2D getExtent() const {
         return extent;
     }
@@ -76,9 +81,6 @@ public:
     }
     Vector<VkImageView> getImageViews() const;
     Vector<VkClearValue> getClearValues() const;
-
-    static Res<RenderTargetTable> from(Vector<RenderTarget>&& targets);
-    static Res<RenderTargetTable> from(std::initializer_list<MovedRenderTarget> moved_targets);
 };
 
 NAMESPACE_END(vkt)

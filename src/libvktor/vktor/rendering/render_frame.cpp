@@ -21,9 +21,21 @@ RenderFrame::RenderFrame(RenderFrame&& rhs)
     , semaphore_pool(std::move(rhs.semaphore_pool))
     , event_pool(std::move(rhs.event_pool))
     , thread_count(rhs.thread_count) {
+    swapchain_rtt = std::move(rhs.swapchain_rtt);
     cmd_pools = std::move(rhs.cmd_pools);
     desc_poolers = std::move(rhs.desc_poolers);
     desc_sets = std::move(rhs.desc_sets);
+}
+
+void RenderFrame::setSwapchainRTT(Box<RenderTargetTable>&& rtt) {
+    swapchain_rtt = std::move(rtt);
+}
+
+Res<CRef<RenderTargetTable>> RenderFrame::getSwapchainRTT() const {
+    if (swapchain_rtt) {
+        return Ok(newCRef(*swapchain_rtt));
+    }
+    return Er("No valid render target table in this render frame");
 }
 
 Res<Void> RenderFrame::resetFrame() {
@@ -40,7 +52,7 @@ Res<Void> RenderFrame::resetFrame() {
     return Ok(Void{});
 }
 
-void RenderFrame::freeDescriptorSets(size_t thread_index) {
+void RenderFrame::resetDescriptorSets(size_t thread_index) {
     if (thread_index < desc_sets.size()) {
         desc_sets[thread_index].clear();
     } else {

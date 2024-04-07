@@ -1,6 +1,7 @@
 #pragma once
 #include "render_frame.hpp"
 #include "vktor/base/api.hpp"
+#include <functional>
 
 NAMESPACE_BEGIN(vkt)
 
@@ -16,6 +17,17 @@ private:
     /** Semaphore to signal after acquired the next swapchain image */
     Box<core::Semaphore> acquisition = nullptr;
 
+public:
+    using FnSwapchainRTT = std::function<Res<RenderTargetTable>(const core::Arg<core::Swapchain>& swapchain)>;
+    /**
+     * @brief The default function to create render target table for swapchain
+     *
+     * The table to create will have 2 render targets:
+     * - RT-0: Color render target with the swapchain image of Arg<Swapchain>::image_index
+     * - RT-1: Depth render target with VK_FORMAT_D32_SFLOAT
+     */
+    static const FnSwapchainRTT defaultFnSwapchainRTT;
+
 private:
     explicit RenderContext(const BaseApi& api, size_t thread_count) : api(api), thread_count(thread_count) {}
 
@@ -27,7 +39,10 @@ public:
     /**
      * @brief Create RenderContext with swapchain
      */
-    static Res<RenderContext> from(const BaseApi& api, const core::SwapchainState& info, size_t thread_count = 1);
+    static Res<RenderContext> from(const BaseApi& api,
+                                   const core::SwapchainState& info,
+                                   FnSwapchainRTT fn = RenderContext::defaultFnSwapchainRTT,
+                                   size_t thread_count = 1);
     RenderContext(RenderContext&&);
 
     /**
@@ -43,6 +58,7 @@ public:
     inline bool hasSwapchain() const {
         return swapchain != nullptr;
     }
+    FnSwapchainRTT createSwapchainRTT = RenderContext::defaultFnSwapchainRTT;
 
     /**
      * @brief Begin the next render frame as activated render frame
@@ -79,6 +95,14 @@ public:
      */
     inline uint32_t getFrameIndex() const {
         return frame_index;
+    }
+    /**
+     * @brief Get the render frames count
+     *
+     * With swapchain enabled, it's also the swapchain images count.
+     */
+    inline uint32_t getFrameCount() const {
+        return frames.size();
     }
 };
 

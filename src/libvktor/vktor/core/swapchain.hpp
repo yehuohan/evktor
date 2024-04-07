@@ -59,14 +59,24 @@ public:
 
     /** Create image from the index-th swapchain image */
     Res<Image> createImage(uint32_t index) const;
-    /** Create images from swapchain images*/
-    Vector<Image> createImages() const;
     /** Create the image view for the index-th swapchain image */
     Res<ImageView> createImageView(uint32_t index) const;
-    /** Create image views for swapchain images */
-    Vector<ImageView> createImageViews() const;
 
     static Res<Swapchain> from(const Device& device, const SwapchainState& info);
+};
+
+template <>
+class Arg<Swapchain> {
+public:
+    /** The swapchain image index going to access */
+    uint32_t image_index = 0;
+
+public:
+    const Swapchain& a;
+
+public:
+    explicit Arg(const Swapchain& a) : a(a) {}
+    OnConstType(VkSwapchainKHR, a.handle);
 };
 
 NAMESPACE_END(core)

@@ -19,36 +19,6 @@ RenderTarget::RenderTarget(RenderTarget&& rhs) : RenderTarget(std::move(rhs.text
     clear = rhs.clear;
 }
 
-Self RenderTarget::set(const AttachmentOps& _ops) {
-    ops = _ops;
-    return *this;
-}
-
-Self RenderTarget::set(const AttachmentOps& ops, const AttachmentOps& _stencil_ops) {
-    stencil_ops = _stencil_ops;
-    return *this;
-}
-
-Self RenderTarget::set(const AttachmentLayouts& _layouts) {
-    layouts = _layouts;
-    return *this;
-}
-
-Self RenderTarget::set(const VkImageLayout final_layout) {
-    layouts.final = final_layout;
-    return *this;
-}
-
-Self RenderTarget::set(const VkClearColorValue& color) {
-    clear.color = color;
-    return *this;
-}
-
-Self RenderTarget::set(const VkClearDepthStencilValue& depthstencil) {
-    clear.depthStencil = depthstencil;
-    return *this;
-}
-
 Res<RenderTarget> RenderTarget::from(const Device& device, const VkExtent2D& extent, VkFormat format) {
     bool ds = isDepthStencilFormat(format);
     auto res_image = ImageState(ds ? "RTDepth" : "RTColor")
@@ -79,10 +49,10 @@ Res<RenderTarget> RenderTarget::from(const Device& device, const VkExtent2D& ext
     return Ok(std::move(rt));
 }
 
-Res<RenderTarget> RenderTarget::from(const core::Swapchain& swapchain, uint32_t index) {
-    auto image = swapchain.createImage(index);
+Res<RenderTarget> RenderTarget::from(const Arg<Swapchain>& swapchain) {
+    auto image = swapchain.a.createImage(swapchain.image_index);
     OnErr(image);
-    auto imageview = swapchain.createImageView(index);
+    auto imageview = swapchain.a.createImageView(swapchain.image_index);
     OnErr(imageview);
     RenderTarget rt(Texture(image.unwrap(), imageview.unwrap()));
     rt.set(AttachmentOps::color());
@@ -91,26 +61,40 @@ Res<RenderTarget> RenderTarget::from(const core::Swapchain& swapchain, uint32_t 
     return Ok(std::move(rt));
 }
 
+Self RenderTarget::set(const AttachmentOps& _ops) {
+    ops = _ops;
+    return *this;
+}
+
+Self RenderTarget::set(const AttachmentOps& ops, const AttachmentOps& _stencil_ops) {
+    stencil_ops = _stencil_ops;
+    return *this;
+}
+
+Self RenderTarget::set(const AttachmentLayouts& _layouts) {
+    layouts = _layouts;
+    return *this;
+}
+
+Self RenderTarget::set(const VkImageLayout final_layout) {
+    layouts.final = final_layout;
+    return *this;
+}
+
+Self RenderTarget::set(const VkClearColorValue& color) {
+    clear.color = color;
+    return *this;
+}
+
+Self RenderTarget::set(const VkClearDepthStencilValue& depthstencil) {
+    clear.depthStencil = depthstencil;
+    return *this;
+}
+
 RenderTargetTable::RenderTargetTable(RenderTargetTable&& rhs) {
     extent = rhs.extent;
     targets = std::move(rhs.targets);
 };
-
-Vector<VkImageView> RenderTargetTable::getImageViews() const {
-    Vector<VkImageView> views{};
-    for (const auto& rt : targets) {
-        views.push_back(rt.getImageView());
-    }
-    return std::move(views);
-}
-
-Vector<VkClearValue> RenderTargetTable::getClearValues() const {
-    Vector<VkClearValue> clears;
-    for (const auto& rt : targets) {
-        clears.push_back(rt.clear);
-    }
-    return std::move(clears);
-}
 
 Res<RenderTargetTable> RenderTargetTable::from(Vector<RenderTarget>&& targets) {
     if (targets.empty()) {
@@ -119,6 +103,7 @@ Res<RenderTargetTable> RenderTargetTable::from(Vector<RenderTarget>&& targets) {
 
     RenderTargetTable rtt;
 
+    // Compute render target extent according to the image view's base mip level
     static const auto getExtent = [](const RenderTarget& rt) {
         const VkExtent3D e = rt.getImage().extent;
         const uint32_t m = rt.getImageView().subresource_range.baseMipLevel;
@@ -153,4 +138,19 @@ Res<RenderTargetTable> RenderTargetTable::from(std::initializer_list<MovedRender
     return RenderTargetTable::from(std::move(rts));
 }
 
+Vector<VkImageView> RenderTargetTable::getImageViews() const {
+    Vector<VkImageView> views{};
+    for (const auto& rt : targets) {
+        views.push_back(rt.getImageView());
+    }
+    return std::move(views);
+}
+
+Vector<VkClearValue> RenderTargetTable::getClearValues() const {
+    Vector<VkClearValue> clears;
+    for (const auto& rt : targets) {
+        clears.push_back(rt.clear);
+    }
+    return std::move(clears);
+}
 NAMESPACE_END(vkt)

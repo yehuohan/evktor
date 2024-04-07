@@ -11,7 +11,10 @@ private:
         FRAG,
     };
     Vector<Shader> shaders{};
-    // By default the output attachments is attachment 0
+    /** Render targets info for subpass
+     *
+     * By default the color attachment is RT-0
+     */
     core::RenderSubpassInfo info{{}, {0}, VK_ATTACHMENT_UNUSED};
 
 public:
@@ -30,13 +33,16 @@ public:
     inline const Shader& fragShader() const {
         return shaders[FRAG];
     }
-    inline void setInputAttachments(Vector<uint32_t>&& inputs) {
+    /** Set input render targets (alias input attachments) */
+    inline void setRTInputs(Vector<uint32_t>&& inputs) {
         info.inputs = std::move(inputs);
     }
-    inline void setColorAttachments(Vector<uint32_t>&& colors) {
+    /** Set color render targets (alias color attachments) */
+    inline void setRTColors(Vector<uint32_t>&& colors) {
         info.colors = std::move(colors);
     }
-    inline void setDepthStencilAttachment(uint32_t depthstencil) {
+    /** Set depth stencil render target (alias depth stencil attachment) */
+    inline void setRTDepthStencil(uint32_t depthstencil) {
         info.depthstencil = depthstencil;
     }
     inline const core::RenderSubpassInfo& getInfo() const {

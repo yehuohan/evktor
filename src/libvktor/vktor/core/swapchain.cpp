@@ -109,17 +109,6 @@ Res<Image> Swapchain::createImage(uint32_t index) const {
     return Ok(std::move(image));
 }
 
-Vector<Image> Swapchain::createImages() const {
-    Vector<Image> swapchain_images{};
-    for (uint32_t k = 0; k < images.size(); k++) {
-        auto res = createImage(k);
-        if (res.isOk()) {
-            swapchain_images.push_back(res.unwrap());
-        }
-    }
-    return std::move(swapchain_images);
-}
-
 Res<ImageView> Swapchain::createImageView(uint32_t index) const {
     if (index >= images.size()) {
         return Er("The index {} is out of swapchain imageviews", index);
@@ -132,17 +121,6 @@ Res<ImageView> Swapchain::createImageView(uint32_t index) const {
         .setMipRange(0, 1)
         .setArrayRange(0, image_layers)
         .into(device);
-}
-
-Vector<ImageView> Swapchain::createImageViews() const {
-    Vector<ImageView> views{};
-    for (uint32_t k = 0; k < images.size(); k++) {
-        auto res = createImageView(k);
-        if (res.isOk()) {
-            views.push_back(res.unwrap());
-        }
-    }
-    return std::move(views);
 }
 
 Res<Swapchain> Swapchain::from(const Device& device, const SwapchainState& info) {
@@ -164,7 +142,7 @@ Res<Swapchain> Swapchain::from(const Device& device, const SwapchainState& info)
     VkPresentModeKHR present_mode = info.choosePresentMode(present_modes);
     VkExtent2D image_extent = info.chooseExtent(surface_capalibities);
 
-    // Specify how many images we would like to have in the swap chain
+    // Specify the number of swapchain images
     uint32_t image_count = surface_capalibities.minImageCount + 1;
     if (surface_capalibities.maxImageCount > 0 && image_count > surface_capalibities.maxImageCount) {
         image_count = surface_capalibities.maxImageCount;

@@ -4,6 +4,20 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
+const RenderContext::FnSwapchainRTT RenderContext::defaultFnSwapchainRTT =
+    [](const Arg<Swapchain>& swapchain) -> Res<RenderTargetTable> {
+    Vector<RenderTarget> rts;
+    // RT-0: Color
+    auto res_color = RenderTarget::from(swapchain);
+    OnErr(res_color);
+    rts.push_back(res_color.unwrap());
+    // RT-1: depth
+    auto res_depth = RenderTarget::from(swapchain.a.device, swapchain.a.image_extent, VK_FORMAT_D32_SFLOAT);
+    OnErr(res_depth);
+    rts.push_back(res_depth.unwrap());
+    return RenderTargetTable::from(std::move(rts));
+};
+
 Res<RenderContext> RenderContext::from(const BaseApi& api, uint32_t frame_count, size_t thread_count) {
     RenderContext render_context(api, thread_count);
     render_context.frame_index = 0;
@@ -13,8 +27,16 @@ Res<RenderContext> RenderContext::from(const BaseApi& api, uint32_t frame_count,
     return Ok(std::move(render_context));
 }
 
-Res<RenderContext> RenderContext::from(const BaseApi& api, const core::SwapchainState& info, size_t thread_count) {
+Res<RenderContext> RenderContext::from(const BaseApi& api,
+                                       const core::SwapchainState& info,
+                                       FnSwapchainRTT fn,
+                                       size_t thread_count) {
     RenderContext render_context(api, thread_count);
+    if (fn) {
+        render_context.createSwapchainRTT = fn;
+    } else {
+        vktLogW("RenderContext can't be from a null FnSwapchainRTT. Use defaultFnSwapchainRTT.");
+    }
     auto res = render_context.reinit(info);
     OnErr(res);
     return Ok(std::move(render_context));
@@ -34,10 +56,16 @@ Res<CRef<core::Swapchain>> RenderContext::reinit(const core::SwapchainState& inf
     // Re-initialize swapchain
     swapchain.reset();
     swapchain = newBox<Swapchain>(res.unwrap());
-    // Re-initialize RenderFrame array
+    // Re-initialize render frames
     frames.clear();
     for (uint32_t k = 0; k < swapchain->image_count; k++) {
         frames.push_back(RenderFrame(api, thread_count));
+        // Set swapchain render target table for render frames
+        Arg arg(*swapchain);
+        arg.image_index = k;
+        auto res_rtt = createSwapchainRTT(arg);
+        OnErr(res_rtt);
+        frames.back().setSwapchainRTT(newBox<RenderTargetTable>(res_rtt.unwrap()));
     }
     frame_index = 0;
     return Ok(newCRef(*swapchain));

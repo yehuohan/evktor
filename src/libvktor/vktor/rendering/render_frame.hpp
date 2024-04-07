@@ -1,4 +1,5 @@
 #pragma once
+#include "render_target.hpp"
 #include "vktor/base/api.hpp"
 
 NAMESPACE_BEGIN(vkt)
@@ -13,6 +14,8 @@ private:
     const BaseApi& api;
 
     const size_t thread_count = 1;
+    /** Render target table for swapchain */
+    Box<RenderTargetTable> swapchain_rtt = nullptr;
     /** Map queue family index to command pool */
     Vector<HashMap<uint32_t, core::CommandPool>> cmd_pools{};
     /** Map DescriptorSetLayout to DescriptorPooler */
@@ -27,11 +30,13 @@ public:
     explicit RenderFrame(const BaseApi& api, size_t thread_count);
     RenderFrame(RenderFrame&&);
 
+    void setSwapchainRTT(Box<RenderTargetTable>&& rtt = nullptr);
+    Res<CRef<RenderTargetTable>> getSwapchainRTT() const;
     Res<Void> resetFrame();
     /**
-     * @brief Free all descriptor pools and sets within thread index
+     * @brief Reset all descriptor pools and sets within thread index
      */
-    void freeDescriptorSets(size_t thread_index = 0);
+    void resetDescriptorSets(size_t thread_index = 0);
     /**
      * @brief Request one command buffer from this frame
      *
