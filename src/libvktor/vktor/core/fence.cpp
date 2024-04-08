@@ -53,6 +53,7 @@ FencePool::FencePool(FencePool&& rhs) : device(rhs.device) {
 
 FencePool::~FencePool() {
     fences.clear();
+    fences_cache.clear();
 }
 
 Res<CRef<Fence>> FencePool::request() {

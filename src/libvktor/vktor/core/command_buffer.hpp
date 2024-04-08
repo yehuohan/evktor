@@ -28,6 +28,9 @@ struct CommandBuffer : public CoreResource<VkCommandBuffer, VK_OBJECT_TYPE_COMMA
 
     VkResult begin(VkCommandBufferUsageFlags flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT) const;
     VkResult end() const;
+    void beginRenderPass(const VkRenderPassBeginInfo& render_pass_bi,
+                         VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE) const;
+    void endRenderPass() const;
 
     void cmdBlitImage(const Image& src,
                       const Image& dst,

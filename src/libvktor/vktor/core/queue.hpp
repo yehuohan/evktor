@@ -29,7 +29,7 @@ struct Queue : public CoreHandle<VkQueue> {
  * @brief Queue family properties
  */
 struct QueueFamilyProps {
-    uint32_t count = 1;    /**< Count of queues in this queue family that >= 1. */
+    uint32_t count = 1;    /**< Count of queues in this queue family that >= 1 */
     bool present = false;  /**< Queue family supports present */
     bool graphics = false; /**< Queue family supports graphics */
     bool compute = false;  /**< Queue family supports compute */

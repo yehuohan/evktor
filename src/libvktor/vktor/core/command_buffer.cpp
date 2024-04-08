@@ -31,6 +31,14 @@ VkResult CommandBuffer::end() const {
     return vkEndCommandBuffer(handle);
 }
 
+void CommandBuffer::beginRenderPass(const VkRenderPassBeginInfo& render_pass_bi, VkSubpassContents contents) const {
+    vkCmdBeginRenderPass(handle, &render_pass_bi, contents);
+}
+
+void CommandBuffer::endRenderPass() const {
+    vkCmdEndRenderPass(handle);
+}
+
 void CommandBuffer::cmdBlitImage(const Image& src,
                                  const Image& dst,
                                  const Vector<VkImageBlit>& regions,

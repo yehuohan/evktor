@@ -45,6 +45,7 @@ EventPool::EventPool(EventPool&& rhs) : device(rhs.device) {
 
 EventPool::~EventPool() {
     events.clear();
+    events_cache.clear();
 }
 
 Res<CRef<Event>> EventPool::request() {

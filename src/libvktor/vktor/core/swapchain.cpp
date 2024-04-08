@@ -68,7 +68,7 @@ Res<Swapchain> SwapchainState::into(const Device& device) const {
     return Swapchain::from(device, *this);
 }
 
-Swapchain::Swapchain(Swapchain&& rhs) : CoreResource(rhs.device) {
+Swapchain::Swapchain(Swapchain&& rhs) : CoreResource(rhs.device), surface(std::move(rhs.surface)) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -176,7 +176,7 @@ Res<Swapchain> Swapchain::from(const Device& device, const SwapchainState& info)
         swapchain_ci.pQueueFamilyIndices = nullptr;
     }
 
-    Swapchain swapchain(device);
+    Swapchain swapchain(device, std::move(info.surface));
     OnRet(vkCreateSwapchainKHR(device, &swapchain_ci, nullptr, swapchain), "Failed to create swapchain");
     OnName(swapchain, info.__name);
     swapchain.image_count = image_count;

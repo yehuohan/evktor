@@ -21,6 +21,7 @@
 #include "vktor/core/sampler.hpp"
 #include "vktor/core/semaphore.hpp"
 #include "vktor/core/shader_module.hpp"
+#include "vktor/core/surface.hpp"
 #include "vktor/core/swapchain.hpp"
 
 NAMESPACE_BEGIN(vkt)
@@ -72,6 +73,9 @@ public:
 
 public:
     // Alias core state object `into` function
+    inline Res<core::Surface> create(VkSurfaceKHR surface) const {
+        return core::Surface::from(*this, surface);
+    }
     inline Res<core::Swapchain> create(const core::SwapchainState& info) const {
         return info.into(*this);
     }

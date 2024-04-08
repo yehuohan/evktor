@@ -45,6 +45,7 @@ SemaphorePool::SemaphorePool(SemaphorePool&& rhs) : device(rhs.device) {
 
 SemaphorePool::~SemaphorePool() {
     semaphores.clear();
+    semaphores_cache.clear();
 }
 
 Res<CRef<Semaphore>> SemaphorePool::request() {
