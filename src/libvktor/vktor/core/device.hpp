@@ -14,10 +14,15 @@ class DeviceState : public CoreStater<DeviceState> {
     friend struct Device;
 
 private:
+    uint32_t max_queue_count = 1; /**< The max count of queues for each queue family, must >= 1. */
+
+private:
     VkResult createMemAllocator(Device& device) const;
 
 public:
     explicit DeviceState(Name&& name = "Device") : CoreStater(std::move(name)) {}
+
+    Self setMaxQueueCount(uint32_t count);
 
     Res<Device> into(const Instance& instance, const PhysicalDevice& phy_dev);
 };

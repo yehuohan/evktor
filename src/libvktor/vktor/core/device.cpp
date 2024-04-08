@@ -62,6 +62,11 @@ VkResult DeviceState::createMemAllocator(Device& device) const {
     return vmaCreateAllocator(&vma_allocator_ai, &device.mem_allocator);
 }
 
+Self DeviceState::setMaxQueueCount(uint32_t count) {
+    max_queue_count = std::max<uint32_t>(1, count);
+    return *this;
+}
+
 Res<Device> DeviceState::into(const Instance& instance, const PhysicalDevice& phy_dev) {
     return Device::from(instance, phy_dev, *this);
 }
@@ -101,10 +106,11 @@ Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev
     Vector<VkDeviceQueueCreateInfo> queues_ci{};
     Vector<Vector<float>> priorities(phy_dev.queue_family_props.size());
     for (const auto& q : phy_dev.queue_family_props) {
-        priorities.push_back(Vector<float>(q.second.count, VKT_CORE_QUEUE_PRIORITY));
+        uint32_t max_count = std::min<uint32_t>(info.max_queue_count, q.second.count);
+        priorities.push_back(Vector<float>(max_count, VKT_CORE_QUEUE_PRIORITY));
         auto dev_queue_ci = Itor::DeviceQueueCreateInfo();
         dev_queue_ci.queueFamilyIndex = q.first;
-        dev_queue_ci.queueCount = q.second.count;
+        dev_queue_ci.queueCount = max_count;
         dev_queue_ci.pQueuePriorities = priorities.back().data();
         queues_ci.push_back(dev_queue_ci);
     }
@@ -138,7 +144,8 @@ Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev
     // Queues are automatically created along with device, and we need to retrieve their handles.
     for (const auto& q : phy_dev.queue_family_props) {
         uint32_t family_index = q.first;
-        for (uint32_t index = 0; index < q.second.count; index++) {
+        uint32_t max_count = std::min<uint32_t>(info.max_queue_count, q.second.count);
+        for (uint32_t index = 0; index < max_count; index++) {
             Queue queue(family_index, index);
             const Name name = "Queue" + std::to_string(family_index) + "." + std::to_string(index);
             vkGetDeviceQueue(device, family_index, 0, queue);
