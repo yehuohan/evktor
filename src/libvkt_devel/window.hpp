@@ -14,7 +14,6 @@ protected:
     uint32_t width;
     uint32_t height;
     GLFWwindow* window = nullptr;
-    VkSurfaceKHR surface = VK_NULL_HANDLE;
     float fps = 0.0f;
 
     /** Make static to be captured by GLFWscrollfun */
@@ -24,8 +23,20 @@ public:
     Window(uint32_t width, uint32_t height);
     virtual ~Window();
 
+    /**
+     * @brief Get required instance extensions from GLFW
+     */
     std::vector<const char*> requiredInstanceExtensions() const;
-    VkSurfaceKHR createSurface(VkInstance instance);
+    /**
+     * @brief Create surface from GLFW
+     *
+     * This function should be invoked only once
+     */
+    VkSurfaceKHR createSurface(VkInstance instance) const;
+    /**
+     * @brief Get surface extent
+     */
+    VkExtent2D getExtent() const;
     void setCamera(ICamera::Type type, glm::vec3 eye_pos = glm::vec3(0.0f, 0.0f, 0.0f));
 
     virtual void run();

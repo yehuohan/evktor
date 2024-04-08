@@ -44,12 +44,19 @@ std::vector<const char*> Window::requiredInstanceExtensions() const {
     return std::move(exts);
 }
 
-VkSurfaceKHR Window::createSurface(VkInstance instance) {
+VkSurfaceKHR Window::createSurface(VkInstance instance) const {
+    VkSurfaceKHR surface = VK_NULL_HANDLE;
     auto ret = glfwCreateWindowSurface(instance, window, nullptr, &surface);
     if (ret != VK_SUCCESS) {
         throw vktErr("Failed to create window surface: {}", VkStr(VkResult, ret));
     }
     return surface;
+}
+
+VkExtent2D Window::getExtent() const {
+    int wid, hei;
+    glfwGetFramebufferSize(window, &wid, &hei);
+    return VkExtent2D{u32(wid), u32(hei)};
 }
 
 void Window::setCamera(ICamera::Type type, glm::vec3 eye_pos) {
