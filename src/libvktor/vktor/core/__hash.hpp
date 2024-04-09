@@ -1,5 +1,5 @@
 #pragma once
-#include "vktor/config.hpp"
+#include "__defs.hpp"
 
 NAMESPACE_BEGIN(std)
 

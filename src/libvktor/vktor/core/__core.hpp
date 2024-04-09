@@ -1,6 +1,6 @@
 #pragma once
+#include "__defs.hpp"
 #include "debug.hpp"
-#include "vktor/config.hpp"
 #include <string>
 
 NAMESPACE_BEGIN(vkt)
