@@ -37,7 +37,7 @@ public:
     static Res<Fence> from(const Device& device, const FenceState& info);
 };
 
-class FencePool : public NonCopyable {
+class FencePool : private NonCopyable {
 private:
     uint32_t active_count = 0;
     /** Actived fences */

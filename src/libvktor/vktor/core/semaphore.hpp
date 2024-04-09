@@ -34,7 +34,7 @@ public:
     static Res<Semaphore> from(const Device& device, const SemaphoreState& info);
 };
 
-class SemaphorePool : public NonCopyable {
+class SemaphorePool : private NonCopyable {
 private:
     uint32_t active_count = 0;
     /** Actived semaphores */

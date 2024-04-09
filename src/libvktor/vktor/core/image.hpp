@@ -142,7 +142,7 @@ public:
 };
 
 template <>
-class Arg<Image> {
+class Arg<Image> : private NonCopyable {
 public:
     VkImageAspectFlags aspect = VK_IMAGE_ASPECT_COLOR_BIT;
     uint32_t mip = 0; /**< Base mip level or the mip level index */

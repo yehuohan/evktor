@@ -41,7 +41,7 @@ typedef std::string Name;
  * Derived struct need to process `handle` at copy/move/assign constructor
  */
 template <typename T>
-struct CoreHandle : public NonCopyable {
+struct CoreHandle : private NonCopyable {
 protected:
     /** Vulkan handle is borrowed or not
      *
@@ -126,7 +126,7 @@ public:
  * @brief CoreHandle/CoreResource argument with extra data
  */
 template <typename T>
-struct Arg : NonCopyable {
+struct Arg : private NonCopyable {
     const T& a; /**< CoreHandle/CoreResource argument */
 
     explicit Arg(const T& a) : a(a) {}

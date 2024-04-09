@@ -34,7 +34,7 @@ public:
     static Res<Event> from(const Device& device, const EventState& info);
 };
 
-class EventPool : public NonCopyable {
+class EventPool : private NonCopyable {
 private:
     uint32_t active_count = 0;
     /** Actived events */

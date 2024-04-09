@@ -4,7 +4,7 @@
 
 NAMESPACE_BEGIN(vkt)
 
-class Texture : public NonCopyable {
+class Texture : private NonCopyable {
 private:
     core::Image image;
     core::ImageView imageview;

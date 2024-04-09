@@ -68,7 +68,7 @@ public:
 };
 
 template <>
-class Arg<Swapchain> {
+class Arg<Swapchain> : private NonCopyable {
 public:
     /** The swapchain image index going to access */
     uint32_t image_index = 0;
@@ -78,6 +78,7 @@ public:
 
 public:
     explicit Arg(const Swapchain& a) : a(a) {}
+    explicit Arg(const Swapchain& a, uint32_t image_index) : a(a), image_index(image_index) {}
     OnConstType(VkSwapchainKHR, a.handle);
 };
 

@@ -62,9 +62,7 @@ Res<CRef<core::Swapchain>> RenderContext::reinit(const core::SwapchainState& inf
     for (uint32_t k = 0; k < swapchain->image_count; k++) {
         frames.push_back(RenderFrame(api, thread_count));
         // Set swapchain render target table for render frames
-        Arg arg(*swapchain);
-        arg.image_index = k;
-        auto res_rtt = createSwapchainRTT(arg);
+        auto res_rtt = createSwapchainRTT(Arg<Swapchain>(*swapchain, k));
         OnErr(res_rtt);
         frames.back().setSwapchainRTT(newBox<RenderTargetTable>(res_rtt.unwrap()));
     }
