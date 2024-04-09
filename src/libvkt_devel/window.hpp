@@ -14,10 +14,9 @@ protected:
     uint32_t width;
     uint32_t height;
     GLFWwindow* window = nullptr;
+    vkt::Box<ICamera> camera = nullptr;
+    bool framebuffer_resized = false;
     float fps = 0.0f;
-
-    /** Make static to be captured by GLFWscrollfun */
-    static vkt::Box<ICamera> camera;
 
 public:
     Window(uint32_t width, uint32_t height);

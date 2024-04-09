@@ -5,8 +5,6 @@ NAMESPACE_BEGIN(vktdev)
 
 using namespace vkt;
 
-Box<ICamera> Window::camera = nullptr;
-
 Window::Window(uint32_t width, uint32_t height) : width(width), height(height) {
     if (!glfwInit()) {
         throw vktErr("Failed to init GLFW");
@@ -17,14 +15,21 @@ Window::Window(uint32_t width, uint32_t height) : width(width), height(height) {
         glfwTerminate();
         throw vktErr("Failed to create GLFW window");
     }
+    glfwSetWindowUserPointer(window, this);
 
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // 隐藏光标，并Capture光标
     glfwSetScrollCallback(window, [](GLFWwindow* win, double xoffset, double yoffset) {
-        if (camera) {
-            camera->processMouseScroll(yoffset);
+        auto user = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
+        if (user && user->camera) {
+            user->camera->processMouseScroll(yoffset);
         }
     });
-    // glfwSetFramebufferSizeCallback(window, [](GLFWwindow* win, int wid, int hei) {});
+    glfwSetFramebufferSizeCallback(window, [](GLFWwindow* win, int wid, int hei) {
+        auto user = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
+        if (user) {
+            user->framebuffer_resized = true;
+        }
+    });
 
     glfwMakeContextCurrent(window);
 }
