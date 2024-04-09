@@ -38,7 +38,7 @@ Res<RenderContext> RenderContext::from(const BaseApi& api,
     } else {
         vktLogW("RenderContext can't be from a null FnSwapchainRTT. Use defaultFnSwapchainRTT.");
     }
-    auto res = render_context.reinit(info);
+    auto res = render_context.initSwapchain(info);
     OnErr(res);
     return Ok(std::move(render_context));
 }
@@ -51,11 +51,11 @@ RenderContext::RenderContext(RenderContext&& rhs) : api(rhs.api), thread_count(r
     acquisition = std::move(rhs.acquisition);
 }
 
-Res<CRef<core::Swapchain>> RenderContext::reinit(const core::SwapchainState& info) {
-    // Re-initialize swapchain
+Res<CRef<core::Swapchain>> RenderContext::initSwapchain(const core::SwapchainState& info) {
+    // Re-initialize swapchain, must reset swapchain before info.into().
+    swapchain.reset();
     auto res_swc = info.into(api);
     OnErr(res_swc);
-    swapchain.reset();
     swapchain = newBox<Swapchain>(res_swc.unwrap());
     // Re-initialize render frames
     frames.clear();

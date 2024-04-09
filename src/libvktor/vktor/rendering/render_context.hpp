@@ -69,7 +69,7 @@ public:
      *
      * The number of render frames to initialize is Swapchain::image_count.
      */
-    Res<CRef<core::Swapchain>> reinit(const core::SwapchainState& info);
+    Res<CRef<core::Swapchain>> initSwapchain(const core::SwapchainState& info);
     inline const core::Swapchain& getSwapchain() const {
         OnCheck(swapchain, "Swapchain is invalid");
         return *swapchain;
