@@ -3,8 +3,6 @@
 #define VMA_IMPLEMENTATION
 #include <vk_mem_alloc.h>
 
-#include "vktor/rendering/render_pipeline.hpp"
-
 NAMESPACE_BEGIN(vkt)
 
 using namespace core;

@@ -26,8 +26,6 @@
 
 NAMESPACE_BEGIN(vkt)
 
-class RenderPipeline;
-
 /**
  * @brief Basic Vulkan API for instance and device
  */

@@ -1,6 +1,11 @@
 #pragma once
 #include "render_frame.hpp"
+#include "render_pipeline.hpp"
+#include "render_subpass.hpp"
+#include "render_target.hpp"
 #include "vktor/base/api.hpp"
+#include "vktor/base/resource_cache.hpp"
+#include "vktor/base/shader.hpp"
 #include <functional>
 
 NAMESPACE_BEGIN(vkt)
@@ -27,6 +32,20 @@ public:
      * - RT-1: Depth render target with VK_FORMAT_D32_SFLOAT
      */
     static const FnSwapchainRTT defaultFnSwapchainRTT;
+
+    /** Render context's resources */
+    struct Resources {
+        ResourceCache<Shader> shaders{};
+        ResourceCache<core::DescriptorSetLayout> descriptor_setlayouts{};
+        ResourceCache<core::PipelineLayout> pipeline_layouts{};
+        ResourceCache<core::GraphicsPipeline> graphics_pipelines{};
+        ResourceCache<core::ComputePipeline> compute_pipelines{};
+        ResourceCache<core::RenderPass> render_passes{};
+        ResourceCache<core::Framebuffer> framebuffers{};
+    };
+
+private:
+    Resources resources{};
 
 private:
     explicit RenderContext(const BaseApi& api, size_t thread_count) : api(api), thread_count(thread_count) {}
@@ -63,7 +82,7 @@ public:
     /**
      * @brief Begin the next render frame as activated render frame
      *
-     * @return The main command buffer from the activated render frame
+     * @return The main command buffer from the activated render frame with graphics queue
      */
     Res<Ref<core::CommandBuffer>> beginFrame();
     /**
@@ -104,6 +123,17 @@ public:
     inline uint32_t getFrameCount() const {
         return frames.size();
     }
+
+public:
+    Res<Ref<Shader>> requestShader(const ShaderSource& shader_source);
+    Res<Ref<core::DescriptorSetLayout>> requestDescriptorSetLayout(const uint32_t set, const Vector<Shader>& shaders);
+    Res<Ref<core::PipelineLayout>> requestPipelineLayout(const Vector<Shader>& shaders);
+    Res<Ref<core::GraphicsPipeline>> requestGraphicsPipeline(const core::GraphicsPipelineState& pso);
+    Res<Ref<core::ComputePipeline>> requestComputePipeline(const core::ComputePipelineState& pso);
+    Res<Ref<core::RenderPass>> requestRenderPass(const RenderTargetTable& render_target_table,
+                                                 const RenderPipeline& render_pipeline);
+    Res<Ref<core::Framebuffer>> requestFramebuffer(const RenderTargetTable& render_target_table,
+                                                   const core::RenderPass& render_pass);
 };
 
 NAMESPACE_END(vkt)

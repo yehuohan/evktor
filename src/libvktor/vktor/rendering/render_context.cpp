@@ -1,4 +1,5 @@
 #include "render_context.hpp"
+#include <set>
 
 NAMESPACE_BEGIN(vkt)
 
@@ -51,11 +52,11 @@ RenderContext::RenderContext(RenderContext&& rhs) : api(rhs.api), thread_count(r
 }
 
 Res<CRef<core::Swapchain>> RenderContext::reinit(const core::SwapchainState& info) {
-    auto res = info.into(api);
-    OnErr(res);
     // Re-initialize swapchain
+    auto res_swc = info.into(api);
+    OnErr(res_swc);
     swapchain.reset();
-    swapchain = newBox<Swapchain>(res.unwrap());
+    swapchain = newBox<Swapchain>(res_swc.unwrap());
     // Re-initialize render frames
     frames.clear();
     for (uint32_t k = 0; k < swapchain->image_count; k++) {
@@ -76,10 +77,11 @@ Res<Ref<core::CommandBuffer>> RenderContext::beginFrame() {
 
     OnCheck(!frame_actived, "Please call endFrame to inactivate the frame");
     if (hasSwapchain()) {
-        // Use previous frame's semaphore from in current frame need ownership
-        auto res = prev_frame.acquireSemaphore();
-        OnErr(res);
-        acquisition = newBox<Semaphore>(res.unwrap());
+        // Use previous frame's semaphore in current frame need ownership
+        auto res_sem = prev_frame.acquireSemaphore();
+        OnErr(res_sem);
+        acquisition = newBox<Semaphore>(res_sem.unwrap());
+
         // Acquire next swapchain image
         auto ret = swapchain->acquireNextImage(frame_index, *acquisition);
         if (ret == VK_SUBOPTIMAL_KHR || ret == VK_ERROR_OUT_OF_DATE_KHR) {
@@ -94,16 +96,13 @@ Res<Ref<core::CommandBuffer>> RenderContext::beginFrame() {
 
     // Reset the frame to begin
     auto& frame = frames[frame_index];
-    {
-        auto res = frame.resetFrame();
-        OnErr(res);
-    }
+    auto res_void = frame.resetFrame();
+    OnErr(res_void);
     frame_actived = true;
 
-    auto res = api.graphicsQueue();
-    OnErr(res);
-    auto& queue = res.unwrap().get();
-    return frame.requestCommandBuffer(queue);
+    auto res_queue = api.graphicsQueue();
+    OnErr(res_queue);
+    return frame.requestCommandBuffer(res_queue.unwrap().get());
 }
 
 Res<Void> RenderContext::endFrame(VkSemaphore wait_semaphore) {
@@ -111,14 +110,19 @@ Res<Void> RenderContext::endFrame(VkSemaphore wait_semaphore) {
 
     OnCheck(frame_actived, "Please call beginFrame to activate the frame");
     if (hasSwapchain()) {
-        auto res = api.presentQueue();
-        OnErr(res);
-        auto& queue = res.unwrap().get();
+        auto res_queue = api.presentQueue();
+        OnErr(res_queue);
+        auto& queue = res_queue.unwrap().get();
+
+        // Present swapchain image
         auto ret = queue.present(*swapchain, frame_index, wait_semaphore);
         if (ret == VK_SUBOPTIMAL_KHR || ret == VK_ERROR_OUT_OF_DATE_KHR) {
             return Er("Need to reinit swapchain");
+        } else {
+            OnRet(ret, "Failed to present the activated swapchain image");
         }
-        OnRet(ret, "Failed to present the activated swapchain image");
+
+        // Reback previous frame's semaphore to current frame with ownership
         if (acquisition) {
             frame.rebackSemaphore(std::move(*acquisition));
             acquisition.reset();
@@ -130,9 +134,10 @@ Res<Void> RenderContext::endFrame(VkSemaphore wait_semaphore) {
 
 Res<CRef<core::Semaphore>> RenderContext::submit(const core::CommandBuffer& cmdbuf) {
     auto& frame = frames[frame_index];
-    auto res = api.graphicsQueue();
-    OnErr(res);
-    auto& queue = res.unwrap().get();
+    auto res_queue = api.graphicsQueue();
+    OnErr(res_queue);
+    auto& queue = res_queue.unwrap().get();
+
     auto res_fence = frame.requestFence();
     OnErr(res_fence);
     auto& fence = res_fence.unwrap().get();
@@ -160,6 +165,98 @@ Res<CRef<core::Semaphore>> RenderContext::submit(const core::CommandBuffer& cmdb
 Ref<RenderFrame> RenderContext::getFrame() {
     OnCheck(frame_index < frames.size(), "The activated frame index {} is out of frames count {}", frame_index, frames.size());
     return newRef(frames[frame_index]);
+}
+
+Res<Ref<Shader>> RenderContext::requestShader(const ShaderSource& shader_source) {
+    size_t key = hash(shader_source);
+    return resources.shaders.request(key, [this, &shader_source]() {
+        return Shader::from(shader_source);
+    });
+}
+
+Res<Ref<DescriptorSetLayout>> RenderContext::requestDescriptorSetLayout(const uint32_t set, const Vector<Shader>& shaders) {
+    size_t key = hash(set, shaders);
+    return resources.descriptor_setlayouts.request(key, [this, set, &shaders]() -> Res<DescriptorSetLayout> {
+        DescriptorSetLayoutState dso{};
+        for (const auto& s : shaders) {
+            switch (s.getStage()) {
+            case VK_SHADER_STAGE_VERTEX_BIT:
+            case VK_SHADER_STAGE_FRAGMENT_BIT:
+            case VK_SHADER_STAGE_COMPUTE_BIT:
+                {
+                    const auto& desc_sets = s.getDescriptorSets();
+                    auto item = desc_sets.find(set);
+                    if (item != desc_sets.end()) {
+                        for (const auto& d : item->second) {
+                            dso.addBinding(d.binding, static_cast<VkDescriptorType>(d.type), d.count, s.getStage());
+                        }
+                    }
+                }
+                break;
+            default:
+                return Er("Request with unsupported shader ({}) stage: {}",
+                          s.getFilename(),
+                          VkStr(VkShaderStageFlags, s.getStage()));
+            }
+        }
+        return dso.into(api);
+    });
+}
+
+Res<Ref<PipelineLayout>> RenderContext::requestPipelineLayout(const Vector<Shader>& shaders) {
+    size_t key = hash(shaders);
+    return resources.pipeline_layouts.request(key, [this, &shaders]() -> Res<PipelineLayout> {
+        // Collect all set index
+        std::set<uint32_t> sets{};
+        for (const auto& s : shaders) {
+            const auto& desc_sets = s.getDescriptorSets();
+            for (const auto& item : desc_sets) {
+                sets.insert(item.first);
+            }
+        }
+        // Collect all descriptor sets
+        PipelineLayoutState pso{};
+        for (const auto& s : sets) {
+            auto res = requestDescriptorSetLayout(s, shaders);
+            OnErr(res);
+            pso.addDescriptorSetLayout(res.unwrap().get());
+        }
+        return pso.into(api);
+    });
+}
+
+Res<Ref<GraphicsPipeline>> RenderContext::requestGraphicsPipeline(const GraphicsPipelineState& pso) {
+    size_t key = hash(pso);
+    return resources.graphics_pipelines.request(key, [this, &pso]() {
+        return pso.into(api);
+    });
+}
+
+Res<Ref<ComputePipeline>> RenderContext::requestComputePipeline(const ComputePipelineState& pso) {
+    size_t key = hash(pso);
+    return resources.compute_pipelines.request(key, [this, &pso]() {
+        return pso.into(api);
+    });
+}
+
+Res<Ref<RenderPass>> RenderContext::requestRenderPass(const RenderTargetTable& render_target_table,
+                                                      const RenderPipeline& render_pipeline) {
+    size_t key = hash(render_target_table.getTargets(), render_pipeline.getSubpasses());
+    return resources.render_passes.request(key, [&render_target_table, &render_pipeline]() {
+        return render_pipeline.createRenderPass(render_target_table);
+    });
+}
+
+Res<Ref<Framebuffer>> RenderContext::requestFramebuffer(const RenderTargetTable& render_target_table,
+                                                        const RenderPass& render_pass) {
+    size_t key = hash(render_target_table, render_pass);
+    return resources.framebuffers.request(key, [this, &render_target_table, &render_pass]() {
+        FramebufferState fso{};
+        fso.setRenderPass(render_pass);
+        fso.addAttachments(render_target_table.getImageViews());
+        fso.setExtent(render_target_table.getExtent());
+        return fso.into(api);
+    });
 }
 
 NAMESPACE_END(vkt)
