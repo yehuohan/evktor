@@ -17,6 +17,7 @@ Window::Window(uint32_t width, uint32_t height) : width(width), height(height) {
     }
     glfwSetWindowUserPointer(window, this);
 
+    glfwSetWindowSizeLimits(window, 1, 1, GLFW_DONT_CARE, GLFW_DONT_CARE);
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // 隐藏光标，并Capture光标
     glfwSetScrollCallback(window, [](GLFWwindow* win, double xoffset, double yoffset) {
         auto user = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
