@@ -19,6 +19,7 @@ private:
     bool frame_actived = false;
     Vector<RenderFrame> frames{};
     Box<core::Swapchain> swapchain = nullptr;
+    Box<core::SwapchainState> swapchain_state = nullptr;
     /** Semaphore to signal after acquired the next swapchain image */
     Box<core::Semaphore> acquisition = nullptr;
 
@@ -59,23 +60,33 @@ public:
      * @brief Create RenderContext with swapchain
      */
     static Res<RenderContext> from(const BaseApi& api,
-                                   const core::SwapchainState& info,
+                                   core::SwapchainState&& info,
                                    FnSwapchainRTT fn = RenderContext::defaultFnSwapchainRTT,
                                    size_t thread_count = 1);
     RenderContext(RenderContext&&);
 
     /**
-     * @brief Re-initialize swapchain and render frames (the old will be destroyed)
+     * @brief Re-initialize swapchain and render frames with `swapchain_state`
      *
-     * The number of render frames to initialize is Swapchain::image_count.
+     * The number of render frames to initialize is Swapchain::image_count
      */
-    Res<CRef<core::Swapchain>> initSwapchain(const core::SwapchainState& info);
+    Res<CRef<core::Swapchain>> reinitSwapchain();
+    /**
+     * @brief Update swapchain with surface changed
+     *
+     * @return Whether updated swapchain
+     */
+    bool updateSwapchain(bool force = false);
+    inline bool hasSwapchain() const {
+        return swapchain != nullptr;
+    }
     inline const core::Swapchain& getSwapchain() const {
         OnCheck(swapchain, "Swapchain is invalid");
         return *swapchain;
     }
-    inline bool hasSwapchain() const {
-        return swapchain != nullptr;
+    inline core::SwapchainState& getSwapchainState() {
+        OnCheck(swapchain, "SwapchainState is invalid");
+        return *swapchain_state;
     }
     FnSwapchainRTT createSwapchainRTT = RenderContext::defaultFnSwapchainRTT;
 

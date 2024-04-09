@@ -22,6 +22,7 @@ private:
     VkExtent2D desired_extent{};
     uint32_t image_layers = 1; /**< Swapchain image array layers */
     VkImageUsageFlags image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    // TODO: use old swapchain
     VkSwapchainKHR old = VK_NULL_HANDLE;
 
 private:
@@ -33,7 +34,9 @@ public:
     explicit SwapchainState(Surface&& surface, Name&& name = "Swapchain")
         : CoreStater(std::move(name))
         , surface(std::move(surface)) {}
+    SwapchainState(SwapchainState&&);
 
+    Self setSurface(Surface&& surface);
     Self addDesiredFormat(const VkSurfaceFormatKHR& format);
     Self addDesiredPresentMode(VkPresentModeKHR mode);
     Self setDesiredExtent(const VkExtent2D& extent);

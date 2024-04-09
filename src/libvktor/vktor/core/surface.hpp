@@ -13,6 +13,7 @@ protected:
 
 public:
     Surface(Surface&&);
+    Surface& operator=(Surface&&);
     ~Surface();
 
     /**

@@ -29,7 +29,7 @@ Res<RenderContext> RenderContext::from(const BaseApi& api, uint32_t frame_count,
 }
 
 Res<RenderContext> RenderContext::from(const BaseApi& api,
-                                       const core::SwapchainState& info,
+                                       core::SwapchainState&& info,
                                        FnSwapchainRTT fn,
                                        size_t thread_count) {
     RenderContext render_context(api, thread_count);
@@ -38,7 +38,9 @@ Res<RenderContext> RenderContext::from(const BaseApi& api,
     } else {
         vktLogW("RenderContext can't be from a null FnSwapchainRTT. Use defaultFnSwapchainRTT.");
     }
-    auto res = render_context.initSwapchain(info);
+    render_context.frame_index = 0;
+    render_context.swapchain_state = newBox<SwapchainState>(std::move(info));
+    auto res = render_context.reinitSwapchain();
     OnErr(res);
     return Ok(std::move(render_context));
 }
@@ -48,26 +50,50 @@ RenderContext::RenderContext(RenderContext&& rhs) : api(rhs.api), thread_count(r
     frame_actived = rhs.frame_actived;
     frames = std::move(rhs.frames);
     swapchain = std::move(rhs.swapchain);
+    swapchain_state = std::move(rhs.swapchain_state);
     acquisition = std::move(rhs.acquisition);
 }
 
-Res<CRef<core::Swapchain>> RenderContext::initSwapchain(const core::SwapchainState& info) {
+Res<CRef<core::Swapchain>> RenderContext::reinitSwapchain() {
     // Re-initialize swapchain, must reset swapchain before info.into().
     swapchain.reset();
-    auto res_swc = info.into(api);
+    auto res_swc = swapchain_state->into(api);
     OnErr(res_swc);
     swapchain = newBox<Swapchain>(res_swc.unwrap());
     // Re-initialize render frames
-    frames.clear();
     for (uint32_t k = 0; k < swapchain->image_count; k++) {
-        frames.push_back(RenderFrame(api, thread_count));
+        if (k >= frames.size()) {
+            frames.push_back(RenderFrame(api, thread_count));
+        }
         // Set swapchain render target table for render frames
         auto res_rtt = createSwapchainRTT(Arg<Swapchain>(*swapchain, k));
         OnErr(res_rtt);
-        frames.back().setSwapchainRTT(newBox<RenderTargetTable>(res_rtt.unwrap()));
+        frames[k].setSwapchainRTT(newBox<RenderTargetTable>(res_rtt.unwrap()));
     }
-    frame_index = 0;
     return Ok(newCRef(*swapchain));
+}
+
+bool RenderContext::updateSwapchain(bool force) {
+    if (!swapchain || !swapchain_state) {
+        return false;
+    }
+    VkSurfaceCapabilitiesKHR capalibities;
+    if (VK_SUCCESS != vkGetPhysicalDeviceSurfaceCapabilitiesKHR(api, swapchain->surface, &capalibities)) {
+        vktLogE("Failed to get surface capalibities to update swapchain");
+        return false;
+    }
+
+    auto extent = capalibities.currentExtent;
+    if (force || extent.width != swapchain->image_extent.width || extent.height != swapchain->image_extent.height) {
+        api.waitIdle();
+        resources.framebuffers.clear();
+        // Update swapchain info then reinit swapchain
+        swapchain_state->setSurface(std::move(swapchain->surface));
+        swapchain_state->setDesiredExtent(extent);
+        reinitSwapchain();
+        return true;
+    }
+    return false;
 }
 
 Res<Ref<core::CommandBuffer>> RenderContext::beginFrame() {
@@ -83,7 +109,13 @@ Res<Ref<core::CommandBuffer>> RenderContext::beginFrame() {
         // Acquire next swapchain image
         auto ret = swapchain->acquireNextImage(frame_index, *acquisition);
         if (ret == VK_SUBOPTIMAL_KHR || ret == VK_ERROR_OUT_OF_DATE_KHR) {
-            return Er("Need to reinit swapchain");
+            if (updateSwapchain(ret == VK_ERROR_OUT_OF_DATE_KHR)) {
+                ret = swapchain->acquireNextImage(frame_index, *acquisition);
+            }
+        }
+        // After update swapchain and acquire image again, `ret` should be success.
+        if (ret != VK_SUCCESS) {
+            prev_frame.resetFrame();
         }
         OnRet(ret, "Failed to acquire the next swapchain image to begin frame");
     } else {
@@ -115,7 +147,7 @@ Res<Void> RenderContext::endFrame(VkSemaphore wait_semaphore) {
         // Present swapchain image
         auto ret = queue.present(*swapchain, frame_index, wait_semaphore);
         if (ret == VK_SUBOPTIMAL_KHR || ret == VK_ERROR_OUT_OF_DATE_KHR) {
-            return Er("Need to reinit swapchain");
+            updateSwapchain();
         } else {
             OnRet(ret, "Failed to present the activated swapchain image");
         }

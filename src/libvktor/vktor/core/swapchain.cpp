@@ -7,6 +7,20 @@ NAMESPACE_BEGIN(core)
 
 using Self = SwapchainState::Self;
 
+SwapchainState::SwapchainState(SwapchainState&& rhs) : CoreStater(std::move(rhs.__name)), surface(std::move(rhs.surface)) {
+    desired_formats = std::move(rhs.desired_formats);
+    desired_present_modes = std::move(rhs.desired_present_modes);
+    desired_extent = rhs.desired_extent;
+    image_layers = rhs.image_layers;
+    image_usage = rhs.image_usage;
+    old = rhs.old;
+}
+
+Self SwapchainState::setSurface(Surface&& _surface) {
+    surface = std::move(_surface);
+    return *this;
+}
+
 Self SwapchainState::addDesiredFormat(const VkSurfaceFormatKHR& format) {
     desired_formats.push_back(format);
     return *this;

@@ -9,6 +9,13 @@ Surface::Surface(Surface&& rhs) : instance(rhs.instance) {
     __borrowed = rhs.__borrowed;
 }
 
+Surface& Surface::operator=(Surface&& rhs) {
+    handle = rhs.handle;
+    rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
+    return *this;
+}
+
 Surface::~Surface() {
     if (!__borrowed && handle) {
         vkDestroySurfaceKHR(instance, handle, nullptr);
