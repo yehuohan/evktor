@@ -36,6 +36,11 @@ Self SwapchainState::setDesiredExtent(const VkExtent2D& extent) {
     return *this;
 }
 
+Self SwapchainState::setOld(VkSwapchainKHR _old) {
+    old = _old;
+    return *this;
+}
+
 VkSurfaceFormatKHR SwapchainState::chooseSurfaceFormat(const Vector<VkSurfaceFormatKHR>& formats) const {
     if (desired_formats.empty()) {
         return VkSurfaceFormatKHR{VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR};
@@ -100,6 +105,11 @@ Swapchain::~Swapchain() {
     }
     handle = VK_NULL_HANDLE;
     images.clear(); // The images will be destroyed along with swapchain's destruction
+}
+
+VkSwapchainKHR Swapchain::take() {
+    __borrowed = true;
+    return handle;
 }
 
 VkResult Swapchain::acquireNextImage(uint32_t& image_index, VkSemaphore semaphore, VkFence fence) const {
@@ -192,6 +202,9 @@ Res<Swapchain> Swapchain::from(const Device& device, const SwapchainState& info)
 
     Swapchain swapchain(device, std::move(info.surface));
     OnRet(vkCreateSwapchainKHR(device, &swapchain_ci, nullptr, swapchain), "Failed to create swapchain");
+    if (info.old) {
+        vkDestroySwapchainKHR(device, info.old, nullptr);
+    }
     OnName(swapchain, info.__name);
     swapchain.image_count = image_count;
     swapchain.image_format = surface_format.format;

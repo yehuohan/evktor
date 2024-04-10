@@ -22,7 +22,6 @@ private:
     VkExtent2D desired_extent{};
     uint32_t image_layers = 1; /**< Swapchain image array layers */
     VkImageUsageFlags image_usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-    // TODO: use old swapchain
     VkSwapchainKHR old = VK_NULL_HANDLE;
 
 private:
@@ -40,6 +39,7 @@ public:
     Self addDesiredFormat(const VkSurfaceFormatKHR& format);
     Self addDesiredPresentMode(VkPresentModeKHR mode);
     Self setDesiredExtent(const VkExtent2D& extent);
+    Self setOld(VkSwapchainKHR old);
 
     Res<Swapchain> into(const Device& device) const;
 };
@@ -60,8 +60,14 @@ public:
     Swapchain(Swapchain&&);
     ~Swapchain();
 
-    VkResult acquireNextImage(uint32_t& image_index, VkSemaphore semaphore, VkFence fence = VK_NULL_HANDLE) const;
+    /**
+     * @brief Take out swapchain handle
+     *
+     * After take out handle, this swapchain will be `__borrowed = true`.
+     */
+    VkSwapchainKHR take();
 
+    VkResult acquireNextImage(uint32_t& image_index, VkSemaphore semaphore, VkFence fence = VK_NULL_HANDLE) const;
     /** Create image from the index-th swapchain image */
     Res<Image> createImage(uint32_t index) const;
     /** Create the image view for the index-th swapchain image */

@@ -45,7 +45,7 @@ struct CoreHandle : private NonCopyable {
 protected:
     /** Vulkan handle is borrowed or not
      *
-     * If it's borrowed, CoreHandle must not destory the handle
+     * A borrowed CoreHandle doesn't have ownership and must not destory the handle.
      */
     bool __borrowed = false;
 

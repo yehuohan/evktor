@@ -91,6 +91,7 @@ bool RenderContext::updateSwapchain(bool force) {
         // Update swapchain info then reinit swapchain
         swapchain_state->setSurface(std::move(swapchain->surface));
         swapchain_state->setDesiredExtent(extent);
+        swapchain_state->setOld(swapchain->take());
         reinitSwapchain();
         return true;
     }
