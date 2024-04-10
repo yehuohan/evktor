@@ -49,6 +49,7 @@ RenderContext::RenderContext(RenderContext&& rhs) : api(rhs.api), thread_count(r
     frame_index = rhs.frame_index;
     frame_actived = rhs.frame_actived;
     frames = std::move(rhs.frames);
+    surface_extent = rhs.surface_extent;
     swapchain = std::move(rhs.swapchain);
     swapchain_state = std::move(rhs.swapchain_state);
     acquisition = std::move(rhs.acquisition);
@@ -61,6 +62,7 @@ Res<CRef<core::Swapchain>> RenderContext::reinitSwapchain() {
     auto res_swc = swapchain_state->into(api);
     OnErr(res_swc);
     swapchain = newBox<Swapchain>(res_swc.unwrap());
+    surface_extent = swapchain->image_extent;
     // Re-initialize render frames
     for (uint32_t k = 0; k < swapchain->image_count; k++) {
         if (k >= frames.size()) {

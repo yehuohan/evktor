@@ -18,6 +18,8 @@ private:
     uint32_t frame_index = 0;
     bool frame_actived = false;
     Vector<RenderFrame> frames{};
+
+    VkExtent2D surface_extent{0, 0};
     Box<core::Swapchain> swapchain = nullptr;
     Box<core::SwapchainState> swapchain_state = nullptr;
     /** Semaphore to signal after acquired the next swapchain image */
@@ -61,10 +63,11 @@ public:
      */
     static Res<RenderContext> from(const BaseApi& api,
                                    core::SwapchainState&& info,
-                                   FnSwapchainRTT fn = RenderContext::defaultFnSwapchainRTT,
+                                   FnSwapchainRTT fn = nullptr,
                                    size_t thread_count = 1);
     RenderContext(RenderContext&&);
 
+public:
     /**
      * @brief Re-initialize swapchain and render frames with `swapchain_state`
      *
@@ -89,7 +92,11 @@ public:
         return *swapchain_state;
     }
     FnSwapchainRTT createSwapchainRTT = RenderContext::defaultFnSwapchainRTT;
+    inline const VkExtent2D& getSurfaceExtent() const {
+        return surface_extent;
+    }
 
+public:
     /**
      * @brief Begin the next render frame as activated render frame
      *
