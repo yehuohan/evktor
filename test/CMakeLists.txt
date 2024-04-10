@@ -8,6 +8,7 @@ foreach(TstFile ${TST_SRC})
     project(${TstName})
     add_executable(${PROJECT_NAME} ${TstFile})
     target_link_libraries(${PROJECT_NAME} vktor glm::glm)
+    install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX})
 endforeach()
 
 project(tst_glslang)
@@ -21,3 +22,4 @@ target_link_libraries(${PROJECT_NAME}
     glslang::OGLCompiler
     glslang::SPVRemapper
     glslang::SPIRV)
+install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX})
