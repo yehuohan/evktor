@@ -52,6 +52,7 @@ RenderContext::RenderContext(RenderContext&& rhs) : api(rhs.api), thread_count(r
     swapchain = std::move(rhs.swapchain);
     swapchain_state = std::move(rhs.swapchain_state);
     acquisition = std::move(rhs.acquisition);
+    resources = std::move(rhs.resources);
 }
 
 Res<CRef<core::Swapchain>> RenderContext::reinitSwapchain() {

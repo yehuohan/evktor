@@ -2,18 +2,27 @@
 #include "share/helpers.hpp"
 #include "share/result.hpp"
 #include "share/share.hpp"
+#include "share/traits.hpp"
 #include <functional>
 #include <mutex>
 
 NAMESPACE_BEGIN(vkt)
 
 template <typename T>
-class ResourceCache {
+class ResourceCache : private NonCopyable {
 private:
     HashMap<size_t, T> map{};
-    std::mutex mtx;
+    std::mutex mtx{};
 
 public:
+    ResourceCache() {}
+    // Just create a new mutex, no need to move mutex and mutex doesn't has move constructor.
+    ResourceCache(ResourceCache&& rhs) : map(std::move(rhs.map)) {}
+    ResourceCache& operator=(ResourceCache&& rhs) {
+        map = std::move(rhs.map);
+        return *this;
+    }
+
     inline void clear() {
         map.clear();
     }
