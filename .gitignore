@@ -8,5 +8,6 @@ imgui.ini
 log.txt
 __pycache__
 
-deps
-install
+/deps
+/install
+/target
