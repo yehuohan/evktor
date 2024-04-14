@@ -125,7 +125,10 @@ Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev
 
     OnRet(vkCreateDevice(phy_dev, &dev_ci, nullptr, device), "Failed to create device");
     auto& name = info.__name;
-    OnRet(core::setDebugName(device, VK_OBJECT_TYPE_DEVICE, u64(reinterpret_cast<uint64_t>(device.handle)), name.c_str()),
+    OnRet(instance.debug->setDebugName(device,
+                                       VK_OBJECT_TYPE_DEVICE,
+                                       u64(reinterpret_cast<uint64_t>(device.handle)),
+                                       name.c_str()),
           "Failed to set debug name: {}",
           name);
 
@@ -140,7 +143,12 @@ Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev
             Queue queue(family_index, index);
             const Name name = "Queue" + std::to_string(family_index) + "." + std::to_string(index);
             vkGetDeviceQueue(device, family_index, 0, queue);
-            OnRet(queue.setDebugName(device, name), "Failed to set debug name: {}", name);
+            OnRet(instance.debug->setDebugName(device,
+                                               VK_OBJECT_TYPE_QUEUE,
+                                               u64(reinterpret_cast<uint64_t>(queue.handle)),
+                                               name.c_str()),
+                  "Failed to set debug name: {}",
+                  name);
             device.queue_indices[family_index].push_back(std::move(queue));
         }
     }

@@ -69,12 +69,6 @@ Self ImageState::setLayout(VkImageLayout layout) {
 }
 
 Self ImageState::setMemoryFlags(VmaAllocationCreateFlags flags) {
-    if ((flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT) ||
-        (flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT)) {
-        if (image_ci.tiling != VK_IMAGE_TILING_LINEAR) {
-            vktLogW("Image should use linear tiling for host access");
-        }
-    }
     memory_flags = flags;
     return *this;
 }
@@ -175,6 +169,13 @@ void Image::unmap() const {
 
 Res<Image> Image::from(const CoreApi& api, const ImageState& info) {
     Image image(api);
+
+    if ((info.memory_flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT) ||
+        (info.memory_flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT)) {
+        if (info.image_ci.tiling != VK_IMAGE_TILING_LINEAR) {
+            vktLogW("Image should use linear tiling for host access");
+        }
+    }
 
     VmaAllocationCreateInfo allocation_ci{};
     allocation_ci.flags = info.memory_flags;

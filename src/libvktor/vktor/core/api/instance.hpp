@@ -1,5 +1,6 @@
 #pragma once
 #include "__api.hpp"
+#include "debug.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -13,8 +14,7 @@ private:
     VkApplicationInfo app_info{};
     Vector<const char*> layers{};
     Vector<const char*> extensions{};
-    bool enable_debug_utils = false;
-    PFN_vkDebugUtilsMessengerCallbackEXT debug_callback = debugUtilsMessengerCallback;
+    DebugState* debug_state = nullptr;
 
 public:
     explicit InstanceState(Name&& name = "Instance") : CoreStater(std::move(name)) {
@@ -35,17 +35,22 @@ public:
     Self addLayers(const Vector<const char*> layers);
     Self addExtension(const char* extension);
     Self addExtensions(const Vector<const char*>& extensions);
-    Self enableValidationLayers(bool enable = true);
-    Self enableDebugUtils(bool enable = true, PFN_vkDebugUtilsMessengerCallbackEXT debug_callback = nullptr);
+    inline Self enableLayerValidation() {
+        return addLayer("VK_LAYER_KHRONOS_validation");
+    }
+    inline Self enableExtensionDebugUtils(DebugState* _debug_state = nullptr) {
+        debug_state = _debug_state;
+        return addExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    }
 
     Res<Instance> into();
 };
 
 struct Instance : public CoreHandle<VkInstance> {
     uint32_t api_version = VK_API_VERSION_1_0;
-    Vector<const char*> layers{};     /**< Enabled instance layers */
-    Vector<const char*> extensions{}; /**< Enabled instance extensions */
-    VkDebugUtilsMessengerEXT debug_messenger = nullptr;
+    Vector<const char*> layers{};               /**< Enabled instance layers */
+    Vector<const char*> extensions{};           /**< Enabled instance extensions */
+    Box<BaseDebug> debug = newBox<BaseDebug>(); /**< Debugger for Vulkan (always valid in Instance) */
 
 protected:
     explicit Instance() {}
@@ -58,6 +63,7 @@ public:
     bool isExtensionEnabled(const char* extension) const;
 
     static Res<Instance> from(InstanceState& info);
+    // static Res<Instance> borrow(VkInstance handle);
 };
 
 bool checkInstanceLayers(const Vector<const char*>& layers);

@@ -1,74 +1,10 @@
 #include "debug.hpp"
+#include "instance.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-// TODO: should not use static var
-static bool debug_utils_enabled = false;
-
-VkResult createDebugUtils(VkInstance instance, PFN_vkDebugUtilsMessengerCallbackEXT callback, VkDebugUtilsMessengerEXT* debug) {
-    auto debug_ci = Itor::DebugUtilsMessengerCreateInfoEXT();
-    debug_ci.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                               VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-    debug_ci.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                           VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    debug_ci.pfnUserCallback = callback;
-    debug_ci.pUserData = nullptr;
-    auto res = vkCreateDebugUtilsMessengerEXT(instance, &debug_ci, nullptr, debug);
-    if (res == VK_SUCCESS) {
-        debug_utils_enabled = true;
-    }
-    return res;
-}
-
-void destroyDebugUtils(VkInstance instance, VkDebugUtilsMessengerEXT debug) {
-    debug_utils_enabled = false;
-    vkDestroyDebugUtilsMessengerEXT(instance, debug, nullptr);
-}
-
-VkResult setDebugName(VkDevice device, VkObjectType type, uint64_t handle, const char* name) {
-    if (!debug_utils_enabled) {
-        return VK_SUCCESS;
-    }
-    VkDebugUtilsObjectNameInfoEXT name_info = Itor::DebugUtilsObjectNameInfoEXT();
-    name_info.objectType = type;
-    name_info.objectHandle = handle;
-    name_info.pObjectName = name;
-    return vkSetDebugUtilsObjectNameEXT(device, &name_info);
-}
-
-void cmdBeginLabel(VkCommandBuffer cmdbuf, const char* name) {
-    if (!debug_utils_enabled) {
-        return;
-    }
-    VkDebugUtilsLabelEXT label_info = Itor::DebugUtilsLabelEXT();
-    label_info.pLabelName = name;
-    label_info.color[0] = 0.0f;
-    label_info.color[1] = 0.0f;
-    label_info.color[2] = 0.0f;
-    label_info.color[3] = 1.0f;
-    vkCmdBeginDebugUtilsLabelEXT(cmdbuf, &label_info);
-}
-
-void cmdEndLabel(VkCommandBuffer cmdbuf) {
-    if (!debug_utils_enabled) {
-        return;
-    }
-    vkCmdEndDebugUtilsLabelEXT(cmdbuf);
-}
-
-void cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) {
-    if (!debug_utils_enabled) {
-        return;
-    }
-    VkDebugUtilsLabelEXT label_info = Itor::DebugUtilsLabelEXT();
-    label_info.pLabelName = name;
-    label_info.color[0] = 0.0f;
-    label_info.color[1] = 0.0f;
-    label_info.color[2] = 0.0f;
-    label_info.color[3] = 1.0f;
-    vkCmdInsertDebugUtilsLabelEXT(cmdbuf, &label_info);
-}
+using Self = DebugState::Self;
 
 VKAPI_ATTR VkBool32 VKAPI_CALL debugUtilsMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
                                                            VkDebugUtilsMessageTypeFlagsEXT messageTypes,
@@ -90,6 +26,76 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugUtilsMessengerCallback(VkDebugUtilsMessageSe
     vktLog(msg, "{}\n", pCallbackData->pMessage);
 
     return VK_FALSE;
+}
+
+Self DebugState::setCallback(PFN_vkDebugUtilsMessengerCallbackEXT callback) {
+    if (callback) {
+        debug_ci.pfnUserCallback = callback;
+    }
+    return *this;
+}
+
+Self DebugState::setUserData(void* user_data) {
+    debug_ci.pUserData = user_data;
+    return *this;
+}
+
+Res<Debug> DebugState::into(const Instance& instance) const {
+    return Debug::from(instance, *this);
+}
+
+Debug::Debug(Debug&& rhs) : instance(rhs.instance) {
+    handle = rhs.handle;
+    rhs.handle = VK_NULL_HANDLE;
+    __borrowed = rhs.__borrowed;
+}
+
+Debug::~Debug() {
+    if (!__borrowed && handle) {
+        vkDestroyDebugUtilsMessengerEXT(instance, handle, nullptr);
+    }
+    handle = VK_NULL_HANDLE;
+}
+
+VkResult Debug::setDebugName(VkDevice device, VkObjectType type, uint64_t hdl, const char* name) const {
+    VkDebugUtilsObjectNameInfoEXT name_info = Itor::DebugUtilsObjectNameInfoEXT();
+    name_info.objectType = type;
+    name_info.objectHandle = hdl;
+    name_info.pObjectName = name;
+    return vkSetDebugUtilsObjectNameEXT(device, &name_info);
+}
+
+void Debug::cmdBeginLabel(VkCommandBuffer cmdbuf, const char* name) const {
+    VkDebugUtilsLabelEXT label_info = Itor::DebugUtilsLabelEXT();
+    label_info.pLabelName = name;
+    label_info.color[0] = 0.0f;
+    label_info.color[1] = 0.0f;
+    label_info.color[2] = 0.0f;
+    label_info.color[3] = 1.0f;
+    vkCmdBeginDebugUtilsLabelEXT(cmdbuf, &label_info);
+}
+
+void Debug::cmdEndLabel(VkCommandBuffer cmdbuf) const {
+    vkCmdEndDebugUtilsLabelEXT(cmdbuf);
+}
+
+void Debug::cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const {
+    VkDebugUtilsLabelEXT label_info = Itor::DebugUtilsLabelEXT();
+    label_info.pLabelName = name;
+    label_info.color[0] = 0.0f;
+    label_info.color[1] = 0.0f;
+    label_info.color[2] = 0.0f;
+    label_info.color[3] = 1.0f;
+    vkCmdInsertDebugUtilsLabelEXT(cmdbuf, &label_info);
+}
+
+Res<Debug> Debug::from(const Instance& instance, const DebugState& info) {
+    Debug debug(instance);
+
+    OnRet(vkCreateDebugUtilsMessengerEXT(instance, &info.debug_ci, nullptr, &debug.handle),
+          "Failed to create debug utils messenger");
+
+    return Ok(std::move(debug));
 }
 
 NAMESPACE_END(core)

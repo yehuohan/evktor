@@ -25,9 +25,13 @@ Surface::~Surface() {
     handle = VK_NULL_HANDLE;
 }
 
-Res<Surface> Surface::from(const Instance& instance, VkSurfaceKHR _surface) {
+Res<Surface> Surface::from(const Instance& instance, VkSurfaceKHR& _surface) {
     Surface surface(instance);
     surface.handle = _surface;
+    _surface = VK_NULL_HANDLE;
+    if (!surface.handle) {
+        return Er("Get an invalid VkSurfaceKHR");
+    }
     return Ok(std::move(surface));
 }
 

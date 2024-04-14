@@ -15,10 +15,6 @@ struct Queue : public CoreHandle<VkQueue> {
     Queue(Queue&&);
     ~Queue();
 
-    inline VkResult setDebugName(VkDevice device, const Name& name) const {
-        return core::setDebugName(device, VK_OBJECT_TYPE_QUEUE, u64(reinterpret_cast<uint64_t>(handle)), name.c_str());
-    }
-
     VkResult submit(const std::vector<VkSubmitInfo>& submits, VkFence fence = VK_NULL_HANDLE) const;
     VkResult submit(VkCommandBuffer cmdbuf, VkFence fence = VK_NULL_HANDLE) const;
     VkResult present(VkSwapchainKHR swapchain, uint32_t image_index, VkSemaphore wait_semaphore = VK_NULL_HANDLE) const;

@@ -57,10 +57,23 @@ public:
     static Res<CoreApi> from(CoreApiState& info) {
         return info.into();
     }
-
-    inline Res<Surface> newSurface(VkSurfaceKHR surface) const {
+    inline Res<Surface> newSurface(VkSurfaceKHR& surface) const {
         return Surface::from(*this, surface);
     }
+
+    inline VkResult setDebugName(VkObjectType type, uint64_t handle, const char* name) const {
+        return instance.debug->setDebugName(device, type, handle, name);
+    }
+    inline void cmdBeginLabel(VkCommandBuffer cmdbuf, const char* name) const {
+        return instance.debug->cmdBeginLabel(cmdbuf, name);
+    }
+    inline void cmdEndLabel(VkCommandBuffer cmdbuf) const {
+        return instance.debug->cmdEndLabel(cmdbuf);
+    }
+    inline void cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const {
+        return instance.debug->cmdInsertLabel(cmdbuf, name);
+    }
+
     Res<CRef<Queue>> presentQueue() const;
     Res<CRef<Queue>> graphicsQueue() const;
     Res<CRef<Queue>> computeQueue() const;

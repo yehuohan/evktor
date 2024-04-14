@@ -84,6 +84,7 @@ public:
     bool isExtensionEnabled(const char* extension) const;
 
     static Res<PhysicalDevice> from(const Instance& instance, PhysicalDeviceState& info);
+    // static Res<PhysicalDevice> borrow(VkPhysicalDevice handle);
 };
 
 bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& device_extensions);

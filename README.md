@@ -5,7 +5,6 @@ Learn graphics with OpenGL and Vulkan.
 
 - [assets](https://github.com/yehuohan/graphics-assets)
 - CMake
-- Make
 - Ninja
 - Python
 - VulkanSDK

@@ -1,6 +1,5 @@
 #pragma once
 #include "__defs.hpp"
-#include "debug.hpp"
 #include <string>
 
 NAMESPACE_BEGIN(vkt)
@@ -90,6 +89,8 @@ public:
     Name __name = ""; /**< Debug name */
     bool __verbose = VKT_CORE_VERBOSE;
 
+    // TODO: support next chain
+    // virtual Self setNext(void* next) = 0;
     inline Self setDebugName(Name&& name) {
         __name = std::move(name);
         return static_cast<Self>(*this);

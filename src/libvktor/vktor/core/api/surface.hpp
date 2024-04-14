@@ -21,7 +21,7 @@ public:
      *
      * Be attention that the VkSurfaceKHR's ownership will transfer to the created core::Surface
      */
-    static Res<Surface> from(const Instance& instance, VkSurfaceKHR surface);
+    static Res<Surface> from(const Instance& instance, VkSurfaceKHR& surface);
 };
 
 NAMESPACE_END(core)

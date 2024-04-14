@@ -46,6 +46,7 @@ public:
     OnConstType(VmaAllocator, mem_allocator);
 
     static Res<Device> from(const Instance& instance, const PhysicalDevice& phy_dev, DeviceState& info);
+    // static Res<VkDevice> borrow(const Instance& instance, const PhysicalDevice& phy_dev, VkDevice handle);
 };
 
 NAMESPACE_END(core)

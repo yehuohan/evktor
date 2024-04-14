@@ -22,13 +22,9 @@ struct CoreResource : public CoreHandle<T> {
 
     explicit CoreResource(const CoreApi& api) : api(api) {}
     virtual ~CoreResource() {}
-    /**
-     * @brief Set resource name for debug conveniently
-     *
-     * Although core::setDebugName accept a `const char*`, set debug name from a temporal std::string is okay.
-     */
+
     inline VkResult setDebugName(const Name& name) const {
-        return core::setDebugName(api, OBJECT_TYPE, u64(reinterpret_cast<uint64_t>(this->handle)), name.c_str());
+        return api.setDebugName(OBJECT_TYPE, u64(reinterpret_cast<uint64_t>(this->handle)), name.c_str());
     }
 };
 
