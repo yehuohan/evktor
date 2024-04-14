@@ -4,9 +4,9 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-DescriptorSet::DescriptorSet(DescriptorPool& pool) : CoreResource(pool.device), desc_pool(pool) {}
+DescriptorSet::DescriptorSet(DescriptorPool& pool) : CoreResource(pool.api), desc_pool(pool) {}
 
-DescriptorSet::DescriptorSet(DescriptorSet&& rhs) : CoreResource(rhs.device), desc_pool(rhs.desc_pool) {
+DescriptorSet::DescriptorSet(DescriptorSet&& rhs) : CoreResource(rhs.api), desc_pool(rhs.desc_pool) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -46,7 +46,7 @@ void DescriptorSet::update(const DescriptorInfo& desc_info) {
         write.pImageInfo = &item.second;
         desc_writes.push_back(write);
     }
-    vkUpdateDescriptorSets(device, desc_writes.size(), desc_writes.data(), 0, nullptr);
+    vkUpdateDescriptorSets(api, desc_writes.size(), desc_writes.data(), 0, nullptr);
 }
 
 void DescriptorSet::update(const DescriptorArrayInfo& desc_arrinfo) {
@@ -77,7 +77,7 @@ void DescriptorSet::update(const DescriptorArrayInfo& desc_arrinfo) {
         write.pImageInfo = imgs.data();
         desc_writes.push_back(write);
     }
-    vkUpdateDescriptorSets(device, desc_writes.size(), desc_writes.data(), 0, nullptr);
+    vkUpdateDescriptorSets(api, desc_writes.size(), desc_writes.data(), 0, nullptr);
 }
 
 NAMESPACE_END(core)

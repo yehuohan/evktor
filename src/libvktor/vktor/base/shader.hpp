@@ -1,4 +1,5 @@
 #pragma once
+#include "vktor/core/api/api.hpp"
 #include "vktor/core/shader_module.hpp"
 
 NAMESPACE_BEGIN(vkt)
@@ -85,7 +86,7 @@ public:
     static Res<Shader> from(const ShaderSource& source);
     Shader(Shader&&);
 
-    Res<core::ShaderModule> into(const core::Device& device) const;
+    Res<core::ShaderModule> into(const core::CoreApi& api) const;
     inline VkShaderStageFlagBits getStage() const {
         return stage;
     }

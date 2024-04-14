@@ -1,6 +1,5 @@
 #include "render_pass.hpp"
 #include "image.hpp"
-#include "utils.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -39,11 +38,11 @@ Self RenderPassState::addSubpass(const RenderSubpassInfo& subpass) {
     return *this;
 }
 
-Res<RenderPass> RenderPassState::into(const Device& device) const {
-    return RenderPass::from(device, *this);
+Res<RenderPass> RenderPassState::into(const CoreApi& api) const {
+    return RenderPass::from(api, *this);
 }
 
-RenderPass::RenderPass(RenderPass&& rhs) : CoreResource(rhs.device) {
+RenderPass::RenderPass(RenderPass&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -51,12 +50,12 @@ RenderPass::RenderPass(RenderPass&& rhs) : CoreResource(rhs.device) {
 
 RenderPass::~RenderPass() {
     if (!__borrowed && handle) {
-        vkDestroyRenderPass(device, handle, nullptr);
+        vkDestroyRenderPass(api, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
 }
 
-Res<RenderPass> RenderPass::from(const Device& device, const RenderPassState& info) {
+Res<RenderPass> RenderPass::from(const CoreApi& api, const RenderPassState& info) {
     uint32_t subpass_count = u32(info.subpasses.size());
     if (subpass_count == 0) {
         return Er("There must be at least one subpass for render pass");
@@ -139,8 +138,8 @@ Res<RenderPass> RenderPass::from(const Device& device, const RenderPassState& in
     render_pass_ci.dependencyCount = u32(dependencies.size());
     render_pass_ci.pDependencies = dependencies.data();
 
-    RenderPass render_pass(device);
-    OnRet(vkCreateRenderPass(device, &render_pass_ci, nullptr, render_pass), "Failed to create render pass");
+    RenderPass render_pass(api);
+    OnRet(vkCreateRenderPass(api, &render_pass_ci, nullptr, render_pass), "Failed to create render pass");
     OnName(render_pass, info.__name);
 
     return Ok(std::move(render_pass));

@@ -153,13 +153,13 @@ Res<Vector<uint32_t>> Shader::glsl2spv(const std::string& code) {
     return Ok(std::move(spirv));
 }
 
-Res<core::ShaderModule> Shader::into(const core::Device& device) const {
+Res<ShaderModule> Shader::into(const CoreApi& api) const {
     return ShaderModuleState("VertShaderModule")
         .setStage(stage)
         .setFilename(filename)
         .setCode(spv_code, id)
         .setEntry(entry)
-        .into(device);
+        .into(api);
 }
 
 NAMESPACE_END(vkt)

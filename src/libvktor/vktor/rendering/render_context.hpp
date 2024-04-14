@@ -3,16 +3,24 @@
 #include "render_pipeline.hpp"
 #include "render_subpass.hpp"
 #include "render_target.hpp"
-#include "vktor/base/api.hpp"
 #include "vktor/base/resource_cache.hpp"
-#include "vktor/base/shader.hpp"
+#include "vktor/core/api/api.hpp"
+#include "vktor/core/descriptor_pool.hpp"
+#include "vktor/core/descriptor_set.hpp"
+#include "vktor/core/descriptor_setlayout.hpp"
+#include "vktor/core/framebuffer.hpp"
+#include "vktor/core/pipeline_compute.hpp"
+#include "vktor/core/pipeline_graphics.hpp"
+#include "vktor/core/pipeline_layout.hpp"
+#include "vktor/core/render_pass.hpp"
+#include "vktor/core/swapchain.hpp"
 #include <functional>
 
 NAMESPACE_BEGIN(vkt)
 
 class RenderContext : private NonCopyable {
 private:
-    const BaseApi& api;
+    const core::CoreApi& api;
     const size_t thread_count = 1;
 
     uint32_t frame_index = 0;
@@ -51,17 +59,17 @@ private:
     Resources resources{};
 
 private:
-    explicit RenderContext(const BaseApi& api, size_t thread_count) : api(api), thread_count(thread_count) {}
+    explicit RenderContext(const core::CoreApi& api, size_t thread_count) : api(api), thread_count(thread_count) {}
 
 public:
     /**
      * @brief Create RenderContext without swapchain
      */
-    static Res<RenderContext> from(const BaseApi& api, uint32_t frame_count = 3, size_t thread_count = 1);
+    static Res<RenderContext> from(const core::CoreApi& api, uint32_t frame_count = 3, size_t thread_count = 1);
     /**
      * @brief Create RenderContext with swapchain
      */
-    static Res<RenderContext> from(const BaseApi& api,
+    static Res<RenderContext> from(const core::CoreApi& api,
                                    core::SwapchainState&& info,
                                    FnSwapchainRTT fn = nullptr,
                                    size_t thread_count = 1);
@@ -91,7 +99,7 @@ public:
         OnCheck(swapchain, "SwapchainState is invalid");
         return *swapchain_state;
     }
-    FnSwapchainRTT createSwapchainRTT = RenderContext::defaultFnSwapchainRTT;
+    FnSwapchainRTT newSwapchainRTT = RenderContext::defaultFnSwapchainRTT;
     inline const VkExtent2D& getSurfaceExtent() const {
         return surface_extent;
     }

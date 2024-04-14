@@ -1,5 +1,4 @@
 #include "render_target.hpp"
-#include "vktor/core/utils.hpp"
 
 NAMESPACE_BEGIN(vkt)
 
@@ -19,16 +18,16 @@ RenderTarget::RenderTarget(RenderTarget&& rhs) : RenderTarget(std::move(rhs.text
     clear = rhs.clear;
 }
 
-Res<RenderTarget> RenderTarget::from(const Device& device, const VkExtent2D& extent, VkFormat format) {
+Res<RenderTarget> RenderTarget::from(const CoreApi& api, const VkExtent2D& extent, VkFormat format) {
     bool ds = isDepthStencilFormat(format);
     auto res_image = ImageState(ds ? "RTDepth" : "RTColor")
                          .setFormat(format)
                          .setExtent(extent)
                          .setUsage(ds ? VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)
-                         .into(device);
+                         .into(api);
     OnErr(res_image);
     Image image = res_image.unwrap();
-    auto res_imageview = ImageViewState(ds ? "RTDepthView" : "RTColorView").setFromImage(image).into(device);
+    auto res_imageview = ImageViewState(ds ? "RTDepthView" : "RTColorView").setFromImage(image).into(api);
     OnErr(res_imageview);
     ImageView imageview = res_imageview.unwrap();
 
@@ -50,9 +49,9 @@ Res<RenderTarget> RenderTarget::from(const Device& device, const VkExtent2D& ext
 }
 
 Res<RenderTarget> RenderTarget::from(const Arg<Swapchain>& swapchain) {
-    auto image = swapchain.a.createImage(swapchain.image_index);
+    auto image = swapchain.a.newImage(swapchain.image_index);
     OnErr(image);
-    auto imageview = swapchain.a.createImageView(swapchain.image_index);
+    auto imageview = swapchain.a.newImageView(swapchain.image_index);
     OnErr(imageview);
     RenderTarget rt(Texture(image.unwrap(), imageview.unwrap()));
     rt.set(AttachmentOps::color());

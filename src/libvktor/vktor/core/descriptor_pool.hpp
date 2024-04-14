@@ -2,7 +2,6 @@
 #include "__core.hpp"
 #include "descriptor_set.hpp"
 #include "descriptor_setlayout.hpp"
-#include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -25,7 +24,7 @@ public:
     Res<DescriptorPool> into(const DescriptorSetLayout& setlayout) const;
 };
 
-struct DescriptorPool : public CoreResource<VkDescriptorPool, VK_OBJECT_TYPE_DESCRIPTOR_POOL, Device> {
+struct DescriptorPool : public CoreResource<VkDescriptorPool, VK_OBJECT_TYPE_DESCRIPTOR_POOL> {
     /** Descriptor set layout for pool (Must destroy this pool before free `desc_setlayout`) */
     const DescriptorSetLayout& desc_setlayout;
     const uint32_t maxsets;
@@ -35,7 +34,7 @@ struct DescriptorPool : public CoreResource<VkDescriptorPool, VK_OBJECT_TYPE_DES
 
 protected:
     explicit DescriptorPool(const DescriptorSetLayout& setlayout, const uint32_t maxsets)
-        : CoreResource(setlayout.device)
+        : CoreResource(setlayout.api)
         , desc_setlayout(setlayout)
         , maxsets(maxsets) {}
 

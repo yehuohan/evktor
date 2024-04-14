@@ -37,11 +37,11 @@ Self DescriptorSetLayoutState::addBinding(uint32_t binding,
     return *this;
 }
 
-Res<DescriptorSetLayout> DescriptorSetLayoutState::into(const Device& device) const {
-    return DescriptorSetLayout::from(device, *this);
+Res<DescriptorSetLayout> DescriptorSetLayoutState::into(const CoreApi& api) const {
+    return DescriptorSetLayout::from(api, *this);
 }
 
-DescriptorSetLayout::DescriptorSetLayout(DescriptorSetLayout&& rhs) : CoreResource(rhs.device) {
+DescriptorSetLayout::DescriptorSetLayout(DescriptorSetLayout&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -50,13 +50,13 @@ DescriptorSetLayout::DescriptorSetLayout(DescriptorSetLayout&& rhs) : CoreResour
 
 DescriptorSetLayout::~DescriptorSetLayout() {
     if (!__borrowed && handle) {
-        vkDestroyDescriptorSetLayout(device, handle, nullptr);
+        vkDestroyDescriptorSetLayout(api, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
 }
 
-Res<DescriptorSetLayout> DescriptorSetLayout::from(const Device& device, const DescriptorSetLayoutState& info) {
-    DescriptorSetLayout setlayout(device);
+Res<DescriptorSetLayout> DescriptorSetLayout::from(const CoreApi& api, const DescriptorSetLayoutState& info) {
+    DescriptorSetLayout setlayout(api);
 
     Vector<VkDescriptorSetLayoutBinding> bindings{};
     for (const auto& item : info.bindings) {
@@ -67,7 +67,7 @@ Res<DescriptorSetLayout> DescriptorSetLayout::from(const Device& device, const D
     layout_ci.flags = info.flags;
     layout_ci.bindingCount = u32(bindings.size());
     layout_ci.pBindings = bindings.data();
-    OnRet(vkCreateDescriptorSetLayout(device, &layout_ci, nullptr, setlayout), "Failed to create descriptor set layout");
+    OnRet(vkCreateDescriptorSetLayout(api, &layout_ci, nullptr, setlayout), "Failed to create descriptor set layout");
     OnName(setlayout, info.__name);
     setlayout.bindings = std::move(info.bindings);
 

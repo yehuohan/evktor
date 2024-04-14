@@ -1,5 +1,4 @@
 #include "image_view.hpp"
-#include "utils.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -70,11 +69,11 @@ Self ImageViewState::setArrayRange(uint32_t base, uint32_t count) {
     return *this;
 }
 
-Res<ImageView> ImageViewState::into(const Device& device) const {
-    return ImageView::from(device, *this);
+Res<ImageView> ImageViewState::into(const CoreApi& api) const {
+    return ImageView::from(api, *this);
 }
 
-ImageView::ImageView(ImageView&& rhs) : CoreResource(rhs.device) {
+ImageView::ImageView(ImageView&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -85,16 +84,16 @@ ImageView::ImageView(ImageView&& rhs) : CoreResource(rhs.device) {
 
 ImageView::~ImageView() {
     if (!__borrowed && handle) {
-        vkDestroyImageView(device, handle, nullptr);
+        vkDestroyImageView(api, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
     image = VK_NULL_HANDLE;
 }
 
-Res<ImageView> ImageView::from(const Device& device, const ImageViewState& info) {
-    ImageView imageview(device);
+Res<ImageView> ImageView::from(const CoreApi& api, const ImageViewState& info) {
+    ImageView imageview(api);
 
-    OnRet(vkCreateImageView(device, &info.imageview_ci, nullptr, imageview), "Failed to create image view");
+    OnRet(vkCreateImageView(api, &info.imageview_ci, nullptr, imageview), "Failed to create image view");
     OnName(imageview, info.__name);
     imageview.image = info.imageview_ci.image;
     imageview.subresource_range = info.imageview_ci.subresourceRange;

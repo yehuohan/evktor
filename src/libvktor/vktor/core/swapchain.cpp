@@ -1,5 +1,4 @@
 #include "swapchain.hpp"
-#include "utils.hpp"
 #include <algorithm>
 
 NAMESPACE_BEGIN(vkt)
@@ -83,11 +82,11 @@ VkExtent2D SwapchainState::chooseExtent(const VkSurfaceCapabilitiesKHR& capalibi
     }
 }
 
-Res<Swapchain> SwapchainState::into(const Device& device) const {
-    return Swapchain::from(device, *this);
+Res<Swapchain> SwapchainState::into(const CoreApi& api) const {
+    return Swapchain::from(api, *this);
 }
 
-Swapchain::Swapchain(Swapchain&& rhs) : CoreResource(rhs.device), surface(std::move(rhs.surface)) {
+Swapchain::Swapchain(Swapchain&& rhs) : CoreResource(rhs.api), surface(std::move(rhs.surface)) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -101,7 +100,7 @@ Swapchain::Swapchain(Swapchain&& rhs) : CoreResource(rhs.device), surface(std::m
 
 Swapchain::~Swapchain() {
     if (!__borrowed && handle) {
-        vkDestroySwapchainKHR(device, handle, nullptr);
+        vkDestroySwapchainKHR(api, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
     images.clear(); // The images will be destroyed along with swapchain's destruction
@@ -113,14 +112,14 @@ VkSwapchainKHR Swapchain::take() {
 }
 
 VkResult Swapchain::acquireNextImage(uint32_t& image_index, VkSemaphore semaphore, VkFence fence) const {
-    return vkAcquireNextImageKHR(device, handle, UINT64_MAX, semaphore, fence, &image_index);
+    return vkAcquireNextImageKHR(api, handle, UINT64_MAX, semaphore, fence, &image_index);
 }
 
-Res<Image> Swapchain::createImage(uint32_t index) const {
+Res<Image> Swapchain::newImage(uint32_t index) const {
     if (index >= images.size()) {
         return Er("The index {} is out of swapchain images", index);
     }
-    Image image = Image::borrow(device,
+    Image image = Image::borrow(api,
                                 images[index],
                                 image_format,
                                 VkExtent3D{image_extent.width, image_extent.height, 1},
@@ -133,7 +132,7 @@ Res<Image> Swapchain::createImage(uint32_t index) const {
     return Ok(std::move(image));
 }
 
-Res<ImageView> Swapchain::createImageView(uint32_t index) const {
+Res<ImageView> Swapchain::newImageView(uint32_t index) const {
     if (index >= images.size()) {
         return Er("The index {} is out of swapchain imageviews", index);
     }
@@ -144,23 +143,23 @@ Res<ImageView> Swapchain::createImageView(uint32_t index) const {
         .setAspect(VK_IMAGE_ASPECT_COLOR_BIT)
         .setMipRange(0, 1)
         .setArrayRange(0, image_layers)
-        .into(device);
+        .into(api);
 }
 
-Res<Swapchain> Swapchain::from(const Device& device, const SwapchainState& info) {
-    if ((!device.physical_device.queue_families.present.has_value()) ||
-        (!device.physical_device.queue_families.graphics.has_value())) {
+Res<Swapchain> Swapchain::from(const CoreApi& api, const SwapchainState& info) {
+    const PhysicalDevice& phy_dev = api;
+    if ((!phy_dev.queue_families.present.has_value()) || (!phy_dev.queue_families.graphics.has_value())) {
         return Er("Swapchain requires valid present and graphics queue family index");
     }
 
     VkSurfaceCapabilitiesKHR surface_capalibities{};
     Vector<VkSurfaceFormatKHR> surface_formats{};
     Vector<VkPresentModeKHR> present_modes{};
-    OnRet(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device.physical_device, info.surface, &surface_capalibities),
+    OnRet(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(phy_dev, info.surface, &surface_capalibities),
           "Failed to get surface capabilities of physical device");
-    OnRet(enumerate(surface_formats, vkGetPhysicalDeviceSurfaceFormatsKHR, device.physical_device, info.surface),
+    OnRet(enumerate(surface_formats, vkGetPhysicalDeviceSurfaceFormatsKHR, phy_dev, info.surface),
           "Failed to get list of surface formats");
-    OnRet(enumerate(present_modes, vkGetPhysicalDeviceSurfacePresentModesKHR, device.physical_device, info.surface),
+    OnRet(enumerate(present_modes, vkGetPhysicalDeviceSurfacePresentModesKHR, phy_dev, info.surface),
           "Failed to get list of present modes");
     VkSurfaceFormatKHR surface_format = info.chooseSurfaceFormat(surface_formats);
     VkPresentModeKHR present_mode = info.choosePresentMode(present_modes);
@@ -187,10 +186,10 @@ Res<Swapchain> Swapchain::from(const Device& device, const SwapchainState& info)
     swapchain_ci.clipped = VK_TRUE;
     swapchain_ci.oldSwapchain = info.old;
     uint32_t queue_family_indices[] = {
-        device.physical_device.queue_families.present.value(),
-        device.physical_device.queue_families.graphics.value(),
+        phy_dev.queue_families.present.value(),
+        phy_dev.queue_families.graphics.value(),
     };
-    if (device.physical_device.queue_families.graphics != device.physical_device.queue_families.present) {
+    if (phy_dev.queue_families.graphics != phy_dev.queue_families.present) {
         swapchain_ci.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
         swapchain_ci.queueFamilyIndexCount = 2;
         swapchain_ci.pQueueFamilyIndices = queue_family_indices;
@@ -200,10 +199,10 @@ Res<Swapchain> Swapchain::from(const Device& device, const SwapchainState& info)
         swapchain_ci.pQueueFamilyIndices = nullptr;
     }
 
-    Swapchain swapchain(device, std::move(info.surface));
-    OnRet(vkCreateSwapchainKHR(device, &swapchain_ci, nullptr, swapchain), "Failed to create swapchain");
+    Swapchain swapchain(api, std::move(info.surface));
+    OnRet(vkCreateSwapchainKHR(api, &swapchain_ci, nullptr, swapchain), "Failed to create swapchain");
     if (info.old) {
-        vkDestroySwapchainKHR(device, info.old, nullptr);
+        vkDestroySwapchainKHR(api, info.old, nullptr);
     }
     OnName(swapchain, info.__name);
     swapchain.image_count = image_count;
@@ -221,7 +220,7 @@ Res<Swapchain> Swapchain::from(const Device& device, const SwapchainState& info)
     }
 
     // Retrieve handles of swapchain images
-    OnRet(enumerate(swapchain.images, vkGetSwapchainImagesKHR, device, swapchain), "Failed get images from swapchain");
+    OnRet(enumerate(swapchain.images, vkGetSwapchainImagesKHR, api, swapchain), "Failed get images from swapchain");
     OnCheck(u32(swapchain.images.size()) == swapchain.image_count, "Get wrong image count from swapchain");
 
     return Ok(std::move(swapchain));

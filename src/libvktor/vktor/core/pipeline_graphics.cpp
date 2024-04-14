@@ -199,11 +199,11 @@ Self GraphicsPipelineState::setRenderPass(VkRenderPass _render_pass, uint32_t su
     return *this;
 }
 
-Res<GraphicsPipeline> GraphicsPipelineState::into(const Device& device) const {
-    return GraphicsPipeline::from(device, *this);
+Res<GraphicsPipeline> GraphicsPipelineState::into(const CoreApi& api) const {
+    return GraphicsPipeline::from(api, *this);
 }
 
-GraphicsPipeline::GraphicsPipeline(GraphicsPipeline&& rhs) : CoreResource(rhs.device) {
+GraphicsPipeline::GraphicsPipeline(GraphicsPipeline&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -211,12 +211,12 @@ GraphicsPipeline::GraphicsPipeline(GraphicsPipeline&& rhs) : CoreResource(rhs.de
 
 GraphicsPipeline::~GraphicsPipeline() {
     if (!__borrowed && handle) {
-        vkDestroyPipeline(device, handle, nullptr);
+        vkDestroyPipeline(api, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
 }
 
-Res<GraphicsPipeline> GraphicsPipeline::from(const Device& device, const GraphicsPipelineState& info) {
+Res<GraphicsPipeline> GraphicsPipeline::from(const CoreApi& api, const GraphicsPipelineState& info) {
     // Shader stages
     Vector<VkPipelineShaderStageCreateInfo> shader_stages{};
     for (auto& s : info.shaders) {
@@ -273,7 +273,7 @@ Res<GraphicsPipeline> GraphicsPipeline::from(const Device& device, const Graphic
     dynamic_sci.pDynamicStates = info.dynamics.data();
 
     // Create graphics pipeline
-    GraphicsPipeline pipeline(device);
+    GraphicsPipeline pipeline(api);
     auto pipeline_ci = Itor::GraphicsPipelineCreateInfo();
     pipeline_ci.flags = info.flags;
     pipeline_ci.stageCount = u32(shader_stages.size());
@@ -293,7 +293,7 @@ Res<GraphicsPipeline> GraphicsPipeline::from(const Device& device, const Graphic
     pipeline_ci.basePipelineHandle = VK_NULL_HANDLE;
     pipeline_ci.basePipelineIndex = -1;
 
-    OnRet(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipeline_ci, nullptr, pipeline),
+    OnRet(vkCreateGraphicsPipelines(api, VK_NULL_HANDLE, 1, &pipeline_ci, nullptr, pipeline),
           "Failed to create graphics pipeline");
     OnName(pipeline, info.__name);
 

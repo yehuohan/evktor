@@ -1,18 +1,18 @@
 #pragma once
 #include "render_subpass.hpp"
 #include "render_target.hpp"
-#include "vktor/base/api.hpp"
+#include "vktor/core/api/api.hpp"
 
 NAMESPACE_BEGIN(vkt)
 
 class RenderPipeline : private NonCopyable {
 private:
-    const BaseApi& api;
+    const core::CoreApi& api;
 
     Vector<RenderSubpass> subpasses{};
 
 public:
-    explicit RenderPipeline(const BaseApi& api) : api(api) {}
+    explicit RenderPipeline(const core::CoreApi& api) : api(api) {}
     RenderPipeline(RenderPipeline&&);
 
     inline void addSubpass(RenderSubpass subpass) {
@@ -21,7 +21,7 @@ public:
     inline const Vector<RenderSubpass>& getSubpasses() const {
         return subpasses;
     }
-    Res<core::RenderPass> createRenderPass(const RenderTargetTable& render_target_table) const;
+    Res<core::RenderPass> newRenderPass(const RenderTargetTable& render_target_table) const;
 };
 
 NAMESPACE_END(vkt)

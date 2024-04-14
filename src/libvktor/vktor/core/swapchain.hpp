@@ -1,9 +1,7 @@
 #pragma once
 #include "__core.hpp"
-#include "device.hpp"
 #include "image.hpp"
 #include "image_view.hpp"
-#include "surface.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -41,10 +39,10 @@ public:
     Self setDesiredExtent(const VkExtent2D& extent);
     Self setOld(VkSwapchainKHR old);
 
-    Res<Swapchain> into(const Device& device) const;
+    Res<Swapchain> into(const CoreApi& api) const;
 };
 
-struct Swapchain : public CoreResource<VkSwapchainKHR, VK_OBJECT_TYPE_SWAPCHAIN_KHR, Device> {
+struct Swapchain : public CoreResource<VkSwapchainKHR, VK_OBJECT_TYPE_SWAPCHAIN_KHR> {
     Surface surface;               /**< Swapchain take surface's ownership */
     Vector<VkImage> images{};      /**< Handles of swapchain images */
     uint32_t image_count;          /**< VkImage number that has count == images.size() */
@@ -54,7 +52,7 @@ struct Swapchain : public CoreResource<VkSwapchainKHR, VK_OBJECT_TYPE_SWAPCHAIN_
     VkImageUsageFlags image_usage; /**< VkImage usage */
 
 protected:
-    explicit Swapchain(const Device& device, Surface&& surface) : CoreResource(device), surface(std::move(surface)) {}
+    explicit Swapchain(const CoreApi& api, Surface&& surface) : CoreResource(api), surface(std::move(surface)) {}
 
 public:
     Swapchain(Swapchain&&);
@@ -69,11 +67,11 @@ public:
 
     VkResult acquireNextImage(uint32_t& image_index, VkSemaphore semaphore, VkFence fence = VK_NULL_HANDLE) const;
     /** Create image from the index-th swapchain image */
-    Res<Image> createImage(uint32_t index) const;
+    Res<Image> newImage(uint32_t index) const;
     /** Create the image view for the index-th swapchain image */
-    Res<ImageView> createImageView(uint32_t index) const;
+    Res<ImageView> newImageView(uint32_t index) const;
 
-    static Res<Swapchain> from(const Device& device, const SwapchainState& info);
+    static Res<Swapchain> from(const CoreApi& api, const SwapchainState& info);
 };
 
 template <>

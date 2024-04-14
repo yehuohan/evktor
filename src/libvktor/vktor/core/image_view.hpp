@@ -1,6 +1,5 @@
 #pragma once
 #include "__core.hpp"
-#include "device.hpp"
 #include "image.hpp"
 
 NAMESPACE_BEGIN(vkt)
@@ -26,21 +25,21 @@ public:
     Self setMipRange(uint32_t base, uint32_t count);
     Self setArrayRange(uint32_t base, uint32_t count);
 
-    Res<ImageView> into(const Device& device) const;
+    Res<ImageView> into(const CoreApi& api) const;
 };
 
-struct ImageView : public CoreResource<VkImageView, VK_OBJECT_TYPE_IMAGE_VIEW, Device> {
+struct ImageView : public CoreResource<VkImageView, VK_OBJECT_TYPE_IMAGE_VIEW> {
     VkImage image = VK_NULL_HANDLE; /**< Store the image that this image view created for */
     VkImageSubresourceRange subresource_range{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
 
 protected:
-    explicit ImageView(const Device& device) : CoreResource(device) {}
+    explicit ImageView(const CoreApi& api) : CoreResource(api) {}
 
 public:
     ImageView(ImageView&&);
     ~ImageView();
 
-    static Res<ImageView> from(const Device& device, const ImageViewState& info);
+    static Res<ImageView> from(const CoreApi& api, const ImageViewState& info);
 };
 
 NAMESPACE_END(core)

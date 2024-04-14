@@ -1,5 +1,5 @@
 #pragma once
-#include "__core.hpp"
+#include "__api.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -20,8 +20,8 @@ struct Queue : public CoreHandle<VkQueue> {
     }
 
     VkResult submit(const std::vector<VkSubmitInfo>& submits, VkFence fence = VK_NULL_HANDLE) const;
-    VkResult submit(const CommandBuffer& cmdbuf, VkFence fence = VK_NULL_HANDLE) const;
-    VkResult present(const Swapchain& swapchain, uint32_t image_index, VkSemaphore wait_semaphore = VK_NULL_HANDLE) const;
+    VkResult submit(VkCommandBuffer cmdbuf, VkFence fence = VK_NULL_HANDLE) const;
+    VkResult present(VkSwapchainKHR swapchain, uint32_t image_index, VkSemaphore wait_semaphore = VK_NULL_HANDLE) const;
     VkResult waitIdle() const;
 };
 

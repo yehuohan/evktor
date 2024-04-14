@@ -1,6 +1,17 @@
 #pragma once
-#include "__core.hpp"
+#include <volk.h>
+
+#include "generated/vk_initializer.hpp"
+#include "generated/vk_string.hpp"
+#include "share/helpers.hpp"
+#include "share/result.hpp"
+#include "share/share.hpp"
+#include "share/traits.hpp"
 #include <string>
+
+#define VKT_CORE_VERBOSE        true
+#define VKT_CORE_QUEUE_PRIORITY 1.0f
+#define VKT_CORE_MAX_SETS       16
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -54,28 +65,6 @@ auto vec2str(const Vector<T>& vec) -> std::string {
 
     return std::move(str);
 }
-
-bool checkInstanceLayers(const Vector<const char*>& layers);
-bool checkInstanceExtensions(const Vector<const char*>& extensions);
-bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& device_extensions);
-void printInstanceLayers(const Vector<const char*>& enabled_layers);
-void printInstanceExtensions(const Vector<const char*>& enabled_extensions);
-void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions);
-
-/**
- * @brief Check format is depth only
- */
-bool isDepthOnlyFormat(VkFormat format);
-
-/**
- * @brief Check format is depth or stencil
- */
-bool isDepthStencilFormat(VkFormat format);
-
-/**
- * @brief Get image aspect from format
- */
-VkImageAspectFlags getAspectMask(VkFormat format);
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)

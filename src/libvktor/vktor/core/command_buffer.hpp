@@ -1,7 +1,6 @@
 #pragma once
 #include "__core.hpp"
 #include "buffer.hpp"
-#include "device.hpp"
 #include "image.hpp"
 
 NAMESPACE_BEGIN(vkt)
@@ -14,7 +13,7 @@ struct CommandPool;
  *
  * CommandBuffer must be allocated with CommandPool::allocate().
  */
-struct CommandBuffer : public CoreResource<VkCommandBuffer, VK_OBJECT_TYPE_COMMAND_BUFFER, Device> {
+struct CommandBuffer : public CoreResource<VkCommandBuffer, VK_OBJECT_TYPE_COMMAND_BUFFER> {
     const CommandPool& command_pool;
 
     enum class Level {

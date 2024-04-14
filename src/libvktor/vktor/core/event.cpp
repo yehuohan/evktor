@@ -10,11 +10,11 @@ Self EventState::setFlags(VkEventCreateFlags flags) {
     return *this;
 }
 
-Res<Event> EventState::into(const Device& device) const {
-    return Event::from(device, *this);
+Res<Event> EventState::into(const CoreApi& api) const {
+    return Event::from(api, *this);
 }
 
-Event::Event(Event&& rhs) : CoreResource(rhs.device) {
+Event::Event(Event&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -22,21 +22,21 @@ Event::Event(Event&& rhs) : CoreResource(rhs.device) {
 
 Event::~Event() {
     if (!__borrowed && handle) {
-        vkDestroyEvent(device, handle, nullptr);
+        vkDestroyEvent(api, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
 }
 
-Res<Event> Event::from(const Device& device, const EventState& info) {
-    Event event(device);
+Res<Event> Event::from(const CoreApi& api, const EventState& info) {
+    Event event(api);
 
-    OnRet(vkCreateEvent(device, &info.event_ci, nullptr, event), "Failed to create event");
+    OnRet(vkCreateEvent(api, &info.event_ci, nullptr, event), "Failed to create event");
     OnName(event, info.__name);
 
     return Ok(std::move(event));
 }
 
-EventPool::EventPool(EventPool&& rhs) : device(rhs.device) {
+EventPool::EventPool(EventPool&& rhs) : api(rhs.api) {
     active_count = rhs.active_count;
     rhs.active_count = 0;
     events = std::move(rhs.events);
@@ -53,7 +53,7 @@ Res<CRef<Event>> EventPool::request() {
         return Ok(newCRef(events[active_count++]));
     }
 
-    auto res = EventState().into(device);
+    auto res = EventState().into(api);
     OnErr(res);
     events.push_back(res.unwrap());
     active_count++;
@@ -66,7 +66,7 @@ Res<Event> EventPool::acquire() {
         events.pop_back();
         return Ok(std::move(evt));
     }
-    return EventState().into(device);
+    return EventState().into(api);
 }
 
 void EventPool::reback(Event&& event) {

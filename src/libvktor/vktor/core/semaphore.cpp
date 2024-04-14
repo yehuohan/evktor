@@ -10,11 +10,11 @@ Self SemaphoreState::setFlags(VkSemaphoreCreateFlags flags) {
     return *this;
 }
 
-Res<Semaphore> SemaphoreState::into(const Device& device) const {
-    return Semaphore::from(device, *this);
+Res<Semaphore> SemaphoreState::into(const CoreApi& api) const {
+    return Semaphore::from(api, *this);
 }
 
-Semaphore::Semaphore(Semaphore&& rhs) : CoreResource(rhs.device) {
+Semaphore::Semaphore(Semaphore&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -22,21 +22,21 @@ Semaphore::Semaphore(Semaphore&& rhs) : CoreResource(rhs.device) {
 
 Semaphore::~Semaphore() {
     if (!__borrowed && handle) {
-        vkDestroySemaphore(device, handle, nullptr);
+        vkDestroySemaphore(api, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
 }
 
-Res<Semaphore> Semaphore::from(const Device& device, const SemaphoreState& info) {
-    Semaphore semaphore(device);
+Res<Semaphore> Semaphore::from(const CoreApi& api, const SemaphoreState& info) {
+    Semaphore semaphore(api);
 
-    OnRet(vkCreateSemaphore(device, &info.semaphore_ci, nullptr, semaphore), "Failed to create semaphore");
+    OnRet(vkCreateSemaphore(api, &info.semaphore_ci, nullptr, semaphore), "Failed to create semaphore");
     OnName(semaphore, info.__name);
 
     return Ok(std::move(semaphore));
 }
 
-SemaphorePool::SemaphorePool(SemaphorePool&& rhs) : device(rhs.device) {
+SemaphorePool::SemaphorePool(SemaphorePool&& rhs) : api(rhs.api) {
     active_count = rhs.active_count;
     rhs.active_count = 0;
     semaphores = std::move(rhs.semaphores);
@@ -53,7 +53,7 @@ Res<CRef<Semaphore>> SemaphorePool::request() {
         return Ok(newCRef(semaphores[active_count++]));
     }
 
-    auto res = SemaphoreState().into(device);
+    auto res = SemaphoreState().into(api);
     OnErr(res);
     semaphores.push_back(res.unwrap());
     active_count++;
@@ -66,7 +66,7 @@ Res<Semaphore> SemaphorePool::acquire() {
         semaphores.pop_back();
         return Ok(std::move(sem));
     }
-    return SemaphoreState().into(device);
+    return SemaphoreState().into(api);
 }
 
 void SemaphorePool::reback(Semaphore&& semaphore) {

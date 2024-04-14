@@ -1,6 +1,5 @@
 #pragma once
 #include "__core.hpp"
-#include "device.hpp"
 #include "shader_module.hpp"
 
 NAMESPACE_BEGIN(vkt)
@@ -24,18 +23,18 @@ public:
     Self setShader(ShaderModule&& shader);
     Self setPipelineLayout(VkPipelineLayout layout);
 
-    Res<ComputePipeline> into(const Device& device) const;
+    Res<ComputePipeline> into(const CoreApi& api) const;
 };
 
-struct ComputePipeline : public CoreResource<VkPipeline, VK_OBJECT_TYPE_PIPELINE, Device> {
+struct ComputePipeline : public CoreResource<VkPipeline, VK_OBJECT_TYPE_PIPELINE> {
 protected:
-    explicit ComputePipeline(const Device& device) : CoreResource(device) {}
+    explicit ComputePipeline(const CoreApi& api) : CoreResource(api) {}
 
 public:
     ComputePipeline(ComputePipeline&&);
     ~ComputePipeline();
 
-    static Res<ComputePipeline> from(const Device& device, const ComputePipelineState& info);
+    static Res<ComputePipeline> from(const CoreApi& api, const ComputePipelineState& info);
 };
 
 NAMESPACE_END(core)

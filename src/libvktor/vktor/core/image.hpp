@@ -1,7 +1,5 @@
 #pragma once
 #include "__core.hpp"
-#include "device.hpp"
-#include "utils.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -53,7 +51,7 @@ public:
     Self setMemoryFlags(VmaAllocationCreateFlags flags);
     Self setMemoryUsage(VmaMemoryUsage usage);
 
-    Res<Image> into(const Device& device) const;
+    Res<Image> into(const CoreApi& api) const;
 };
 
 /**
@@ -72,7 +70,7 @@ public:
  *  - Image3D: array layers must be 1
  *  - Image2DArray: depth must be 1
  */
-struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
+struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE> {
     VkImageType type = VK_IMAGE_TYPE_2D;
     VkFormat format = VK_FORMAT_UNDEFINED;
     VkExtent3D extent{};
@@ -87,7 +85,7 @@ struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE, Device> {
     VmaAllocation allocation = VK_NULL_HANDLE;
 
 protected:
-    explicit Image(const Device& device) : CoreResource(device) {}
+    explicit Image(const CoreApi& api) : CoreResource(api) {}
 
 public:
     Image(Image&&);
@@ -126,11 +124,11 @@ public:
     Res<void*> map() const;
     void unmap() const;
 
-    static Res<Image> from(const Device& device, const ImageState& info);
+    static Res<Image> from(const CoreApi& api, const ImageState& info);
     /**
      * @brief Borrow image with already allocated handle (e.g. for swapchain images)
      */
-    static Image borrow(const Device& device,
+    static Image borrow(const CoreApi& api,
                         const VkImage image,
                         VkFormat format,
                         VkExtent3D extent,
@@ -140,6 +138,21 @@ public:
                         VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL,
                         VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT);
 };
+
+/**
+ * @brief Check format is depth only
+ */
+bool isDepthOnlyFormat(VkFormat format);
+
+/**
+ * @brief Check format is depth or stencil
+ */
+bool isDepthStencilFormat(VkFormat format);
+
+/**
+ * @brief Get image aspect from format
+ */
+VkImageAspectFlags getAspectMask(VkFormat format);
 
 template <>
 class Arg<Image> : private NonCopyable {

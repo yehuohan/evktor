@@ -1,5 +1,5 @@
 #pragma once
-#include "__core.hpp"
+#include "__api.hpp"
 #include "instance.hpp"
 
 NAMESPACE_BEGIN(vkt)

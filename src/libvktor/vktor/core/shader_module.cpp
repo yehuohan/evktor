@@ -34,11 +34,11 @@ Self ShaderModuleState::setEntry(const std::string& _entry) {
     return *this;
 }
 
-Res<ShaderModule> ShaderModuleState::into(const Device& device) const {
-    return ShaderModule::from(device, *this);
+Res<ShaderModule> ShaderModuleState::into(const CoreApi& api) const {
+    return ShaderModule::from(api, *this);
 }
 
-ShaderModule::ShaderModule(ShaderModule&& rhs) : CoreResource(rhs.device) {
+ShaderModule::ShaderModule(ShaderModule&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -49,18 +49,18 @@ ShaderModule::ShaderModule(ShaderModule&& rhs) : CoreResource(rhs.device) {
 
 ShaderModule::~ShaderModule() {
     if (!__borrowed && handle) {
-        vkDestroyShaderModule(device, handle, nullptr);
+        vkDestroyShaderModule(api, handle, nullptr);
     }
     handle = nullptr;
 }
 
-Res<ShaderModule> ShaderModule::from(const Device& device, const ShaderModuleState& info) {
-    ShaderModule shader_module(device);
+Res<ShaderModule> ShaderModule::from(const CoreApi& api, const ShaderModuleState& info) {
+    ShaderModule shader_module(api);
 
     auto shader_ci = Itor::ShaderModuleCreateInfo();
     shader_ci.codeSize = info.code_size;
     shader_ci.pCode = info.code;
-    OnRet(vkCreateShaderModule(device, &shader_ci, nullptr, shader_module),
+    OnRet(vkCreateShaderModule(api, &shader_ci, nullptr, shader_module),
           "Failed to create shader module for {}",
           info.filename);
     OnName(shader_module, info.__name);

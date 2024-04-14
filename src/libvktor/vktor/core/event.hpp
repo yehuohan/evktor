@@ -1,6 +1,5 @@
 #pragma once
 #include "__core.hpp"
-#include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -20,18 +19,18 @@ public:
 
     Self setFlags(VkEventCreateFlags flags);
 
-    Res<Event> into(const Device& device) const;
+    Res<Event> into(const CoreApi& api) const;
 };
 
-struct Event : public CoreResource<VkEvent, VK_OBJECT_TYPE_EVENT, Device> {
+struct Event : public CoreResource<VkEvent, VK_OBJECT_TYPE_EVENT> {
 protected:
-    explicit Event(const Device& device) : CoreResource(device) {}
+    explicit Event(const CoreApi& api) : CoreResource(api) {}
 
 public:
     Event(Event&&);
     ~Event();
 
-    static Res<Event> from(const Device& device, const EventState& info);
+    static Res<Event> from(const CoreApi& api, const EventState& info);
 };
 
 class EventPool : private NonCopyable {
@@ -43,9 +42,9 @@ private:
     Vector<Event> events_cache{};
 
 public:
-    const Device& device;
+    const CoreApi& api;
 
-    explicit EventPool(const Device& device) : device(device) {}
+    explicit EventPool(const CoreApi& api) : api(api) {}
     EventPool(EventPool&&);
     ~EventPool();
 

@@ -10,11 +10,11 @@ Self FenceState::setFlags(VkFenceCreateFlags flags) {
     return *this;
 }
 
-Res<Fence> FenceState::into(const Device& device) const {
-    return Fence::from(device, *this);
+Res<Fence> FenceState::into(const CoreApi& api) const {
+    return Fence::from(api, *this);
 }
 
-Fence::Fence(Fence&& rhs) : CoreResource(rhs.device) {
+Fence::Fence(Fence&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -22,29 +22,29 @@ Fence::Fence(Fence&& rhs) : CoreResource(rhs.device) {
 
 Fence::~Fence() {
     if (!__borrowed && handle) {
-        vkDestroyFence(device, handle, nullptr);
+        vkDestroyFence(api, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
 }
 
 VkResult Fence::wait(uint64_t timeout) const {
-    return vkWaitForFences(device, 1, &handle, VK_TRUE, timeout);
+    return vkWaitForFences(api, 1, &handle, VK_TRUE, timeout);
 }
 
 VkResult Fence::reset() const {
-    return vkResetFences(device, 1, &handle);
+    return vkResetFences(api, 1, &handle);
 }
 
-Res<Fence> Fence::from(const Device& device, const FenceState& info) {
-    Fence fence(device);
+Res<Fence> Fence::from(const CoreApi& api, const FenceState& info) {
+    Fence fence(api);
 
-    OnRet(vkCreateFence(device, &info.fence_ci, nullptr, fence), "Failed to create fence");
+    OnRet(vkCreateFence(api, &info.fence_ci, nullptr, fence), "Failed to create fence");
     OnName(fence, info.__name);
 
     return Ok(std::move(fence));
 }
 
-FencePool::FencePool(FencePool&& rhs) : device(rhs.device) {
+FencePool::FencePool(FencePool&& rhs) : api(rhs.api) {
     active_count = rhs.active_count;
     rhs.active_count = 0;
     fences = std::move(rhs.fences);
@@ -61,7 +61,7 @@ Res<CRef<Fence>> FencePool::request() {
         return Ok(newCRef(fences[active_count++]));
     }
 
-    auto res = FenceState().into(device);
+    auto res = FenceState().into(api);
     OnErr(res);
     fences.push_back(res.unwrap());
     active_count++;
@@ -74,7 +74,7 @@ Res<Fence> FencePool::acquire() {
         fences.pop_back();
         return Ok(std::move(fen));
     }
-    return FenceState().into(device);
+    return FenceState().into(api);
 }
 
 void FencePool::reback(Fence&& fence) {
@@ -89,7 +89,7 @@ VkResult FencePool::waitPool(uint64_t timeout) {
         for (uint32_t k = 0; k < active_count; k++) {
             actived.push_back(fences[k]);
         }
-        ret = vkWaitForFences(device, active_count, actived.data(), true, timeout);
+        ret = vkWaitForFences(api, active_count, actived.data(), true, timeout);
     }
 
     return ret;
@@ -105,7 +105,7 @@ VkResult FencePool::resetPool() {
         }
         // Only reset actived fences.
         // The cached fences should be reset manually.
-        ret = vkResetFences(device, active_count, actived.data());
+        ret = vkResetFences(api, active_count, actived.data());
     }
     active_count = 0;
     for (auto& fen : fences_cache) {

@@ -43,11 +43,11 @@ Self SamplerState::setLinear() {
     return *this;
 }
 
-Res<Sampler> SamplerState::into(const Device& device) const {
-    return Sampler::from(device, *this);
+Res<Sampler> SamplerState::into(const CoreApi& api) const {
+    return Sampler::from(api, *this);
 }
 
-Sampler::Sampler(Sampler&& rhs) : CoreResource(rhs.device) {
+Sampler::Sampler(Sampler&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -55,15 +55,15 @@ Sampler::Sampler(Sampler&& rhs) : CoreResource(rhs.device) {
 
 Sampler::~Sampler() {
     if (!__borrowed && handle) {
-        vkDestroySampler(device, handle, nullptr);
+        vkDestroySampler(api, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
 }
 
-Res<Sampler> Sampler::from(const Device& device, const SamplerState& info) {
-    Sampler sampler(device);
+Res<Sampler> Sampler::from(const CoreApi& api, const SamplerState& info) {
+    Sampler sampler(api);
 
-    OnRet(vkCreateSampler(device, &info.sampler_ci, nullptr, sampler), "Failed to create sampler");
+    OnRet(vkCreateSampler(api, &info.sampler_ci, nullptr, sampler), "Failed to create sampler");
     OnName(sampler, info.__name);
 
     return Ok(std::move(sampler));

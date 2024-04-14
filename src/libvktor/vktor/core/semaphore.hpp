@@ -1,6 +1,5 @@
 #pragma once
 #include "__core.hpp"
-#include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -20,18 +19,18 @@ public:
 
     Self setFlags(VkSemaphoreCreateFlags flags);
 
-    Res<Semaphore> into(const Device& device) const;
+    Res<Semaphore> into(const CoreApi& api) const;
 };
 
-struct Semaphore : public CoreResource<VkSemaphore, VK_OBJECT_TYPE_SEMAPHORE, Device> {
+struct Semaphore : public CoreResource<VkSemaphore, VK_OBJECT_TYPE_SEMAPHORE> {
 protected:
-    explicit Semaphore(const Device& device) : CoreResource(device) {}
+    explicit Semaphore(const CoreApi& api) : CoreResource(api) {}
 
 public:
     Semaphore(Semaphore&&);
     ~Semaphore();
 
-    static Res<Semaphore> from(const Device& device, const SemaphoreState& info);
+    static Res<Semaphore> from(const CoreApi& api, const SemaphoreState& info);
 };
 
 class SemaphorePool : private NonCopyable {
@@ -43,9 +42,9 @@ private:
     Vector<Semaphore> semaphores_cache{};
 
 public:
-    const Device& device;
+    const CoreApi& api;
 
-    explicit SemaphorePool(const Device& device) : device(device) {}
+    explicit SemaphorePool(const CoreApi& api) : api(api) {}
     SemaphorePool(SemaphorePool&&);
     ~SemaphorePool();
 

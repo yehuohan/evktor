@@ -1,5 +1,5 @@
 #pragma once
-#include "__core.hpp"
+#include "__api.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -53,11 +53,17 @@ protected:
 public:
     Instance(Instance&&);
     ~Instance();
+
     bool isLayerEnabled(const char* layer) const;
     bool isExtensionEnabled(const char* extension) const;
 
     static Res<Instance> from(InstanceState& info);
 };
+
+bool checkInstanceLayers(const Vector<const char*>& layers);
+bool checkInstanceExtensions(const Vector<const char*>& extensions);
+void printInstanceLayers(const Vector<const char*>& enabled_layers);
+void printInstanceExtensions(const Vector<const char*>& enabled_extensions);
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)

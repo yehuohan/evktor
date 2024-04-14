@@ -8,7 +8,7 @@ RenderPipeline::RenderPipeline(RenderPipeline&& rhs) : api(rhs.api) {
     subpasses = std::move(rhs.subpasses);
 }
 
-Res<RenderPass> RenderPipeline::createRenderPass(const RenderTargetTable& render_target_table) const {
+Res<RenderPass> RenderPipeline::newRenderPass(const RenderTargetTable& render_target_table) const {
     RenderPassState rso{};
 
     for (const auto& rt : render_target_table.getTargets()) {

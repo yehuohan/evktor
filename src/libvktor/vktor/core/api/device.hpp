@@ -1,5 +1,5 @@
 #pragma once
-#include "__core.hpp"
+#include "__api.hpp"
 #include "instance.hpp"
 #include "physical_device.hpp"
 #include "queue.hpp"
@@ -44,8 +44,6 @@ public:
     Device(Device&&);
     ~Device();
     OnConstType(VmaAllocator, mem_allocator);
-
-    VkResult waitIdle() const;
 
     static Res<Device> from(const Instance& instance, const PhysicalDevice& phy_dev, DeviceState& info);
 };

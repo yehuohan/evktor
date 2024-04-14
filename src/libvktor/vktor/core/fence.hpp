@@ -1,6 +1,5 @@
 #pragma once
 #include "__core.hpp"
-#include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -20,12 +19,12 @@ public:
 
     Self setFlags(VkFenceCreateFlags flags);
 
-    Res<Fence> into(const Device& device) const;
+    Res<Fence> into(const CoreApi& api) const;
 };
 
-struct Fence : public CoreResource<VkFence, VK_OBJECT_TYPE_FENCE, Device> {
+struct Fence : public CoreResource<VkFence, VK_OBJECT_TYPE_FENCE> {
 protected:
-    explicit Fence(const Device& device) : CoreResource(device) {}
+    explicit Fence(const CoreApi& api) : CoreResource(api) {}
 
 public:
     Fence(Fence&&);
@@ -34,7 +33,7 @@ public:
     VkResult wait(uint64_t timeout = UINT64_MAX) const;
     VkResult reset() const;
 
-    static Res<Fence> from(const Device& device, const FenceState& info);
+    static Res<Fence> from(const CoreApi& api, const FenceState& info);
 };
 
 class FencePool : private NonCopyable {
@@ -46,9 +45,9 @@ private:
     Vector<Fence> fences_cache{};
 
 public:
-    const Device& device;
+    const CoreApi& api;
 
-    explicit FencePool(const Device& device) : device(device) {}
+    explicit FencePool(const CoreApi& api) : api(api) {}
     FencePool(FencePool&&);
     ~FencePool();
 

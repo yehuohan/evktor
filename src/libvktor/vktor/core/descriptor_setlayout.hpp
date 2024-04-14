@@ -1,6 +1,5 @@
 #pragma once
 #include "__core.hpp"
-#include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -35,10 +34,10 @@ public:
         return addBinding(binding, type, count, VK_SHADER_STAGE_COMPUTE_BIT, spls);
     }
 
-    Res<DescriptorSetLayout> into(const Device& device) const;
+    Res<DescriptorSetLayout> into(const CoreApi& api) const;
 };
 
-struct DescriptorSetLayout : public CoreResource<VkDescriptorSetLayout, VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, Device> {
+struct DescriptorSetLayout : public CoreResource<VkDescriptorSetLayout, VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT> {
     /**
      * @brief Map VkDescriptorSetLayoutBinding::binding to VkDescriptorSetLayoutBinding
      *
@@ -49,13 +48,13 @@ struct DescriptorSetLayout : public CoreResource<VkDescriptorSetLayout, VK_OBJEC
     Map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
 
 protected:
-    explicit DescriptorSetLayout(const Device& device) : CoreResource(device) {}
+    explicit DescriptorSetLayout(const CoreApi& api) : CoreResource(api) {}
 
 public:
     DescriptorSetLayout(DescriptorSetLayout&&);
     ~DescriptorSetLayout();
 
-    static Res<DescriptorSetLayout> from(const Device& device, const DescriptorSetLayoutState& info);
+    static Res<DescriptorSetLayout> from(const CoreApi& api, const DescriptorSetLayoutState& info);
 };
 
 NAMESPACE_END(core)

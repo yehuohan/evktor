@@ -1,5 +1,4 @@
 #include "image.hpp"
-#include "utils.hpp"
 #include <algorithm>
 
 NAMESPACE_BEGIN(vkt)
@@ -85,11 +84,11 @@ Self ImageState::setMemoryUsage(VmaMemoryUsage usage) {
     return *this;
 }
 
-Res<Image> ImageState::into(const Device& device) const {
-    return Image::from(device, *this);
+Res<Image> ImageState::into(const CoreApi& api) const {
+    return Image::from(api, *this);
 }
 
-Image::Image(Image&& rhs) : CoreResource(rhs.device) {
+Image::Image(Image&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -112,10 +111,10 @@ Image::Image(Image&& rhs) : CoreResource(rhs.device) {
 Image::~Image() {
     if (!__borrowed && handle) {
         if (allocation) {
-            vmaDestroyImage(device, handle, allocation);
+            vmaDestroyImage(api, handle, allocation);
         } else {
-            vkFreeMemory(device, memory, nullptr);
-            vkDestroyImage(device, handle, nullptr);
+            vkFreeMemory(api, memory, nullptr);
+            vkDestroyImage(api, handle, nullptr);
         }
     }
     handle = VK_NULL_HANDLE;
@@ -129,7 +128,7 @@ VkSubresourceLayout Image::getSubresourceLayout(uint32_t mip, uint32_t layer, Vk
     subresource.mipLevel = mip;
     subresource.arrayLayer = layer;
     VkSubresourceLayout subresource_layout;
-    vkGetImageSubresourceLayout(device, handle, &subresource, &subresource_layout);
+    vkGetImageSubresourceLayout(api, handle, &subresource, &subresource_layout);
     return subresource_layout;
 }
 
@@ -139,13 +138,13 @@ bool Image::copyFrom(const void* src, const VkDeviceSize src_size, uint32_t mip,
     VkDeviceSize offset = subresource_layout.offset;
 
     void* data;
-    auto ret = vmaMapMemory(device, allocation, &data);
+    auto ret = vmaMapMemory(api, allocation, &data);
     if (VK_SUCCESS != ret) {
         vktLogE("Failed to map image memory: {}", VkStr(VkResult, ret));
         return false;
     }
     std::memcpy((uint8_t*)data + offset, src, (size_t)mem_size);
-    vmaUnmapMemory(device, allocation);
+    vmaUnmapMemory(api, allocation);
     return true;
 }
 
@@ -155,34 +154,34 @@ bool Image::copyInto(void* dst, const VkDeviceSize dst_size = 0, uint32_t mip, u
     VkDeviceSize offset = subresource_layout.offset;
 
     void* data;
-    auto ret = vmaMapMemory(device, allocation, &data);
+    auto ret = vmaMapMemory(api, allocation, &data);
     if (VK_SUCCESS != ret) {
         vktLogE("Failed to map image memory: {}", VkStr(VkResult, ret));
         return false;
     }
     std::memcpy(dst, (uint8_t*)data + offset, (size_t)mem_size);
-    vmaUnmapMemory(device, allocation);
+    vmaUnmapMemory(api, allocation);
     return true;
 }
 
 Res<void*> Image::map() const {
     void* data;
-    OnRet(vmaMapMemory(device, allocation, &data), "Failed to map image memory");
+    OnRet(vmaMapMemory(api, allocation, &data), "Failed to map image memory");
     return Ok(data);
 }
 void Image::unmap() const {
-    vmaUnmapMemory(device, allocation);
+    vmaUnmapMemory(api, allocation);
 }
 
-Res<Image> Image::from(const Device& device, const ImageState& info) {
-    Image image(device);
+Res<Image> Image::from(const CoreApi& api, const ImageState& info) {
+    Image image(api);
 
     VmaAllocationCreateInfo allocation_ci{};
     allocation_ci.flags = info.memory_flags;
     allocation_ci.usage = info.memory_usage;
     VmaAllocationInfo allocation_info{};
 
-    OnRet(vmaCreateImage(device, &info.image_ci, &allocation_ci, image, &image.allocation, &allocation_info),
+    OnRet(vmaCreateImage(api, &info.image_ci, &allocation_ci, image, &image.allocation, &allocation_info),
           "Failed to create image");
     OnName(image, info.__name);
     image.type = info.image_ci.imageType;
@@ -199,7 +198,7 @@ Res<Image> Image::from(const Device& device, const ImageState& info) {
     return Ok(std::move(image));
 }
 
-Image Image::borrow(const Device& device,
+Image Image::borrow(const CoreApi& api,
                     const VkImage _image,
                     VkFormat _format,
                     VkExtent3D _extent,
@@ -211,7 +210,7 @@ Image Image::borrow(const Device& device,
     if (VK_NULL_HANDLE == _image) {
         vktLogW("Create Image should from a existed & valid VkImage");
     }
-    Image image(device);
+    Image image(api);
     image.__borrowed = true;
     image.handle = _image;
     image.type = getType(_extent);
@@ -223,6 +222,25 @@ Image Image::borrow(const Device& device,
     image.tiling = _tiling;
     image.usage = _usage;
     return std::move(image);
+}
+
+bool isDepthOnlyFormat(VkFormat format) {
+    return format == VK_FORMAT_D16_UNORM || format == VK_FORMAT_D32_SFLOAT;
+}
+
+bool isDepthStencilFormat(VkFormat format) {
+    return format == VK_FORMAT_D16_UNORM_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT ||
+           format == VK_FORMAT_D32_SFLOAT_S8_UINT || isDepthOnlyFormat(format);
+}
+
+VkImageAspectFlags getAspectMask(VkFormat format) {
+    if (isDepthOnlyFormat(format)) {
+        return VK_IMAGE_ASPECT_DEPTH_BIT;
+    } else if (isDepthStencilFormat(format)) {
+        return VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+    } else {
+        return VK_IMAGE_ASPECT_COLOR_BIT;
+    }
 }
 
 NAMESPACE_END(core)

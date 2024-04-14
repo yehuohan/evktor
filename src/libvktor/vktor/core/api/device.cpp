@@ -1,5 +1,4 @@
 #include "device.hpp"
-#include "utils.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -96,10 +95,6 @@ Device::~Device() {
     mem_allocator = VK_NULL_HANDLE;
 }
 
-VkResult Device::waitIdle() const {
-    return vkDeviceWaitIdle(handle);
-}
-
 Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev, DeviceState& info) {
     Device device(instance, phy_dev);
 
@@ -127,10 +122,6 @@ Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev
     dev_ci.enabledExtensionCount = u32(phy_dev.extensions.size());
     dev_ci.ppEnabledExtensionNames = phy_dev.extensions.data();
     dev_ci.pEnabledFeatures = &pdev_feats;
-
-    if (info.__verbose) {
-        printDeviceExtensions(phy_dev, phy_dev.extensions);
-    }
 
     OnRet(vkCreateDevice(phy_dev, &dev_ci, nullptr, device), "Failed to create device");
     auto& name = info.__name;

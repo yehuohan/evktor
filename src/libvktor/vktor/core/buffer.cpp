@@ -25,11 +25,11 @@ Self BufferState::setMemoryUsage(VmaMemoryUsage usage) {
     return *this;
 }
 
-Res<Buffer> BufferState::into(const Device& device) const {
-    return Buffer::from(device, *this);
+Res<Buffer> BufferState::into(const CoreApi& api) const {
+    return Buffer::from(api, *this);
 }
 
-Buffer::Buffer(Buffer&& rhs) : CoreResource(rhs.device) {
+Buffer::Buffer(Buffer&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -43,10 +43,10 @@ Buffer::Buffer(Buffer&& rhs) : CoreResource(rhs.device) {
 Buffer::~Buffer() {
     if (!__borrowed && handle) {
         if (allocation) {
-            vmaDestroyBuffer(device, handle, allocation);
+            vmaDestroyBuffer(api, handle, allocation);
         } else {
-            vkFreeMemory(device, memory, nullptr);
-            vkDestroyBuffer(device, handle, nullptr);
+            vkFreeMemory(api, memory, nullptr);
+            vkDestroyBuffer(api, handle, nullptr);
         }
     }
     handle = VK_NULL_HANDLE;
@@ -57,48 +57,48 @@ Buffer::~Buffer() {
 bool Buffer::copyFrom(const void* src, const VkDeviceSize copy_size, VkDeviceSize offset) const {
     VkDeviceSize mem_size = copy_size > 0 ? copy_size : size;
     void* data;
-    auto ret = vmaMapMemory(device, allocation, &data);
+    auto ret = vmaMapMemory(api, allocation, &data);
     if (VK_SUCCESS != ret) {
         vktLogE("Failed to map buffer memory: {}", VkStr(VkResult, ret));
         return false;
     }
     std::memcpy((uint8_t*)data + offset, src, (size_t)mem_size);
-    vmaUnmapMemory(device, allocation);
+    vmaUnmapMemory(api, allocation);
     return true;
 }
 
 bool Buffer::copyInto(void* dst, const VkDeviceSize copy_size, VkDeviceSize offset) const {
     VkDeviceSize mem_size = copy_size > 0 ? copy_size : size;
     void* data;
-    auto ret = vmaMapMemory(device, allocation, &data);
+    auto ret = vmaMapMemory(api, allocation, &data);
     if (VK_SUCCESS != ret) {
         vktLogE("Failed to map buffer memory: {}", VkStr(VkResult, ret));
         return false;
     }
     std::memcpy(dst, (uint8_t*)data + offset, (size_t)mem_size);
-    vmaUnmapMemory(device, allocation);
+    vmaUnmapMemory(api, allocation);
     return true;
 }
 
 Res<void*> Buffer::map() const {
     void* data;
-    OnRet(vmaMapMemory(device, allocation, &data), "Failed to map buffer memory");
+    OnRet(vmaMapMemory(api, allocation, &data), "Failed to map buffer memory");
     return Ok(data);
 }
 
 void Buffer::unmap() const {
-    vmaUnmapMemory(device, allocation);
+    vmaUnmapMemory(api, allocation);
 }
 
-Res<Buffer> Buffer::from(const Device& device, const BufferState& info) {
-    Buffer buffer(device);
+Res<Buffer> Buffer::from(const CoreApi& api, const BufferState& info) {
+    Buffer buffer(api);
 
     VmaAllocationCreateInfo allocation_ci{};
     allocation_ci.flags = info.memory_flags;
     allocation_ci.usage = info.memory_usage;
     VmaAllocationInfo allocation_info{};
 
-    OnRet(vmaCreateBuffer(device, &info.buffer_ci, &allocation_ci, buffer, &buffer.allocation, &allocation_info),
+    OnRet(vmaCreateBuffer(api, &info.buffer_ci, &allocation_ci, buffer, &buffer.allocation, &allocation_info),
           "Failed to create buffer");
     OnName(buffer, info.__name);
     buffer.size = info.buffer_ci.size;

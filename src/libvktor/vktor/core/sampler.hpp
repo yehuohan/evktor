@@ -1,6 +1,5 @@
 #pragma once
 #include "__core.hpp"
-#include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -22,18 +21,18 @@ public:
     Self setNearest();
     Self setLinear();
 
-    Res<Sampler> into(const Device& device) const;
+    Res<Sampler> into(const CoreApi& api) const;
 };
 
-struct Sampler : CoreResource<VkSampler, VK_OBJECT_TYPE_SAMPLER, Device> {
+struct Sampler : CoreResource<VkSampler, VK_OBJECT_TYPE_SAMPLER> {
 protected:
-    explicit Sampler(const Device& device) : CoreResource(device) {}
+    explicit Sampler(const CoreApi& api) : CoreResource(api) {}
 
 public:
     Sampler(Sampler&&);
     ~Sampler();
 
-    static Res<Sampler> from(const Device& device, const SamplerState& info);
+    static Res<Sampler> from(const CoreApi& api, const SamplerState& info);
 };
 
 NAMESPACE_END(core)

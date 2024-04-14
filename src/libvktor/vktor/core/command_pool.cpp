@@ -16,11 +16,11 @@ Self CommandPoolState::setQueueIndex(uint32_t index) {
     return *this;
 }
 
-Res<CommandPool> CommandPoolState::into(const Device& device) const {
-    return CommandPool::from(device, *this);
+Res<CommandPool> CommandPoolState::into(const CoreApi& api) const {
+    return CommandPool::from(api, *this);
 }
 
-CommandPool::CommandPool(CommandPool&& rhs) : CoreResource(rhs.device) {
+CommandPool::CommandPool(CommandPool&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -36,7 +36,7 @@ CommandPool::~CommandPool() {
     primaries.clear();
     secondaries.clear();
     if (!__borrowed && handle) {
-        vkDestroyCommandPool(device, handle, nullptr);
+        vkDestroyCommandPool(api, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
 }
@@ -54,7 +54,7 @@ Res<Ref<CommandBuffer>> CommandPool::allocate(CommandBuffer::Level level, const 
                 cmdbuf_ai.commandPool = *this;
                 cmdbuf_ai.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
                 cmdbuf_ai.commandBufferCount = 1;
-                OnRet(vkAllocateCommandBuffers(device, &cmdbuf_ai, cmdbuf), "Failed to allocate primary command buffer");
+                OnRet(vkAllocateCommandBuffers(api, &cmdbuf_ai, cmdbuf), "Failed to allocate primary command buffer");
                 OnName(cmdbuf, name);
 
                 active_primary_count++;
@@ -73,7 +73,7 @@ Res<Ref<CommandBuffer>> CommandPool::allocate(CommandBuffer::Level level, const 
                 cmdbuf_ai.commandPool = *this;
                 cmdbuf_ai.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
                 cmdbuf_ai.commandBufferCount = 1;
-                OnRet(vkAllocateCommandBuffers(device, &cmdbuf_ai, cmdbuf), "Failed to allocate secondary command buffer");
+                OnRet(vkAllocateCommandBuffers(api, &cmdbuf_ai, cmdbuf), "Failed to allocate secondary command buffer");
                 OnName(cmdbuf, name);
 
                 active_secondary_count++;
@@ -95,13 +95,13 @@ void CommandPool::resetPool() {
     active_secondary_count = 0;
 }
 
-Res<CommandPool> CommandPool::from(const Device& device, const CommandPoolState& info) {
-    CommandPool cmdpool(device);
+Res<CommandPool> CommandPool::from(const CoreApi& api, const CommandPoolState& info) {
+    CommandPool cmdpool(api);
 
     auto cmdpool_ci = Itor::CommandPoolCreateInfo();
     cmdpool_ci.flags = info.flags;
     cmdpool_ci.queueFamilyIndex = info.queue_index;
-    OnRet(vkCreateCommandPool(device, &cmdpool_ci, nullptr, cmdpool), "Failed to create command pool");
+    OnRet(vkCreateCommandPool(api, &cmdpool_ci, nullptr, cmdpool), "Failed to create command pool");
     OnName(cmdpool, info.__name);
 
     return Ok(std::move(cmdpool));

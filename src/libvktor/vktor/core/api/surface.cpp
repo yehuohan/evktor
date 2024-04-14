@@ -10,9 +10,11 @@ Surface::Surface(Surface&& rhs) : instance(rhs.instance) {
 }
 
 Surface& Surface::operator=(Surface&& rhs) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+    if (this != &rhs) {
+        handle = rhs.handle;
+        rhs.handle = VK_NULL_HANDLE;
+        __borrowed = rhs.__borrowed;
+    }
     return *this;
 }
 

@@ -1,14 +1,13 @@
 #include "command_buffer.hpp"
 #include "command_pool.hpp"
-#include "utils.hpp"
 #include <algorithm>
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-CommandBuffer::CommandBuffer(const CommandPool& command_pool) : CoreResource(command_pool.device), command_pool(command_pool) {}
+CommandBuffer::CommandBuffer(const CommandPool& command_pool) : CoreResource(command_pool.api), command_pool(command_pool) {}
 
-CommandBuffer::CommandBuffer(CommandBuffer&& rhs) : CoreResource(rhs.device), command_pool(rhs.command_pool) {
+CommandBuffer::CommandBuffer(CommandBuffer&& rhs) : CoreResource(rhs.api), command_pool(rhs.command_pool) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -16,7 +15,7 @@ CommandBuffer::CommandBuffer(CommandBuffer&& rhs) : CoreResource(rhs.device), co
 
 CommandBuffer::~CommandBuffer() {
     if (!__borrowed && handle) {
-        vkFreeCommandBuffers(command_pool.device, command_pool, 1, &handle);
+        vkFreeCommandBuffers(command_pool.api, command_pool, 1, &handle);
     }
     handle = VK_NULL_HANDLE;
 }

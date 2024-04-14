@@ -1,6 +1,5 @@
 #pragma once
 #include "__core.hpp"
-#include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -33,16 +32,16 @@ public:
     Self setMemoryFlags(VmaAllocationCreateFlags flags);
     Self setMemoryUsage(VmaMemoryUsage usage);
 
-    Res<Buffer> into(const Device& device) const;
+    Res<Buffer> into(const CoreApi& api) const;
 };
 
-struct Buffer : public CoreResource<VkBuffer, VK_OBJECT_TYPE_BUFFER, Device> {
+struct Buffer : public CoreResource<VkBuffer, VK_OBJECT_TYPE_BUFFER> {
     VkDeviceSize size = 0;
     VkDeviceMemory memory = VK_NULL_HANDLE;
     VmaAllocation allocation = VK_NULL_HANDLE;
 
 protected:
-    explicit Buffer(const Device& device) : CoreResource(device) {}
+    explicit Buffer(const CoreApi& api) : CoreResource(api) {}
 
 public:
     Buffer(Buffer&&);
@@ -70,7 +69,7 @@ public:
     Res<void*> map() const;
     void unmap() const;
 
-    static Res<Buffer> from(const Device& device, const BufferState& info);
+    static Res<Buffer> from(const CoreApi& api, const BufferState& info);
 #if 0
     /**
      * @brief Create buffer with native Vulkan api without device.mem_allocator for reference

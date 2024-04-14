@@ -1,7 +1,6 @@
 #pragma once
 #include "__core.hpp"
 #include "descriptor_setlayout.hpp"
-#include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -23,18 +22,18 @@ public:
     Self addDescriptorSetLayout(VkDescriptorSetLayout setlayout);
     Self addPushConstantRange(const VkPushConstantRange& range);
 
-    Res<PipelineLayout> into(const Device& device) const;
+    Res<PipelineLayout> into(const CoreApi& api) const;
 };
 
-struct PipelineLayout : public CoreResource<VkPipelineLayout, VK_OBJECT_TYPE_PIPELINE_LAYOUT, Device> {
+struct PipelineLayout : public CoreResource<VkPipelineLayout, VK_OBJECT_TYPE_PIPELINE_LAYOUT> {
 protected:
-    explicit PipelineLayout(const Device& device) : CoreResource(device) {}
+    explicit PipelineLayout(const CoreApi& api) : CoreResource(api) {}
 
 public:
     PipelineLayout(PipelineLayout&&);
     ~PipelineLayout();
 
-    static Res<PipelineLayout> from(const Device& device, const PipelineLayoutState& info);
+    static Res<PipelineLayout> from(const CoreApi& api, const PipelineLayoutState& info);
 };
 
 NAMESPACE_END(core)

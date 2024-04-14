@@ -20,7 +20,7 @@ Res<DescriptorPool> DescriptorPoolState::into(const DescriptorSetLayout& setlayo
 }
 
 DescriptorPool::DescriptorPool(DescriptorPool&& rhs)
-    : CoreResource(rhs.device)
+    : CoreResource(rhs.api)
     , desc_setlayout(rhs.desc_setlayout)
     , maxsets(rhs.maxsets) {
     handle = rhs.handle;
@@ -31,7 +31,7 @@ DescriptorPool::DescriptorPool(DescriptorPool&& rhs)
 DescriptorPool::~DescriptorPool() {
     if (!__borrowed && handle) {
         // Descriptor set will be freed along with vkDestroyDescriptorPool
-        vkDestroyDescriptorPool(device, handle, nullptr);
+        vkDestroyDescriptorPool(api, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
     count = 0;
@@ -43,7 +43,7 @@ Res<DescriptorSet> DescriptorPool::allocate(const Name& name) {
     descset_ai.descriptorPool = *this;
     descset_ai.descriptorSetCount = 1;
     descset_ai.pSetLayouts = desc_setlayout;
-    OnRet(vkAllocateDescriptorSets(device, &descset_ai, descset), "Failed to allocate descriptor set");
+    OnRet(vkAllocateDescriptorSets(api, &descset_ai, descset), "Failed to allocate descriptor set");
     OnName(descset, name);
 
     count++;
@@ -52,7 +52,7 @@ Res<DescriptorSet> DescriptorPool::allocate(const Name& name) {
 
 bool DescriptorPool::free(const DescriptorSet& descset) {
     if (descset.handle) {
-        auto res = vkFreeDescriptorSets(device, *this, 1, &descset.handle);
+        auto res = vkFreeDescriptorSets(api, *this, 1, &descset.handle);
         if (res == VK_SUCCESS) {
             count--;
             return true;
@@ -92,7 +92,7 @@ Res<DescriptorPool> DescriptorPool::from(const DescriptorSetLayout& setlayout, c
     descpool_ci.maxSets = info.maxsets;
     descpool_ci.poolSizeCount = u32(poolsizes.size());
     descpool_ci.pPoolSizes = poolsizes.data();
-    OnRet(vkCreateDescriptorPool(setlayout.device, &descpool_ci, nullptr, descriptor_pool), "Failed to create descriptor pool");
+    OnRet(vkCreateDescriptorPool(setlayout.api, &descpool_ci, nullptr, descriptor_pool), "Failed to create descriptor pool");
     OnName(descriptor_pool, info.__name);
 
     return Ok(std::move(descriptor_pool));

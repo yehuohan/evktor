@@ -1,6 +1,6 @@
 #include "physical_device.hpp"
-#include "utils.hpp"
 #include <algorithm>
+#include <set>
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -264,7 +264,50 @@ Res<PhysicalDevice> PhysicalDevice::from(const Instance& instance, PhysicalDevic
     PhysicalDevice phy_dev = info.pickBestSuitable(suitables);
     vkGetPhysicalDeviceProperties(phy_dev, &phy_dev.properties);
     vkGetPhysicalDeviceMemoryProperties(phy_dev, &phy_dev.memory_properties);
+    if (info.__verbose) {
+        printDeviceExtensions(phy_dev, phy_dev.extensions);
+    }
+
     return Ok(std::move(phy_dev));
+}
+
+bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& device_extensions) {
+    Vector<VkExtensionProperties> exts{};
+    VkResult ret = enumerate(exts, vkEnumerateDeviceExtensionProperties, pd, nullptr);
+    if (ret != VK_SUCCESS) {
+        vktLogE("Failed to get properties of device extensions: {}", VkStr(VkResult, ret));
+        return false;
+    }
+
+    std::set<std::string> device_exts(device_extensions.begin(), device_extensions.end());
+    for (const auto& e : exts) {
+        device_exts.erase(e.extensionName);
+    }
+
+    return device_exts.empty();
+}
+
+void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions) {
+    Vector<VkExtensionProperties> ext_props{};
+    VkResult ret = enumerate(ext_props, vkEnumerateDeviceExtensionProperties, pd, nullptr);
+    if (ret != VK_SUCCESS) {
+        vktLogE("Failed to get properties of device extensions: {}", VkStr(VkResult, ret));
+        return;
+    }
+
+    std::string str("Available device extensions {\n");
+    for (const auto& e : ext_props) {
+        str += vktFmt("\t{}\n", e.extensionName);
+    }
+    str += "}\n";
+
+    str += "Enabled device extensions {\n";
+    for (const auto& e : enabled_extensions) {
+        str += vktFmt("\t{}\n", e);
+    }
+    str += "}";
+
+    vktOut("{}", str);
 }
 
 NAMESPACE_END(core)

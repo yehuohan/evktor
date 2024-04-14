@@ -1,7 +1,6 @@
 #pragma once
 #include "__core.hpp"
 #include "__hash.hpp"
-#include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -41,7 +40,7 @@ struct DescriptorArrayInfo {
  *
  * DescriptorSet should be allocated with DescriptorPool::allocate() as vkAllocateDescriptorSets need VkDescriptorPool.
  */
-struct DescriptorSet : public CoreResource<VkDescriptorSet, VK_OBJECT_TYPE_DESCRIPTOR_SET, Device> {
+struct DescriptorSet : public CoreResource<VkDescriptorSet, VK_OBJECT_TYPE_DESCRIPTOR_SET> {
     DescriptorPool& desc_pool;
 
     explicit DescriptorSet(DescriptorPool& pool);

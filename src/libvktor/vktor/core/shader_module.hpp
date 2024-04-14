@@ -1,6 +1,5 @@
 #pragma once
 #include "__core.hpp"
-#include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -27,22 +26,22 @@ public:
     Self setCode(const uint32_t* code, size_t code_size, size_t code_id);
     Self setCode(const Vector<uint32_t>& code, size_t code_id);
 
-    Res<ShaderModule> into(const Device& device) const;
+    Res<ShaderModule> into(const CoreApi& api) const;
 };
 
-struct ShaderModule : public CoreResource<VkShaderModule, VK_OBJECT_TYPE_SHADER_MODULE, Device> {
+struct ShaderModule : public CoreResource<VkShaderModule, VK_OBJECT_TYPE_SHADER_MODULE> {
     VkShaderStageFlagBits stage = VK_SHADER_STAGE_VERTEX_BIT;
     std::string entry = "main";
     size_t code_id = 0;
 
 protected:
-    explicit ShaderModule(const Device& device) : CoreResource(device) {}
+    explicit ShaderModule(const CoreApi& api) : CoreResource(api) {}
 
 public:
     ShaderModule(ShaderModule&&);
     ~ShaderModule();
 
-    static Res<ShaderModule> from(const Device& device, const ShaderModuleState& info);
+    static Res<ShaderModule> from(const CoreApi& api, const ShaderModuleState& info);
 };
 
 NAMESPACE_END(core)

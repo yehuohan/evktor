@@ -1,133 +1,43 @@
 #pragma once
-#include "__defs.hpp"
-#include "debug.hpp"
-#include <string>
+#include "api/api.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-/**
- * @brief Conversion constructor
- *
- * This is mainly for the Vulkan handle
- */
-#define OnType(Type, Var)   \
-    OnConstType(Type, Var); \
-    operator Type*() {      \
-        return &Var;        \
-    }
-
-/**
- * @brief Const conversion constructor
- *
- * This is mainly for the const Vulkan handle
- */
-#define OnConstType(Type, Var)     \
-    operator const Type() const {  \
-        return Var;                \
-    }                              \
-    operator const Type*() const { \
-        return &Var;               \
-    }
-
 #define OnName(r, n) OnRet(r.setDebugName(n), "Failed to set debug name: {}", n)
-
-/** A lite string as name */
-typedef std::string Name;
-
-/**
- * @brief Vulkan core handle type
- *
- * Derived struct need to process `handle` at copy/move/assign constructor
- */
-template <typename T>
-struct CoreHandle : private NonCopyable {
-protected:
-    /** Vulkan handle is borrowed or not
-     *
-     * A borrowed CoreHandle doesn't have ownership and must not destory the handle.
-     */
-    bool __borrowed = false;
-
-public:
-    /** Vulkan handle */
-    T handle = VK_NULL_HANDLE;
-
-    virtual ~CoreHandle() {}
-    OnType(T, this->handle);
-};
 
 /**
  * @brief Vulkan core resource type
+ *
+ * CoreResource's default move assignment operator is deleted, as there's a
+ * non-static data member of a reference type (const A& api).
+ * CoreResource should better not define move assignment operator because:
+ *  - the reference member can not be updated in move assignment operator
+ *  - need destruct CoreHandle mannual (move assignment operator won't call destructor)
+ *  - need check `this != &rhs` (otherwise move assignment operator doesn't make sense and may destruct the CoreHandle)
  */
-template <typename T, VkObjectType OBJECT_TYPE, typename D>
-    requires std::derived_from<D, CoreHandle<VkDevice>>
+template <typename T, VkObjectType OBJECT_TYPE>
 struct CoreResource : public CoreHandle<T> {
-    const D& device;
+    const CoreApi& api;
 
-    explicit CoreResource(const D& device) : device(device) {}
+    explicit CoreResource(const CoreApi& api) : api(api) {}
     virtual ~CoreResource() {}
     /**
      * @brief Set resource name for debug conveniently
      *
      * Although core::setDebugName accept a `const char*`, set debug name from a temporal std::string is okay.
      */
-    inline VkResult setDebugName(const Name& name) {
-        return core::setDebugName(device, OBJECT_TYPE, u64(reinterpret_cast<uint64_t>(this->handle)), name.c_str());
+    inline VkResult setDebugName(const Name& name) const {
+        return core::setDebugName(api, OBJECT_TYPE, u64(reinterpret_cast<uint64_t>(this->handle)), name.c_str());
     }
 };
 
 /**
- * @brief State info for Vulkan core type
- *
- * Example code:
- * ```cpp
- *      class TypeState : public CoreStater {
- *          friend struct Type;
- *          Self set() { ...; return *this; };
- *          Self add() { ...; return *this; };
- *          Res<Type> into() const {}
- *      };
- *      struct Type : public CoreHandle<VkXXX> {
- *          static Res<Type> from(const TypeState& info) {}
- *      };
- *
- *      auto tso = TypeState();
- *      tso.set().add();
- *      auto ty1 = Type::from(tso).unwrap();
- *      tso = TypeState(); // Should re-construct then re-set/add again, but not re-use the stater
- *      auto ty2 = tso.set().add().info().unwrap();
- * ```
- */
-template <typename S>
-class CoreStater : private NonCopyable {
-protected:
-    explicit CoreStater(Name&& name) {
-        __name = std::move(name);
-    }
-
-public:
-    using Self = S&;
-
-    Name __name = ""; /**< Debug name */
-    bool __verbose = VKT_CORE_VERBOSE;
-
-    inline Self setDebugName(Name&& name) {
-        __name = std::move(name);
-        return static_cast<Self>(*this);
-    }
-    inline Self setVerbose(bool verbose = true) {
-        __verbose = verbose;
-        return static_cast<Self>(*this);
-    }
-};
-
-/**
- * @brief CoreHandle/CoreResource argument with extra data
+ * @brief CoreResource argument with extra data
  */
 template <typename T>
 struct Arg : private NonCopyable {
-    const T& a; /**< CoreHandle/CoreResource argument */
+    const T& a; /**< CoreResource argument */
 
     explicit Arg(const T& a) : a(a) {}
 };

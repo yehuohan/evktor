@@ -20,11 +20,11 @@ Self PipelineLayoutState::addPushConstantRange(const VkPushConstantRange& range)
     return *this;
 }
 
-Res<PipelineLayout> PipelineLayoutState::into(const Device& device) const {
-    return PipelineLayout::from(device, *this);
+Res<PipelineLayout> PipelineLayoutState::into(const CoreApi& api) const {
+    return PipelineLayout::from(api, *this);
 }
 
-PipelineLayout::PipelineLayout(PipelineLayout&& rhs) : PipelineLayout(rhs.device) {
+PipelineLayout::PipelineLayout(PipelineLayout&& rhs) : PipelineLayout(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -32,20 +32,20 @@ PipelineLayout::PipelineLayout(PipelineLayout&& rhs) : PipelineLayout(rhs.device
 
 PipelineLayout::~PipelineLayout() {
     if (!__borrowed && handle) {
-        vkDestroyPipelineLayout(device, handle, nullptr);
+        vkDestroyPipelineLayout(api, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
 }
 
-Res<PipelineLayout> PipelineLayout::from(const Device& device, const PipelineLayoutState& info) {
-    PipelineLayout pipeline_layout(device);
+Res<PipelineLayout> PipelineLayout::from(const CoreApi& api, const PipelineLayoutState& info) {
+    PipelineLayout pipeline_layout(api);
 
     auto pipeline_layout_ci = Itor::PipelineLayoutCreateInfo();
     pipeline_layout_ci.setLayoutCount = u32(info.desc_setlayouts.size());
     pipeline_layout_ci.pSetLayouts = info.desc_setlayouts.data();
     pipeline_layout_ci.pushConstantRangeCount = u32(info.constant_ranges.size());
     pipeline_layout_ci.pPushConstantRanges = info.constant_ranges.data();
-    OnRet(vkCreatePipelineLayout(device, &pipeline_layout_ci, nullptr, pipeline_layout), "Failed to create pipeline layout");
+    OnRet(vkCreatePipelineLayout(api, &pipeline_layout_ci, nullptr, pipeline_layout), "Failed to create pipeline layout");
     OnName(pipeline_layout, info.__name);
 
     return Ok(std::move(pipeline_layout));

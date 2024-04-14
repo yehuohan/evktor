@@ -1,6 +1,5 @@
 #pragma once
 #include "__core.hpp"
-#include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -31,18 +30,18 @@ public:
         return setExtent(extent.width, extent.height, extent.depth);
     }
 
-    Res<Framebuffer> into(const Device& device) const;
+    Res<Framebuffer> into(const CoreApi& api) const;
 };
 
-struct Framebuffer : public CoreResource<VkFramebuffer, VK_OBJECT_TYPE_FRAMEBUFFER, Device> {
+struct Framebuffer : public CoreResource<VkFramebuffer, VK_OBJECT_TYPE_FRAMEBUFFER> {
 protected:
-    explicit Framebuffer(const Device& device) : CoreResource(device) {}
+    explicit Framebuffer(const CoreApi& api) : CoreResource(api) {}
 
 public:
     Framebuffer(Framebuffer&&);
     ~Framebuffer();
 
-    static Res<Framebuffer> from(const Device& device, const FramebufferState& info);
+    static Res<Framebuffer> from(const CoreApi& api, const FramebufferState& info);
 };
 
 NAMESPACE_END(core)

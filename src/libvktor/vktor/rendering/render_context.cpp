@@ -13,13 +13,13 @@ const RenderContext::FnSwapchainRTT RenderContext::defaultFnSwapchainRTT =
     OnErr(res_color);
     rts.push_back(res_color.unwrap());
     // RT-1: depth
-    auto res_depth = RenderTarget::from(swapchain.a.device, swapchain.a.image_extent, VK_FORMAT_D32_SFLOAT);
+    auto res_depth = RenderTarget::from(swapchain.a.api, swapchain.a.image_extent, VK_FORMAT_D32_SFLOAT);
     OnErr(res_depth);
     rts.push_back(res_depth.unwrap());
     return RenderTargetTable::from(std::move(rts));
 };
 
-Res<RenderContext> RenderContext::from(const BaseApi& api, uint32_t frame_count, size_t thread_count) {
+Res<RenderContext> RenderContext::from(const CoreApi& api, uint32_t frame_count, size_t thread_count) {
     RenderContext render_context(api, thread_count);
     render_context.frame_index = 0;
     for (uint32_t k = 0; k < frame_count; k++) {
@@ -28,13 +28,13 @@ Res<RenderContext> RenderContext::from(const BaseApi& api, uint32_t frame_count,
     return Ok(std::move(render_context));
 }
 
-Res<RenderContext> RenderContext::from(const BaseApi& api,
+Res<RenderContext> RenderContext::from(const CoreApi& api,
                                        core::SwapchainState&& info,
                                        FnSwapchainRTT fn,
                                        size_t thread_count) {
     RenderContext render_context(api, thread_count);
     if (fn) {
-        render_context.createSwapchainRTT = fn;
+        render_context.newSwapchainRTT = fn;
     } else {
         vktLogW("RenderContext can't be from a null FnSwapchainRTT. Use defaultFnSwapchainRTT.");
     }
@@ -69,7 +69,7 @@ Res<CRef<core::Swapchain>> RenderContext::reinitSwapchain() {
             frames.push_back(RenderFrame(api, thread_count));
         }
         // Set swapchain render target table for render frames
-        auto res_rtt = createSwapchainRTT(Arg<Swapchain>(*swapchain, k));
+        auto res_rtt = newSwapchainRTT(Arg<Swapchain>(*swapchain, k));
         OnErr(res_rtt);
         frames[k].setSwapchainRTT(newBox<RenderTargetTable>(res_rtt.unwrap()));
     }
@@ -277,7 +277,7 @@ Res<Ref<RenderPass>> RenderContext::requestRenderPass(const RenderTargetTable& r
                                                       const RenderPipeline& render_pipeline) {
     size_t key = hash(render_target_table.getTargets(), render_pipeline.getSubpasses());
     return resources.render_passes.request(key, [&render_target_table, &render_pipeline]() {
-        return render_pipeline.createRenderPass(render_target_table);
+        return render_pipeline.newRenderPass(render_target_table);
     });
 }
 

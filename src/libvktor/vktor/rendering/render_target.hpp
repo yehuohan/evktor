@@ -1,6 +1,6 @@
 #pragma once
 #include "vktor/base/texture.hpp"
-#include "vktor/core/device.hpp"
+#include "vktor/core/api/api.hpp"
 #include "vktor/core/render_pass.hpp"
 #include "vktor/core/swapchain.hpp"
 
@@ -29,12 +29,15 @@ public:
 
     explicit RenderTarget(Texture&& texture);
     RenderTarget(RenderTarget&&);
-    static Res<RenderTarget> from(const core::Device& device, const VkExtent2D& extent, VkFormat format);
+    static Res<RenderTarget> from(const core::CoreApi& api, const VkExtent2D& extent, VkFormat format);
     /**
      * @brief Create render target with the swapchain image of Arg<Swapchain>::image_index
      */
     static Res<RenderTarget> from(const core::Arg<core::Swapchain>& swapchain);
 
+    inline const Texture& getTexture() const {
+        return texture;
+    }
     inline const core::Image& getImage() const {
         return texture.getImage();
     }

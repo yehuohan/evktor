@@ -4,7 +4,7 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
-RenderFrame::RenderFrame(const BaseApi& api, size_t thread_count)
+RenderFrame::RenderFrame(const CoreApi& api, size_t thread_count)
     : api(api)
     , fence_pool(api)
     , semaphore_pool(api)

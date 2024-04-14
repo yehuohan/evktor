@@ -1,7 +1,6 @@
 #pragma once
 #include "__core.hpp"
 #include "command_buffer.hpp"
-#include "device.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -21,17 +20,17 @@ public:
     Self setFlags(VkCommandPoolCreateFlags flags);
     Self setQueueIndex(uint32_t index);
 
-    Res<CommandPool> into(const Device& device) const;
+    Res<CommandPool> into(const CoreApi& api) const;
 };
 
-struct CommandPool : public CoreResource<VkCommandPool, VK_OBJECT_TYPE_COMMAND_POOL, Device> {
+struct CommandPool : public CoreResource<VkCommandPool, VK_OBJECT_TYPE_COMMAND_POOL> {
     Vector<CommandBuffer> primaries{};
     Vector<CommandBuffer> secondaries{};
     uint32_t active_primary_count = 0;
     uint32_t active_secondary_count = 0;
 
 protected:
-    explicit CommandPool(const Device& device) : CoreResource(device) {}
+    explicit CommandPool(const CoreApi& api) : CoreResource(api) {}
 
 public:
     CommandPool(CommandPool&&);
@@ -45,7 +44,7 @@ public:
     Res<Ref<CommandBuffer>> allocate(CommandBuffer::Level level, const Name& name = "CommandBuffer");
     void resetPool();
 
-    static Res<CommandPool> from(const Device& device, const CommandPoolState& info);
+    static Res<CommandPool> from(const CoreApi& api, const CommandPoolState& info);
 };
 
 NAMESPACE_END(core)

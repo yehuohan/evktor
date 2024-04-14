@@ -1,6 +1,15 @@
 #pragma once
 #include "render_target.hpp"
-#include "vktor/base/api.hpp"
+#include "vktor/core/api/api.hpp"
+#include "vktor/core/buffer.hpp"
+#include "vktor/core/command_buffer.hpp"
+#include "vktor/core/command_pool.hpp"
+#include "vktor/core/descriptor_pool.hpp"
+#include "vktor/core/descriptor_set.hpp"
+#include "vktor/core/descriptor_setlayout.hpp"
+#include "vktor/core/event.hpp"
+#include "vktor/core/fence.hpp"
+#include "vktor/core/semaphore.hpp"
 
 NAMESPACE_BEGIN(vkt)
 
@@ -11,7 +20,7 @@ NAMESPACE_BEGIN(vkt)
  */
 class RenderFrame : private NonCopyable {
 private:
-    const BaseApi& api;
+    const core::CoreApi& api;
 
     const size_t thread_count = 1;
     /** Render target table for swapchain */
@@ -27,7 +36,7 @@ private:
     core::EventPool event_pool;
 
 public:
-    explicit RenderFrame(const BaseApi& api, size_t thread_count);
+    explicit RenderFrame(const core::CoreApi& api, size_t thread_count);
     RenderFrame(RenderFrame&&);
 
     void setSwapchainRTT(Box<RenderTargetTable>&& rtt = nullptr);

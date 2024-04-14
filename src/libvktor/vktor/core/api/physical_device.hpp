@@ -1,5 +1,5 @@
 #pragma once
-#include "__core.hpp"
+#include "__api.hpp"
 #include "instance.hpp"
 #include "queue.hpp"
 
@@ -85,6 +85,9 @@ public:
 
     static Res<PhysicalDevice> from(const Instance& instance, PhysicalDeviceState& info);
 };
+
+bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& device_extensions);
+void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions);
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)

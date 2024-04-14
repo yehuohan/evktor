@@ -3,6 +3,7 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
+// TODO: should not use static var
 static bool debug_utils_enabled = false;
 
 VkResult createDebugUtils(VkInstance instance, PFN_vkDebugUtilsMessengerCallbackEXT callback, VkDebugUtilsMessengerEXT* debug) {

@@ -1,6 +1,5 @@
 #pragma once
 #include "__core.hpp"
-#include "device.hpp"
 #include "swapchain.hpp"
 
 NAMESPACE_BEGIN(vkt)
@@ -112,18 +111,18 @@ public:
     Self addSubpass(Vector<uint32_t>&& input, Vector<uint32_t>&& color, uint32_t depthstencil = VK_ATTACHMENT_UNUSED);
     Self addSubpass(const RenderSubpassInfo& subpass);
 
-    Res<RenderPass> into(const Device& device) const;
+    Res<RenderPass> into(const CoreApi& api) const;
 };
 
-struct RenderPass : public CoreResource<VkRenderPass, VK_OBJECT_TYPE_RENDER_PASS, Device> {
+struct RenderPass : public CoreResource<VkRenderPass, VK_OBJECT_TYPE_RENDER_PASS> {
 protected:
-    explicit RenderPass(const Device& device) : CoreResource(device) {}
+    explicit RenderPass(const CoreApi& api) : CoreResource(api) {}
 
 public:
     RenderPass(RenderPass&&);
     ~RenderPass();
 
-    static Res<RenderPass> from(const Device& device, const RenderPassState& info);
+    static Res<RenderPass> from(const CoreApi& api, const RenderPassState& info);
 };
 
 NAMESPACE_END(core)

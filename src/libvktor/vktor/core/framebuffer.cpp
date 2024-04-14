@@ -27,11 +27,11 @@ Self FramebufferState::setExtent(uint32_t _width, uint32_t _height, uint32_t _la
     return *this;
 }
 
-Res<Framebuffer> FramebufferState::into(const Device& device) const {
-    return Framebuffer::from(device, *this);
+Res<Framebuffer> FramebufferState::into(const CoreApi& api) const {
+    return Framebuffer::from(api, *this);
 }
 
-Framebuffer::Framebuffer(Framebuffer&& rhs) : CoreResource(rhs.device) {
+Framebuffer::Framebuffer(Framebuffer&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -39,13 +39,13 @@ Framebuffer::Framebuffer(Framebuffer&& rhs) : CoreResource(rhs.device) {
 
 Framebuffer::~Framebuffer() {
     if (!__borrowed && handle) {
-        vkDestroyFramebuffer(device, handle, nullptr);
+        vkDestroyFramebuffer(api, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
 }
 
-Res<Framebuffer> Framebuffer::from(const Device& device, const FramebufferState& info) {
-    Framebuffer framebuffer(device);
+Res<Framebuffer> Framebuffer::from(const CoreApi& api, const FramebufferState& info) {
+    Framebuffer framebuffer(api);
 
     auto framebuffer_ci = Itor::FramebufferCreateInfo();
     framebuffer_ci.renderPass = info.render_pass;
@@ -55,7 +55,7 @@ Res<Framebuffer> Framebuffer::from(const Device& device, const FramebufferState&
     framebuffer_ci.height = info.height;
     framebuffer_ci.layers = info.layers;
 
-    OnRet(vkCreateFramebuffer(device, &framebuffer_ci, nullptr, framebuffer), "Failed to create framebuffer");
+    OnRet(vkCreateFramebuffer(api, &framebuffer_ci, nullptr, framebuffer), "Failed to create framebuffer");
     OnName(framebuffer, info.__name);
 
     return Ok(std::move(framebuffer));
