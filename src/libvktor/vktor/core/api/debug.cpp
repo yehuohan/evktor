@@ -40,7 +40,7 @@ Self DebugState::setUserData(void* user_data) {
     return *this;
 }
 
-Res<Debug> DebugState::into(const Instance& instance) const {
+Res<Debug> DebugState::into(const VkInstance instance) const {
     return Debug::from(instance, *this);
 }
 
@@ -89,7 +89,7 @@ void Debug::cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const {
     vkCmdInsertDebugUtilsLabelEXT(cmdbuf, &label_info);
 }
 
-Res<Debug> Debug::from(const Instance& instance, const DebugState& info) {
+Res<Debug> Debug::from(const VkInstance instance, const DebugState& info) {
     Debug debug(instance);
 
     OnRet(vkCreateDebugUtilsMessengerEXT(instance, &info.debug_ci, nullptr, &debug.handle),

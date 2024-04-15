@@ -10,9 +10,7 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/misc SRC)
 
 # Borrow 'assets' and 'camera' from libvkt_devel
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libvkt_devel)
-set(SRC_EXT
-    ${CMAKE_CURRENT_SOURCE_DIR}/ ../libvkt_devel/assets.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ ../libvkt_devel/camera.cpp)
+set(SRC_EXT ${CMAKE_CURRENT_SOURCE_DIR}/ ../libvkt_devel/camera.cpp)
 
 add_executable(${PROJECT_NAME} ${SRC} ${SRC_EXT})
 

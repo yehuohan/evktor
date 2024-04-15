@@ -16,8 +16,15 @@ class Shader;
 class ShaderSource : private NonCopyable {
     friend class Shader;
 
+public:
+    enum Stage {
+        Vert = VK_SHADER_STAGE_VERTEX_BIT,
+        Frag = VK_SHADER_STAGE_FRAGMENT_BIT,
+        Comp = VK_SHADER_STAGE_COMPUTE_BIT,
+    };
+
 private:
-    VkShaderStageFlagBits stage;
+    Stage stage;
     std::string filename{""};
     std::string entry = "main";
     std::string code{""};
@@ -27,7 +34,7 @@ private:
     ShaderSource(){};
 
 public:
-    static Res<ShaderSource> from(const std::string& filename);
+    static Res<ShaderSource> from(ShaderSource::Stage stage, std::string&& code);
     ShaderSource(ShaderSource&&);
 
     inline size_t getId() const {

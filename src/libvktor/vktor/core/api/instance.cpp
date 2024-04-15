@@ -67,6 +67,7 @@ Instance::Instance(Instance&& rhs) {
 }
 
 Instance::~Instance() {
+    // Must resuet debug before destroy instance
     debug.reset();
     if (!__borrowed && handle) {
         vkDestroyInstance(handle, nullptr);

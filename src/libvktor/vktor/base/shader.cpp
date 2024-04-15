@@ -9,36 +9,6 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
-static Res<VkShaderStageFlagBits> getShaderStage(const std::string& filename) {
-    std::string::size_type n = filename.rfind('.');
-    if (n == std::string::npos) {
-        return Er("Failed to get shader stage: {}", filename);
-    }
-    std::string suffix = filename.substr(n + 1);
-
-    VkShaderStageFlagBits stage;
-    if ("vert" == suffix) {
-        stage = VK_SHADER_STAGE_VERTEX_BIT;
-    } else if ("frag" == suffix) {
-        stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    } else if ("geom" == suffix) {
-        stage = VK_SHADER_STAGE_GEOMETRY_BIT;
-    } else if ("comp" == suffix) {
-        stage = VK_SHADER_STAGE_COMPUTE_BIT;
-    } else {
-        return Er("Unrecognized shader type: {}", suffix);
-    }
-    return Ok(stage);
-}
-
-static Res<std::string> readShader(const std::string& filename) {
-    std::ifstream fin(filename, std::ios::in);
-    if (!fin.is_open()) {
-        return Er("Failed to read shader: {}", filename);
-    }
-    return Ok(std::string({std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()}));
-}
-
 inline static bool getShaderLanguage(EShLanguage& lang, const VkShaderStageFlagBits stage) {
     switch (stage) {
     case VK_SHADER_STAGE_VERTEX_BIT: lang = EShLangVertex; break;
@@ -60,18 +30,16 @@ inline static bool getShaderLanguage(EShLanguage& lang, const VkShaderStageFlagB
     return true;
 }
 
-Res<ShaderSource> ShaderSource::from(const std::string& filename) {
+Res<ShaderSource> ShaderSource::from(ShaderSource::Stage stage, std::string&& code) {
     ShaderSource shader_source{};
 
-    auto stage = getShaderStage(filename);
-    OnErr(stage);
-    shader_source.stage = stage.unwrap();
-    shader_source.filename = filename;
+    shader_source.stage = stage;
     shader_source.entry = "main";
-    auto code = readShader(filename);
-    OnErr(code);
-    shader_source.code = std::move(code.unwrap());
+    shader_source.code = std::move(code);
     shader_source.id = hash(shader_source.code);
+    // Take hash id as filename currently
+    // Maybe there can have a table to map all hasd ids to shader filenames for debug
+    shader_source.filename = std::to_string(shader_source.id);
 
     return Ok(std::move(shader_source));
 }
@@ -88,7 +56,7 @@ ShaderSource::ShaderSource(ShaderSource&& rhs) {
 Res<Shader> Shader::from(const ShaderSource& source) {
     Shader shader{};
 
-    shader.stage = source.stage;
+    shader.stage = static_cast<VkShaderStageFlagBits>(source.stage);
     shader.filename = source.filename;
     shader.entry = source.entry;
     // Must set stage, filename and entry before glsl2spv()

@@ -10,10 +10,10 @@
 #define vktFmt(f, ...) fmt::format(f, ##__VA_ARGS__)
 
 #define vktOut(f, ...)    vkt::print(vktFmt("[vkt] " f "\n", ##__VA_ARGS__))
-#define vktLog(l, f, ...) vkt::print(vktFmt("[vkt][{}] " f "\n", l, ##__VA_ARGS__))
+#define vktLog(l, f, ...) vkt::print(vktFmt("[vkt][{}] " f, l, ##__VA_ARGS__))
 
-#define vktLogW(f, ...) vktLog("W", f, ##__VA_ARGS__)
-// #define vktLogE(f, ...) vktLog("E", f, ##__VA_ARGS__)
+#define vktLogW(f, ...) vktLog("W", f "\n", ##__VA_ARGS__)
+// #define vktLogE(f, ...) vktLog("E", f "\n", ##__VA_ARGS__)
 #define vktLogE(f, ...) vkt::print(vktFmt("[vkt][E({}:{})] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__))
 
 #define vktErrThrow(f, ...) std::runtime_error(vktFmt(f, ##__VA_ARGS__))

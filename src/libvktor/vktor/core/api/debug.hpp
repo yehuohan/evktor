@@ -36,7 +36,7 @@ public:
     Self setCallback(PFN_vkDebugUtilsMessengerCallbackEXT callback);
     Self setUserData(void* user_data);
 
-    Res<Debug> into(const Instance& instance) const;
+    Res<Debug> into(const VkInstance instance) const;
 };
 
 struct BaseDebug : public CoreHandle<VkDebugUtilsMessengerEXT> {
@@ -58,10 +58,10 @@ public:
  * VK_EXT_DEBUG_UTILS_EXTENSION_NAME works after vkCreateInstance and before vkDestroyInstance
  */
 struct Debug : public BaseDebug {
-    const Instance& instance;
+    const VkInstance instance;
 
 protected:
-    explicit Debug(const Instance& instance) : instance(instance) {}
+    explicit Debug(const VkInstance instance) : instance(instance) {}
 
 public:
     Debug(Debug&&);
@@ -78,7 +78,7 @@ public:
     virtual void cmdEndLabel(VkCommandBuffer cmdbuf) const override;
     virtual void cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const override;
 
-    static Res<Debug> from(const Instance& instance, const DebugState& info);
+    static Res<Debug> from(const VkInstance instance, const DebugState& info);
 };
 
 NAMESPACE_END(core)

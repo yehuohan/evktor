@@ -1,6 +1,11 @@
 /**
  * @file vktor.hpp
- * @brief Vulkan graphics framework
+ * @brief Graphics framework
+ *
+ * - Only support Vulkan
+ * - Featured with state api: `auto xxx = XXXState().into().unwrap()` and
+ *   static constructor api: `auto xxx = XXX::from().unwrap()`
+ * - Avoid crash: wrap unexpected returns/results/errors with Res for custom processing
  *
  * @author yehuohan@qq.com
  */
