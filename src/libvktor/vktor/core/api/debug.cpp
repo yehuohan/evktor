@@ -51,7 +51,7 @@ Debug::Debug(Debug&& rhs) : instance(rhs.instance) {
 }
 
 Debug::~Debug() {
-    if (!__borrowed && handle) {
+    if (!__borrowed && instance && handle) {
         vkDestroyDebugUtilsMessengerEXT(instance, handle, nullptr);
     }
     handle = VK_NULL_HANDLE;
@@ -92,6 +92,9 @@ void Debug::cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const {
 Res<Debug> Debug::from(const VkInstance instance, const DebugState& info) {
     Debug debug(instance);
 
+    if (!instance) {
+        return Er("Require a valid VkInstance to create debug utils");
+    }
     OnRet(vkCreateDebugUtilsMessengerEXT(instance, &info.debug_ci, nullptr, &debug.handle),
           "Failed to create debug utils messenger");
 
