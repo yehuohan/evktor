@@ -29,18 +29,37 @@ void compute_jitter() {
     std::cout << "===============================================================================\n";
     glm::mat4 mview = glm::lookAt(glm::vec3(0.0, 0.0, 5.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
     glm::mat4 mproj = glm::perspective(glm::radians(45.0), 1.0 / 1.0, 0.1, 100.0);
-
     glm::vec4 pos = glm::vec4(0.5, 0.5, 1.0, 1.0);
-    glm::mat4 vp = mproj * mview;
-    std::cout << "vp: " << vp << std::endl;
-    std::cout << "pos: " << vp * pos << std::endl;
+
+    glm::vec4 pa;
+    {
+        glm::mat4 vp = mproj * mview;
+        std::cout << "vp (without jitter): " << vp << std::endl;
+        pa = vp * pos;
+        pa /= pa.w;
+        std::cout << "pa (without jitter):\n" << pa << std::endl;
+    }
 
     // Apply jitter
-    vp[2][0] += 0.1;
-    vp[2][1] += -0.1;
+    glm::vec2 jitter(0.1, -0.1);
+    {
+        std::cout << "jitter: " << jitter << std::endl;
+        mproj[2][0] += jitter.x;
+        mproj[2][1] += jitter.y;
+    }
 
-    std::cout << "vp: " << vp << std::endl;
-    std::cout << "pos: " << vp * pos << std::endl;
+    glm::vec4 pb;
+    {
+        glm::mat4 vp = mproj * mview;
+        std::cout << "vp (with jitter): " << vp << std::endl;
+        pb = vp * pos;
+        pb /= pb.w;
+        std::cout << "pb (with jitter):\n" << pb << std::endl;
+    }
+
+    auto pc = glm::vec2(pb) + jitter;
+    auto res = (pc == glm::vec2(pa)) ? "true" : "false";
+    std::cout << "pb + jitter == pa : " << res << std::endl;
 }
 
 int main() {
