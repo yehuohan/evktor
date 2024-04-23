@@ -41,10 +41,10 @@ CommandPool::~CommandPool() {
     handle = VK_NULL_HANDLE;
 }
 
-Res<Ref<CommandBuffer>> CommandPool::allocate(CommandBuffer::Level level, const Name& name) {
+Res<Ref<CommandBuffer>> CommandPool::allocate(Level level, const Name& name) {
     CommandBuffer* ptr = nullptr;
     switch (level) {
-    case CommandBuffer::Level::Primary:
+    case Level::Primary:
         {
             if (active_primary_count < primaries.size()) {
                 ptr = &primaries[active_primary_count++];
@@ -63,7 +63,7 @@ Res<Ref<CommandBuffer>> CommandPool::allocate(CommandBuffer::Level level, const 
             }
             break;
         }
-    case CommandBuffer::Level::Secondary:
+    case Level::Secondary:
         {
             if (active_secondary_count < secondaries.size()) {
                 ptr = &secondaries[active_secondary_count++];

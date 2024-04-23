@@ -5,6 +5,8 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
+using Self = CommandBuffer::Self;
+
 CommandBuffer::CommandBuffer(const CommandPool& command_pool) : CoreResource(command_pool.api), command_pool(command_pool) {}
 
 CommandBuffer::CommandBuffer(CommandBuffer&& rhs) : CoreResource(rhs.api), command_pool(rhs.command_pool) {
@@ -18,33 +20,6 @@ CommandBuffer::~CommandBuffer() {
         vkFreeCommandBuffers(command_pool.api, command_pool, 1, &handle);
     }
     handle = VK_NULL_HANDLE;
-}
-
-VkResult CommandBuffer::begin(VkCommandBufferUsageFlags flags) const {
-    auto cmdbuf_bi = Itor::CommandBufferBeginInfo();
-    cmdbuf_bi.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-    return vkBeginCommandBuffer(handle, &cmdbuf_bi);
-}
-
-VkResult CommandBuffer::end() const {
-    return vkEndCommandBuffer(handle);
-}
-
-void CommandBuffer::beginRenderPass(const VkRenderPassBeginInfo& render_pass_bi, VkSubpassContents contents) const {
-    vkCmdBeginRenderPass(handle, &render_pass_bi, contents);
-}
-
-void CommandBuffer::endRenderPass() const {
-    vkCmdEndRenderPass(handle);
-}
-
-void CommandBuffer::cmdBlitImage(const Image& src,
-                                 const Image& dst,
-                                 const Vector<VkImageBlit>& regions,
-                                 VkImageLayout src_layout,
-                                 VkImageLayout dst_layout,
-                                 VkFilter filter) const {
-    vkCmdBlitImage(handle, src, src_layout, dst, dst_layout, u32(regions.size()), regions.data(), filter);
 }
 
 void CommandBuffer::cmdBlitImage(const Arg<Image>& src,
@@ -143,14 +118,6 @@ void CommandBuffer::cmdGenImageMips(const Arg<Image>& img, VkFilter filter) cons
     }
 }
 
-void CommandBuffer::cmdCopyImage(const Image& src,
-                                 const Image& dst,
-                                 const Vector<VkImageCopy>& regions,
-                                 VkImageLayout src_layout,
-                                 VkImageLayout dst_layout) const {
-    vkCmdCopyImage(handle, src, src_layout, dst, dst_layout, u32(regions.size()), regions.data());
-}
-
 void CommandBuffer::cmdCopyImage(const Arg<Image>& src,
                                  const Arg<Image>& dst,
                                  VkImageLayout src_layout,
@@ -166,10 +133,6 @@ void CommandBuffer::cmdCopyImage(const Arg<Image>& src,
     vkCmdCopyImage(handle, src, src_layout, dst, dst_layout, 1, &copy);
 }
 
-void CommandBuffer::cmdCopyBuffer(const Buffer& src, const Buffer& dst, const Vector<VkBufferCopy>& regions) const {
-    vkCmdCopyBuffer(handle, src, dst, u32(regions.size()), regions.data());
-}
-
 void CommandBuffer::cmdCopyBuffer(const Buffer& src,
                                   const Buffer& dst,
                                   VkDeviceSize src_offset,
@@ -183,13 +146,6 @@ void CommandBuffer::cmdCopyBuffer(const Buffer& src,
     vkCmdCopyBuffer(handle, src, dst, 1, &copy);
 }
 
-void CommandBuffer::cmdCopyImageToBuffer(const Image& img,
-                                         const Buffer& buf,
-                                         const Vector<VkBufferImageCopy>& regions,
-                                         VkImageLayout img_layout) const {
-    vkCmdCopyImageToBuffer(handle, img, img_layout, buf, u32(regions.size()), regions.data());
-}
-
 void CommandBuffer::cmdCopyImageToBuffer(const Arg<Image>& img, const Buffer& buf, VkImageLayout img_layout) const {
     VkBufferImageCopy copy{};
     copy.imageSubresource = img;
@@ -201,13 +157,6 @@ void CommandBuffer::cmdCopyImageToBuffer(const Arg<Image>& img, const Buffer& bu
     vkCmdCopyImageToBuffer(handle, img, img_layout, buf, 1, &copy);
 };
 
-void CommandBuffer::cmdCopyBufferToImage(const Buffer& buf,
-                                         const Image& img,
-                                         const Vector<VkBufferImageCopy>& regions,
-                                         VkImageLayout img_layout) const {
-    vkCmdCopyBufferToImage(handle, buf, img, img_layout, u32(regions.size()), regions.data());
-}
-
 void CommandBuffer::cmdCopyBufferToImage(const Buffer& buf, const Arg<Image>& img, VkImageLayout img_layout) const {
     VkBufferImageCopy copy{};
     copy.bufferOffset = 0;
@@ -217,27 +166,6 @@ void CommandBuffer::cmdCopyBufferToImage(const Buffer& buf, const Arg<Image>& im
     copy.imageOffset = VkOffset3D{0, 0, 0};
     copy.imageExtent = img.a.extent;
     vkCmdCopyBufferToImage(handle, buf, img, img_layout, 1, &copy);
-}
-
-void CommandBuffer::cmdMemoryBarrier(VkPipelineStageFlags src_stage,
-                                     VkPipelineStageFlags dst_stage,
-                                     const Vector<VkMemoryBarrier>& barriers,
-                                     VkDependencyFlags flags) const {
-    vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, u32(barriers.size()), barriers.data(), 0, nullptr, 0, nullptr);
-}
-
-void CommandBuffer::cmdBufferMemoryBarrier(VkPipelineStageFlags src_stage,
-                                           VkPipelineStageFlags dst_stage,
-                                           const Vector<VkBufferMemoryBarrier>& barriers,
-                                           VkDependencyFlags flags) const {
-    vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, u32(barriers.size()), barriers.data(), 0, nullptr);
-}
-
-void CommandBuffer::cmdImageMemoryBarrier(VkPipelineStageFlags src_stage,
-                                          VkPipelineStageFlags dst_stage,
-                                          const Vector<VkImageMemoryBarrier>& barriers,
-                                          VkDependencyFlags flags) const {
-    vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, 0, nullptr, u32(barriers.size()), barriers.data());
 }
 
 bool CommandBuffer::cmdTransitImageLayout(const Arg<Image>& img,

@@ -29,6 +29,11 @@ struct CommandPool : public CoreResource<VkCommandPool, VK_OBJECT_TYPE_COMMAND_P
     uint32_t active_primary_count = 0;
     uint32_t active_secondary_count = 0;
 
+    enum class Level {
+        Primary = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+        Secondary = VK_COMMAND_BUFFER_LEVEL_SECONDARY,
+    };
+
 protected:
     explicit CommandPool(const CoreApi& api) : CoreResource(api) {}
 
@@ -41,7 +46,7 @@ public:
      * Store allocated CommandBuffer within this CommandPool, so return the referrence of the CommandBuffer.
      * And free CommandBuffer by removing CommandBuffer from `primaries` or `secondaries`.
      */
-    Res<Ref<CommandBuffer>> allocate(CommandBuffer::Level level, const Name& name = "CommandBuffer");
+    Res<Ref<CommandBuffer>> allocate(Level level, const Name& name = "CommandBuffer");
     void resetPool();
 
     static Res<CommandPool> from(const CoreApi& api, const CommandPoolState& info);

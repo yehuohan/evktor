@@ -88,7 +88,7 @@ Res<Ref<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, si
         }
     }
 
-    return cmdpool->allocate(CommandBuffer::Level::Primary);
+    return cmdpool->allocate(CommandPool::Level::Primary);
 }
 
 Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
