@@ -3,7 +3,7 @@ set dotenv-load
 set ignore-comments
 
 dir_root := replace(justfile_directory(), '\', '/')
-dir_home := replace(env('APPS_HOME'), '\', '/')
+dir_home := replace(env('DOT_HOME'), '\', '/')
 
 build_type := env('BUILD_TYPE', 'Debug')
 # build_type := env('BUILD_TYPE', 'Release')
