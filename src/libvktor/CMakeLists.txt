@@ -9,6 +9,7 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/core SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/core/api SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/base SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/rendering SRC)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/render_graph SRC)
 
 add_library(${PROJECT_NAME} STATIC ${SRC})
 
