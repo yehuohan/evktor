@@ -83,3 +83,16 @@ deps-repos:
 deps-gen:
     @echo Prepare generated
     python {{dir_root}}/scripts/generate.py
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Build with xmakae
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+export XMAKE_GLOBALDIR := dir_root
+
+xall: xgen
+    # xmake show -l envs
+    xmake
+
+xgen:
+    xmake g --proxy_pac={{dir_root}}/.xmake/pac.lua
+    xmake f -p mingw -a x86_64 -m debug -o {{dir_root}}/_VOut/build

@@ -10,6 +10,7 @@
  * @author yehuohan@qq.com
  */
 #pragma once
+#include "vktor/render_graph/render_graph.hpp"
 #include "vktor/rendering/render_context.hpp"
 
 NAMESPACE_BEGIN(vkt)
@@ -24,7 +25,10 @@ public:
         return *api;
     }
 
-    // Box<RenderGraph> newRdg();
+    inline Box<RenderGraph> newRdg() const {
+        return newBox<RenderGraph>(RenderGraph::from(*api).unwrap());
+    }
+
     inline Box<RenderContext> newRctx(uint32_t frame_count = 3, size_t thread_count = 1) const {
         return newBox<RenderContext>(RenderContext::from(*api, frame_count, thread_count).unwrap());
     }
