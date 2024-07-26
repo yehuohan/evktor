@@ -3,7 +3,7 @@ set dotenv-load
 set ignore-comments
 
 dir_root := replace(justfile_directory(), '\', '/')
-dir_home := replace(env('DOT_HOME'), '\', '/')
+dir_apps := replace(env('DOT_APPS'), '\', '/')
 
 build_type := env('BUILD_TYPE', 'Debug')
 # build_type := env('BUILD_TYPE', 'Release')
@@ -13,7 +13,7 @@ build_job := '-j4'
 dir_build := dir_root / '_VOut' / build_type
 dir_install := dir_root / 'install' / build_type
 
-export VCPKG_ROOT := dir_home / 'vcpkg'
+export VCPKG_ROOT := dir_apps / 'vcpkg'
 export VCPKG_TRIPLET := env('VCPKG_TRIPLET', 'x64-mingw-mix')
 VCPKG_XSCRIPT := 'clear;x-script,bash {{dir_root}}/scripts/vcpkg_xscript.sh {url} {dst};x-block-origin'
 DEPS_DIR := dir_root / 'deps'

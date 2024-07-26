@@ -1,5 +1,19 @@
-# pyproject.toml
 
+### black
+# fmt: on/off
 [tool.black]
 line-length = 120
 skip-string-normalization = 0
+
+
+### basedpyright
+[tool.basedpyright]
+typeCheckingMode = 'standard' # "off", "basic", "standard", "strict", "all"
+reportAny = false
+
+[[tool.basedpyright.executionEnvironments]]
+root = "scripts"
+extraPaths = [
+    "deps/repos/Vulkan-ValidationLayers/scripts",
+    "deps/x64-mingw-mix/share/vulkan/registry",
+]
