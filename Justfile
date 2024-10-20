@@ -22,12 +22,16 @@ DEPS_DIR := dir_root / 'deps'
 all: evktor #omega
 
 evktor: src
-    @echo [run] evktor...
+    @echo [Run] evktor...
     {{dir_install}}/evktor {{dir_root}}/../assets {{dir_root}}/glsl
 
 omega: src
-    @echo [run] evktor/omega...
+    @echo [Run] evktor/omega...
     {{dir_install}}/omega {{dir_root}}/../assets {{dir_root}}/glsl
+
+test case: src
+    @echo [Run] evktor/test/tst_{{case}}
+    {{dir_install}}/tst_{{case}}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Build src

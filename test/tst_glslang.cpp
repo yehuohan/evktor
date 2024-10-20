@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
 
     const std::string filename = "./glsl/test/triangle.vert";
     std::vector<unsigned int> spirv = glsl2spv(filename);
-    std::cout << "spv size: " << spirv.size();
+    std::cout << "spv size: " << spirv.size() << std::endl;
 
     return 0;
 }
