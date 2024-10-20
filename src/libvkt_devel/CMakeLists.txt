@@ -10,8 +10,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     glfw
     glm::glm
     imgui::imgui
-    Freetype::Freetype
-    fmt::fmt)
+    Freetype::Freetype)
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${Stb_INCLUDE_DIR}
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

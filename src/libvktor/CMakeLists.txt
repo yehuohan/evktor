@@ -18,7 +18,8 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE glslang::glslang
     PRIVATE glslang::SPIRV
     PRIVATE glslang::glslang-default-resource-limits
-    PRIVATE GPUOpen::VulkanMemoryAllocator)
+    PRIVATE GPUOpen::VulkanMemoryAllocator
+    PRIVATE fmt::fmt)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 # define VK_NO_PROTOTYPES to use volk
 target_compile_definitions(${PROJECT_NAME} PUBLIC VK_NO_PROTOTYPES)
