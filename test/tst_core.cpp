@@ -1,12 +1,13 @@
+#include "__helpers.hpp"
 #include <iostream>
 #include <vktor.hpp>
 
 using namespace vkt;
 using namespace vkt::core;
 
-int main(int argc, char* argv[]) {
-    vktOut("tst_core");
+static const std::string filename = "./glsl/test/quad.comp";
 
+Box<CoreApi> setupCoreApi() {
     CoreApiState aso{};
 
     // Create instance
@@ -35,10 +36,39 @@ int main(int argc, char* argv[]) {
     aso.init(DeviceState().setMaxQueueCount(1).setVerbose(true)).unwrap();
 
     // Create core api
-    vkt::Box<vkt::core::CoreApi> api = newBox<vkt::core::CoreApi>(aso.into().unwrap());
+    Box<CoreApi> api = newBox<CoreApi>(aso.into().unwrap());
 
     vktOut("Instance: {}, Physical Device: {}, Device: {}",
            fmt::ptr((VkInstance)*api),
            fmt::ptr((VkPhysicalDevice)*api),
            fmt::ptr((VkDevice)*api));
+
+    return std::move(api);
+}
+
+void setupComputePass(const CoreApi& api) {
+    ShaderSource shader_source = ShaderSource::from(ShaderSource::Comp, read_shader(filename)).unwrap();
+    Shader shader = Shader::from(shader_source).unwrap();
+
+    DescriptorSetLayoutState dslso{};
+    dslso.addCompBinding(0, VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_IMAGE);
+    dslso.addCompBinding(1, VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_IMAGE);
+    auto dsl = dslso.into(api).unwrap();
+
+    PipelineLayoutState plso{};
+    plso.addDescriptorSetLayout(dsl);
+    auto pl = plso.into(api).unwrap();
+
+    ComputePipelineState pso{};
+    pso.setShader(shader.into(api).unwrap()).setPipelineLayout(pl);
+    auto p = pso.into(api).unwrap();
+
+    vktOut("Pipeline: {}", fmt::ptr((VkPipeline)p));
+}
+
+int main(int argc, char* argv[]) {
+    vktOut(">>> tst_core");
+
+    auto api = setupCoreApi();
+    setupComputePass(*api);
 }

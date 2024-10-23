@@ -1,18 +1,9 @@
+#include "__helpers.hpp"
 #include <cstdint>
-#include <fstream>
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/SPIRV/GlslangToSpv.h>
 #include <iostream>
-#include <string>
-
-std::string read_shader(const std::string& filename) {
-    std::ifstream fin(filename, std::ios::in);
-    if (!fin.is_open()) {
-        throw std::runtime_error("Failed to read shader " + filename);
-    }
-    return std::string({std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()});
-}
 
 std::vector<unsigned int> glsl2spv(const std::string& filename) {
     std::string shader_code = read_shader(filename);
@@ -59,7 +50,7 @@ std::vector<unsigned int> glsl2spv(const std::string& filename) {
 }
 
 int main(int argc, char* argv[]) {
-    std::cout << "tst_glslang\n";
+    std::cout << ">>> tst_glslang\n";
 
     const std::string filename = "./glsl/test/triangle.vert";
     std::vector<unsigned int> spirv = glsl2spv(filename);

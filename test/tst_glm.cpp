@@ -76,6 +76,8 @@ void compute_jitter() {
 }
 
 int main() {
+    std::cout << ">>> tst_glm\n";
+
     compute_mvp();
     compute_jitter();
 }
