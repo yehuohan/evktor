@@ -3,7 +3,6 @@ set dotenv-load
 set ignore-comments
 
 dir_root := replace(justfile_directory(), '\', '/')
-dir_apps := replace(env('DOT_APPS'), '\', '/')
 
 build_type := env('BUILD_TYPE', 'Debug')
 # build_type := env('BUILD_TYPE', 'Release')
@@ -13,10 +12,13 @@ build_job := '-j4'
 dir_build := dir_root / '_VOut' / build_type
 dir_install := dir_root / 'install' / build_type
 
-export VCPKG_ROOT := dir_apps / 'vcpkg'
-export VCPKG_TRIPLET := env('VCPKG_TRIPLET', 'x64-mingw-mix')
-VCPKG_XSCRIPT := 'clear;x-script,bash {{dir_root}}/scripts/vcpkg_xscript.sh {url} {dst};x-block-origin'
+export LD_LIBRARY_PATH := dir_install / 'lib'
+
+export VCPKG_ROOT := replace(env('DOT_APPS'), '\', '/') / 'vcpkg'
+export VCPKG_TRIPLET := if os() == "windows" { 'x64-mingw-mix' } else { 'x64-linux-mix' }
+VCPKG_XSCRIPT := '"clear;x-script,bash {{dir_root}}/scripts/vcpkg_xscript.sh {url} {dst};x-block-origin"'
 DEPS_DIR := dir_root / 'deps'
+
 
 
 all: evktor #omega
