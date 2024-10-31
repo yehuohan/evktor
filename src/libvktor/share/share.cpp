@@ -1,16 +1,14 @@
 #include "share.hpp"
+#include "defines.hpp"
 #include <fmt/chrono.h>
 #include <fstream>
 #include <iostream>
 
 NAMESPACE_BEGIN(vkt)
 
-#define VKT_SHARE_PRINT2FILE
-
-static std::fstream fout;
-
 void print(const std::string& str) {
 #ifdef VKT_SHARE_PRINT2FILE
+    static std::fstream fout;
     if (!fout.is_open()) {
         fout.open("log.txt", std::ios::out);
     }

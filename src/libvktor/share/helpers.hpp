@@ -3,6 +3,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -93,6 +94,22 @@ inline size_t hash(const Args&... args) {
     size_t seed = 0;
     hashCombine(seed, args...);
     return seed;
+}
+
+/**
+ * @brief Print vector to string
+ */
+template <typename T>
+auto vec2str(const Vector<T>& vec) -> std::string {
+    std::string str("[");
+    for (uint32_t k = 0; k < vec.size(); k++) {
+        str += " ";
+        str += std::to_string(k);
+        str += ",";
+    }
+    str += " ]";
+
+    return std::move(str);
 }
 
 } // namespace vkt

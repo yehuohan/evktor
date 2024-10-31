@@ -156,16 +156,16 @@ Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev
     // Select the first queue index by default
     const auto& indices = phy_dev.queue_families;
     if (indices.present.has_value()) {
-        device.queues.present = &device.queue_indices[indices.present.value()][0];
+        device.queues.present = &device.queue_indices[indices.present.value()][VKT_CORE_QUEUE_INDEX];
     }
     if (indices.graphics.has_value()) {
-        device.queues.graphics = &device.queue_indices[indices.graphics.value()][0];
+        device.queues.graphics = &device.queue_indices[indices.graphics.value()][VKT_CORE_QUEUE_INDEX];
     }
     if (indices.compute.has_value()) {
-        device.queues.compute = &device.queue_indices[indices.compute.value()][0];
+        device.queues.compute = &device.queue_indices[indices.compute.value()][VKT_CORE_QUEUE_INDEX];
     }
     if (indices.transfer.has_value()) {
-        device.queues.transfer = &device.queue_indices[indices.transfer.value()][0];
+        device.queues.transfer = &device.queue_indices[indices.transfer.value()][VKT_CORE_QUEUE_INDEX];
     }
 
     // Create memory allocator
