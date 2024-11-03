@@ -11,8 +11,8 @@ Self CommandPoolState::setFlags(VkCommandPoolCreateFlags _flags) {
     return *this;
 }
 
-Self CommandPoolState::setQueueIndex(uint32_t index) {
-    queue_index = index;
+Self CommandPoolState::setQueueFamilyIndex(uint32_t index) {
+    queue_family_index = index;
     return *this;
 }
 
@@ -100,7 +100,7 @@ Res<CommandPool> CommandPool::from(const CoreApi& api, const CommandPoolState& i
 
     auto cmdpool_ci = Itor::CommandPoolCreateInfo();
     cmdpool_ci.flags = info.flags;
-    cmdpool_ci.queueFamilyIndex = info.queue_index;
+    cmdpool_ci.queueFamilyIndex = info.queue_family_index;
     OnRet(vkCreateCommandPool(api, &cmdpool_ci, nullptr, cmdpool), "Failed to create command pool");
     OnName(cmdpool, info.__name);
 

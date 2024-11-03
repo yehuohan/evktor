@@ -80,7 +80,7 @@ Res<Ref<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, si
         } else {
             auto res = CommandPoolState()
                            .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
-                           .setQueueIndex(queue.family_index)
+                           .setQueueFamilyIndex(queue.family_index)
                            .into(api);
             OnErr(res);
             auto iter = cmdpools.insert({queue.family_index, res.unwrap()}).first;

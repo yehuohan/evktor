@@ -12,13 +12,13 @@ class CommandPoolState : public CoreStater<CommandPoolState> {
 
 private:
     VkCommandPoolCreateFlags flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    uint32_t queue_index = 0;
+    uint32_t queue_family_index = 0;
 
 public:
     explicit CommandPoolState(Name&& name = "CommandPool") : CoreStater(std::move(name)) {}
 
     Self setFlags(VkCommandPoolCreateFlags flags);
-    Self setQueueIndex(uint32_t index);
+    Self setQueueFamilyIndex(uint32_t index);
 
     Res<CommandPool> into(const CoreApi& api) const;
 };
