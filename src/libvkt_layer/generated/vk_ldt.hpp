@@ -2,7 +2,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace vkt {
+namespace vktlyr {
 
 typedef PFN_vkVoidFunction(VKAPI_PTR* PFN_GetPhysicalDeviceProcAddr)(VkInstance instance, const char* pName);
 
@@ -157,7 +157,7 @@ typedef struct VkLayerInstanceDispatchTable {
 } VkLayerInstanceDispatchTable;
 
 // Device dispatch table
-typedef struct VkLayerDispatchTable {
+typedef struct VkLayerDeviceDispatchTable {
     VkPhysicalDevice physical_device;
     VkDevice device;
     PFN_vkGetDeviceProcAddr GetDeviceProcAddr;
@@ -732,7 +732,7 @@ typedef struct VkLayerDispatchTable {
     PFN_vkCmdDrawMeshTasksEXT CmdDrawMeshTasksEXT;
     PFN_vkCmdDrawMeshTasksIndirectEXT CmdDrawMeshTasksIndirectEXT;
     PFN_vkCmdDrawMeshTasksIndirectCountEXT CmdDrawMeshTasksIndirectCountEXT;
-} VkLayerDispatchTable;
+} VkLayerDeviceDispatchTable;
 
 // Init instance dispatch table
 static inline bool initLDT(VkLayerInstanceDispatchTable& ldt,
@@ -890,11 +890,11 @@ static inline bool initLDT(VkLayerInstanceDispatchTable& ldt,
 }
 
 // Init device dispatch table
-static inline bool initLDT(VkLayerDispatchTable& ldt,
+static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
                            PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr,
                            VkPhysicalDevice physical_device,
                            VkDevice device) {
-    memset(&ldt, 0, sizeof(VkLayerDispatchTable));
+    memset(&ldt, 0, sizeof(VkLayerDeviceDispatchTable));
     ldt.physical_device = physical_device;
     ldt.device = device;
 #define GET(n) ldt.n = reinterpret_cast<PFN_vk##n>(fpGetDeviceProcAddr(device, "vk" #n))
@@ -1474,4 +1474,4 @@ static inline bool initLDT(VkLayerDispatchTable& ldt,
     return true;
 }
 
-} // namespace vkt
+} // namespace vktlyr

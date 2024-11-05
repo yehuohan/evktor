@@ -27,7 +27,7 @@ __VK_Sty = f"{__DIR_ROOT}/.clang-format"
 __VK_Xml = f"{__DIR_VkHeaders}/vk.xml"
 __VK_Api = "vulkan"
 __VK_Generators = {
-    "libvkt_layer/generated/vk_ldt.hpp": lambda: LDTGenerator(["vkt"]),
+    "libvkt_layer/generated/vk_ldt.hpp": lambda: LDTGenerator(["vktlyr"]),
     "libvktor/generated/vk_initializer.hpp": lambda: InitializerGenerator(["vkt", "Itor"]),
     "libvktor/generated/vk_string.hpp": lambda: OnStringGenerator(["vkt"]),
     "libvktor/generated/vk_string.cpp": lambda: OnStringGenerator(["vkt"], "vk_string.hpp"),
