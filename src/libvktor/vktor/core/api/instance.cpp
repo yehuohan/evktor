@@ -150,19 +150,26 @@ Res<Instance> Instance::from(InstanceState& info) {
 }
 
 bool checkInstanceLayers(const Vector<const char*>& layers) {
-    Vector<VkLayerProperties> lys{};
-    VkResult ret = enumerate(lys, vkEnumerateInstanceLayerProperties);
+    Vector<VkLayerProperties> lyrs{};
+    VkResult ret = enumerate(lyrs, vkEnumerateInstanceLayerProperties);
     if (ret != VK_SUCCESS) {
         vktLogE("Failed to get properties of instance layers: {}", VkStr(VkResult, ret));
         return false;
     }
 
-    std::set<std::string> instance_lys(layers.begin(), layers.end());
-    for (const auto& l : lys) {
-        instance_lys.erase(l.layerName);
+    std::set<std::string> instance_lyrs(layers.begin(), layers.end());
+    for (const auto& l : lyrs) {
+        instance_lyrs.erase(l.layerName);
     }
 
-    return instance_lys.empty();
+    bool res = instance_lyrs.empty();
+    if (!res) {
+        vktLogW("Not supported instance layers:");
+        for (const auto& l : instance_lyrs) {
+            vktLogW("\t{}", l);
+        }
+    }
+    return res;
 }
 
 bool checkInstanceExtensions(const Vector<const char*>& extensions) {
@@ -178,7 +185,14 @@ bool checkInstanceExtensions(const Vector<const char*>& extensions) {
         instance_exts.erase(e.extensionName);
     }
 
-    return instance_exts.empty();
+    bool res = instance_exts.empty();
+    if (!res) {
+        vktLogW("Not supported instance extensions:");
+        for (const auto& e : instance_exts) {
+            vktLogW("\t{}", e);
+        }
+    }
+    return res;
 }
 
 void printInstanceLayers(const Vector<const char*>& enabled_layers) {

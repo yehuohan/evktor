@@ -284,7 +284,14 @@ bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& devic
         device_exts.erase(e.extensionName);
     }
 
-    return device_exts.empty();
+    bool res = device_exts.empty();
+    if (!res) {
+        vktLogW("Not supported device extensions:");
+        for (const auto& e : device_exts) {
+            vktLogW("\t{}", e);
+        }
+    }
+    return res;
 }
 
 void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions) {
