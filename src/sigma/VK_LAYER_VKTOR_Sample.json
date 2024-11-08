@@ -1,0 +1,15 @@
+{
+    "file_format_version" : "1.0.0",
+    "layer" : {
+        "name": "VK_LAYER_VKTOR_Sample",
+        "type": "GLOBAL",
+        "library_path": ".\\VK_LAYER_VKTOR_Sample.dll",
+        "api_version": "1.0.0",
+        "implementation_version": "1",
+        "description": "Sample layer with evktor/libvkt_layer",
+        "functions": {
+            "vkGetInstanceProcAddr": "vkGetInstanceProcAddr",
+            "vkGetDeviceProcAddr": "vkGetDeviceProcAddr"
+        }
+    }
+}

@@ -5,7 +5,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(PROJECT_ASSETS ${PROJECT_ROOT}/../assets)
 set(PROJECT_GLSL ${PROJECT_ROOT}/glsl)
-set(PROJECT_BUILD ${PROJECT_ROOT}/_VOut)
 
 set(PROJECT_BUILD_DIR ${PROJECT_ROOT}/_VOut/${CMAKE_BUILD_TYPE})
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BUILD_DIR}/Outputs)
@@ -23,8 +22,10 @@ include(FindDeps)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/libvktor)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/libvkt_devel)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/libvkt_layer)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/main)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/omega)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/sigma)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 # Install

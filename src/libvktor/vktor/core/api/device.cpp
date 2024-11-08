@@ -115,8 +115,7 @@ Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev
     auto dev_ci = Itor::DeviceCreateInfo();
     dev_ci.queueCreateInfoCount = u32(queues_ci.size());
     dev_ci.pQueueCreateInfos = queues_ci.data();
-    // Lastest Vulkan implementation, there is no validation layers distinction between instance
-    // and device. But it's ok to set validation layers explicitly for compatiblity here.
+    // Device-only layers are deprecated at lastest Vulkan spec
     //.enabledLayerCount = u32(validation_layers.size()),
     //.ppEnabledLayerNames = validation_layers.data(),
     dev_ci.enabledExtensionCount = u32(phy_dev.extensions.size());
