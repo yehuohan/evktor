@@ -132,9 +132,9 @@ bool Image::copyFrom(const void* src, const VkDeviceSize src_size, uint32_t mip,
     VkDeviceSize offset = subresource_layout.offset;
 
     void* data;
-    auto ret = vmaMapMemory(api, allocation, &data);
-    if (VK_SUCCESS != ret) {
-        vktLogE("Failed to map image memory: {}", VkStr(VkResult, ret));
+    auto res = vmaMapMemory(api, allocation, &data);
+    if (VK_SUCCESS != res) {
+        vktLogE("Failed to map image memory: {}", VkStr(VkResult, res));
         return false;
     }
     std::memcpy((uint8_t*)data + offset, src, (size_t)mem_size);
@@ -148,9 +148,9 @@ bool Image::copyInto(void* dst, const VkDeviceSize dst_size = 0, uint32_t mip, u
     VkDeviceSize offset = subresource_layout.offset;
 
     void* data;
-    auto ret = vmaMapMemory(api, allocation, &data);
-    if (VK_SUCCESS != ret) {
-        vktLogE("Failed to map image memory: {}", VkStr(VkResult, ret));
+    auto res = vmaMapMemory(api, allocation, &data);
+    if (VK_SUCCESS != res) {
+        vktLogE("Failed to map image memory: {}", VkStr(VkResult, res));
         return false;
     }
     std::memcpy(dst, (uint8_t*)data + offset, (size_t)mem_size);
@@ -170,10 +170,15 @@ void Image::unmap() const {
 Res<Image> Image::from(const CoreApi& api, const ImageState& info) {
     Image image(api);
 
-    if ((info.memory_flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT) ||
-        (info.memory_flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT)) {
-        if (info.image_ci.tiling != VK_IMAGE_TILING_LINEAR) {
-            vktLogW("Image should use linear tiling for host access");
+    if (info.image_ci.tiling == VK_IMAGE_TILING_OPTIMAL) {
+        if ((info.memory_flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT) ||
+            (info.memory_flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT)) {
+            vktLogW("Image with optimal tiling may not work for host access");
+        }
+    } else if (info.image_ci.tiling == VK_IMAGE_TILING_LINEAR) {
+        if ((info.image_ci.usage & VK_IMAGE_USAGE_STORAGE_BIT) ||
+            (info.image_ci.usage && VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) {
+            vktLogW("Image with linear tiling may not work for storage or color attachment usage");
         }
     }
 

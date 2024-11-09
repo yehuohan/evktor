@@ -273,9 +273,9 @@ Res<PhysicalDevice> PhysicalDevice::from(const Instance& instance, PhysicalDevic
 
 bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& device_extensions) {
     Vector<VkExtensionProperties> exts{};
-    VkResult ret = enumerate(exts, vkEnumerateDeviceExtensionProperties, pd, nullptr);
-    if (ret != VK_SUCCESS) {
-        vktLogE("Failed to get properties of device extensions: {}", VkStr(VkResult, ret));
+    VkResult res = enumerate(exts, vkEnumerateDeviceExtensionProperties, pd, nullptr);
+    if (res != VK_SUCCESS) {
+        vktLogE("Failed to get properties of device extensions: {}", VkStr(VkResult, res));
         return false;
     }
 
@@ -284,21 +284,21 @@ bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& devic
         device_exts.erase(e.extensionName);
     }
 
-    bool res = device_exts.empty();
-    if (!res) {
+    bool empty = device_exts.empty();
+    if (!empty) {
         vktLogW("Not supported device extensions:");
         for (const auto& e : device_exts) {
             vktLogW("\t{}", e);
         }
     }
-    return res;
+    return empty;
 }
 
 void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions) {
     Vector<VkExtensionProperties> ext_props{};
-    VkResult ret = enumerate(ext_props, vkEnumerateDeviceExtensionProperties, pd, nullptr);
-    if (ret != VK_SUCCESS) {
-        vktLogE("Failed to get properties of device extensions: {}", VkStr(VkResult, ret));
+    VkResult res = enumerate(ext_props, vkEnumerateDeviceExtensionProperties, pd, nullptr);
+    if (res != VK_SUCCESS) {
+        vktLogE("Failed to get properties of device extensions: {}", VkStr(VkResult, res));
         return;
     }
 

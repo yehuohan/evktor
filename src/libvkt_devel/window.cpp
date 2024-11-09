@@ -52,9 +52,9 @@ std::vector<const char*> Window::requiredInstanceExtensions() const {
 
 VkSurfaceKHR Window::createSurface(VkInstance instance) const {
     VkSurfaceKHR surface = VK_NULL_HANDLE;
-    auto ret = glfwCreateWindowSurface(instance, window, nullptr, &surface);
-    if (ret != VK_SUCCESS) {
-        throw vktErr("Failed to create window surface: {}", VkStr(VkResult, ret));
+    auto res = glfwCreateWindowSurface(instance, window, nullptr, &surface);
+    if (res != VK_SUCCESS) {
+        throw vktErr("Failed to create window surface: {}", VkStr(VkResult, res));
     }
     return surface;
 }

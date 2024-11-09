@@ -102,9 +102,9 @@ inline size_t hash(const Args&... args) {
 template <typename T>
 auto vec2str(const Vector<T>& vec) -> std::string {
     std::string str("[");
-    for (uint32_t k = 0; k < vec.size(); k++) {
+    for (const auto& v : vec) {
         str += " ";
-        str += std::to_string(k);
+        str += std::to_string(v);
         str += ",";
     }
     str += " ]";

@@ -111,17 +111,17 @@ Res<Ref<core::CommandBuffer>> RenderContext::beginFrame() {
         acquisition = newBox<Semaphore>(res_sem.unwrap());
 
         // Acquire next swapchain image
-        auto ret = swapchain->acquireNextImage(frame_index, *acquisition);
-        if (ret == VK_SUBOPTIMAL_KHR || ret == VK_ERROR_OUT_OF_DATE_KHR) {
-            if (updateSwapchain(ret == VK_ERROR_OUT_OF_DATE_KHR)) {
-                ret = swapchain->acquireNextImage(frame_index, *acquisition);
+        auto res = swapchain->acquireNextImage(frame_index, *acquisition);
+        if (res == VK_SUBOPTIMAL_KHR || res == VK_ERROR_OUT_OF_DATE_KHR) {
+            if (updateSwapchain(res == VK_ERROR_OUT_OF_DATE_KHR)) {
+                res = swapchain->acquireNextImage(frame_index, *acquisition);
             }
         }
-        // After update swapchain and acquire image again, `ret` should be success.
-        if (ret != VK_SUCCESS) {
+        // After update swapchain and acquire image again, `res` should be success.
+        if (res != VK_SUCCESS) {
             prev_frame.resetFrame();
         }
-        OnRet(ret, "Failed to acquire the next swapchain image to begin frame");
+        OnRet(res, "Failed to acquire the next swapchain image to begin frame");
     } else {
         // Advance to next frame
         frame_index = (frame_index + 1) % frames.size();
@@ -149,11 +149,11 @@ Res<Void> RenderContext::endFrame(VkSemaphore wait_semaphore) {
         auto& queue = res_queue.unwrap().get();
 
         // Present swapchain image
-        auto ret = queue.present(*swapchain, frame_index, wait_semaphore);
-        if (ret == VK_SUBOPTIMAL_KHR || ret == VK_ERROR_OUT_OF_DATE_KHR) {
+        auto res = queue.present(*swapchain, frame_index, wait_semaphore);
+        if (res == VK_SUBOPTIMAL_KHR || res == VK_ERROR_OUT_OF_DATE_KHR) {
             updateSwapchain();
         } else {
-            OnRet(ret, "Failed to present the activated swapchain image");
+            OnRet(res, "Failed to present the activated swapchain image");
         }
 
         // Reback previous frame's semaphore to current frame with ownership

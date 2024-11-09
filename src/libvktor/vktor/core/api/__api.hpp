@@ -117,17 +117,17 @@ public:
 template <typename T, typename F, typename... Ts>
 auto enumerate(Vector<T>& out, F&& f, Ts&&... ts) -> VkResult {
     uint32_t count = 0;
-    VkResult ret;
+    VkResult res;
     do {
-        ret = f(ts..., &count, nullptr);
-        if (ret != VK_SUCCESS) {
-            return ret;
+        res = f(ts..., &count, nullptr);
+        if (res != VK_SUCCESS) {
+            return res;
         }
         out.resize(count);
-        ret = f(ts..., &count, out.data());
+        res = f(ts..., &count, out.data());
         out.resize(count);
-    } while (ret == VK_INCOMPLETE);
-    return ret;
+    } while (res == VK_INCOMPLETE);
+    return res;
 }
 
 /**

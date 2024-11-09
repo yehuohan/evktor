@@ -82,21 +82,21 @@ void FencePool::reback(Fence&& fence) {
 }
 
 VkResult FencePool::waitPool(uint64_t timeout) {
-    VkResult ret = VK_SUCCESS;
+    VkResult res = VK_SUCCESS;
 
     if (active_count > 0) {
         Vector<VkFence> actived{};
         for (uint32_t k = 0; k < active_count; k++) {
             actived.push_back(fences[k]);
         }
-        ret = vkWaitForFences(api, active_count, actived.data(), true, timeout);
+        res = vkWaitForFences(api, active_count, actived.data(), true, timeout);
     }
 
-    return ret;
+    return res;
 }
 
 VkResult FencePool::resetPool() {
-    VkResult ret = VK_SUCCESS;
+    VkResult res = VK_SUCCESS;
 
     if (active_count > 0) {
         Vector<VkFence> actived{};
@@ -105,7 +105,7 @@ VkResult FencePool::resetPool() {
         }
         // Only reset actived fences.
         // The cached fences should be reset manually.
-        ret = vkResetFences(api, active_count, actived.data());
+        res = vkResetFences(api, active_count, actived.data());
     }
     active_count = 0;
     for (auto& fen : fences_cache) {
@@ -113,7 +113,7 @@ VkResult FencePool::resetPool() {
     }
     fences_cache.clear();
 
-    return ret;
+    return res;
 }
 
 NAMESPACE_END(core)

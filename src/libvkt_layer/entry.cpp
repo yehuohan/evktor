@@ -127,7 +127,7 @@ VKAPI_ATTR VkResult VKAPI_CALL CreateDevice(VkPhysicalDevice physicalDevice,
         auto tbl = __impl.ldt_inst.get(physicalDevice);
         auto instance = tbl ? tbl->instance : VK_NULL_HANDLE;
         if (!instance) {
-            vktlyrLogW("There's no LDT for physical device = {}", fmt::ptr(physicalDevice));
+            vktlyrLogW("There's no LDT for physical device: {}", fmt::ptr(physicalDevice));
         }
         fpCreateDevice = (PFN_vkCreateDevice)fpGetInstanceProcAddr(instance, "vkCreateDevice");
     }

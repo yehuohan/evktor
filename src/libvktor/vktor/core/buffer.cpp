@@ -57,9 +57,9 @@ Buffer::~Buffer() {
 bool Buffer::copyFrom(const void* src, const VkDeviceSize copy_size, VkDeviceSize offset) const {
     VkDeviceSize mem_size = copy_size > 0 ? copy_size : size;
     void* data;
-    auto ret = vmaMapMemory(api, allocation, &data);
-    if (VK_SUCCESS != ret) {
-        vktLogE("Failed to map buffer memory: {}", VkStr(VkResult, ret));
+    auto res = vmaMapMemory(api, allocation, &data);
+    if (VK_SUCCESS != res) {
+        vktLogE("Failed to map buffer memory: {}", VkStr(VkResult, res));
         return false;
     }
     std::memcpy((uint8_t*)data + offset, src, (size_t)mem_size);
@@ -70,9 +70,9 @@ bool Buffer::copyFrom(const void* src, const VkDeviceSize copy_size, VkDeviceSiz
 bool Buffer::copyInto(void* dst, const VkDeviceSize copy_size, VkDeviceSize offset) const {
     VkDeviceSize mem_size = copy_size > 0 ? copy_size : size;
     void* data;
-    auto ret = vmaMapMemory(api, allocation, &data);
-    if (VK_SUCCESS != ret) {
-        vktLogE("Failed to map buffer memory: {}", VkStr(VkResult, ret));
+    auto res = vmaMapMemory(api, allocation, &data);
+    if (VK_SUCCESS != res) {
+        vktLogE("Failed to map buffer memory: {}", VkStr(VkResult, res));
         return false;
     }
     std::memcpy(dst, (uint8_t*)data + offset, (size_t)mem_size);

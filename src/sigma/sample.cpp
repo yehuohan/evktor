@@ -41,6 +41,6 @@ VKAPI_ATTR VkResult VKAPI_CALL BeginCommandBuffer(VkCommandBuffer commandBuffer,
     // auto& impl = *vktlyrGetImpl(sample_layer);
     // auto tbl = impl[commandBuffer];
     auto tbl = sample_layer[commandBuffer];
-    vktlyrOut(">>> Begin command buffer = {}", fmt::ptr(commandBuffer));
+    vktlyrOut(">>> Begin command buffer: {}", fmt::ptr(commandBuffer));
     return tbl->BeginCommandBuffer(commandBuffer, pBeginInfo);
 }
