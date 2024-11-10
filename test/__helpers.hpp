@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 
+typedef void (*FnCaseVoid)(void);
+
 static std::string read_shader(const std::string& filename) {
     std::ifstream fin(filename, std::ios::in);
     if (!fin.is_open()) {

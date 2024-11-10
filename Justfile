@@ -32,15 +32,15 @@ omega: src
     {{dir_install}}/omega {{dir_root}}/../assets {{dir_root}}/glsl
 
 sigma: src
-    @echo [Run] evktor/test/tst_core
+    @echo [Run] evktor/test/tst_main core
     # Only search layers from VK_LAYER_PATH
-    VK_LAYER_PATH=install/Debug/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_core
+    VK_LAYER_PATH=install/Debug/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_main core
     # Append layers from VK_ADD_LAYER_PATH (why VK_ADD_LAYER_PATH not work?)
-    # VK_ADD_LAYER_PATH=install/Debug/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_core
+    # VK_ADD_LAYER_PATH=install/Debug/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_main core
 
-test case: src
-    @echo [Run] evktor/test/tst_{{case}}
-    {{dir_install}}/tst_{{case}}
+test case="": src
+    @echo [Run] evktor/test
+    {{dir_install}}/tst_main {{case}}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Build src

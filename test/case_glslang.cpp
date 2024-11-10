@@ -49,12 +49,8 @@ std::vector<unsigned int> glsl2spv(const std::string& filename) {
     return std::move(spirv);
 }
 
-int main(int argc, char* argv[]) {
-    std::cout << ">>> tst_glslang\n";
-
+void case_glslang() {
     const std::string filename = "./glsl/test/triangle.vert";
     std::vector<unsigned int> spirv = glsl2spv(filename);
     std::cout << "spv size: " << spirv.size() << std::endl;
-
-    return 0;
 }

@@ -16,7 +16,6 @@
  *      平移向量 T = { M[3][0], M[3][1], M[3][3] }  => 索引M[col][row]
  */
 void compute_mvp() {
-    std::cout << "===============================================================================\n";
     glm::mat4 mmodel = glm::mat4(1.0);
     // mmodel = glm::translate(mmodel, glm::vec3(1.0f, 1.0f, 1.0f));
     // mmodel = glm::scale(mmodel, glm::vec3(5.0f, 5.0f, 5.0f));
@@ -39,7 +38,6 @@ void compute_mvp() {
 }
 
 void compute_jitter() {
-    std::cout << "===============================================================================\n";
     glm::mat4 mview = glm::lookAt(glm::vec3(0.0, 0.0, 5.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
     glm::mat4 mproj = glm::perspective(glm::radians(45.0), 1.0 / 1.0, 0.1, 100.0);
     glm::vec4 pos = glm::vec4(0.5, 0.5, 1.0, 1.0);
@@ -75,9 +73,7 @@ void compute_jitter() {
     std::cout << "pb + jitter == pa : " << res << std::endl;
 }
 
-int main() {
-    std::cout << ">>> tst_glm\n";
-
+void case_glm() {
     compute_mvp();
     compute_jitter();
 }

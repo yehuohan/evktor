@@ -51,12 +51,8 @@ vktRes get() {
     // vktRes r = vktOk(std::move(v)); return r;
 }
 
-int main() {
-    std::cout << ">>> tst_result\n";
-
-    std::cout << "===============================================================================\n";
+void case_result() {
     get();
-    std::cout << "===============================================================================\n";
     vktRes r = get();
 
     std::printf("c1: %d\n", r == vktOk(Vec{}));

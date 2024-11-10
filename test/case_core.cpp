@@ -158,9 +158,7 @@ void setupComputePass(const CoreApi& api) {
     vktOut("out_img: {}", vec2str(vkt::Vector<float>{buf, buf + 10}));
 }
 
-int main(int argc, char* argv[]) {
-    vktOut(">>> tst_core");
-
+void case_core() {
     auto api = setupCoreApi();
     setupComputePass(*api);
 }
