@@ -55,7 +55,7 @@ public:
     Self setRasterizationDepthClamp(VkBool32 enable_depth_clamp);
     Self setRasterizationDiscard(VkBool32 enable_rasterizer_discard);
     Self setRasterizationPolygonMode(VkPolygonMode polygon_mode);
-    Self setRasterizationCullFace(VkCullModeFlags cull_mode, VkFrontFace front_face);
+    Self setRasterizationCullFace(VkCullModeFlags cull_mode, VkFrontFace front_face = VK_FRONT_FACE_COUNTER_CLOCKWISE);
     Self setRasterizationDepthBias(VkBool32 enable, float constant = 0.0f, float clamp = 0.0f, float slope = 0.0f);
     Self setRasterizationLineWith(float line_width);
     Self setMultisampleCount(VkSampleCountFlagBits sample_count);

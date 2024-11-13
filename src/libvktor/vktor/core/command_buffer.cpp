@@ -22,6 +22,22 @@ CommandBuffer::~CommandBuffer() {
     handle = VK_NULL_HANDLE;
 }
 
+Self CommandBuffer::beginRenderPass(const VkRenderPass render_pass,
+                                    const VkFramebuffer framebuffer,
+                                    const VkOffset2D offset,
+                                    const VkExtent2D extent,
+                                    const Vector<VkClearValue>& clear_values,
+                                    VkSubpassContents contents) const {
+    auto render_pass_bi = Itor::RenderPassBeginInfo();
+    render_pass_bi.renderPass = render_pass;
+    render_pass_bi.framebuffer = framebuffer;
+    render_pass_bi.renderArea = VkRect2D{offset, extent};
+    render_pass_bi.clearValueCount = u32(clear_values.size());
+    render_pass_bi.pClearValues = clear_values.data();
+    vkCmdBeginRenderPass(handle, &render_pass_bi, contents);
+    return *this;
+}
+
 void CommandBuffer::cmdBlitImage(const Arg<Image>& src,
                                  const Arg<Image>& dst,
                                  VkImageLayout src_layout,

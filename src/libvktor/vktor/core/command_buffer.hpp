@@ -39,6 +39,12 @@ public:
         vkCmdBeginRenderPass(handle, &render_pass_bi, contents);
         return *this;
     }
+    Self beginRenderPass(const VkRenderPass render_pass,
+                         const VkFramebuffer framebuffer,
+                         const VkOffset2D offset,
+                         const VkExtent2D extent,
+                         const Vector<VkClearValue>& clear_values,
+                         VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE) const;
     inline Self endRenderPass() const {
         vkCmdEndRenderPass(handle);
         return *this;
