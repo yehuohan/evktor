@@ -7,5 +7,5 @@ layout (binding = 1, rgba8) writeonly uniform image2D out_img;
 void main() {
     ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
     vec3 color = imageLoad(inp_img, pos).rgb;
-    imageStore(out_img, pos, vec4(color, 1.0));
+    imageStore(out_img, pos, vec4(color * 10.0, 1.0));
 }
