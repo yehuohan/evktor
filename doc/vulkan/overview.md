@@ -1,5 +1,5 @@
 
-## Concepts we will catch to render a triangle
+## Concepts
 
 - Instance & Physical device
 
@@ -36,15 +36,3 @@ Render passes describe the type of images that are used during rendering, how th
 `VkCommandBuffer` is allocated from a `VkCommandPool`.
 Operations in vulkan to execute, like drawing operations, need to be recorded in to `VkCommandBuffer`.
 So operations in vulkan need to be submitted to a queue to execute.
-
-- Main loop
-
-Acquire an image from swap chain, then submit command buffer for the image to execute, finally return the image to swap chain for presentation to window.
-
-
-## Others
-
-- Buffer
-
-Buffers in vulkan are regions of memory used for storing arbitrary data.
-

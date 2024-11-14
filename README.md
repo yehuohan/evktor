@@ -4,6 +4,8 @@ Learn graphics with OpenGL and Vulkan.
 ## Requirements
 
 - [assets](https://github.com/yehuohan/graphics-assets)
+- Just
+- Vcpkg
 - CMake
 - Ninja
 - Python
