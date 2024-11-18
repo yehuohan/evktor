@@ -113,34 +113,39 @@ void computePass(const CoreApi& api) {
     stage.copyFrom(buf);
 
     // Record command
-    auto inp_barrier = Itor::ImageMemoryBarrier();
-    auto out_barrier = Itor::ImageMemoryBarrier();
-    inp_barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    inp_barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    inp_barrier.image = inp_img;
-    inp_barrier.subresourceRange = Arg{inp_img};
-    out_barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    out_barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    out_barrier.image = out_img;
-    out_barrier.subresourceRange = Arg{out_img};
     cmdbuf.begin();
-    inp_barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    inp_barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-    cmdbuf.cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, {inp_barrier});
-    cmdbuf.cmdCopyBufferToImage(stage, Arg{inp_img});
-    inp_barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-    inp_barrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
-    out_barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    out_barrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
-    cmdbuf.cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+    cmdbuf.cmdImageMemoryBarrier(Arg{inp_img},
                                  VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                                 {inp_barrier, out_barrier});
+                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                 0,
+                                 VK_ACCESS_TRANSFER_WRITE_BIT,
+                                 VK_IMAGE_LAYOUT_UNDEFINED,
+                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    cmdbuf.cmdCopyBufferToImage(stage, Arg{inp_img});
+    cmdbuf.cmdImageMemoryBarrier(Arg{inp_img},
+                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                 VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                                 VK_ACCESS_TRANSFER_READ_BIT,
+                                 VK_ACCESS_SHADER_READ_BIT,
+                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                 VK_IMAGE_LAYOUT_GENERAL);
+    cmdbuf.cmdImageMemoryBarrier(Arg{out_img},
+                                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                                 VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                                 0,
+                                 VK_ACCESS_SHADER_WRITE_BIT,
+                                 VK_IMAGE_LAYOUT_UNDEFINED,
+                                 VK_IMAGE_LAYOUT_GENERAL);
     cmdbuf.cmdBindPipeline(VK_PIPELINE_BIND_POINT_COMPUTE, pipeline)
         .cmdBindDescriptorSets(VK_PIPELINE_BIND_POINT_COMPUTE, pipeline_layout, 0, {desc_set})
         .cmdDispatch((wid + 7) / 8, (hei + 7) / 8, 1);
-    out_barrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
-    out_barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-    cmdbuf.cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, {out_barrier});
+    cmdbuf.cmdImageMemoryBarrier(Arg{out_img},
+                                 VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                 VK_ACCESS_SHADER_WRITE_BIT,
+                                 VK_ACCESS_TRANSFER_READ_BIT,
+                                 VK_IMAGE_LAYOUT_GENERAL,
+                                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
     cmdbuf.cmdCopyImageToBuffer(Arg{out_img}, stage);
     cmdbuf.end();
     queue.submit(cmdbuf);
@@ -294,28 +299,29 @@ void graphicsPass(const CoreApi& api) {
         buf[k] = 1.0;
     }
     stage.copyFrom(buf);
-    auto tex_barrier = Itor::ImageMemoryBarrier();
-    auto out_barrier = Itor::ImageMemoryBarrier();
-    tex_barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    tex_barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    tex_barrier.image = tex_img;
-    tex_barrier.subresourceRange = Arg{tex_img};
-    out_barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    out_barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    out_barrier.image = out_img;
-    out_barrier.subresourceRange = Arg{out_img};
     cmdbuf.begin();
-    tex_barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    tex_barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-    cmdbuf.cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, {tex_barrier});
+    cmdbuf.cmdImageMemoryBarrier(Arg{tex_img},
+                                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                 0,
+                                 VK_ACCESS_TRANSFER_WRITE_BIT,
+                                 VK_IMAGE_LAYOUT_UNDEFINED,
+                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     cmdbuf.cmdCopyBufferToImage(stage, Arg{tex_img});
-    tex_barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-    tex_barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    out_barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    out_barrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-    cmdbuf.cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+    cmdbuf.cmdImageMemoryBarrier(Arg{tex_img},
+                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
                                  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                                 {out_barrier, tex_barrier});
+                                 VK_ACCESS_TRANSFER_WRITE_BIT,
+                                 VK_ACCESS_SHADER_READ_BIT,
+                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    cmdbuf.cmdImageMemoryBarrier(Arg{out_img},
+                                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                                 0,
+                                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                                 VK_IMAGE_LAYOUT_UNDEFINED,
+                                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
     cmdbuf.beginRenderPass(render_pass, framebuffer, {0, 0}, {wid, hei}, {VkClearValue{}})
         .cmdBindPipeline(VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline)
         .cmdBindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, {desc_set})
@@ -323,9 +329,13 @@ void graphicsPass(const CoreApi& api) {
         .cmdBindIndexBuffer(index_buf, 0, VK_INDEX_TYPE_UINT32)
         .cmdDrawIndexed(3, 1, 0, 0, 0)
         .endRenderPass();
-    out_barrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-    out_barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-    cmdbuf.cmdImageMemoryBarrier(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, {out_barrier});
+    cmdbuf.cmdImageMemoryBarrier(Arg{out_img},
+                                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+                                 VK_ACCESS_TRANSFER_WRITE_BIT,
+                                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
     cmdbuf.cmdCopyImageToBuffer(Arg{out_img}, stage);
     cmdbuf.end();
     queue.submit(cmdbuf);
