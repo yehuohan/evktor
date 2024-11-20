@@ -2,17 +2,7 @@
 #include <iostream>
 #include <map>
 
-extern void case_core();
-extern void case_glm();
-extern void case_glslang();
-extern void case_result();
-
-static const std::map<std::string, FnCaseVoid> cases{
-    {   "case_core",    case_core},
-    {    "case_glm",     case_glm},
-    {"case_glslang", case_glslang},
-    { "case_result",  case_result},
-};
+#include "tst_generated.hpp"
 
 int main(int argc, char* argv[]) {
     std::cout << "[tst]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
