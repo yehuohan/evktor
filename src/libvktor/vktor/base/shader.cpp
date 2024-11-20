@@ -1,6 +1,5 @@
 #include "shader.hpp"
 #include <fstream>
-#include <glslang/Include/ShHandle.h>
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/SPIRV/GlslangToSpv.h>

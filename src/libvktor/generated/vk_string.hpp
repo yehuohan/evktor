@@ -64,11 +64,11 @@ std::string On_Str_VkPerformanceCounterStorageKHR(VkPerformanceCounterStorageKHR
 std::string On_Str_VkQueueGlobalPriorityKHR(VkQueueGlobalPriorityKHR e);
 std::string On_Str_VkFragmentShadingRateCombinerOpKHR(VkFragmentShadingRateCombinerOpKHR e);
 std::string On_Str_VkPipelineExecutableStatisticFormatKHR(VkPipelineExecutableStatisticFormatKHR e);
-#ifdef VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkVideoEncodeTuningModeKHR(VkVideoEncodeTuningModeKHR e);
-#endif // VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkComponentTypeKHR(VkComponentTypeKHR e);
 std::string On_Str_VkScopeKHR(VkScopeKHR e);
+std::string On_Str_VkLineRasterizationModeKHR(VkLineRasterizationModeKHR e);
+std::string On_Str_VkTimeDomainKHR(VkTimeDomainKHR e);
 std::string On_Str_VkDebugReportObjectTypeEXT(VkDebugReportObjectTypeEXT e);
 std::string On_Str_VkRasterizationOrderAMD(VkRasterizationOrderAMD e);
 std::string On_Str_VkShaderInfoTypeAMD(VkShaderInfoTypeAMD e);
@@ -91,7 +91,6 @@ std::string On_Str_VkGeometryTypeKHR(VkGeometryTypeKHR e);
 std::string On_Str_VkAccelerationStructureTypeKHR(VkAccelerationStructureTypeKHR e);
 std::string On_Str_VkCopyAccelerationStructureModeKHR(VkCopyAccelerationStructureModeKHR e);
 std::string On_Str_VkAccelerationStructureMemoryRequirementsTypeNV(VkAccelerationStructureMemoryRequirementsTypeNV e);
-std::string On_Str_VkTimeDomainEXT(VkTimeDomainEXT e);
 std::string On_Str_VkMemoryOverallocationBehaviorAMD(VkMemoryOverallocationBehaviorAMD e);
 std::string On_Str_VkPerformanceConfigurationTypeINTEL(VkPerformanceConfigurationTypeINTEL e);
 std::string On_Str_VkQueryPoolSamplingModeINTEL(VkQueryPoolSamplingModeINTEL e);
@@ -105,7 +104,6 @@ std::string On_Str_VkProvokingVertexModeEXT(VkProvokingVertexModeEXT e);
 #ifdef VK_USE_PLATFORM_WIN32_KHR
 std::string On_Str_VkFullScreenExclusiveEXT(VkFullScreenExclusiveEXT e);
 #endif // VK_USE_PLATFORM_WIN32_KHR
-std::string On_Str_VkLineRasterizationModeEXT(VkLineRasterizationModeEXT e);
 std::string On_Str_VkIndirectCommandsTokenTypeNV(VkIndirectCommandsTokenTypeNV e);
 std::string On_Str_VkDepthBiasRepresentationEXT(VkDepthBiasRepresentationEXT e);
 std::string On_Str_VkDeviceMemoryReportEventTypeEXT(VkDeviceMemoryReportEventTypeEXT e);
@@ -131,6 +129,12 @@ std::string On_Str_VkOpticalFlowPerformanceLevelNV(VkOpticalFlowPerformanceLevel
 std::string On_Str_VkOpticalFlowSessionBindingPointNV(VkOpticalFlowSessionBindingPointNV e);
 std::string On_Str_VkShaderCodeTypeEXT(VkShaderCodeTypeEXT e);
 std::string On_Str_VkRayTracingInvocationReorderModeNV(VkRayTracingInvocationReorderModeNV e);
+std::string On_Str_VkLayerSettingTypeEXT(VkLayerSettingTypeEXT e);
+std::string On_Str_VkLatencyMarkerNV(VkLatencyMarkerNV e);
+std::string On_Str_VkOutOfBandQueueTypeNV(VkOutOfBandQueueTypeNV e);
+std::string On_Str_VkBlockMatchWindowCompareModeQCOM(VkBlockMatchWindowCompareModeQCOM e);
+std::string On_Str_VkCubicFilterWeightsQCOM(VkCubicFilterWeightsQCOM e);
+std::string On_Str_VkLayeredDriverUnderlyingApiMSFT(VkLayeredDriverUnderlyingApiMSFT e);
 std::string On_Str_VkBuildAccelerationStructureModeKHR(VkBuildAccelerationStructureModeKHR e);
 std::string On_Str_VkShaderGroupShaderKHR(VkShaderGroupShaderKHR e);
 
@@ -147,6 +151,7 @@ std::string On_Str_VkMemoryPropertyFlags(VkMemoryPropertyFlags f);
 std::string On_Str_VkQueueFlags(VkQueueFlags f);
 std::string On_Str_VkDeviceQueueCreateFlags(VkDeviceQueueCreateFlags f);
 std::string On_Str_VkPipelineStageFlags(VkPipelineStageFlags f);
+std::string On_Str_VkMemoryMapFlags(VkMemoryMapFlags f);
 std::string On_Str_VkSparseMemoryBindFlags(VkSparseMemoryBindFlags f);
 std::string On_Str_VkSparseImageFormatFlags(VkSparseImageFormatFlags f);
 std::string On_Str_VkFenceCreateFlags(VkFenceCreateFlags f);
@@ -213,29 +218,27 @@ std::string On_Str_VkVideoSessionCreateFlagsKHR(VkVideoSessionCreateFlagsKHR f);
 std::string On_Str_VkVideoCodingControlFlagsKHR(VkVideoCodingControlFlagsKHR f);
 std::string On_Str_VkVideoDecodeCapabilityFlagsKHR(VkVideoDecodeCapabilityFlagsKHR f);
 std::string On_Str_VkVideoDecodeUsageFlagsKHR(VkVideoDecodeUsageFlagsKHR f);
+std::string On_Str_VkVideoEncodeH264CapabilityFlagsKHR(VkVideoEncodeH264CapabilityFlagsKHR f);
+std::string On_Str_VkVideoEncodeH264StdFlagsKHR(VkVideoEncodeH264StdFlagsKHR f);
+std::string On_Str_VkVideoEncodeH264RateControlFlagsKHR(VkVideoEncodeH264RateControlFlagsKHR f);
+std::string On_Str_VkVideoEncodeH265CapabilityFlagsKHR(VkVideoEncodeH265CapabilityFlagsKHR f);
+std::string On_Str_VkVideoEncodeH265StdFlagsKHR(VkVideoEncodeH265StdFlagsKHR f);
+std::string On_Str_VkVideoEncodeH265CtbSizeFlagsKHR(VkVideoEncodeH265CtbSizeFlagsKHR f);
+std::string On_Str_VkVideoEncodeH265TransformBlockSizeFlagsKHR(VkVideoEncodeH265TransformBlockSizeFlagsKHR f);
+std::string On_Str_VkVideoEncodeH265RateControlFlagsKHR(VkVideoEncodeH265RateControlFlagsKHR f);
 std::string On_Str_VkVideoDecodeH264PictureLayoutFlagsKHR(VkVideoDecodeH264PictureLayoutFlagsKHR f);
 std::string On_Str_VkPerformanceCounterDescriptionFlagsKHR(VkPerformanceCounterDescriptionFlagsKHR f);
 std::string On_Str_VkAcquireProfilingLockFlagsKHR(VkAcquireProfilingLockFlagsKHR f);
-#ifdef VK_ENABLE_BETA_EXTENSIONS
+std::string On_Str_VkMemoryUnmapFlagsKHR(VkMemoryUnmapFlagsKHR f);
+std::string On_Str_VkVideoEncodeFlagsKHR(VkVideoEncodeFlagsKHR f);
 std::string On_Str_VkVideoEncodeCapabilityFlagsKHR(VkVideoEncodeCapabilityFlagsKHR f);
 std::string On_Str_VkVideoEncodeRateControlModeFlagsKHR(VkVideoEncodeRateControlModeFlagsKHR f);
 std::string On_Str_VkVideoEncodeFeedbackFlagsKHR(VkVideoEncodeFeedbackFlagsKHR f);
 std::string On_Str_VkVideoEncodeUsageFlagsKHR(VkVideoEncodeUsageFlagsKHR f);
 std::string On_Str_VkVideoEncodeContentFlagsKHR(VkVideoEncodeContentFlagsKHR f);
-#endif // VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkPipelineCreateFlags2KHR(VkPipelineCreateFlags2KHR f);
 std::string On_Str_VkBufferUsageFlags2KHR(VkBufferUsageFlags2KHR f);
 std::string On_Str_VkDebugReportFlagsEXT(VkDebugReportFlagsEXT f);
-#ifdef VK_ENABLE_BETA_EXTENSIONS
-std::string On_Str_VkVideoEncodeH264CapabilityFlagsEXT(VkVideoEncodeH264CapabilityFlagsEXT f);
-std::string On_Str_VkVideoEncodeH264StdFlagsEXT(VkVideoEncodeH264StdFlagsEXT f);
-std::string On_Str_VkVideoEncodeH264RateControlFlagsEXT(VkVideoEncodeH264RateControlFlagsEXT f);
-std::string On_Str_VkVideoEncodeH265CapabilityFlagsEXT(VkVideoEncodeH265CapabilityFlagsEXT f);
-std::string On_Str_VkVideoEncodeH265StdFlagsEXT(VkVideoEncodeH265StdFlagsEXT f);
-std::string On_Str_VkVideoEncodeH265CtbSizeFlagsEXT(VkVideoEncodeH265CtbSizeFlagsEXT f);
-std::string On_Str_VkVideoEncodeH265TransformBlockSizeFlagsEXT(VkVideoEncodeH265TransformBlockSizeFlagsEXT f);
-std::string On_Str_VkVideoEncodeH265RateControlFlagsEXT(VkVideoEncodeH265RateControlFlagsEXT f);
-#endif // VK_ENABLE_BETA_EXTENSIONS
 std::string On_Str_VkExternalMemoryHandleTypeFlagsNV(VkExternalMemoryHandleTypeFlagsNV f);
 std::string On_Str_VkExternalMemoryFeatureFlagsNV(VkExternalMemoryFeatureFlagsNV f);
 std::string On_Str_VkConditionalRenderingFlagsEXT(VkConditionalRenderingFlagsEXT f);
@@ -263,8 +266,10 @@ std::string On_Str_VkDeviceAddressBindingFlagsEXT(VkDeviceAddressBindingFlagsEXT
 #ifdef VK_USE_PLATFORM_FUCHSIA
 std::string On_Str_VkImageConstraintsInfoFlagsFUCHSIA(VkImageConstraintsInfoFlagsFUCHSIA f);
 #endif // VK_USE_PLATFORM_FUCHSIA
+std::string On_Str_VkFrameBoundaryFlagsEXT(VkFrameBoundaryFlagsEXT f);
 std::string On_Str_VkBuildMicromapFlagsEXT(VkBuildMicromapFlagsEXT f);
 std::string On_Str_VkMicromapCreateFlagsEXT(VkMicromapCreateFlagsEXT f);
+std::string On_Str_VkPhysicalDeviceSchedulingControlsFlagsARM(VkPhysicalDeviceSchedulingControlsFlagsARM f);
 std::string On_Str_VkMemoryDecompressionMethodFlagsNV(VkMemoryDecompressionMethodFlagsNV f);
 std::string On_Str_VkOpticalFlowGridSizeFlagsNV(VkOpticalFlowGridSizeFlagsNV f);
 std::string On_Str_VkOpticalFlowUsageFlagsNV(VkOpticalFlowUsageFlagsNV f);

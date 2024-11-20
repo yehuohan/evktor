@@ -94,10 +94,9 @@ typedef struct VkLayerInstanceDispatchTable {
     PFN_vkGetDisplayModeProperties2KHR GetDisplayModeProperties2KHR;
     PFN_vkGetDisplayPlaneCapabilities2KHR GetDisplayPlaneCapabilities2KHR;
     PFN_vkGetPhysicalDeviceFragmentShadingRatesKHR GetPhysicalDeviceFragmentShadingRatesKHR;
-#ifdef VK_ENABLE_BETA_EXTENSIONS
     PFN_vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR GetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR;
-#endif // VK_ENABLE_BETA_EXTENSIONS
     PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR GetPhysicalDeviceCooperativeMatrixPropertiesKHR;
+    PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsKHR GetPhysicalDeviceCalibrateableTimeDomainsKHR;
     PFN_vkCreateDebugReportCallbackEXT CreateDebugReportCallbackEXT;
     PFN_vkDestroyDebugReportCallbackEXT DestroyDebugReportCallbackEXT;
     PFN_vkDebugReportMessageEXT DebugReportMessageEXT;
@@ -416,6 +415,8 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkWaitSemaphoresKHR WaitSemaphoresKHR;
     PFN_vkSignalSemaphoreKHR SignalSemaphoreKHR;
     PFN_vkCmdSetFragmentShadingRateKHR CmdSetFragmentShadingRateKHR;
+    PFN_vkCmdSetRenderingAttachmentLocationsKHR CmdSetRenderingAttachmentLocationsKHR;
+    PFN_vkCmdSetRenderingInputAttachmentIndicesKHR CmdSetRenderingInputAttachmentIndicesKHR;
     PFN_vkWaitForPresentKHR WaitForPresentKHR;
     PFN_vkGetBufferDeviceAddressKHR GetBufferDeviceAddressKHR;
     PFN_vkGetBufferOpaqueCaptureAddressKHR GetBufferOpaqueCaptureAddressKHR;
@@ -430,10 +431,8 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkGetPipelineExecutableInternalRepresentationsKHR GetPipelineExecutableInternalRepresentationsKHR;
     PFN_vkMapMemory2KHR MapMemory2KHR;
     PFN_vkUnmapMemory2KHR UnmapMemory2KHR;
-#ifdef VK_ENABLE_BETA_EXTENSIONS
     PFN_vkGetEncodedVideoSessionParametersKHR GetEncodedVideoSessionParametersKHR;
     PFN_vkCmdEncodeVideoKHR CmdEncodeVideoKHR;
-#endif // VK_ENABLE_BETA_EXTENSIONS
     PFN_vkCmdSetEvent2KHR CmdSetEvent2KHR;
     PFN_vkCmdResetEvent2KHR CmdResetEvent2KHR;
     PFN_vkCmdWaitEvents2KHR CmdWaitEvents2KHR;
@@ -456,6 +455,14 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkGetRenderingAreaGranularityKHR GetRenderingAreaGranularityKHR;
     PFN_vkGetDeviceImageSubresourceLayoutKHR GetDeviceImageSubresourceLayoutKHR;
     PFN_vkGetImageSubresourceLayout2KHR GetImageSubresourceLayout2KHR;
+    PFN_vkCmdSetLineStippleKHR CmdSetLineStippleKHR;
+    PFN_vkGetCalibratedTimestampsKHR GetCalibratedTimestampsKHR;
+    PFN_vkCmdBindDescriptorSets2KHR CmdBindDescriptorSets2KHR;
+    PFN_vkCmdPushConstants2KHR CmdPushConstants2KHR;
+    PFN_vkCmdPushDescriptorSet2KHR CmdPushDescriptorSet2KHR;
+    PFN_vkCmdPushDescriptorSetWithTemplate2KHR CmdPushDescriptorSetWithTemplate2KHR;
+    PFN_vkCmdSetDescriptorBufferOffsets2EXT CmdSetDescriptorBufferOffsets2EXT;
+    PFN_vkCmdBindDescriptorBufferEmbeddedSamplers2EXT CmdBindDescriptorBufferEmbeddedSamplers2EXT;
     PFN_vkDebugMarkerSetObjectTagEXT DebugMarkerSetObjectTagEXT;
     PFN_vkDebugMarkerSetObjectNameEXT DebugMarkerSetObjectNameEXT;
     PFN_vkCmdDebugMarkerBeginEXT CmdDebugMarkerBeginEXT;
@@ -593,6 +600,12 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkDestroyPrivateDataSlotEXT DestroyPrivateDataSlotEXT;
     PFN_vkSetPrivateDataEXT SetPrivateDataEXT;
     PFN_vkGetPrivateDataEXT GetPrivateDataEXT;
+    PFN_vkCreateCudaModuleNV CreateCudaModuleNV;
+    PFN_vkGetCudaModuleCacheNV GetCudaModuleCacheNV;
+    PFN_vkCreateCudaFunctionNV CreateCudaFunctionNV;
+    PFN_vkDestroyCudaModuleNV DestroyCudaModuleNV;
+    PFN_vkDestroyCudaFunctionNV DestroyCudaFunctionNV;
+    PFN_vkCmdCudaLaunchKernelNV CmdCudaLaunchKernelNV;
 #ifdef VK_USE_PLATFORM_METAL_EXT
     PFN_vkExportMetalObjectsEXT ExportMetalObjectsEXT;
 #endif // VK_USE_PLATFORM_METAL_EXT
@@ -660,7 +673,6 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkGetPipelineIndirectMemoryRequirementsNV GetPipelineIndirectMemoryRequirementsNV;
     PFN_vkCmdUpdatePipelineIndirectBufferNV CmdUpdatePipelineIndirectBufferNV;
     PFN_vkGetPipelineIndirectDeviceAddressNV GetPipelineIndirectDeviceAddressNV;
-    PFN_vkCmdSetTessellationDomainOriginEXT CmdSetTessellationDomainOriginEXT;
     PFN_vkCmdSetDepthClampEnableEXT CmdSetDepthClampEnableEXT;
     PFN_vkCmdSetPolygonModeEXT CmdSetPolygonModeEXT;
     PFN_vkCmdSetRasterizationSamplesEXT CmdSetRasterizationSamplesEXT;
@@ -671,6 +683,7 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkCmdSetColorBlendEnableEXT CmdSetColorBlendEnableEXT;
     PFN_vkCmdSetColorBlendEquationEXT CmdSetColorBlendEquationEXT;
     PFN_vkCmdSetColorWriteMaskEXT CmdSetColorWriteMaskEXT;
+    PFN_vkCmdSetTessellationDomainOriginEXT CmdSetTessellationDomainOriginEXT;
     PFN_vkCmdSetRasterizationStreamEXT CmdSetRasterizationStreamEXT;
     PFN_vkCmdSetConservativeRasterizationModeEXT CmdSetConservativeRasterizationModeEXT;
     PFN_vkCmdSetExtraPrimitiveOverestimationSizeEXT CmdSetExtraPrimitiveOverestimationSizeEXT;
@@ -703,6 +716,11 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkCmdBindShadersEXT CmdBindShadersEXT;
     PFN_vkGetFramebufferTilePropertiesQCOM GetFramebufferTilePropertiesQCOM;
     PFN_vkGetDynamicRenderingTilePropertiesQCOM GetDynamicRenderingTilePropertiesQCOM;
+    PFN_vkSetLatencySleepModeNV SetLatencySleepModeNV;
+    PFN_vkLatencySleepNV LatencySleepNV;
+    PFN_vkSetLatencyMarkerNV SetLatencyMarkerNV;
+    PFN_vkGetLatencyTimingsNV GetLatencyTimingsNV;
+    PFN_vkQueueNotifyOutOfBandNV QueueNotifyOutOfBandNV;
     PFN_vkCmdSetAttachmentFeedbackLoopEnableEXT CmdSetAttachmentFeedbackLoopEnableEXT;
 #ifdef VK_USE_PLATFORM_SCREEN_QNX
     PFN_vkGetScreenBufferPropertiesQNX GetScreenBufferPropertiesQNX;
@@ -826,10 +844,9 @@ static inline bool initLDT(VkLayerInstanceDispatchTable& ldt,
     GET(GetDisplayModeProperties2KHR);
     GET(GetDisplayPlaneCapabilities2KHR);
     GET(GetPhysicalDeviceFragmentShadingRatesKHR);
-#ifdef VK_ENABLE_BETA_EXTENSIONS
     GET(GetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR);
-#endif // VK_ENABLE_BETA_EXTENSIONS
     GET(GetPhysicalDeviceCooperativeMatrixPropertiesKHR);
+    GET(GetPhysicalDeviceCalibrateableTimeDomainsKHR);
     GET(CreateDebugReportCallbackEXT);
     GET(DestroyDebugReportCallbackEXT);
     GET(DebugReportMessageEXT);
@@ -1154,6 +1171,8 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(WaitSemaphoresKHR);
     GET(SignalSemaphoreKHR);
     GET(CmdSetFragmentShadingRateKHR);
+    GET(CmdSetRenderingAttachmentLocationsKHR);
+    GET(CmdSetRenderingInputAttachmentIndicesKHR);
     GET(WaitForPresentKHR);
     GET(GetBufferDeviceAddressKHR);
     GET(GetBufferOpaqueCaptureAddressKHR);
@@ -1168,10 +1187,8 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(GetPipelineExecutableInternalRepresentationsKHR);
     GET(MapMemory2KHR);
     GET(UnmapMemory2KHR);
-#ifdef VK_ENABLE_BETA_EXTENSIONS
     GET(GetEncodedVideoSessionParametersKHR);
     GET(CmdEncodeVideoKHR);
-#endif // VK_ENABLE_BETA_EXTENSIONS
     GET(CmdSetEvent2KHR);
     GET(CmdResetEvent2KHR);
     GET(CmdWaitEvents2KHR);
@@ -1194,6 +1211,14 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(GetRenderingAreaGranularityKHR);
     GET(GetDeviceImageSubresourceLayoutKHR);
     GET(GetImageSubresourceLayout2KHR);
+    GET(CmdSetLineStippleKHR);
+    GET(GetCalibratedTimestampsKHR);
+    GET(CmdBindDescriptorSets2KHR);
+    GET(CmdPushConstants2KHR);
+    GET(CmdPushDescriptorSet2KHR);
+    GET(CmdPushDescriptorSetWithTemplate2KHR);
+    GET(CmdSetDescriptorBufferOffsets2EXT);
+    GET(CmdBindDescriptorBufferEmbeddedSamplers2EXT);
     GET(DebugMarkerSetObjectTagEXT);
     GET(DebugMarkerSetObjectNameEXT);
     GET(CmdDebugMarkerBeginEXT);
@@ -1331,6 +1356,12 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(DestroyPrivateDataSlotEXT);
     GET(SetPrivateDataEXT);
     GET(GetPrivateDataEXT);
+    GET(CreateCudaModuleNV);
+    GET(GetCudaModuleCacheNV);
+    GET(CreateCudaFunctionNV);
+    GET(DestroyCudaModuleNV);
+    GET(DestroyCudaFunctionNV);
+    GET(CmdCudaLaunchKernelNV);
 #ifdef VK_USE_PLATFORM_METAL_EXT
     GET(ExportMetalObjectsEXT);
 #endif // VK_USE_PLATFORM_METAL_EXT
@@ -1398,7 +1429,6 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(GetPipelineIndirectMemoryRequirementsNV);
     GET(CmdUpdatePipelineIndirectBufferNV);
     GET(GetPipelineIndirectDeviceAddressNV);
-    GET(CmdSetTessellationDomainOriginEXT);
     GET(CmdSetDepthClampEnableEXT);
     GET(CmdSetPolygonModeEXT);
     GET(CmdSetRasterizationSamplesEXT);
@@ -1409,6 +1439,7 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(CmdSetColorBlendEnableEXT);
     GET(CmdSetColorBlendEquationEXT);
     GET(CmdSetColorWriteMaskEXT);
+    GET(CmdSetTessellationDomainOriginEXT);
     GET(CmdSetRasterizationStreamEXT);
     GET(CmdSetConservativeRasterizationModeEXT);
     GET(CmdSetExtraPrimitiveOverestimationSizeEXT);
@@ -1441,6 +1472,11 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(CmdBindShadersEXT);
     GET(GetFramebufferTilePropertiesQCOM);
     GET(GetDynamicRenderingTilePropertiesQCOM);
+    GET(SetLatencySleepModeNV);
+    GET(LatencySleepNV);
+    GET(SetLatencyMarkerNV);
+    GET(GetLatencyTimingsNV);
+    GET(QueueNotifyOutOfBandNV);
     GET(CmdSetAttachmentFeedbackLoopEnableEXT);
 #ifdef VK_USE_PLATFORM_SCREEN_QNX
     GET(GetScreenBufferPropertiesQNX);
