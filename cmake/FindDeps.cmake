@@ -51,6 +51,9 @@ find_package(Stb REQUIRED)
 # Target: imgui::imgui
 find_package(imgui CONFIG REQUIRED)
 
+# Target: tinygltf
+find_path(TINYGLTF_INCLUDE_DIRS "tiny_gltf.h")
+
 # Target: Freetype::Freetype
 find_package(Freetype REQUIRED)
 

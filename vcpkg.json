@@ -4,20 +4,21 @@
         {
             "name": "glslang",
             "features": [ "tools" ],
-            "version>=": "13.1.1"
+            "version>=": "13.0.0"
         },
         { "name": "vulkan-memory-allocator", "version>=": "3.0.1" },
         { "name": "glfw3", "version>=": "3.3.9" },
-        { "name": "glm", "version>=": "0.9.9.8#2" },
+        { "name": "glm", "version>=": "1.0.1" },
         { "name": "stb", "version>=": "2023-04-11" },
         {
             "name": "imgui",
             "features": [ "glfw-binding", "opengl3-binding", "vulkan-binding" ],
             "version>=": "1.90"
         },
+        {"name": "tinygltf", "version>=": "2.8.22" },
         { "name": "freetype", "version>=": "2.12.1" },
         { "name": "assimp", "version>=": "5.3.1" },
         { "name": "fmt", "version>=": "10.1.1" }
     ],
-    "builtin-baseline": "c8696863d371ab7f46e213d8f5ca923c4aef2a00"
+    "builtin-baseline": "47364fbc300756f64f7876b549d9422d5f3ec0d3"
 }

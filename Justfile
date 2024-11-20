@@ -16,7 +16,7 @@ export LD_LIBRARY_PATH := dir_install / 'lib'
 
 export VCPKG_ROOT := replace(env('DOT_APPS'), '\', '/') / 'vcpkg'
 export VCPKG_TRIPLET := if os() == "windows" { 'x64-mingw-mix' } else { 'x64-linux-mix' }
-VCPKG_XSCRIPT := '"clear;x-script,bash {{dir_root}}/scripts/vcpkg_xscript.sh {url} {dst};x-block-origin"'
+VCPKG_XSCRIPT := '"clear;x-script,bash ' + dir_root + '/scripts/vcpkg_xscript.sh {url} {dst};x-block-origin"'
 DEPS_DIR := dir_root / 'deps'
 
 
