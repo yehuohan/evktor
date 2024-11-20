@@ -1,5 +1,4 @@
 #include <glm/glm.hpp>
-#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include <fmt/core.h>
 #include <iostream>

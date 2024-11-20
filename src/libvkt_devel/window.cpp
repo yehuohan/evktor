@@ -1,5 +1,5 @@
 #include "window.hpp"
-#include "generated/vk_string.hpp"
+#include <generated/vk_string.hpp>
 
 NAMESPACE_BEGIN(vktdev)
 

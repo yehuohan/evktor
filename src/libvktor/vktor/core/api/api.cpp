@@ -1,5 +1,3 @@
-#define VOLK_IMPLEMENTATION
-#define VMA_IMPLEMENTATION
 #include "api.hpp"
 
 NAMESPACE_BEGIN(vkt)

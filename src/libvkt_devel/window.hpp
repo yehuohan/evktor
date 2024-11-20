@@ -1,8 +1,8 @@
 #pragma once
-#include "share/helpers.hpp"
-#include "share/share.hpp"
 #include <camera.hpp>
 #include <cstdint>
+#include <share/helpers.hpp>
+#include <share/share.hpp>
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
