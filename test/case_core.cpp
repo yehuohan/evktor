@@ -39,7 +39,7 @@ Box<CoreApi> setupCoreApi() {
     // Create core api
     Box<CoreApi> api = newBox<CoreApi>(aso.into().unwrap());
 
-    vktOut("Instance: {}, Physical Device: {}, Device: {}",
+    tstOut("Instance: {}, Physical Device: {}, Device: {}",
            fmt::ptr((VkInstance)*api),
            fmt::ptr((VkPhysicalDevice)*api),
            fmt::ptr((VkDevice)*api));
@@ -59,7 +59,7 @@ void computePass(const CoreApi& api) {
     auto& queue = api.computeQueue().unwrap().get();
     auto cmdpool = CommandPoolState{}.setQueueFamilyIndex(queue.family_index).into(api).unwrap();
     auto& cmdbuf = cmdpool.allocate(CommandPool::Level::Primary).unwrap().get();
-    vktOut("Comamnd buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
+    tstOut("Comamnd buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
     auto shader_source = ShaderSource::from(ShaderSource::Comp, read_shader(shader_file)).unwrap();
@@ -73,7 +73,7 @@ void computePass(const CoreApi& api) {
                                .unwrap();
     auto pipeline_layout = PipelineLayoutState{}.addDescriptorSetLayout(desc_set_layout).into(api).unwrap();
     auto pipeline = ComputePipelineState{}.setShader(std::move(shader)).setPipelineLayout(pipeline_layout).into(api).unwrap();
-    vktOut("Compute pipeline: {}", fmt::ptr((VkPipeline)pipeline));
+    tstOut("Compute pipeline: {}", fmt::ptr((VkPipeline)pipeline));
 
     // Create descriptors
     auto desc_pool = DescriptorPoolState{}
@@ -153,7 +153,7 @@ void computePass(const CoreApi& api) {
 
     // Check stage buffer
     stage.copyInto(buf);
-    vktOut("out_img: {}", vec2str(vkt::Vector<float>{buf, buf + 12}));
+    tstOut("out_img: {}", vec2str(vkt::Vector<float>{buf, buf + 12}));
 }
 
 void graphicsPass(const CoreApi& api) {
@@ -184,7 +184,7 @@ void graphicsPass(const CoreApi& api) {
     auto& queue = api.computeQueue().unwrap().get();
     auto cmdpool = CommandPoolState{}.setQueueFamilyIndex(queue.family_index).into(api).unwrap();
     auto& cmdbuf = cmdpool.allocate(CommandPool::Level::Primary).unwrap().get();
-    vktOut("Comamnd buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
+    tstOut("Comamnd buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
     auto shader_vert_source = vkt::ShaderSource::from(ShaderSource::Vert, read_shader(shader_vert_file)).unwrap();
@@ -223,7 +223,7 @@ void graphicsPass(const CoreApi& api) {
                         .setRenderPass(render_pass)
                         .into(api)
                         .unwrap();
-    vktOut("Graphics pipeline: {}", fmt::ptr((VkPipeline)pipeline));
+    tstOut("Graphics pipeline: {}", fmt::ptr((VkPipeline)pipeline));
 
     // Create framebuffer
     auto out_img = ImageState{}
@@ -343,7 +343,7 @@ void graphicsPass(const CoreApi& api) {
 
     // Check stage buffer
     stage.copyInto(buf);
-    vktOut("out_img:");
+    tstOut("out_img:");
     for (size_t r = 0; r < hei; r++) {
         char line[wid + 1];
         for (size_t c = 0; c < wid; c++) {
@@ -352,7 +352,7 @@ void graphicsPass(const CoreApi& api) {
             line[c] = gray > 0.5 ? '*' : '#';
         }
         line[wid] = '\0';
-        vktOut("{}", line);
+        tstOut("{}", line);
     }
 }
 

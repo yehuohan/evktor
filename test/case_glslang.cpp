@@ -3,7 +3,6 @@
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/SPIRV/GlslangToSpv.h>
-#include <iostream>
 
 std::vector<unsigned int> glsl2spv(const std::string& filename) {
     std::string shader_code = read_shader(filename);
@@ -27,16 +26,16 @@ std::vector<unsigned int> glsl2spv(const std::string& filename) {
     // shader.addProcesses(processes);
     shader.setEnvTarget(glslang::EShTargetLanguage::EShTargetSpv, glslang::EShTargetLanguageVersion::EShTargetSpv_1_0);
     if (!shader.parse(GetDefaultResources(), 100, false, messages)) {
-        std::cout << shader.getInfoLog();
-        std::cout << shader.getInfoDebugLog();
+        tstOut("{}", shader.getInfoLog());
+        tstOut("{}", shader.getInfoDebugLog());
         throw std::runtime_error("Failed to parse shader");
     }
 
     glslang::TProgram program;
     program.addShader(&shader);
     if (!program.link(messages)) {
-        std::cout << program.getInfoLog();
-        std::cout << program.getInfoDebugLog();
+        tstOut("{}", program.getInfoLog());
+        tstOut("{}", program.getInfoDebugLog());
         throw std::runtime_error("Failed to link shader");
     }
     glslang::TIntermediate* intermediate = program.getIntermediate(language);
@@ -52,5 +51,5 @@ std::vector<unsigned int> glsl2spv(const std::string& filename) {
 void case_glslang() {
     const std::string filename = "./glsl/test/triangle.vert";
     std::vector<unsigned int> spirv = glsl2spv(filename);
-    std::cout << "spv size: " << spirv.size() << std::endl;
+    tstOut("spv size: {}", spirv.size());
 }
