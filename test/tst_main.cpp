@@ -1,10 +1,13 @@
 #include "__helpers.hpp"
+#include <assets.hpp>
 #include <iostream>
 #include <map>
 
 #include "tst_generated.hpp"
 
 int main(int argc, char* argv[]) {
+    vktdev::Assets::setDirs("../assets", "./glsl");
+
     std::cout << "[tst]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
     if (argc >= 2) {
         auto res = cases.find(std::string("case_") + argv[1]);

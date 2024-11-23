@@ -23,6 +23,9 @@ public:
     inline static std::string obj(const std::string& filename) {
         return fmt::format("{}/objects/{}", Assets::assets, filename);
     }
+    inline static std::string scene(const std::string& filename) {
+        return fmt::format("{}/scenes/{}", Assets::assets, filename);
+    }
 
     inline static std::string shaderFile(const std::string& filename) {
         return fmt::format("{}/{}", Assets::shader, filename);

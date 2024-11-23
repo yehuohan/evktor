@@ -52,21 +52,21 @@ public:
         return glm::perspective(glm::radians(zoom), (float)wid / hei, znear, zfar);
     };
 
-    virtual void update(){};
+    virtual void update() {};
 
     /**
      * @brief 移动摄像机
      *
      * @param delta_time 当前帧与上一帧的时间差
      */
-    virtual void processCameraMove(Movement dir, float delta_time){};
+    virtual void processCameraMove(Movement dir, float delta_time) {};
 
     /**
      * @brief 鼠标移动
      *
      * @param pa,pb 移动起止坐标（使用归一化坐标）
      */
-    virtual void processMouseMove(const glm::vec2& pa, const glm::vec2& pb){};
+    virtual void processMouseMove(const glm::vec2& pa, const glm::vec2& pb) {};
 
     /**
      * @brief 滚轮缩放

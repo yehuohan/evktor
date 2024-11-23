@@ -1,4 +1,5 @@
 #include "__helpers.hpp"
+#include <assets.hpp>
 #include <cstdint>
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/Public/ShaderLang.h>
@@ -49,7 +50,7 @@ std::vector<unsigned int> glsl2spv(const std::string& filename) {
 }
 
 void case_glslang() {
-    const std::string filename = "./glsl/test/triangle.vert";
+    const std::string filename = vktdev::Assets::shaderFile("test/triangle.vert");
     std::vector<unsigned int> spirv = glsl2spv(filename);
     tstOut("spv size: {}", spirv.size());
 }
