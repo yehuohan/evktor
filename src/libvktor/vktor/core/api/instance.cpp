@@ -157,7 +157,7 @@ bool checkInstanceLayers(const Vector<const char*>& layers) {
         return false;
     }
 
-    std::set<std::string> instance_lyrs(layers.begin(), layers.end());
+    std::set<String> instance_lyrs(layers.begin(), layers.end());
     for (const auto& l : lyrs) {
         instance_lyrs.erase(l.layerName);
     }
@@ -180,7 +180,7 @@ bool checkInstanceExtensions(const Vector<const char*>& extensions) {
         return false;
     }
 
-    std::set<std::string> instance_exts(extensions.begin(), extensions.end());
+    std::set<String> instance_exts(extensions.begin(), extensions.end());
     for (const auto& e : exts) {
         instance_exts.erase(e.extensionName);
     }
@@ -203,7 +203,7 @@ void printInstanceLayers(const Vector<const char*>& enabled_layers) {
         return;
     }
 
-    std::string str("Available instance layers {\n");
+    String str("Available instance layers {\n");
     for (const auto& y : lys) {
         str += vktFmt("\t{}\n", y.layerName);
     }
@@ -226,7 +226,7 @@ void printInstanceExtensions(const Vector<const char*>& enabled_extensions) {
         return;
     }
 
-    std::string str("Available instance extensions {\n");
+    String str("Available instance extensions {\n");
     for (const auto& e : ext_props) {
         str += vktFmt("\t{}\n", e.extensionName);
     }

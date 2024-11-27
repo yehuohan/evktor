@@ -211,7 +211,7 @@ Res<Swapchain> Swapchain::from(const CoreApi& api, const SwapchainState& info) {
     swapchain.image_layers = info.image_layers;
     swapchain.image_usage = info.image_usage;
     if (info.__verbose) {
-        std::string str("Swapchain is created {\n");
+        String str("Swapchain is created {\n");
         str += vktFmt("\tColor format(VkFormat): {}\n", VkStr(VkFormat, surface_format.format));
         str += vktFmt("\tImage extent: {}x{}\n", image_extent.width, image_extent.height);
         str += vktFmt("\tImage count: {}\n", image_count);

@@ -29,7 +29,7 @@ inline static bool getShaderLanguage(EShLanguage& lang, const VkShaderStageFlagB
     return true;
 }
 
-Res<ShaderSource> ShaderSource::from(ShaderSource::Stage stage, std::string&& code) {
+Res<ShaderSource> ShaderSource::from(ShaderSource::Stage stage, String&& code) {
     ShaderSource shader_source{};
 
     shader_source.stage = stage;
@@ -62,8 +62,8 @@ Res<Shader> Shader::from(const ShaderSource& source) {
     auto res = shader.glsl2spv(source.code);
     OnErr(res);
     shader.spv_code = res.unwrap();
-    shader.id = hash(std::string{reinterpret_cast<const char*>(shader.spv_code.data()),
-                                 reinterpret_cast<const char*>(shader.spv_code.data() + shader.spv_code.size())});
+    shader.id = hash(String{reinterpret_cast<const char*>(shader.spv_code.data()),
+                            reinterpret_cast<const char*>(shader.spv_code.data() + shader.spv_code.size())});
 
     return Ok(std::move(shader));
 }
@@ -78,7 +78,7 @@ Shader::Shader(Shader&& rhs) {
     desc_sets = std::move(rhs.desc_sets);
 }
 
-Res<Vector<uint32_t>> Shader::glsl2spv(const std::string& code) {
+Res<Vector<uint32_t>> Shader::glsl2spv(const String& code) {
     const char* shader_strings[] = {code.c_str()};
     const int shader_lengths[] = {(int)code.size()};
     const char* shader_filenames[] = {filename.c_str()};

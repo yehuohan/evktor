@@ -7,7 +7,7 @@ NAMESPACE_BEGIN(vkt)
 class Shader;
 
 // class ShaderVariant : private NonCopyable {
-//     Self defMacro(const std::string& macro);
+//     Self defMacro(const String& macro);
 // };
 
 /**
@@ -25,16 +25,16 @@ public:
 
 private:
     Stage stage;
-    std::string filename{""};
-    std::string entry = "main";
-    std::string code{""};
+    String filename{""};
+    String entry = "main";
+    String code{""};
     size_t id = 0; /**< id = hash(code) */
 
 private:
-    ShaderSource(){};
+    ShaderSource() {};
 
 public:
-    static Res<ShaderSource> from(ShaderSource::Stage stage, std::string&& code);
+    static Res<ShaderSource> from(ShaderSource::Stage stage, String&& code);
     ShaderSource(ShaderSource&&);
 
     inline size_t getId() const {
@@ -58,7 +58,7 @@ struct ShaderDescriptor {
         InputAttachment = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,
     };
 
-    // std::string name;
+    // String name;
     Type type;
     uint32_t set;
     uint32_t binding;
@@ -77,17 +77,17 @@ struct ShaderDescriptor {
 class Shader : private NonCopyable {
 private:
     VkShaderStageFlagBits stage;
-    std::string filename{""};
-    std::string entry = "main";
+    String filename{""};
+    String entry = "main";
     Vector<uint32_t> spv_code{};
     size_t id = 0; /**< id = hash(spv_code) */
     /** Map descriptor set index to it's all descriptor */
     HashMap<uint32_t, Vector<ShaderDescriptor>> desc_sets{};
 
 private:
-    Shader(){};
+    Shader() {};
 
-    Res<Vector<uint32_t>> glsl2spv(const std::string& code);
+    Res<Vector<uint32_t>> glsl2spv(const String& code);
 
 public:
     static Res<Shader> from(const ShaderSource& source);
@@ -97,10 +97,10 @@ public:
     inline VkShaderStageFlagBits getStage() const {
         return stage;
     }
-    inline const std::string& getFilename() const {
+    inline const String& getFilename() const {
         return filename;
     }
-    inline const std::string& getEntry() const {
+    inline const String& getEntry() const {
         return entry;
     }
     inline const Vector<uint32_t>& getSpvCode() const {

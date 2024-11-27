@@ -48,7 +48,7 @@ class OnStringGenerator(BaseGenerator):
         out = []
         out.append("#pragma once\n\n")
         out.append("#include <vulkan/vulkan.h>\n")
-        out.append("#include <string>\n\n")
+        out.append('#include "share/helpers.hpp"\n\n')
         out.append(f"#define VkStr(Type, Var) {'::'.join(self.namespaces)}::On_Str_##Type(Var)\n\n")
         out.append("\n".join(map(lambda ns: f"namespace {ns} {LBracket}", self.namespaces)))
 
@@ -56,14 +56,14 @@ class OnStringGenerator(BaseGenerator):
         out.append("\n\n// Enums\n")
         for e in self.vk.enums.values():
             out.extend(guarder.add_guard(e.protect))
-            out.append(f"std::string On_Str_{e.name}({e.name} e);\n")
+            out.append(f"String On_Str_{e.name}({e.name} e);\n")
         out.extend(guarder.add_guard(None))
 
         guarder = PlatformGuardHelper()
         out.append("\n// Flags\n")
         for f in self.vk.bitmasks.values():
             out.extend(guarder.add_guard(f.protect))
-            out.append(f"std::string On_Str_{f.flagName}({f.flagName} f);\n")
+            out.append(f"String On_Str_{f.flagName}({f.flagName} f);\n")
         out.extend(guarder.add_guard(None))
         out.append("\n")
 
@@ -79,8 +79,8 @@ class OnStringGenerator(BaseGenerator):
         out.append("\n\n// Enums\n")
         for e in self.vk.enums.values():
             out.extend(guarder.add_guard(e.protect, True))
-            out.append(f"std::string On_Str_{e.name}({e.name} e) {LBracket}\n")
-            out.append(f'    std::string str = "Unknown " + std::to_string(e);\n')
+            out.append(f"String On_Str_{e.name}({e.name} e) {LBracket}\n")
+            out.append(f'    String str = "Unknown " + std::to_string(e);\n')
             out.append(f"    switch(e) {LBracket}\n")
             subguarder = PlatformGuardHelper()
             for v in e.fields:
@@ -97,8 +97,8 @@ class OnStringGenerator(BaseGenerator):
         out.append("\n// Flags\n")
         for f in self.vk.bitmasks.values():
             out.extend(guarder.add_guard(f.protect, True))
-            out.append(f"std::string On_Str_{f.flagName}({f.flagName} f) {LBracket}\n")
-            out.append(f'    std::string str = "|";\n')
+            out.append(f"String On_Str_{f.flagName}({f.flagName} f) {LBracket}\n")
+            out.append(f'    String str = "|";\n')
             subguarder = PlatformGuardHelper()
             for v in f.flags:
                 out.extend(subguarder.add_guard(v.protect))

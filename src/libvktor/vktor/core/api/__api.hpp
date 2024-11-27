@@ -8,7 +8,6 @@
 #include "share/result.hpp"
 #include "share/share.hpp"
 #include "share/traits.hpp"
-#include <string>
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -36,9 +35,6 @@ NAMESPACE_BEGIN(core)
     operator const Type*() const { \
         return &Var;               \
     }
-
-/** A lite string as name */
-typedef std::string Name;
 
 /**
  * @brief Vulkan core handle type

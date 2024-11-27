@@ -10,7 +10,7 @@ Self ShaderModuleState::setStage(VkShaderStageFlagBits _stage) {
     return *this;
 }
 
-Self ShaderModuleState::setFilename(const std::string& _filename) {
+Self ShaderModuleState::setFilename(const String& _filename) {
     filename = _filename;
     return *this;
 }
@@ -29,7 +29,7 @@ Self ShaderModuleState::setCode(const Vector<uint32_t>& _code, size_t _code_id) 
     return *this;
 }
 
-Self ShaderModuleState::setEntry(const std::string& _entry) {
+Self ShaderModuleState::setEntry(const String& _entry) {
     entry = _entry;
     return *this;
 }

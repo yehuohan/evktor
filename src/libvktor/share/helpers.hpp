@@ -14,6 +14,11 @@ namespace vkt {
 #define newRef  std::ref
 #define newCRef std::cref
 
+/** A lite string as name */
+typedef std::string Name;
+
+typedef std::string String;
+
 template <typename T>
 using Box = std::unique_ptr<T>;
 
@@ -100,8 +105,8 @@ inline size_t hash(const Args&... args) {
  * @brief Print vector to string
  */
 template <typename T>
-auto vec2str(const Vector<T>& vec) -> std::string {
-    std::string str("[");
+auto vec2str(const Vector<T>& vec) -> String {
+    String str("[");
     for (const auto& v : vec) {
         str += " ";
         str += std::to_string(v);

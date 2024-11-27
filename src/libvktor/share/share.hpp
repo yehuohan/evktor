@@ -1,4 +1,5 @@
 #pragma once
+#include "helpers.hpp"
 #include <cassert>
 #include <fmt/format.h>
 #include <stdexcept>
@@ -58,6 +59,6 @@
 
 NAMESPACE_BEGIN(vkt)
 
-void print(const std::string& str);
+void print(const String& str);
 
 NAMESPACE_END(vkt)

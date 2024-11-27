@@ -151,7 +151,7 @@ PhysicalDevice PhysicalDeviceState::pickBestSuitable(const Vector<PhysicalDevice
     VkPhysicalDeviceProperties props;
     vkGetPhysicalDeviceProperties(pd->physical_device, &props);
 
-    std::string str(vktFmt("{} is selected {{\n", props.deviceName));
+    String str(vktFmt("{} is selected {{\n", props.deviceName));
     PhysicalDevice phy_dev{};
     phy_dev.handle = pd->physical_device;
 
@@ -279,7 +279,7 @@ bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& devic
         return false;
     }
 
-    std::set<std::string> device_exts(device_extensions.begin(), device_extensions.end());
+    std::set<String> device_exts(device_extensions.begin(), device_extensions.end());
     for (const auto& e : exts) {
         device_exts.erase(e.extensionName);
     }
@@ -302,7 +302,7 @@ void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabl
         return;
     }
 
-    std::string str("Available device extensions {\n");
+    String str("Available device extensions {\n");
     for (const auto& e : ext_props) {
         str += vktFmt("\t{}\n", e.extensionName);
     }

@@ -71,7 +71,7 @@ public:
      * @brief Set resource name for debug conveniently
      *
      * Although vkSetDebugUtilsObjectNameEXT accept a `const char*`, set debug
-     * name from a temporal std::string is okay.
+     * name from a temporal `String` is okay.
      */
     virtual VkResult setDebugName(VkDevice device, VkObjectType type, uint64_t hdl, const char* name) const override;
     virtual void cmdBeginLabel(VkCommandBuffer cmdbuf, const char* name) const override;
