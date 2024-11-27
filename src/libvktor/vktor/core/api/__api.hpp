@@ -37,9 +37,6 @@ NAMESPACE_BEGIN(core)
         return &Var;               \
     }
 
-/** A lite string as name */
-typedef std::string Name;
-
 /**
  * @brief Vulkan core handle type
  *

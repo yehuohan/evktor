@@ -18,6 +18,11 @@ public:
         setNearest();
     }
 
+    Self setFilter(VkFilter mag, VkFilter min);
+    Self setMipmapMode(VkSamplerMipmapMode mode);
+    Self setAddressMode(VkSamplerAddressMode u,
+                        VkSamplerAddressMode v,
+                        VkSamplerAddressMode w = VK_SAMPLER_ADDRESS_MODE_REPEAT);
     Self setNearest();
     Self setLinear();
 

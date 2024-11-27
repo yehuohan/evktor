@@ -14,6 +14,9 @@ namespace vkt {
 #define newRef  std::ref
 #define newCRef std::cref
 
+/** A lite string as name */
+typedef std::string Name;
+
 template <typename T>
 using Box = std::unique_ptr<T>;
 

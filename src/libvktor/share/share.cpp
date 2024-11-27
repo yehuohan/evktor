@@ -12,7 +12,7 @@ void print(const std::string& str) {
     if (!fout.is_open()) {
         fout.open("log.txt", std::ios::out);
     }
-    fout << fmt::format("[{:%F %T}]", fmt::localtime(std::time(nullptr))) << str;
+    fout << fmt::format("[{:%m-%d %T}]", fmt::localtime(std::time(nullptr))) << str;
 #endif
     std::cout << str << std::flush;
 }

@@ -5,6 +5,24 @@ NAMESPACE_BEGIN(core)
 
 using Self = SamplerState::Self;
 
+Self SamplerState::setFilter(VkFilter mag, VkFilter min) {
+    sampler_ci.magFilter = mag;
+    sampler_ci.minFilter = min;
+    return *this;
+}
+
+Self SamplerState::setMipmapMode(VkSamplerMipmapMode mode) {
+    sampler_ci.mipmapMode = mode;
+    return *this;
+}
+
+Self SamplerState::setAddressMode(VkSamplerAddressMode u, VkSamplerAddressMode v, VkSamplerAddressMode w) {
+    sampler_ci.addressModeU = u;
+    sampler_ci.addressModeV = v;
+    sampler_ci.addressModeW = w;
+    return *this;
+}
+
 Self SamplerState::setNearest() {
     sampler_ci.magFilter = VK_FILTER_NEAREST;
     sampler_ci.minFilter = VK_FILTER_NEAREST;
