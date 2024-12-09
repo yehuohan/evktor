@@ -1,9 +1,14 @@
 
-### black
-# fmt: on/off
-[tool.black]
+### ruff
+[tool.ruff]
 line-length = 120
-skip-string-normalization = 0
+indent-width = 4
+target-version = "py310"
+
+[tool.ruff.format]
+preview = true
+quote-style = "double" # "single"
+indent-style = "space" # "tab"
 
 
 ### basedpyright
