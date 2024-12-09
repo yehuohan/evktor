@@ -1,4 +1,4 @@
-use super::Res;
+use crate::res::Res;
 use ash::{vk, Entry};
 use std::ffi::{c_char, CString};
 
@@ -25,8 +25,8 @@ impl<'a> InstanceState<'a> {
     }
 
     #[inline]
-    pub fn app_version(mut self, version: u32) -> Self {
-        self.app_version = version;
+    pub fn app_version(mut self, major: u32, minor: u32, patch: u32) -> Self {
+        self.app_version = vk::make_api_version(0, major, minor, patch);
         self
     }
 
@@ -37,14 +37,14 @@ impl<'a> InstanceState<'a> {
     }
 
     #[inline]
-    pub fn engine_version(mut self, version: u32) -> Self {
-        self.engine_version = version;
+    pub fn engine_version(mut self, major: u32, minor: u32, patch: u32) -> Self {
+        self.engine_version = vk::make_api_version(0, major, minor, patch);
         self
     }
 
     #[inline]
-    pub fn api_verion(mut self, version: u32) -> Self {
-        self.api_version = version;
+    pub fn api_verion(mut self, major: u32, minor: u32, patch: u32) -> Self {
+        self.api_version = vk::make_api_version(0, major, minor, patch);
         self
     }
 
@@ -52,6 +52,11 @@ impl<'a> InstanceState<'a> {
     pub fn add_layer(mut self, layer: &'a str) -> Self {
         self.layers.push(layer);
         self
+    }
+
+    #[inline]
+    pub fn enable_layer_validation(self) -> Self {
+        self.add_layer("VK_LAYER_KHRONOS_validation")
     }
 
     #[inline]
@@ -67,12 +72,19 @@ impl<'a> InstanceState<'a> {
 }
 
 pub struct Instance {
-    pub entry: Entry,
-    pub handle: ash::Instance,
+    pub(crate) entry: Entry,
+    pub(crate) handle: ash::Instance,
 }
 
 impl Instance {
-    fn from(stt: InstanceState) -> Res<Self> {
+    fn from(mut stt: InstanceState) -> Res<Self> {
+        let entry = unsafe { Entry::load()? };
+
+        stt.layers.sort_unstable();
+        stt.layers.dedup();
+        stt.extensions.sort_unstable();
+        stt.extensions.dedup();
+
         let app_name = CString::new(stt.app_name)?;
         let engine_name = CString::new(stt.engine_name)?;
         let app_info = vk::ApplicationInfo { ..Default::default() }
@@ -94,7 +106,6 @@ impl Instance {
             .enabled_layer_names(layers.as_slice())
             .enabled_extension_names(extensions.as_slice());
 
-        let entry = unsafe { Entry::load()? };
         let handle = unsafe { entry.create_instance(&create_info, None)? };
 
         Ok(Instance { entry, handle })

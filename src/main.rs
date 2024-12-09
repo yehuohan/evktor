@@ -55,11 +55,21 @@ impl App {
 fn main() {
     println!("Rust vktor");
 
-    let inst = core::InstanceState::new()
-        .app_name("Rust Vktor")
-        .add_layer("VK_LAYER_KHRONOS_validation")
-        .into();
+    let mut aso = core::ApiState::new();
+    let inst = aso.init_instance(
+        core::InstanceState::new()
+            .app_name("Rust Vktor")
+            .app_version(0, 0, 1)
+            .engine_name("rktor")
+            .engine_version(0, 0, 1)
+            .api_verion(1, 2, 0)
+            .enable_layer_validation(),
+    );
     if let Err(err) = inst {
+        println!("{:?}", err);
+    }
+    let phy_dev = aso.init_physical_device(core::PhysicalDeviceState {});
+    if let Err(err) = phy_dev {
         println!("{:?}", err);
     }
 
