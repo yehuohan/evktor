@@ -11,7 +11,7 @@ foreach(File ${SRC})
 endforeach()
 
 set(CASE_EXTS)
-set(CASE_MAPS "static const std::map<std::string, FnCaseVoid> cases{\n")
+set(CASE_MAPS "static const std::map<vkt::String, FnCaseVoid> cases{\n")
 foreach(Case ${CASES})
     string(APPEND CASE_EXTS "extern void ${Case}();\n")
     string(APPEND CASE_MAPS "\t{\"${Case}\", ${Case}},\n")

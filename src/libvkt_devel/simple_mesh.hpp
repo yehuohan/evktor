@@ -1,8 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <glm/glm.hpp>
+#include <share/helpers.hpp>
 #include <share/share.hpp>
-#include <vector>
 #include <vulkan/vulkan.h>
 
 NAMESPACE_BEGIN(vktdev)
@@ -36,11 +36,11 @@ public:
         alignas(16) glm::mat4 proj;
     };
 
-    const std::vector<Vertex> vertices;
-    const std::vector<Index> indices;
+    const vkt::Vector<Vertex> vertices;
+    const vkt::Vector<Index> indices;
 
 public:
-    SimpleMesh(std::vector<Vertex>&& vertices, std::vector<Index>&& indices)
+    SimpleMesh(vkt::Vector<Vertex>&& vertices, vkt::Vector<Index>&& indices)
         : vertices(std::move(vertices))
         , indices(std::move(indices)) {}
     SimpleMesh(SimpleMesh&& rhs) : vertices(std::move(rhs.vertices)), indices(std::move(rhs.indices)) {}
@@ -63,8 +63,8 @@ public:
         };
     }
 
-    std::vector<VkVertexInputAttributeDescription> vertexAttributes(uint32_t binding = 0) const {
-        std::vector<VkVertexInputAttributeDescription> attrs{};
+    vkt::Vector<VkVertexInputAttributeDescription> vertexAttributes(uint32_t binding = 0) const {
+        vkt::Vector<VkVertexInputAttributeDescription> attrs{};
         attrs.push_back(VkVertexInputAttributeDescription{
             0,
             binding,

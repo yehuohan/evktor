@@ -49,7 +49,7 @@ Box<CoreApi> setupCoreApi() {
 }
 
 void computePass(const CoreApi& api) {
-    const std::string shader_file = vktdev::Assets::shaderFile("test/quad.comp");
+    const vkt::String shader_file = vktdev::Assets::shaderFile("test/quad.comp");
     const uint32_t wid = 9;
     const uint32_t hei = 9;
     const uint32_t cha = 4;
@@ -158,8 +158,8 @@ void computePass(const CoreApi& api) {
 }
 
 void graphicsPass(const CoreApi& api) {
-    const std::string shader_vert_file = vktdev::Assets::shaderFile("test/triangle.vert");
-    const std::string shader_frag_file = vktdev::Assets::shaderFile("test/triangle.frag");
+    const vkt::String shader_vert_file = vktdev::Assets::shaderFile("test/triangle.vert");
+    const vkt::String shader_frag_file = vktdev::Assets::shaderFile("test/triangle.frag");
     const uint32_t wid = 9;
     const uint32_t hei = 9;
     const uint32_t cha = 4;

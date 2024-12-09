@@ -6,20 +6,20 @@ NAMESPACE_BEGIN(vktdev)
 
 using namespace vkt;
 
-std::string Assets::assets = std::string(".");
-std::string Assets::shader = std::string(".");
+String Assets::assets = String(".");
+String Assets::shader = String(".");
 
-void Assets::setDirs(const std::string& assets_dir, const std::string& shader_dir) {
+void Assets::setDirs(const String& assets_dir, const String& shader_dir) {
     Assets::assets = assets_dir;
     Assets::shader = shader_dir;
 }
 
-vkt::ShaderSource::Stage Assets::shaderStage(const std::string& filename) {
-    std::string::size_type n = filename.rfind('.');
-    if (n == std::string::npos) {
+vkt::ShaderSource::Stage Assets::shaderStage(const String& filename) {
+    String::size_type n = filename.rfind('.');
+    if (n == String::npos) {
         throw vktErr("Failed to get shader stage: {}", filename);
     }
-    std::string suffix = filename.substr(n + 1);
+    String suffix = filename.substr(n + 1);
 
     ShaderSource::Stage stage;
     if ("vert" == suffix) {
@@ -34,12 +34,12 @@ vkt::ShaderSource::Stage Assets::shaderStage(const std::string& filename) {
     return stage;
 }
 
-std::string Assets::shaderSource(const std::string& filename) {
+String Assets::shaderSource(const String& filename) {
     std::ifstream fin(filename, std::ios::in);
     if (!fin.is_open()) {
         throw vktErr("Failed to read shader: {}", filename);
     }
-    return std::string({std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()});
+    return String({std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()});
 }
 
 NAMESPACE_END(vktdev)

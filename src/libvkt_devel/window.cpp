@@ -42,11 +42,11 @@ Window::~Window() {
     glfwTerminate();
 }
 
-std::vector<const char*> Window::requiredInstanceExtensions() const {
+vkt::Vector<const char*> Window::requiredInstanceExtensions() const {
     const char** glfw_exts;
     uint32_t glfw_exts_cnt = 0;
     glfw_exts = glfwGetRequiredInstanceExtensions(&glfw_exts_cnt);
-    std::vector<const char*> exts(glfw_exts, glfw_exts + glfw_exts_cnt);
+    vkt::Vector<const char*> exts(glfw_exts, glfw_exts + glfw_exts_cnt);
     return std::move(exts);
 }
 

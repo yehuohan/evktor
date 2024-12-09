@@ -1,5 +1,6 @@
 #pragma once
 #include <fstream>
+#include <share/helpers.hpp>
 #include <share/share.hpp>
 #include <string>
 
@@ -7,10 +8,10 @@
 
 typedef void (*FnCaseVoid)(void);
 
-static std::string read_shader(const std::string& filename) {
+static vkt::String read_shader(const vkt::String& filename) {
     std::ifstream fin(filename, std::ios::in);
     if (!fin.is_open()) {
         throw std::runtime_error("Failed to read shader " + filename);
     }
-    return std::string({std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()});
+    return vkt::String({std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()});
 }

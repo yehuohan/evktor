@@ -7,7 +7,7 @@
 void case_gltf() {
     using namespace tinygltf;
 
-    const std::string gltf_file = vktdev::Assets::scene("Sponza/glTF/Sponza.gltf");
+    const vkt::String gltf_file = vktdev::Assets::scene("Sponza/glTF/Sponza.gltf");
 
     Model model;
     TinyGLTF loader;

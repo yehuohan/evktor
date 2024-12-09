@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
 
     std::cout << "[tst]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
     if (argc >= 2) {
-        auto res = cases.find(std::string("case_") + argv[1]);
+        auto res = cases.find(vkt::String("case_") + argv[1]);
         if (res != cases.end()) {
             res->second();
         } else {
