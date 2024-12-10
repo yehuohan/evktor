@@ -36,7 +36,7 @@ CommandPool::~CommandPool() {
     primaries.clear();
     secondaries.clear();
     if (!__borrowed && handle) {
-        vkDestroyCommandPool(api, handle, nullptr);
+        vkDestroyCommandPool(api, handle, api);
     }
     handle = VK_NULL_HANDLE;
 }
@@ -101,7 +101,7 @@ Res<CommandPool> CommandPool::from(const CoreApi& api, const CommandPoolState& i
     auto cmdpool_ci = Itor::CommandPoolCreateInfo();
     cmdpool_ci.flags = info.flags;
     cmdpool_ci.queueFamilyIndex = info.queue_family_index;
-    OnRet(vkCreateCommandPool(api, &cmdpool_ci, nullptr, cmdpool), "Failed to create command pool");
+    OnRet(vkCreateCommandPool(api, &cmdpool_ci, api, cmdpool), "Failed to create command pool");
     OnName(cmdpool, info.__name);
 
     return Ok(std::move(cmdpool));

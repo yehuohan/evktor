@@ -32,7 +32,7 @@ PipelineLayout::PipelineLayout(PipelineLayout&& rhs) : PipelineLayout(rhs.api) {
 
 PipelineLayout::~PipelineLayout() {
     if (!__borrowed && handle) {
-        vkDestroyPipelineLayout(api, handle, nullptr);
+        vkDestroyPipelineLayout(api, handle, api);
     }
     handle = VK_NULL_HANDLE;
 }
@@ -45,7 +45,7 @@ Res<PipelineLayout> PipelineLayout::from(const CoreApi& api, const PipelineLayou
     pipeline_layout_ci.pSetLayouts = info.desc_setlayouts.data();
     pipeline_layout_ci.pushConstantRangeCount = u32(info.constant_ranges.size());
     pipeline_layout_ci.pPushConstantRanges = info.constant_ranges.data();
-    OnRet(vkCreatePipelineLayout(api, &pipeline_layout_ci, nullptr, pipeline_layout), "Failed to create pipeline layout");
+    OnRet(vkCreatePipelineLayout(api, &pipeline_layout_ci, api, pipeline_layout), "Failed to create pipeline layout");
     OnName(pipeline_layout, info.__name);
 
     return Ok(std::move(pipeline_layout));

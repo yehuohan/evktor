@@ -84,7 +84,7 @@ ImageView::ImageView(ImageView&& rhs) : CoreResource(rhs.api) {
 
 ImageView::~ImageView() {
     if (!__borrowed && handle) {
-        vkDestroyImageView(api, handle, nullptr);
+        vkDestroyImageView(api, handle, api);
     }
     handle = VK_NULL_HANDLE;
     image = VK_NULL_HANDLE;
@@ -93,7 +93,7 @@ ImageView::~ImageView() {
 Res<ImageView> ImageView::from(const CoreApi& api, const ImageViewState& info) {
     ImageView imageview(api);
 
-    OnRet(vkCreateImageView(api, &info.imageview_ci, nullptr, imageview), "Failed to create image view");
+    OnRet(vkCreateImageView(api, &info.imageview_ci, api, imageview), "Failed to create image view");
     OnName(imageview, info.__name);
     imageview.image = info.imageview_ci.image;
     imageview.subresource_range = info.imageview_ci.subresourceRange;

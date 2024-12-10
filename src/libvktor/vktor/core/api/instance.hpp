@@ -11,6 +11,7 @@ struct InstanceState : public CoreStater<InstanceState> {
     friend struct Instance;
 
 private:
+    const VkAllocationCallbacks* allocator = nullptr;
     VkApplicationInfo app_info{};
     Vector<const char*> layers{};
     Vector<const char*> extensions{};
@@ -26,6 +27,7 @@ public:
         app_info.apiVersion = VK_API_VERSION_1_0;
     }
 
+    Self setAllocationCallbacks(const VkAllocationCallbacks* allocation_callbacks);
     Self setAppName(const char* name);
     Self setAppVerion(uint32_t version);
     Self setEngineName(const char* name);
@@ -38,7 +40,7 @@ public:
     inline Self enableLayerValidation() {
         return addLayer("VK_LAYER_KHRONOS_validation");
     }
-    inline Self enableExtensionDebugUtils(DebugState* _debug_state = nullptr) {
+    inline Self enableExtensionDebugUtils(DebugState* _debug_state) {
         debug_state = _debug_state;
         return addExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
@@ -47,6 +49,7 @@ public:
 };
 
 struct Instance : public CoreHandle<VkInstance> {
+    const VkAllocationCallbacks* allocator = nullptr;
     uint32_t api_version = VK_API_VERSION_1_0;
     Vector<const char*> layers{};               /**< Enabled instance layers */
     Vector<const char*> extensions{};           /**< Enabled instance extensions */
@@ -58,6 +61,10 @@ protected:
 public:
     Instance(Instance&&);
     ~Instance();
+
+    operator const VkAllocationCallbacks*() const {
+        return allocator;
+    }
 
     bool isLayerEnabled(const char* layer) const;
     bool isExtensionEnabled(const char* extension) const;

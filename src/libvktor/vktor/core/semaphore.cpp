@@ -22,7 +22,7 @@ Semaphore::Semaphore(Semaphore&& rhs) : CoreResource(rhs.api) {
 
 Semaphore::~Semaphore() {
     if (!__borrowed && handle) {
-        vkDestroySemaphore(api, handle, nullptr);
+        vkDestroySemaphore(api, handle, api);
     }
     handle = VK_NULL_HANDLE;
 }
@@ -30,7 +30,7 @@ Semaphore::~Semaphore() {
 Res<Semaphore> Semaphore::from(const CoreApi& api, const SemaphoreState& info) {
     Semaphore semaphore(api);
 
-    OnRet(vkCreateSemaphore(api, &info.semaphore_ci, nullptr, semaphore), "Failed to create semaphore");
+    OnRet(vkCreateSemaphore(api, &info.semaphore_ci, api, semaphore), "Failed to create semaphore");
     OnName(semaphore, info.__name);
 
     return Ok(std::move(semaphore));

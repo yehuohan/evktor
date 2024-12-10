@@ -87,7 +87,7 @@ Device::~Device() {
         vmaDestroyAllocator(mem_allocator);
     }
     if (!__borrowed && handle) {
-        vkDestroyDevice(handle, nullptr);
+        vkDestroyDevice(handle, instance.allocator);
     }
     queues.clear();
     queue_indices.clear();
@@ -122,7 +122,7 @@ Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev
     dev_ci.ppEnabledExtensionNames = phy_dev.extensions.data();
     dev_ci.pEnabledFeatures = &pdev_feats;
 
-    OnRet(vkCreateDevice(phy_dev, &dev_ci, nullptr, device), "Failed to create device");
+    OnRet(vkCreateDevice(phy_dev, &dev_ci, instance, device), "Failed to create device");
     auto& name = info.__name;
     OnRet(instance.debug->setDebugName(device,
                                        VK_OBJECT_TYPE_DEVICE,

@@ -45,8 +45,8 @@ Buffer::~Buffer() {
         if (allocation) {
             vmaDestroyBuffer(api, handle, allocation);
         } else {
-            vkFreeMemory(api, memory, nullptr);
-            vkDestroyBuffer(api, handle, nullptr);
+            vkFreeMemory(api, memory, api);
+            vkDestroyBuffer(api, handle, api);
         }
     }
     handle = VK_NULL_HANDLE;
@@ -111,7 +111,7 @@ Res<Buffer> Buffer::from(const CoreApi& api, const BufferState& info) {
 Res<Buffer> Buffer::native_from(const Device& device, const BufferState& info, VkMemoryPropertyFlags memory_props) {
     Buffer buffer(device);
 
-    OnRet(vkCreateBuffer(device, &info.buffer_ci, nullptr, buffer), "Failed to create buffer");
+    OnRet(vkCreateBuffer(device, &info.buffer_ci, device.instance, buffer), "Failed to create buffer");
     OnName(buffer, info.__name);
     buffer.size = info.buffer_ci.size;
 
@@ -134,7 +134,7 @@ Res<Buffer> Buffer::native_from(const Device& device, const BufferState& info, V
     auto memory_ai = Itor::MemoryAllocateInfo();
     memory_ai.allocationSize = reqs.size;
     memory_ai.memoryTypeIndex = memory_typeidx.value();
-    OnRet(vkAllocateMemory(device, &memory_ai, nullptr, &buffer.memory), "Failed to allocate buffer memory");
+    OnRet(vkAllocateMemory(device, &memory_ai, device.instance, &buffer.memory), "Failed to allocate buffer memory");
     vkBindBufferMemory(device, buffer, buffer.memory, 0);
 
     // vkMapMemory(device, memory, 0, size, 0, &data);

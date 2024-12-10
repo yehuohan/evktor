@@ -39,7 +39,7 @@ Framebuffer::Framebuffer(Framebuffer&& rhs) : CoreResource(rhs.api) {
 
 Framebuffer::~Framebuffer() {
     if (!__borrowed && handle) {
-        vkDestroyFramebuffer(api, handle, nullptr);
+        vkDestroyFramebuffer(api, handle, api);
     }
     handle = VK_NULL_HANDLE;
 }
@@ -55,7 +55,7 @@ Res<Framebuffer> Framebuffer::from(const CoreApi& api, const FramebufferState& i
     framebuffer_ci.height = info.height;
     framebuffer_ci.layers = info.layers;
 
-    OnRet(vkCreateFramebuffer(api, &framebuffer_ci, nullptr, framebuffer), "Failed to create framebuffer");
+    OnRet(vkCreateFramebuffer(api, &framebuffer_ci, api, framebuffer), "Failed to create framebuffer");
     OnName(framebuffer, info.__name);
 
     return Ok(std::move(framebuffer));

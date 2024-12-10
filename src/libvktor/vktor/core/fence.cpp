@@ -22,7 +22,7 @@ Fence::Fence(Fence&& rhs) : CoreResource(rhs.api) {
 
 Fence::~Fence() {
     if (!__borrowed && handle) {
-        vkDestroyFence(api, handle, nullptr);
+        vkDestroyFence(api, handle, api);
     }
     handle = VK_NULL_HANDLE;
 }
@@ -38,7 +38,7 @@ VkResult Fence::reset() const {
 Res<Fence> Fence::from(const CoreApi& api, const FenceState& info) {
     Fence fence(api);
 
-    OnRet(vkCreateFence(api, &info.fence_ci, nullptr, fence), "Failed to create fence");
+    OnRet(vkCreateFence(api, &info.fence_ci, api, fence), "Failed to create fence");
     OnName(fence, info.__name);
 
     return Ok(std::move(fence));

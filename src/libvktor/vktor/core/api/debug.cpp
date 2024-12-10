@@ -40,9 +40,11 @@ Self DebugState::setUserData(void* user_data) {
     return *this;
 }
 
-Res<Debug> DebugState::into(const VkInstance instance) const {
+Res<Debug> DebugState::into(const Instance& instance) const {
     return Debug::from(instance, *this);
 }
+
+Debug::Debug(const Instance& instance) : instance(instance), allocator(instance) {}
 
 Debug::Debug(Debug&& rhs) : instance(rhs.instance) {
     handle = rhs.handle;
@@ -52,7 +54,7 @@ Debug::Debug(Debug&& rhs) : instance(rhs.instance) {
 
 Debug::~Debug() {
     if (!__borrowed && instance && handle) {
-        vkDestroyDebugUtilsMessengerEXT(instance, handle, nullptr);
+        vkDestroyDebugUtilsMessengerEXT(instance, handle, allocator);
     }
     handle = VK_NULL_HANDLE;
 }
@@ -89,15 +91,10 @@ void Debug::cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const {
     vkCmdInsertDebugUtilsLabelEXT(cmdbuf, &label_info);
 }
 
-Res<Debug> Debug::from(const VkInstance instance, const DebugState& info) {
+Res<Debug> Debug::from(const Instance& instance, const DebugState& info) {
     Debug debug(instance);
-
-    if (!instance) {
-        return Er("Require a valid VkInstance to create debug utils");
-    }
-    OnRet(vkCreateDebugUtilsMessengerEXT(instance, &info.debug_ci, nullptr, &debug.handle),
+    OnRet(vkCreateDebugUtilsMessengerEXT(instance, &info.debug_ci, instance, &debug.handle),
           "Failed to create debug utils messenger");
-
     return Ok(std::move(debug));
 }
 

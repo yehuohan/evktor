@@ -50,7 +50,7 @@ RenderPass::RenderPass(RenderPass&& rhs) : CoreResource(rhs.api) {
 
 RenderPass::~RenderPass() {
     if (!__borrowed && handle) {
-        vkDestroyRenderPass(api, handle, nullptr);
+        vkDestroyRenderPass(api, handle, api);
     }
     handle = VK_NULL_HANDLE;
 }
@@ -139,7 +139,7 @@ Res<RenderPass> RenderPass::from(const CoreApi& api, const RenderPassState& info
     render_pass_ci.pDependencies = dependencies.data();
 
     RenderPass render_pass(api);
-    OnRet(vkCreateRenderPass(api, &render_pass_ci, nullptr, render_pass), "Failed to create render pass");
+    OnRet(vkCreateRenderPass(api, &render_pass_ci, api, render_pass), "Failed to create render pass");
     OnName(render_pass, info.__name);
 
     return Ok(std::move(render_pass));

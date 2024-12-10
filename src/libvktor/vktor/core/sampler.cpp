@@ -73,7 +73,7 @@ Sampler::Sampler(Sampler&& rhs) : CoreResource(rhs.api) {
 
 Sampler::~Sampler() {
     if (!__borrowed && handle) {
-        vkDestroySampler(api, handle, nullptr);
+        vkDestroySampler(api, handle, api);
     }
     handle = VK_NULL_HANDLE;
 }
@@ -81,7 +81,7 @@ Sampler::~Sampler() {
 Res<Sampler> Sampler::from(const CoreApi& api, const SamplerState& info) {
     Sampler sampler(api);
 
-    OnRet(vkCreateSampler(api, &info.sampler_ci, nullptr, sampler), "Failed to create sampler");
+    OnRet(vkCreateSampler(api, &info.sampler_ci, api, sampler), "Failed to create sampler");
     OnName(sampler, info.__name);
 
     return Ok(std::move(sampler));

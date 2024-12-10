@@ -49,7 +49,7 @@ ShaderModule::ShaderModule(ShaderModule&& rhs) : CoreResource(rhs.api) {
 
 ShaderModule::~ShaderModule() {
     if (!__borrowed && handle) {
-        vkDestroyShaderModule(api, handle, nullptr);
+        vkDestroyShaderModule(api, handle, api);
     }
     handle = nullptr;
 }
@@ -60,9 +60,7 @@ Res<ShaderModule> ShaderModule::from(const CoreApi& api, const ShaderModuleState
     auto shader_ci = Itor::ShaderModuleCreateInfo();
     shader_ci.codeSize = info.code_size;
     shader_ci.pCode = info.code;
-    OnRet(vkCreateShaderModule(api, &shader_ci, nullptr, shader_module),
-          "Failed to create shader module for {}",
-          info.filename);
+    OnRet(vkCreateShaderModule(api, &shader_ci, api, shader_module), "Failed to create shader module for {}", info.filename);
     OnName(shader_module, info.__name);
     shader_module.entry = std::move(info.entry);
     shader_module.stage = info.stage;

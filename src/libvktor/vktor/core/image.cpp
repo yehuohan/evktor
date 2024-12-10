@@ -107,8 +107,8 @@ Image::~Image() {
         if (allocation) {
             vmaDestroyImage(api, handle, allocation);
         } else {
-            vkFreeMemory(api, memory, nullptr);
-            vkDestroyImage(api, handle, nullptr);
+            vkFreeMemory(api, memory, api);
+            vkDestroyImage(api, handle, api);
         }
     }
     handle = VK_NULL_HANDLE;

@@ -32,7 +32,7 @@ ComputePipeline::ComputePipeline(ComputePipeline&& rhs) : CoreResource(rhs.api) 
 
 ComputePipeline::~ComputePipeline() {
     if (!__borrowed && handle) {
-        vkDestroyPipeline(api, handle, nullptr);
+        vkDestroyPipeline(api, handle, api);
     }
     handle = VK_NULL_HANDLE;
 }
@@ -52,8 +52,7 @@ Res<ComputePipeline> ComputePipeline::from(const CoreApi& api, const ComputePipe
     pipeline_ci.basePipelineHandle = VK_NULL_HANDLE;
     pipeline_ci.basePipelineIndex = -1;
 
-    OnRet(vkCreateComputePipelines(api, VK_NULL_HANDLE, 1, &pipeline_ci, nullptr, pipeline),
-          "Failed to create compute pipeline");
+    OnRet(vkCreateComputePipelines(api, VK_NULL_HANDLE, 1, &pipeline_ci, api, pipeline), "Failed to create compute pipeline");
     OnName(pipeline, info.__name);
 
     return Ok(std::move(pipeline));

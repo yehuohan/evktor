@@ -22,7 +22,7 @@ Event::Event(Event&& rhs) : CoreResource(rhs.api) {
 
 Event::~Event() {
     if (!__borrowed && handle) {
-        vkDestroyEvent(api, handle, nullptr);
+        vkDestroyEvent(api, handle, api);
     }
     handle = VK_NULL_HANDLE;
 }
@@ -30,7 +30,7 @@ Event::~Event() {
 Res<Event> Event::from(const CoreApi& api, const EventState& info) {
     Event event(api);
 
-    OnRet(vkCreateEvent(api, &info.event_ci, nullptr, event), "Failed to create event");
+    OnRet(vkCreateEvent(api, &info.event_ci, api, event), "Failed to create event");
     OnName(event, info.__name);
 
     return Ok(std::move(event));

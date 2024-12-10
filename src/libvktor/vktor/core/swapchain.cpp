@@ -100,7 +100,7 @@ Swapchain::Swapchain(Swapchain&& rhs) : CoreResource(rhs.api), surface(std::move
 
 Swapchain::~Swapchain() {
     if (!__borrowed && handle) {
-        vkDestroySwapchainKHR(api, handle, nullptr);
+        vkDestroySwapchainKHR(api, handle, api);
     }
     handle = VK_NULL_HANDLE;
     images.clear(); // The images will be destroyed along with swapchain's destruction
@@ -200,9 +200,9 @@ Res<Swapchain> Swapchain::from(const CoreApi& api, const SwapchainState& info) {
     }
 
     Swapchain swapchain(api, std::move(info.surface));
-    OnRet(vkCreateSwapchainKHR(api, &swapchain_ci, nullptr, swapchain), "Failed to create swapchain");
+    OnRet(vkCreateSwapchainKHR(api, &swapchain_ci, api, swapchain), "Failed to create swapchain");
     if (info.old) {
-        vkDestroySwapchainKHR(api, info.old, nullptr);
+        vkDestroySwapchainKHR(api, info.old, api);
     }
     OnName(swapchain, info.__name);
     swapchain.image_count = image_count;

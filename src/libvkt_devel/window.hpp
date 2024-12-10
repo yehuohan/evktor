@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <share/helpers.hpp>
 #include <share/share.hpp>
+#include <vktor/core/api/instance.hpp>
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -31,7 +32,7 @@ public:
      *
      * This function should be invoked only once
      */
-    VkSurfaceKHR createSurface(VkInstance instance) const;
+    VkSurfaceKHR createSurface(const vkt::core::Instance& instance) const;
     /**
      * @brief Get surface extent
      */

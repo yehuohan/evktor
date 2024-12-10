@@ -31,7 +31,7 @@ DescriptorPool::DescriptorPool(DescriptorPool&& rhs)
 DescriptorPool::~DescriptorPool() {
     if (!__borrowed && handle) {
         // Descriptor set will be freed along with vkDestroyDescriptorPool
-        vkDestroyDescriptorPool(api, handle, nullptr);
+        vkDestroyDescriptorPool(api, handle, api);
     }
     handle = VK_NULL_HANDLE;
     count = 0;
@@ -92,7 +92,8 @@ Res<DescriptorPool> DescriptorPool::from(const DescriptorSetLayout& setlayout, c
     descpool_ci.maxSets = info.maxsets;
     descpool_ci.poolSizeCount = u32(poolsizes.size());
     descpool_ci.pPoolSizes = poolsizes.data();
-    OnRet(vkCreateDescriptorPool(setlayout.api, &descpool_ci, nullptr, descriptor_pool), "Failed to create descriptor pool");
+    OnRet(vkCreateDescriptorPool(setlayout.api, &descpool_ci, setlayout.api, descriptor_pool),
+          "Failed to create descriptor pool");
     OnName(descriptor_pool, info.__name);
 
     return Ok(std::move(descriptor_pool));

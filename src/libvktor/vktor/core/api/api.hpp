@@ -41,6 +41,9 @@ public:
     CoreApi(CoreApi&&);
     virtual ~CoreApi() {}
 
+    operator const VkAllocationCallbacks*() const {
+        return instance.allocator;
+    }
     OnConstType(VkInstance, instance.handle);
     OnConstType(VkPhysicalDevice, physical_device.handle);
     OnConstType(VkDevice, device.handle);

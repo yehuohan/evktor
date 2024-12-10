@@ -7,6 +7,11 @@ NAMESPACE_BEGIN(core)
 
 using Self = InstanceState::Self;
 
+Self InstanceState::setAllocationCallbacks(const VkAllocationCallbacks* allocation_callbacks) {
+    allocator = allocation_callbacks;
+    return *this;
+}
+
 Self InstanceState::setAppName(const char* name) {
     app_info.pApplicationName = name;
     return *this;
@@ -70,7 +75,7 @@ Instance::~Instance() {
     // Must resuet debug before destroy instance
     debug.reset();
     if (!__borrowed && handle) {
-        vkDestroyInstance(handle, nullptr);
+        vkDestroyInstance(handle, allocator);
     }
     handle = VK_NULL_HANDLE;
     layers.clear();
@@ -129,7 +134,8 @@ Res<Instance> Instance::from(InstanceState& info) {
     }
 
     Instance instance{};
-    OnRet(vkCreateInstance(&instance_ci, nullptr, instance), "Failed to create instance");
+    OnRet(vkCreateInstance(&instance_ci, info.allocator, instance), "Failed to create instance");
+    instance.allocator = info.allocator;
     instance.api_version = info.app_info.apiVersion;
     instance.layers = std::move(info.layers);
     instance.extensions = std::move(info.extensions);

@@ -211,7 +211,7 @@ GraphicsPipeline::GraphicsPipeline(GraphicsPipeline&& rhs) : CoreResource(rhs.ap
 
 GraphicsPipeline::~GraphicsPipeline() {
     if (!__borrowed && handle) {
-        vkDestroyPipeline(api, handle, nullptr);
+        vkDestroyPipeline(api, handle, api);
     }
     handle = VK_NULL_HANDLE;
 }
@@ -293,8 +293,7 @@ Res<GraphicsPipeline> GraphicsPipeline::from(const CoreApi& api, const GraphicsP
     pipeline_ci.basePipelineHandle = VK_NULL_HANDLE;
     pipeline_ci.basePipelineIndex = -1;
 
-    OnRet(vkCreateGraphicsPipelines(api, VK_NULL_HANDLE, 1, &pipeline_ci, nullptr, pipeline),
-          "Failed to create graphics pipeline");
+    OnRet(vkCreateGraphicsPipelines(api, VK_NULL_HANDLE, 1, &pipeline_ci, api, pipeline), "Failed to create graphics pipeline");
     OnName(pipeline, info.__name);
 
     return Ok(std::move(pipeline));
