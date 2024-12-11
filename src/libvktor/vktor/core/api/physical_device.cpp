@@ -115,7 +115,12 @@ Self PhysicalDeviceState::addRequiredExtensions(const Vector<const char*> extens
     return *this;
 }
 
-bool PhysicalDeviceState::checkSuitable(const PhysicalDeviceDetails& details) {
+Self PhysicalDeviceState::addChecker(std::function<bool(VkInstance, VkPhysicalDevice)> checker) {
+    checkers.push_back(checker);
+    return *this;
+}
+
+bool PhysicalDeviceState::checkSuitable(VkInstance instance, const PhysicalDeviceDetails& details) {
     if (require_present_queue && details.present_indices.size() == 0) {
         return false;
     }
@@ -131,7 +136,11 @@ bool PhysicalDeviceState::checkSuitable(const PhysicalDeviceDetails& details) {
     if (!checkDeviceExtensions(details.physical_device, required_extensions)) {
         return false;
     }
-
+    for (const auto& checker : checkers) {
+        if (checker && !checker(instance, details.physical_device)) {
+            return false;
+        }
+    }
     return true;
 }
 
@@ -252,8 +261,8 @@ Res<PhysicalDevice> PhysicalDevice::from(const Instance& instance, PhysicalDevic
         if (info.__verbose) {
             PhysicalDeviceDetails::print(details);
         }
-        if (info.checkSuitable(details)) {
-            suitables.push_back(details);
+        if (info.checkSuitable(instance, details)) {
+            suitables.push_back(std::move(details));
         }
     }
     if (suitables.size() == 0) {

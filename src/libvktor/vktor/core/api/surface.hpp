@@ -6,10 +6,11 @@ NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
 struct Surface : public CoreHandle<VkSurfaceKHR> {
-    const Instance& instance;
+    const VkAllocationCallbacks* allocator = nullptr;
+    const VkInstance instance;
 
 protected:
-    explicit Surface(const Instance& instance) : instance(instance) {}
+    explicit Surface(const Instance& instance) : allocator(instance.allocator), instance(instance) {}
 
 public:
     Surface(Surface&&);

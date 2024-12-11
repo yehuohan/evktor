@@ -10,19 +10,22 @@ using namespace vkt::core;
 
 Box<CoreApi> setupCoreApi() {
     CoreApiState aso{};
+    DebugState dso{};
 
     // Create instance
-    DebugState dso{};
     aso.init(InstanceState()
+                 .setNext(dso)
                  .setAppName("tst_core")
                  .setAppVerion(VK_MAKE_VERSION(1, 0, 0))
                  .setEngineName("vktor")
                  .setEngineVersion(VK_MAKE_VERSION(1, 0, 0))
                  .setApiVerion(VK_API_VERSION_1_2)
                  .enableLayerValidation()
-                 .enableExtensionDebugUtils(&dso)
+                 .enableExtensionDebugUtils()
                  .setVerbose(true))
         .unwrap();
+
+    aso.init(dso).unwrap();
 
     // Select physical device
     aso.init(PhysicalDeviceState()
@@ -38,7 +41,7 @@ Box<CoreApi> setupCoreApi() {
     aso.init(DeviceState().setMaxQueueCount(1).setVerbose(true)).unwrap();
 
     // Create core api
-    Box<CoreApi> api = newBox<CoreApi>(aso.into().unwrap());
+    Box<CoreApi> api = aso.into().unwrap();
 
     tstOut("Instance: {}, Physical Device: {}, Device: {}",
            fmt::ptr((VkInstance)*api),

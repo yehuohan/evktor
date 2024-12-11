@@ -1,6 +1,5 @@
 #pragma once
 #include "__api.hpp"
-#include "debug.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -12,10 +11,10 @@ struct InstanceState : public CoreStater<InstanceState> {
 
 private:
     const VkAllocationCallbacks* allocator = nullptr;
+    const void* next = nullptr;
     VkApplicationInfo app_info{};
     Vector<const char*> layers{};
     Vector<const char*> extensions{};
-    DebugState* debug_state = nullptr;
 
 public:
     explicit InstanceState(Name&& name = "Instance") : CoreStater(std::move(name)) {
@@ -28,6 +27,7 @@ public:
     }
 
     Self setAllocationCallbacks(const VkAllocationCallbacks* allocation_callbacks);
+    Self setNext(const void* next);
     Self setAppName(const char* name);
     Self setAppVerion(uint32_t version);
     Self setEngineName(const char* name);
@@ -40,8 +40,7 @@ public:
     inline Self enableLayerValidation() {
         return addLayer("VK_LAYER_KHRONOS_validation");
     }
-    inline Self enableExtensionDebugUtils(DebugState* _debug_state) {
-        debug_state = _debug_state;
+    inline Self enableExtensionDebugUtils() {
         return addExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
 
@@ -51,9 +50,8 @@ public:
 struct Instance : public CoreHandle<VkInstance> {
     const VkAllocationCallbacks* allocator = nullptr;
     uint32_t api_version = VK_API_VERSION_1_0;
-    Vector<const char*> layers{};               /**< Enabled instance layers */
-    Vector<const char*> extensions{};           /**< Enabled instance extensions */
-    Box<BaseDebug> debug = newBox<BaseDebug>(); /**< Debugger for Vulkan (always valid in Instance) */
+    Vector<const char*> layers{};     /**< Enabled instance layers */
+    Vector<const char*> extensions{}; /**< Enabled instance extensions */
 
 protected:
     explicit Instance() {}

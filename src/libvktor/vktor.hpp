@@ -14,7 +14,7 @@
 
 NAMESPACE_BEGIN(vkt)
 
-class Vktor {
+class Vktor : private NonCopyable, private NonMoveable {
 public:
     Box<core::CoreApi> api = nullptr;
 

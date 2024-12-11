@@ -2,6 +2,7 @@
 #include "__api.hpp"
 #include "instance.hpp"
 #include "queue.hpp"
+#include <functional>
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -38,10 +39,11 @@ private:
     bool require_transfer_queue = false;
     Vector<const char*> required_extensions{};
     // VkPhysicalDeviceFeatures required_features{};
+    Vector<std::function<bool(VkInstance, VkPhysicalDevice)>> checkers{};
 
 private:
     /** Check required items */
-    bool checkSuitable(const PhysicalDeviceDetails& details);
+    bool checkSuitable(VkInstance instance, const PhysicalDeviceDetails& details);
     /** Check preferred items */
     PhysicalDevice pickBestSuitable(const Vector<PhysicalDeviceDetails> details);
 
@@ -61,6 +63,7 @@ public:
     Self addRequiredExtension(const char* extension);
     Self addRequiredExtensions(const Vector<const char*> extensions);
     // Self setRequiredFeatures(const VkPhysicalDeviceFeatures& features);
+    Self addChecker(std::function<bool(VkInstance, VkPhysicalDevice)> checker);
 
     Res<PhysicalDevice> into(const Instance& instance);
 };

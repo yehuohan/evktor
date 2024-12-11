@@ -20,7 +20,7 @@ Surface& Surface::operator=(Surface&& rhs) {
 
 Surface::~Surface() {
     if (!__borrowed && handle) {
-        vkDestroySurfaceKHR(instance, handle, instance);
+        vkDestroySurfaceKHR(instance, handle, allocator);
     }
     handle = VK_NULL_HANDLE;
 }

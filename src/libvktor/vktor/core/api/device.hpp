@@ -1,5 +1,6 @@
 #pragma once
 #include "__api.hpp"
+#include "debug.hpp"
 #include "instance.hpp"
 #include "physical_device.hpp"
 #include "queue.hpp"
@@ -14,22 +15,25 @@ class DeviceState : public CoreStater<DeviceState> {
     friend struct Device;
 
 private:
+    const void* next = nullptr;
     uint32_t max_queue_count = 1; /**< The max count of queues for each queue family, must >= 1. */
 
 private:
-    VkResult createMemAllocator(Device& device) const;
+    VkResult createMemAllocator(const Instance& instance, const PhysicalDevice& physical_device, Device& device) const;
 
 public:
     explicit DeviceState(Name&& name = "Device") : CoreStater(std::move(name)) {}
 
+    Self setNext(const void* next);
     Self setMaxQueueCount(uint32_t count);
 
-    Res<Device> into(const Instance& instance, const PhysicalDevice& phy_dev);
+    Res<Device> into(const Instance& instance, const PhysicalDevice& phy_dev, const IDebug& debug);
 };
 
 struct Device : public CoreHandle<VkDevice> {
-    const Instance& instance;
-    const PhysicalDevice& physical_device;
+    const VkAllocationCallbacks* allocator = nullptr;
+    const VkInstance instance = VK_NULL_HANDLE;
+    const VkPhysicalDevice physical_device = VK_NULL_HANDLE;
 
     Queues queues{};                                  /**< Corresponding queues for PhysicalDevice::queue_families */
     HashMap<uint32_t, Vector<Queue>> queue_indices{}; /**< Map queue family index to corresponding queue array */
@@ -37,7 +41,8 @@ struct Device : public CoreHandle<VkDevice> {
 
 protected:
     explicit Device(const Instance& instance, const PhysicalDevice& physical_device)
-        : instance(instance)
+        : allocator(instance.allocator)
+        , instance(instance)
         , physical_device(physical_device) {}
 
 public:
@@ -45,7 +50,7 @@ public:
     ~Device();
     OnConstType(VmaAllocator, mem_allocator);
 
-    static Res<Device> from(const Instance& instance, const PhysicalDevice& phy_dev, DeviceState& info);
+    static Res<Device> from(const Instance& instance, const PhysicalDevice& phy_dev, const IDebug& debug, DeviceState& info);
     // static Res<VkDevice> borrow(const Instance& instance, const PhysicalDevice& phy_dev, VkDevice handle);
 };
 

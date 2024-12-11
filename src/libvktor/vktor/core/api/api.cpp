@@ -12,9 +12,21 @@ Res<CRef<Instance>> CoreApiState::init(InstanceState& info) {
     return Ok(newCRef(*instance));
 }
 
+Res<CRef<IDebug>> CoreApiState::init(DebugState& info) {
+    if (!instance) {
+        return Er("Must have initialized a valid instance to initialize debug");
+    }
+    // Must reset debug before info.into()
+    debug.reset();
+    auto res = info.into(*instance);
+    OnErr(res);
+    debug = newBox<Debug>(res.unwrap());
+    return Ok(newCRef(*debug));
+}
+
 Res<CRef<PhysicalDevice>> CoreApiState::init(PhysicalDeviceState& info) {
     if (!instance) {
-        return Er("Must have initialized a valid instance");
+        return Er("Must have initialized a valid instance to initialize physical device");
     }
     // Must reset physical device before info.into()
     physical_device.reset();
@@ -26,20 +38,20 @@ Res<CRef<PhysicalDevice>> CoreApiState::init(PhysicalDeviceState& info) {
 
 Res<CRef<Device>> CoreApiState::init(DeviceState& info) {
     if (!instance) {
-        return Er("Must have initialized a valid instance");
+        return Er("Must have initialized a valid instance to initialize device");
     }
     if (!physical_device) {
         return Er("Must have initialized a valid physical device");
     }
     // Must reset device before info.into()
     device.reset();
-    auto res = info.into(*instance, *physical_device);
+    auto res = info.into(*instance, *physical_device, *debug);
     OnErr(res);
     device = newBox<Device>(res.unwrap());
     return Ok(newCRef(*device));
 }
 
-Res<CoreApi> CoreApiState::into() {
+Res<Box<CoreApi>> CoreApiState::into() {
     if (!instance) {
         return Er("Must have initialized a valid instance");
     }
@@ -49,13 +61,8 @@ Res<CoreApi> CoreApiState::into() {
     if (!device) {
         return Er("Must have initialized a valid device");
     }
-    return Ok(CoreApi(std::move(*instance), std::move(*physical_device), std::move(*device)));
+    return Ok(newBox<CoreApi>(std::move(*instance), std::move(*physical_device), std::move(*device), std::move(debug)));
 }
-
-CoreApi::CoreApi(CoreApi&& rhs)
-    : instance(std::move(rhs.instance))
-    , physical_device(std::move(rhs.physical_device))
-    , device(std::move(rhs.device)) {}
 
 Res<CRef<Queue>> CoreApi::presentQueue() const {
     if (device.queues.present) {

@@ -2,6 +2,12 @@
 
 namespace vkt {
 
+/**
+ * @brief Non-copyable
+ *
+ * Though there's an explict move constructor, something like `T t(rhs)` still
+ * can NOT compile successful.
+ */
 class NonCopyable {
 protected:
     NonCopyable() = default;
@@ -11,13 +17,19 @@ protected:
     NonCopyable& operator=(const NonCopyable&) = delete;
 };
 
-class NonMovable {
+/**
+ * @brief Non-moveable
+ *
+ * If there's an explict copy constructor, something like `T t(std::move(rhs))`
+ * can compile successful and invoke copy constructor instead.
+ */
+class NonMoveable {
 protected:
-    NonMovable() = default;
-    ~NonMovable() = default;
+    NonMoveable() = default;
+    ~NonMoveable() = default;
 
-    NonMovable(NonMovable&&) = delete;
-    NonMovable& operator=(NonMovable&&) = delete;
+    NonMoveable(NonMoveable&&) = delete;
+    NonMoveable& operator=(NonMoveable&&) = delete;
 };
 
 } // namespace vkt

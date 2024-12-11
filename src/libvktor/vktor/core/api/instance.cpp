@@ -12,6 +12,11 @@ Self InstanceState::setAllocationCallbacks(const VkAllocationCallbacks* allocati
     return *this;
 }
 
+Self InstanceState::setNext(const void* _next) {
+    next = _next;
+    return *this;
+}
+
 Self InstanceState::setAppName(const char* name) {
     app_info.pApplicationName = name;
     return *this;
@@ -68,12 +73,9 @@ Instance::Instance(Instance&& rhs) {
     api_version = rhs.api_version;
     layers = std::move(rhs.layers);
     extensions = std::move(rhs.extensions);
-    debug = std::move(rhs.debug);
 }
 
 Instance::~Instance() {
-    // Must resuet debug before destroy instance
-    debug.reset();
     if (!__borrowed && handle) {
         vkDestroyInstance(handle, allocator);
     }
@@ -106,7 +108,9 @@ Res<Instance> Instance::from(InstanceState& info) {
     auto new_end = std::unique(info.extensions.begin(), info.extensions.end());
     info.extensions.erase(new_end, info.extensions.end());
 
-    auto instance_ci = Itor::InstanceCreateInfo();
+    // To debug issue in vkCreateInstance and vkDestroyInstance calls,
+    // pass a VkDebugUtilsMessengerCreateInfoEXT struct to `instance_ci.pNext`.
+    auto instance_ci = Itor::InstanceCreateInfo(info.next);
     instance_ci.pApplicationInfo = &info.app_info;
     if (info.layers.size() > 0) {
         if (!checkInstanceLayers(info.layers)) {
@@ -122,11 +126,6 @@ Res<Instance> Instance::from(InstanceState& info) {
         instance_ci.enabledExtensionCount = u32(info.extensions.size());
         instance_ci.ppEnabledExtensionNames = info.extensions.data();
     }
-    if (info.debug_state) {
-        // To debug issue in vkCreateInstance and vkDestroyInstance calls,
-        // pass a VkDebugUtilsMessengerCreateInfoEXT struct to `instance_ci.pNext`.
-        instance_ci.pNext = &info.debug_state->debug_ci;
-    }
 
     if (info.__verbose) {
         printInstanceLayers(info.layers);
@@ -141,16 +140,6 @@ Res<Instance> Instance::from(InstanceState& info) {
     instance.extensions = std::move(info.extensions);
 
     volkLoadInstance(instance);
-
-    if (info.debug_state) {
-        auto res = info.debug_state->into(instance);
-        if (res.isOk()) {
-            instance.debug = newBox<Debug>(res.unwrap());
-        } else {
-            vktLogW("Failed to create a custom debug utils messenger");
-        }
-    }
-    OnCheck(instance.debug, "Instance must have a valid debugger");
 
     return Ok(std::move(instance));
 }

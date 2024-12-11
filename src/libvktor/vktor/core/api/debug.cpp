@@ -44,8 +44,6 @@ Res<Debug> DebugState::into(const Instance& instance) const {
     return Debug::from(instance, *this);
 }
 
-Debug::Debug(const Instance& instance) : instance(instance), allocator(instance) {}
-
 Debug::Debug(Debug&& rhs) : instance(rhs.instance) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;

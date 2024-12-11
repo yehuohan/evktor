@@ -5,9 +5,7 @@ NAMESPACE_BEGIN(core)
 
 using Self = DeviceState::Self;
 
-VkResult DeviceState::createMemAllocator(Device& device) const {
-    const auto& instance = device.instance;
-    const auto& phy_dev = device.physical_device;
+VkResult DeviceState::createMemAllocator(const Instance& instance, const PhysicalDevice& phy_dev, Device& device) const {
     VmaVulkanFunctions fns{};
     fns.vkGetPhysicalDeviceProperties = vkGetPhysicalDeviceProperties;
     fns.vkGetPhysicalDeviceMemoryProperties = vkGetPhysicalDeviceMemoryProperties;
@@ -61,13 +59,18 @@ VkResult DeviceState::createMemAllocator(Device& device) const {
     return vmaCreateAllocator(&vma_allocator_ai, &device.mem_allocator);
 }
 
+Self DeviceState::setNext(const void* _next) {
+    next = _next;
+    return *this;
+}
+
 Self DeviceState::setMaxQueueCount(uint32_t count) {
     max_queue_count = std::max<uint32_t>(1, count);
     return *this;
 }
 
-Res<Device> DeviceState::into(const Instance& instance, const PhysicalDevice& phy_dev) {
-    return Device::from(instance, phy_dev, *this);
+Res<Device> DeviceState::into(const Instance& instance, const PhysicalDevice& phy_dev, const IDebug& debug) {
+    return Device::from(instance, phy_dev, debug, *this);
 }
 
 Device::Device(Device&& rhs) : instance(rhs.instance), physical_device(rhs.physical_device) {
@@ -87,7 +90,7 @@ Device::~Device() {
         vmaDestroyAllocator(mem_allocator);
     }
     if (!__borrowed && handle) {
-        vkDestroyDevice(handle, instance.allocator);
+        vkDestroyDevice(handle, allocator);
     }
     queues.clear();
     queue_indices.clear();
@@ -95,7 +98,7 @@ Device::~Device() {
     mem_allocator = VK_NULL_HANDLE;
 }
 
-Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev, DeviceState& info) {
+Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev, const IDebug& debug, DeviceState& info) {
     Device device(instance, phy_dev);
 
     Vector<VkDeviceQueueCreateInfo> queues_ci{};
@@ -112,7 +115,7 @@ Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev
 
     // Create device
     VkPhysicalDeviceFeatures pdev_feats{};
-    auto dev_ci = Itor::DeviceCreateInfo();
+    auto dev_ci = Itor::DeviceCreateInfo(info.next);
     dev_ci.queueCreateInfoCount = u32(queues_ci.size());
     dev_ci.pQueueCreateInfos = queues_ci.data();
     // Device-only layers are deprecated at lastest Vulkan spec
@@ -123,13 +126,9 @@ Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev
     dev_ci.pEnabledFeatures = &pdev_feats;
 
     OnRet(vkCreateDevice(phy_dev, &dev_ci, instance, device), "Failed to create device");
-    auto& name = info.__name;
-    OnRet(instance.debug->setDebugName(device,
-                                       VK_OBJECT_TYPE_DEVICE,
-                                       u64(reinterpret_cast<uint64_t>(device.handle)),
-                                       name.c_str()),
+    OnRet(debug.setDebugName(device, VK_OBJECT_TYPE_DEVICE, reinterpret_cast<uint64_t>(device.handle), info.__name.c_str()),
           "Failed to set debug name: {}",
-          name);
+          info.__name);
 
     // Support only just one VkDevice object
     volkLoadDevice(device);
@@ -142,10 +141,7 @@ Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev
             Queue queue(family_index, index);
             const Name name = "Queue" + std::to_string(family_index) + "." + std::to_string(index);
             vkGetDeviceQueue(device, family_index, 0, queue);
-            OnRet(instance.debug->setDebugName(device,
-                                               VK_OBJECT_TYPE_QUEUE,
-                                               u64(reinterpret_cast<uint64_t>(queue.handle)),
-                                               name.c_str()),
+            OnRet(debug.setDebugName(device, VK_OBJECT_TYPE_QUEUE, reinterpret_cast<uint64_t>(queue.handle), name.c_str()),
                   "Failed to set debug name: {}",
                   name);
             device.queue_indices[family_index].push_back(std::move(queue));
@@ -168,7 +164,7 @@ Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev
     }
 
     // Create memory allocator
-    OnRet(info.createMemAllocator(device), "Failed to create memory allocator");
+    OnRet(info.createMemAllocator(instance, phy_dev, device), "Failed to create memory allocator");
 
     return Ok(std::move(device));
 }

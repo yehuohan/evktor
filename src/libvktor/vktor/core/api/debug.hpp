@@ -1,11 +1,27 @@
 #pragma once
 #include "__api.hpp"
+#include "instance.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
 struct Debug;
-struct Instance;
+
+/**
+ * @brief Vulkan debug interface
+ */
+struct IDebug : public CoreHandle<VkDebugUtilsMessengerEXT> {
+public:
+    explicit IDebug() {}
+    virtual ~IDebug() {}
+
+    virtual VkResult setDebugName(VkDevice device, VkObjectType type, uint64_t hdl, const char* name) const {
+        return VK_SUCCESS;
+    }
+    virtual void cmdBeginLabel(VkCommandBuffer cmdbuf, const char* name) const {}
+    virtual void cmdEndLabel(VkCommandBuffer cmdbuf) const {}
+    virtual void cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const {}
+};
 
 /**
  * @brief Handle debug messages come from validation layers.
@@ -17,7 +33,6 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugUtilsMessengerCallback(VkDebugUtilsMessageSe
 
 struct DebugState : public CoreStater<DebugState> {
     friend struct Debug;
-    friend struct Instance;
 
 private:
     VkDebugUtilsMessengerCreateInfoEXT debug_ci{};
@@ -32,6 +47,9 @@ public:
                                VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
         debug_ci.pfnUserCallback = debugUtilsMessengerCallback;
     }
+    operator const void*() const {
+        return &debug_ci;
+    }
 
     Self setCallback(PFN_vkDebugUtilsMessengerCallbackEXT callback);
     Self setUserData(void* user_data);
@@ -39,30 +57,17 @@ public:
     Res<Debug> into(const Instance& instance) const;
 };
 
-struct BaseDebug : public CoreHandle<VkDebugUtilsMessengerEXT> {
-public:
-    explicit BaseDebug() {}
-    virtual ~BaseDebug() {}
-
-    virtual VkResult setDebugName(VkDevice device, VkObjectType type, uint64_t hdl, const char* name) const {
-        return VK_SUCCESS;
-    }
-    virtual void cmdBeginLabel(VkCommandBuffer cmdbuf, const char* name) const {}
-    virtual void cmdEndLabel(VkCommandBuffer cmdbuf) const {}
-    virtual void cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const {}
-};
-
 /**
  * @brief Debug Vulkan with VK_EXT_DEBUG_UTILS_EXTENSION_NAME extension
  *
  * VK_EXT_DEBUG_UTILS_EXTENSION_NAME works after vkCreateInstance and before vkDestroyInstance
  */
-struct Debug : public BaseDebug {
+struct Debug : public IDebug {
     const VkAllocationCallbacks* allocator = nullptr;
     const VkInstance instance = VK_NULL_HANDLE;
 
 protected:
-    explicit Debug(const Instance& instance);
+    explicit Debug(const Instance& instance) : instance(instance), allocator(instance) {}
 
 public:
     Debug(Debug&&);

@@ -1,4 +1,5 @@
 #pragma once
+#include "debug.hpp"
 #include "device.hpp"
 #include "instance.hpp"
 #include "physical_device.hpp"
@@ -13,32 +14,41 @@ class CoreApi;
 class CoreApiState : private NonCopyable {
 protected:
     Box<Instance> instance = nullptr;
+    Box<IDebug> debug = newBox<IDebug>();
     Box<PhysicalDevice> physical_device = nullptr;
     Box<Device> device = nullptr;
 
 public:
     /** Initialize instance (the old will be destroyed) */
     Res<CRef<Instance>> init(InstanceState& info);
+    /** Initialize debug (the old will be destroyed) */
+    Res<CRef<IDebug>> init(DebugState& info);
     /** Initialize physical device (the old will be destroyed) */
     Res<CRef<PhysicalDevice>> init(PhysicalDeviceState& info);
     /** Initialize device (the old will be destroyed) */
     Res<CRef<Device>> init(DeviceState& info);
     /** Initialize core api */
-    Res<CoreApi> into();
+    Res<Box<CoreApi>> into();
 };
 
-class CoreApi : private NonCopyable {
+/**
+ * @brief Vulkan core api
+ *
+ * CoreApi should not move, as core Vulkan resource constructor need reference `const CoreApi&`.
+ */
+class CoreApi : private NonCopyable, private NonMoveable {
 protected:
     Instance instance;
     PhysicalDevice physical_device;
     Device device;
+    Box<IDebug> debug;
 
 public:
-    CoreApi(Instance&& instance, PhysicalDevice&& physical_device, Device&& device)
+    CoreApi(Instance&& instance, PhysicalDevice&& physical_device, Device&& device, Box<IDebug>&& debug)
         : instance(std::move(instance))
         , physical_device(std::move(physical_device))
-        , device(std::move(device)) {}
-    CoreApi(CoreApi&&);
+        , device(std::move(device))
+        , debug(std::move(debug)) {}
     virtual ~CoreApi() {}
 
     operator const VkAllocationCallbacks*() const {
@@ -57,7 +67,7 @@ public:
     operator const Device&() const {
         return device;
     }
-    static Res<CoreApi> from(CoreApiState& info) {
+    static Res<Box<CoreApi>> from(CoreApiState& info) {
         return info.into();
     }
     inline Res<Surface> newSurface(VkSurfaceKHR& surface) const {
@@ -65,16 +75,16 @@ public:
     }
 
     inline VkResult setDebugName(VkObjectType type, uint64_t handle, const char* name) const {
-        return instance.debug->setDebugName(device, type, handle, name);
+        return debug->setDebugName(device, type, handle, name);
     }
     inline void cmdBeginLabel(VkCommandBuffer cmdbuf, const char* name) const {
-        return instance.debug->cmdBeginLabel(cmdbuf, name);
+        return debug->cmdBeginLabel(cmdbuf, name);
     }
     inline void cmdEndLabel(VkCommandBuffer cmdbuf) const {
-        return instance.debug->cmdEndLabel(cmdbuf);
+        return debug->cmdEndLabel(cmdbuf);
     }
     inline void cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const {
-        return instance.debug->cmdInsertLabel(cmdbuf, name);
+        return debug->cmdInsertLabel(cmdbuf, name);
     }
 
     Res<CRef<Queue>> presentQueue() const;
