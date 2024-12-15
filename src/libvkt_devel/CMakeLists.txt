@@ -11,7 +11,4 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     glm::glm
     imgui::imgui
     Freetype::Freetype)
-target_include_directories(${PROJECT_NAME}
-    PRIVATE ${Stb_INCLUDE_DIR}
-    PUBLIC ${TINYGLTF_INCLUDE_DIRS}
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
