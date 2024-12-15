@@ -1,30 +1,9 @@
+mod api;
 mod instance;
+pub use api::*;
 pub use instance::*;
 
-#[macro_export]
-macro_rules! impl_err {
-    ($t:ty) => {
-        impl From<$t> for Error {
-            fn from(error: $t) -> Self {
-                Error::from(error.to_string())
-            }
-        }
-    };
-}
+use crate::rkt_impl_err;
 
-pub type Res<T> = Result<T, Error>;
-
-#[derive(Debug)]
-pub struct Error {
-    pub msg: String,
-}
-
-impl Error {
-    pub fn from(msg: String) -> Self {
-        Error { msg }
-    }
-}
-
-impl_err!(std::ffi::NulError);
-impl_err!(ash::LoadingError);
-impl_err!(ash::vk::Result);
+rkt_impl_err!(&str, std::ffi::NulError);
+rkt_impl_err!(ash::LoadingError, ash::vk::Result);

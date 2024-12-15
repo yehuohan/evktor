@@ -1,9 +1,10 @@
-use super::Res;
+use crate::res::Res;
 use ash::{vk, Entry};
 use std::ffi::{c_char, CString};
 
 #[derive(Default)]
 pub struct InstanceState<'a> {
+    pub(crate) allocator: Option<&'a vk::AllocationCallbacks<'a>>,
     app_name: String,
     app_version: u32,
     engine_name: String,
@@ -15,7 +16,22 @@ pub struct InstanceState<'a> {
 
 impl<'a> InstanceState<'a> {
     pub fn new() -> Self {
-        InstanceState { ..Default::default() }
+        InstanceState {
+            allocator: None,
+            app_name: String::from("rktor"),
+            app_version: vk::make_api_version(0, 1, 0, 0),
+            engine_name: String::from("rktor"),
+            engine_version: vk::make_api_version(0, 1, 0, 0),
+            api_version: vk::make_api_version(0, 1, 0, 0),
+            layers: vec![],
+            extensions: vec![],
+        }
+    }
+
+    #[inline]
+    pub fn allocation_callbacks(mut self, allocator: &'a vk::AllocationCallbacks<'a>) -> Self {
+        self.allocator = Some(allocator);
+        self
     }
 
     #[inline]
@@ -25,8 +41,8 @@ impl<'a> InstanceState<'a> {
     }
 
     #[inline]
-    pub fn app_version(mut self, version: u32) -> Self {
-        self.app_version = version;
+    pub fn app_version(mut self, major: u32, minor: u32, patch: u32) -> Self {
+        self.app_version = vk::make_api_version(0, major, minor, patch);
         self
     }
 
@@ -37,14 +53,14 @@ impl<'a> InstanceState<'a> {
     }
 
     #[inline]
-    pub fn engine_version(mut self, version: u32) -> Self {
-        self.engine_version = version;
+    pub fn engine_version(mut self, major: u32, minor: u32, patch: u32) -> Self {
+        self.engine_version = vk::make_api_version(0, major, minor, patch);
         self
     }
 
     #[inline]
-    pub fn api_verion(mut self, version: u32) -> Self {
-        self.api_version = version;
+    pub fn api_version(mut self, major: u32, minor: u32, patch: u32) -> Self {
+        self.api_version = vk::make_api_version(0, major, minor, patch);
         self
     }
 
@@ -55,24 +71,38 @@ impl<'a> InstanceState<'a> {
     }
 
     #[inline]
+    pub fn enable_layer_validation(self) -> Self {
+        self.add_layer("VK_LAYER_KHRONOS_validation")
+    }
+
+    #[inline]
     pub fn add_extension(mut self, extension: &'a str) -> Self {
         self.extensions.push(extension);
         self
     }
 
     #[inline]
-    pub fn into(self) -> Res<Instance> {
+    pub fn into(self) -> Res<Instance<'a>> {
         Instance::from(self)
     }
 }
 
-pub struct Instance {
-    pub entry: Entry,
-    pub handle: ash::Instance,
+#[allow(dead_code)]
+pub struct Instance<'a> {
+    pub(crate) allocator: Option<&'a vk::AllocationCallbacks<'a>>,
+    pub(crate) entry: Entry,
+    pub(crate) handle: ash::Instance,
 }
 
-impl Instance {
-    fn from(stt: InstanceState) -> Res<Self> {
+impl<'a> Instance<'a> {
+    fn from(mut stt: InstanceState<'a>) -> Res<Self> {
+        let entry = unsafe { Entry::load()? };
+
+        stt.layers.sort_unstable();
+        stt.layers.dedup();
+        stt.extensions.sort_unstable();
+        stt.extensions.dedup();
+
         let app_name = CString::new(stt.app_name)?;
         let engine_name = CString::new(stt.engine_name)?;
         let app_info = vk::ApplicationInfo { ..Default::default() }
@@ -94,17 +124,26 @@ impl Instance {
             .enabled_layer_names(layers.as_slice())
             .enabled_extension_names(extensions.as_slice());
 
-        let entry = unsafe { Entry::load()? };
-        let handle = unsafe { entry.create_instance(&create_info, None)? };
+        let handle = unsafe { entry.create_instance(&create_info, stt.allocator)? };
 
-        Ok(Instance { entry, handle })
+        Ok(Instance {
+            allocator: stt.allocator,
+            entry,
+            handle,
+        })
     }
 }
 
-impl Drop for Instance {
+impl<'a> Into<Option<&'a vk::AllocationCallbacks<'a>>> for Instance<'a> {
+    fn into(self) -> Option<&'a vk::AllocationCallbacks<'a>> {
+        self.allocator
+    }
+}
+
+impl<'a> Drop for Instance<'a> {
     fn drop(&mut self) {
         unsafe {
-            self.handle.destroy_instance(None);
+            self.handle.destroy_instance(self.allocator);
         };
     }
 }
