@@ -98,7 +98,10 @@ Device::~Device() {
     mem_allocator = VK_NULL_HANDLE;
 }
 
-Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev, const IDebug& debug, DeviceState& info) {
+Res<Device> Device::from(const Instance& instance,
+                         const PhysicalDevice& phy_dev,
+                         const IDebug& debug,
+                         const DeviceState& info) {
     Device device(instance, phy_dev);
 
     Vector<VkDeviceQueueCreateInfo> queues_ci{};
@@ -114,7 +117,6 @@ Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev
     }
 
     // Create device
-    VkPhysicalDeviceFeatures pdev_feats{};
     auto dev_ci = Itor::DeviceCreateInfo(info.next);
     dev_ci.queueCreateInfoCount = u32(queues_ci.size());
     dev_ci.pQueueCreateInfos = queues_ci.data();
@@ -123,7 +125,12 @@ Res<Device> Device::from(const Instance& instance, const PhysicalDevice& phy_dev
     //.ppEnabledLayerNames = validation_layers.data(),
     dev_ci.enabledExtensionCount = u32(phy_dev.extensions.size());
     dev_ci.ppEnabledExtensionNames = phy_dev.extensions.data();
-    dev_ci.pEnabledFeatures = &pdev_feats;
+    dev_ci.pEnabledFeatures = traverse(info.next,
+                                       [](const VkBaseInStructure& base) {
+                                           return base.sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+                                       })
+                                  ? nullptr
+                                  : &phy_dev.features;
 
     OnRet(vkCreateDevice(phy_dev, &dev_ci, instance, device), "Failed to create device");
     OnRet(debug.setDebugName(device, VK_OBJECT_TYPE_DEVICE, reinterpret_cast<uint64_t>(device.handle), info.__name.c_str()),

@@ -106,7 +106,7 @@ public:
 /**
  * @brief Enumerate template for Vulkan
  *
- * Function 'F' return VkResult
+ * Function 'F' should return VkResult
  */
 template <typename T, typename F, typename... Ts>
 auto enumerate(Vector<T>& out, F&& f, Ts&&... ts) -> VkResult {
@@ -127,7 +127,7 @@ auto enumerate(Vector<T>& out, F&& f, Ts&&... ts) -> VkResult {
 /**
  * @brief Enumerate template for Vulkan
  *
- * Function 'F' return void
+ * Function 'F' should return void
  */
 template <typename T, typename F, typename... Ts>
 auto enumerate(F&& f, Ts&&... ts) -> Vector<T> {
@@ -138,6 +138,26 @@ auto enumerate(F&& f, Ts&&... ts) -> Vector<T> {
     f(ts..., &count, vec.data());
     vec.resize(count);
     return std::move(vec);
+}
+
+/**
+ * @brief Traverse vulkan next chain
+ *
+ * @param next The `.pNext` chain
+ * @retval true Exit traverse early when function 'F' returns true
+ * @retval false Exit traverse until catch null next
+ */
+template <typename F>
+auto traverse(const void* next, F&& f) -> bool {
+    const void* n = next;
+    while (n) {
+        const VkBaseInStructure& base = *static_cast<const VkBaseInStructure*>(n);
+        if (f(base)) {
+            return true;
+        }
+        n = base.pNext;
+    }
+    return false;
 }
 
 NAMESPACE_END(core)

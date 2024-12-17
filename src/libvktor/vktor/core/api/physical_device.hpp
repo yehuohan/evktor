@@ -38,7 +38,7 @@ private:
     bool require_compute_queue = false;
     bool require_transfer_queue = false;
     Vector<const char*> required_extensions{};
-    // VkPhysicalDeviceFeatures required_features{};
+    VkPhysicalDeviceFeatures required_features{};
     Vector<std::function<bool(VkInstance, VkPhysicalDevice)>> checkers{};
 
 private:
@@ -62,7 +62,7 @@ public:
     // Self requireSeparateTransferQueue(bool require = true);
     Self addRequiredExtension(const char* extension);
     Self addRequiredExtensions(const Vector<const char*> extensions);
-    // Self setRequiredFeatures(const VkPhysicalDeviceFeatures& features);
+    Self setRequiredFeatures(const VkPhysicalDeviceFeatures& features);
     Self addChecker(std::function<bool(VkInstance, VkPhysicalDevice)> checker);
 
     Res<PhysicalDevice> into(const Instance& instance);
@@ -72,7 +72,7 @@ struct PhysicalDevice : public CoreHandle<VkPhysicalDevice> {
     QueueFamilies queue_families{};
     HashMap<uint32_t, QueueFamilyProps> queue_family_props{}; /**< Map queue family index to it's properties */
     Vector<const char*> extensions{};                         /**< Enabled extensions for device */
-    // VkPhysicalDeviceFeatures features{};
+    VkPhysicalDeviceFeatures features{};
     VkPhysicalDeviceProperties properties{};
     VkPhysicalDeviceMemoryProperties memory_properties{};
 
@@ -92,6 +92,8 @@ public:
 
 bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& device_extensions);
 void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions);
+bool checkDeviceFeatures(VkPhysicalDevice pd, const VkPhysicalDeviceFeatures& device_features);
+void printDeviceFeatures(VkPhysicalDevice pd, const VkPhysicalDeviceFeatures& enabled_features);
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)
