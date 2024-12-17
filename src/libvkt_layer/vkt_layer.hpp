@@ -5,6 +5,10 @@
 #include <share/helpers.hpp>
 #include <share/share.hpp>
 
+#define vktlyrOut(f, ...)  vkt::print(vktFmt("[vktlyr] " f "\n", ##__VA_ARGS__))
+#define vktlyrLogW(f, ...) vkt::print(vktFmt("[vktlyr][W] " f "\n", ##__VA_ARGS__))
+#define vktlyrLogE(f, ...) vkt::print(vktFmt("[vktlyr][E({}:{})] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__))
+
 /**
  * @brief Reference layer implementation
  *
@@ -16,10 +20,21 @@
 #define vktlyrGetImpl(impl) dynamic_cast<vktlyr::VktorLayerImpl*>(&impl)
 /** Define hook pair */
 #define vktlyrHook(ns, name) {"vk" #name, (PFN_vkVoidFunction)ns::name}
-
-#define vktlyrOut(f, ...)  vkt::print(vktFmt("[vktlyr] " f "\n", ##__VA_ARGS__))
-#define vktlyrLogW(f, ...) vkt::print(vktFmt("[vktlyr][W] " f "\n", ##__VA_ARGS__))
-#define vktlyrLogE(f, ...) vkt::print(vktFmt("[vktlyr][E({}:{})] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__))
+// clang-format off
+/** Default layer hooks */
+#define vktlyrDefaultHooks()                                      \
+        vktlyrHook(vktlyr, GetInstanceProcAddr),                  \
+        vktlyrHook(vktlyr, GetPhysicalDeviceProcAddr),            \
+        vktlyrHook(vktlyr, GetDeviceProcAddr),                    \
+        vktlyrHook(vktlyr, CreateInstance),                       \
+        vktlyrHook(vktlyr, DestroyInstance),                      \
+        vktlyrHook(vktlyr, CreateDevice),                         \
+        vktlyrHook(vktlyr, DestroyDevice),                        \
+        vktlyrHook(vktlyr, EnumerateInstanceLayerProperties),     \
+        vktlyrHook(vktlyr, EnumerateInstanceExtensionProperties), \
+        vktlyrHook(vktlyr, EnumerateDeviceLayerProperties),       \
+        vktlyrHook(vktlyr, EnumerateDeviceExtensionProperties)
+// clang-format on
 
 NAMESPACE_BEGIN(vktlyr)
 
@@ -74,7 +89,7 @@ protected:
      * By default, VktorLayerImpl prepares few functions `hooks` (see entry.hpp).
      * Also we can override VktorLayerImpl::hooks at subclass constructor.
      */
-    LayerHookMap hooks{};
+    const LayerHookMap hooks{vktlyrDefaultHooks()};
 
 public:
     LayerDispatchTable<VkLayerInstanceDispatchTable> ldt_inst{};
@@ -82,7 +97,9 @@ public:
 
 public:
     // Functions
-    VktorLayerImpl();
+    VktorLayerImpl() = default;
+    VktorLayerImpl(const LayerHookMap&& _hooks) : hooks(std::move(_hooks)) {}
+    ~VktorLayerImpl() = default;
 
     /**
      * @brief Get device dispatch table quickly

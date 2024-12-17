@@ -7,12 +7,12 @@ VKAPI_ATTR VkResult VKAPI_CALL BeginCommandBuffer(VkCommandBuffer commandBuffer,
 
 class SampleLayer : public vktlyr::VktorLayerImpl {
 public:
-    SampleLayer() {
-        hooks["vkCreateInstance"] = (PFN_vkVoidFunction)CreateInstance;
-        hooks.merge(vktlyr::LayerHookMap{
-            vktlyrHook(, BeginCommandBuffer),
-        });
-    }
+    SampleLayer()
+        : vktlyr::VktorLayerImpl({
+              vktlyrHook(, CreateInstance), // Add hook before `vktlyrDefaultHooks()` to override default hooks
+              vktlyrDefaultHooks(),
+              vktlyrHook(, BeginCommandBuffer),
+          }) {}
 
     virtual const VkLayerProperties& getLayerProps() const {
         static const VkLayerProperties props{
