@@ -50,7 +50,10 @@ public:
     ~Device();
     OnConstType(VmaAllocator, mem_allocator);
 
-    static Res<Device> from(const Instance& instance, const PhysicalDevice& phy_dev, const IDebug& debug, DeviceState& info);
+    static Res<Device> from(const Instance& instance,
+                            const PhysicalDevice& phy_dev,
+                            const IDebug& debug,
+                            const DeviceState& info);
     // static Res<VkDevice> borrow(const Instance& instance, const PhysicalDevice& phy_dev, VkDevice handle);
 };
 

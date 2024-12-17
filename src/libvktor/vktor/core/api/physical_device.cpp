@@ -34,8 +34,6 @@ void PhysicalDeviceDetails::collect(PhysicalDeviceDetails& details) {
 void PhysicalDeviceDetails::print(const PhysicalDeviceDetails& details) {
     VkPhysicalDeviceProperties props;
     vkGetPhysicalDeviceProperties(details.physical_device, &props);
-    // VkPhysicalDeviceFeatures feats;
-    // vkGetPhysicalDeviceFeatures(pd, &feats);
 
     const char* pdev_type = "Unkown";
     switch (props.deviceType) {
@@ -115,6 +113,11 @@ Self PhysicalDeviceState::addRequiredExtensions(const Vector<const char*> extens
     return *this;
 }
 
+Self PhysicalDeviceState::setRequiredFeatures(const VkPhysicalDeviceFeatures& features) {
+    required_features = features;
+    return *this;
+}
+
 Self PhysicalDeviceState::addChecker(std::function<bool(VkInstance, VkPhysicalDevice)> checker) {
     checkers.push_back(checker);
     return *this;
@@ -134,6 +137,9 @@ bool PhysicalDeviceState::checkSuitable(VkInstance instance, const PhysicalDevic
         return false;
     }
     if (!checkDeviceExtensions(details.physical_device, required_extensions)) {
+        return false;
+    }
+    if (!checkDeviceFeatures(details.physical_device, required_features)) {
         return false;
     }
     for (const auto& checker : checkers) {
@@ -198,6 +204,7 @@ PhysicalDevice PhysicalDeviceState::pickBestSuitable(const Vector<PhysicalDevice
     vktOut("{}", str);
 
     phy_dev.extensions = std::move(required_extensions);
+    phy_dev.features = std::move(required_features);
     return std::move(phy_dev);
 }
 
@@ -212,7 +219,7 @@ PhysicalDevice::PhysicalDevice(PhysicalDevice&& rhs) {
     queue_families = std::move(rhs.queue_families);
     queue_family_props = std::move(rhs.queue_family_props);
     extensions = std::move(rhs.extensions);
-    // features = std::move(rhs.features);
+    features = std::move(rhs.features);
     properties = std::move(rhs.properties);
     memory_properties = std::move(rhs.memory_properties);
 }
@@ -275,6 +282,7 @@ Res<PhysicalDevice> PhysicalDevice::from(const Instance& instance, PhysicalDevic
     vkGetPhysicalDeviceMemoryProperties(phy_dev, &phy_dev.memory_properties);
     if (info.__verbose) {
         printDeviceExtensions(phy_dev, phy_dev.extensions);
+        printDeviceFeatures(phy_dev, phy_dev.features);
     }
 
     return Ok(std::move(phy_dev));
@@ -324,6 +332,154 @@ void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabl
     str += "}";
 
     vktOut("{}", str);
+}
+
+bool checkDeviceFeatures(VkPhysicalDevice pd, const VkPhysicalDeviceFeatures& device_features) {
+    VkPhysicalDeviceFeatures feats{};
+    vkGetPhysicalDeviceFeatures(pd, &feats);
+
+#define Check(f)                         \
+    if (device_features.f && !feats.f) { \
+        return false;                    \
+    }
+
+    Check(robustBufferAccess);
+    Check(fullDrawIndexUint32);
+    Check(imageCubeArray);
+    Check(independentBlend);
+    Check(geometryShader);
+    Check(tessellationShader);
+    Check(sampleRateShading);
+    Check(dualSrcBlend);
+    Check(logicOp);
+    Check(multiDrawIndirect);
+    Check(drawIndirectFirstInstance);
+    Check(depthClamp);
+    Check(depthBiasClamp);
+    Check(fillModeNonSolid);
+    Check(depthBounds);
+    Check(wideLines);
+    Check(largePoints);
+    Check(alphaToOne);
+    Check(multiViewport);
+    Check(samplerAnisotropy);
+    Check(textureCompressionETC2);
+    Check(textureCompressionASTC_LDR);
+    Check(textureCompressionBC);
+    Check(occlusionQueryPrecise);
+    Check(pipelineStatisticsQuery);
+    Check(vertexPipelineStoresAndAtomics);
+    Check(fragmentStoresAndAtomics);
+    Check(shaderTessellationAndGeometryPointSize);
+    Check(shaderImageGatherExtended);
+    Check(shaderStorageImageExtendedFormats);
+    Check(shaderStorageImageMultisample);
+    Check(shaderStorageImageReadWithoutFormat);
+    Check(shaderStorageImageWriteWithoutFormat);
+    Check(shaderUniformBufferArrayDynamicIndexing);
+    Check(shaderSampledImageArrayDynamicIndexing);
+    Check(shaderStorageBufferArrayDynamicIndexing);
+    Check(shaderStorageImageArrayDynamicIndexing);
+    Check(shaderClipDistance);
+    Check(shaderCullDistance);
+    Check(shaderFloat64);
+    Check(shaderInt64);
+    Check(shaderInt16);
+    Check(shaderResourceResidency);
+    Check(shaderResourceMinLod);
+    Check(sparseBinding);
+    Check(sparseResidencyBuffer);
+    Check(sparseResidencyImage2D);
+    Check(sparseResidencyImage3D);
+    Check(sparseResidency2Samples);
+    Check(sparseResidency4Samples);
+    Check(sparseResidency8Samples);
+    Check(sparseResidency16Samples);
+    Check(sparseResidencyAliased);
+    Check(variableMultisampleRate);
+    Check(inheritedQueries);
+
+#undef Check
+
+    return true;
+}
+
+void printDeviceFeatures(VkPhysicalDevice pd, const VkPhysicalDeviceFeatures& required_features) {
+    VkPhysicalDeviceFeatures feats{};
+    vkGetPhysicalDeviceFeatures(pd, &feats);
+
+    String sa("Available device features {\n");
+    String sr("Required device features {\n");
+
+#define Print(f)                    \
+    if (feats.f) {                  \
+        sa += vktFmt("\t{}\n", #f); \
+    }                               \
+    if (required_features.f) {      \
+        sr += vktFmt("\t{}\n", #f); \
+    }
+
+    Print(robustBufferAccess);
+    Print(fullDrawIndexUint32);
+    Print(imageCubeArray);
+    Print(independentBlend);
+    Print(geometryShader);
+    Print(tessellationShader);
+    Print(sampleRateShading);
+    Print(dualSrcBlend);
+    Print(logicOp);
+    Print(multiDrawIndirect);
+    Print(drawIndirectFirstInstance);
+    Print(depthClamp);
+    Print(depthBiasClamp);
+    Print(fillModeNonSolid);
+    Print(depthBounds);
+    Print(wideLines);
+    Print(largePoints);
+    Print(alphaToOne);
+    Print(multiViewport);
+    Print(samplerAnisotropy);
+    Print(textureCompressionETC2);
+    Print(textureCompressionASTC_LDR);
+    Print(textureCompressionBC);
+    Print(occlusionQueryPrecise);
+    Print(pipelineStatisticsQuery);
+    Print(vertexPipelineStoresAndAtomics);
+    Print(fragmentStoresAndAtomics);
+    Print(shaderTessellationAndGeometryPointSize);
+    Print(shaderImageGatherExtended);
+    Print(shaderStorageImageExtendedFormats);
+    Print(shaderStorageImageMultisample);
+    Print(shaderStorageImageReadWithoutFormat);
+    Print(shaderStorageImageWriteWithoutFormat);
+    Print(shaderUniformBufferArrayDynamicIndexing);
+    Print(shaderSampledImageArrayDynamicIndexing);
+    Print(shaderStorageBufferArrayDynamicIndexing);
+    Print(shaderStorageImageArrayDynamicIndexing);
+    Print(shaderClipDistance);
+    Print(shaderCullDistance);
+    Print(shaderFloat64);
+    Print(shaderInt64);
+    Print(shaderInt16);
+    Print(shaderResourceResidency);
+    Print(shaderResourceMinLod);
+    Print(sparseBinding);
+    Print(sparseResidencyBuffer);
+    Print(sparseResidencyImage2D);
+    Print(sparseResidencyImage3D);
+    Print(sparseResidency2Samples);
+    Print(sparseResidency4Samples);
+    Print(sparseResidency8Samples);
+    Print(sparseResidency16Samples);
+    Print(sparseResidencyAliased);
+    Print(variableMultisampleRate);
+    Print(inheritedQueries);
+
+#undef Print
+
+    sa += "}\n";
+    sr += "}";
+    vktOut("{}", sa + sr);
 }
 
 NAMESPACE_END(core)

@@ -4,9 +4,6 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-struct Swapchain;
-struct CommandBuffer;
-
 struct Queue : public CoreHandle<VkQueue> {
     const uint32_t family_index;
     const uint32_t index;
