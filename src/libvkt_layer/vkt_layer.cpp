@@ -2,21 +2,6 @@
 
 NAMESPACE_BEGIN(vktlyr)
 
-VktorLayerImpl::VktorLayerImpl()
-    : hooks{
-          vktlyrHook(vktlyr, GetInstanceProcAddr),
-          vktlyrHook(vktlyr, GetPhysicalDeviceProcAddr),
-          vktlyrHook(vktlyr, GetDeviceProcAddr),
-          vktlyrHook(vktlyr, CreateInstance),
-          vktlyrHook(vktlyr, DestroyInstance),
-          vktlyrHook(vktlyr, CreateDevice),
-          vktlyrHook(vktlyr, DestroyDevice),
-          vktlyrHook(vktlyr, EnumerateInstanceLayerProperties),
-          vktlyrHook(vktlyr, EnumerateInstanceExtensionProperties),
-          vktlyrHook(vktlyr, EnumerateDeviceLayerProperties),
-          vktlyrHook(vktlyr, EnumerateDeviceExtensionProperties),
-      } {}
-
 const PFN_vkVoidFunction VktorLayerImpl::tryHook(VkInstance instance, const char* fname) const {
     auto res = hooks.find(fname);
     if (res != hooks.end()) {
