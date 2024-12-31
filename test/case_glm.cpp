@@ -1,13 +1,15 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/io.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <iostream>
 
 /**
  * @brief Compute model-view-projection
  *
  * - 数学上，P * M 称作 P左乘M；
- *   GLSL/GLM中，需要写成 M * P 的形式。
+ *   GLSL/GLM中，需要写成 M * P 的形式，表示按矩阵M对P进行变换。
  *
  * - GLSL/GLM中的矩阵使用column-major，内存按列存储，使用M[col][row]的索引方式；
  *   使用GLSL/GLM中的矩阵时，不要在‘矩阵数学形式’和‘内存排列顺序’之间做联想，
@@ -39,42 +41,63 @@ void compute_mvp() {
 }
 
 void compute_jitter() {
+    glm::vec2 msize = glm::vec2(1920.0f, 1080.0f);
     glm::mat4 mview = glm::lookAt(glm::vec3(0.0, 0.0, 5.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
     glm::mat4 mproj = glm::perspective(glm::radians(45.0), 1.0 / 1.0, 0.1, 100.0);
-    glm::vec4 pos = glm::vec4(0.5, 0.5, 1.0, 1.0);
+    glm::vec4 mpos = glm::vec4(0.5, 0.5, 1.0, 1.0);
 
-    glm::vec4 pa;
+    glm::vec4 ndc;
+    glm::vec2 pos;
     {
         glm::mat4 vp = mproj * mview;
-        std::cout << "vp (without jitter): " << vp << std::endl;
-        pa = vp * pos;
-        pa /= pa.w;
-        std::cout << "pa (without jitter):\n" << pa << std::endl;
+        std::cout << "vp: " << vp << std::endl;
+        ndc = vp * mpos;
+        ndc /= ndc.w;
+        pos = ((glm::vec2(ndc) + 1.0f) / 2.0f) * msize;
+        std::cout << "pos:\n" << pos << std::endl;
     }
 
     // Apply jitter
-    glm::vec2 jitter(0.1, -0.1);
+    glm::vec2 jitter(0.125, -0.375);
+    glm::vec2 jitter_ndc = jitter / msize * 2.0f;
     {
         std::cout << "jitter: " << jitter << std::endl;
-        mproj[2][0] += jitter.x;
-        mproj[2][1] += jitter.y;
+        mproj[2][0] += jitter_ndc.x;
+        mproj[2][1] += jitter_ndc.y;
     }
 
-    glm::vec4 pb;
     {
         glm::mat4 vp = mproj * mview;
-        std::cout << "vp (with jitter): " << vp << std::endl;
-        pb = vp * pos;
-        pb /= pb.w;
-        std::cout << "pb (with jitter):\n" << pb << std::endl;
+        std::cout << "vp: " << vp << std::endl;
+        ndc = vp * mpos;
+        ndc /= ndc.w;
+        pos = ((glm::vec2(ndc) + 1.0f) / 2.0f) * msize;
+        std::cout << "pos:\n" << pos << std::endl;
+        std::cout << "pos+jitter:\n" << pos + jitter << std::endl;
     }
+}
 
-    auto pc = glm::vec2(pb) + jitter;
-    auto res = (pc == glm::vec2(pa)) ? "true" : "false";
-    std::cout << "pb + jitter == pa : " << res << std::endl;
+void compute_quat() {
+    float ang = glm::radians(90.0f);
+    glm::vec3 axis = glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::quat rot;
+    rot = glm::quat(glm::cos(ang / 2.0),
+                    axis.x * glm::sin(ang / 2.0),
+                    axis.y * glm::sin(ang / 2.0),
+                    axis.z * glm::sin(ang / 2.0));
+    std::cout << "rot: " << rot << std::endl;
+
+    rot = glm::angleAxis(ang, axis);
+    std::cout << "rot: " << rot << std::endl;
+    std::cout << "rot.mat4: " << glm::toMat4(rot) << std::endl;
+
+    // Rotation only works on `xyz`
+    glm::vec4 pos = rot * glm::vec4(1.0, 0.0, 0.0, 10.0);
+    std::cout << "rot * pos: " << pos << std::endl;
 }
 
 void case_glm() {
     compute_mvp();
     compute_jitter();
+    compute_quat();
 }
