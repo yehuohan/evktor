@@ -1,4 +1,7 @@
 # .clangd
 
+Completion:
+  HeaderInsertion: Never
+
 Diagnostics:
   UnusedIncludes: None

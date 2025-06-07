@@ -1,20 +1,26 @@
 {
     "version": "0.2.0",
     "configurations": [
+        /* C/C++/Rust */
+        // Extension: C/C++
+        //      - "cppdbg" for GDB and LLDB
+        //      - "cppvsdbg" for MSVC (vsdbg.exe)
+        //      - "console": "internalConsole", "integratedTerminal", "externalTerminal"
+        //      - "debug.allowBreakpointsEverywhere": true
+        // Install GDB: pacman -S --needed base-devel mingw-w64-ucrt-x86_64-toolchain
         {
-            "name": "Debug C/C++",
-            "type": "cppdbg", // cppdbg for GDB and LLDB, cppvsdbg for VS
-            "request": "launch", // attach
+            "name": "Debug C/C++/Rust: Launch with cppdbg",
+            "type": "cppdbg",
+            "request": "launch",
             "program": "${workspaceFolder}/install/Debug/evktor.exe",
             "args": ["${workspaceFolder}/../assets", "${workspaceFolder}/glsl"],
             "cwd": "${workspaceFolder}",
-            "environment": [], // { "name": "PATH", "value": "."}
+            // "environment": [ { "name": "PATH", "value": "." } ],
             "externalConsole": false,
             "stopAtEntry": false,
-            "linux": { "MIMode": "gdb", "miDebuggerPath": "/usr/bin/gdb" },
-            "osx": { "MIMode": "lldb" },
-            // pacman -S --needed base-devel mingw-w64-ucrt-x86_64-toolchain
             "windows": { "MIMode": "gdb", "miDebuggerPath": "gdb" },
+            "linux": { "MIMode": "gdb", "miDebuggerPath": "gdb" },
+            "osx": { "MIMode": "lldb" },
             "setupCommands": [
                 { "text": "-enable-pretty-printing", "ignoreFailures": true },
                 { "text": "-gdb-set disassembly-flavor intel", "ignoreFailures": true }
