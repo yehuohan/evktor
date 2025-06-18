@@ -1,0 +1,28 @@
+/// Local .nlsp.json
+///
+/// Disable server: "lspconfig.server": false
+{
+    /* Neoconf settings */
+    "neoconf": {
+        "plugins": {
+            "lspconfig": { "enabled": true },
+            "jsonls": { "enabled": true },
+            "lua_ls": { "enabled": true }
+        }
+    },
+    /* Language server settings */
+    "lspconfig": {
+        "lua_ls": {
+            "Lua.runtime.version": "LuaJIT", // "Lua 5.2", "LuaJIT"
+            "Lua.workspace.library": [
+                "./xmake/luals-addon"
+            ],
+            "Lua.diagnostics.disable": [
+                "inject-field",
+                "missing-fields",
+                "undefined-field"
+            ]
+        }
+    }
+}
+
