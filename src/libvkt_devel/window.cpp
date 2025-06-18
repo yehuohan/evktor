@@ -18,7 +18,6 @@ Window::Window(uint32_t width, uint32_t height) : width(width), height(height) {
     glfwSetWindowUserPointer(window, this);
 
     glfwSetWindowSizeLimits(window, 1, 1, GLFW_DONT_CARE, GLFW_DONT_CARE);
-    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // 隐藏光标，并Capture光标
     glfwSetScrollCallback(window, [](GLFWwindow* win, double xoffset, double yoffset) {
         auto user = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
         if (user && user->camera) {
@@ -112,9 +111,9 @@ void Window::processKeys(float delta_time) {
         dir = ICamera::Movement::Leftward;
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
         dir = ICamera::Movement::Rightward;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        dir = ICamera::Movement::Upward;
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+        dir = ICamera::Movement::Upward;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         dir = ICamera::Movement::Downward;
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
         dir = ICamera::Movement::Reset;
