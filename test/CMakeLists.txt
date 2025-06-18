@@ -32,7 +32,7 @@ endif()
 project(tst_main)
 
 add_executable(${PROJECT_NAME} ${SRC})
-target_link_libraries(${PROJECT_NAME} vkt_devel vktor)
+target_link_libraries(${PROJECT_NAME} vkt_devel vkt_scene vktor)
 target_include_directories(${PROJECT_NAME} PUBLIC ${EXECUTABLE_OUTPUT_PATH}/test)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX})

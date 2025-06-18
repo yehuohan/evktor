@@ -1,7 +1,7 @@
 #include "__helpers.hpp"
 #include <assets.hpp>
 #include <string>
-// libvkt_devel has compiled TINYGLTF_IMPLEMENTATION
+// libvkt_scene has compiled TINYGLTF_IMPLEMENTATION
 #include <tiny_gltf.h>
 
 void case_gltf() {
