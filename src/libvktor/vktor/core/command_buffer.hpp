@@ -73,10 +73,9 @@ public:
         return *this;
     }
     inline Self cmdBindVertexBuffers(uint32_t first_binding,
-                                     uint32_t binding_count,
                                      const Vector<VkBuffer>& buffers,
                                      const Vector<VkDeviceSize>& offsets) const {
-        vkCmdBindVertexBuffers(handle, first_binding, binding_count, buffers.data(), offsets.data());
+        vkCmdBindVertexBuffers(handle, first_binding, u32(buffers.size()), buffers.data(), offsets.data());
         return *this;
     }
     inline Self cmdDrawIndexed(uint32_t index_count,

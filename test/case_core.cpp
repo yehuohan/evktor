@@ -329,7 +329,7 @@ void graphicsPass(const CoreApi& api) {
     cmdbuf.beginRenderPass(render_pass, framebuffer, {0, 0}, {wid, hei}, {VkClearValue{}})
         .cmdBindPipeline(VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline)
         .cmdBindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, {desc_set})
-        .cmdBindVertexBuffers(0, 1, {vertex_buf}, {0})
+        .cmdBindVertexBuffers(0, {vertex_buf}, {0})
         .cmdBindIndexBuffer(index_buf, 0, VK_INDEX_TYPE_UINT32)
         .cmdDrawIndexed(3, 1, 0, 0, 0)
         .endRenderPass();
