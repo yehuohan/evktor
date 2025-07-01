@@ -85,7 +85,7 @@ deps:
 deps-repos:
     @echo Prepare deps-repos...
     -git clone --depth=1 https://github.com/zeux/volk.git {{DEPS_DIR}}/repos/volk
-    -git clone --depth=1 https://github.com/KhronosGroup/Vulkan-ValidationLayers.git {{DEPS_DIR}}/repos/Vulkan-ValidationLayers
+    -git clone --depth=1 -b vulkan-sdk-1.3.280 https://github.com/KhronosGroup/Vulkan-ValidationLayers.git {{DEPS_DIR}}/repos/Vulkan-ValidationLayers
     pip install glad2
     python -m glad \
         --api='gl:core=4.5' \
