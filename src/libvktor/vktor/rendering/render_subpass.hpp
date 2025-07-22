@@ -60,22 +60,22 @@ struct hash<vkt::RenderSubpass> {
         size_t res = 0;
         const auto& info = render_subpass.getInfo();
         for (const auto a : info.inputs) {
-            vkt::hashCombine(res, a);
+            hashCombine(res, a);
         }
         for (const auto a : info.colors) {
-            vkt::hashCombine(res, a);
+            hashCombine(res, a);
         }
-        vkt::hashCombine(res, info.depthstencil);
+        hashCombine(res, info.depthstencil);
         return res;
     }
 };
 
 template <>
-struct hash<vkt::Vector<vkt::RenderSubpass>> {
-    size_t operator()(const vkt::Vector<vkt::RenderSubpass>& render_subpasses) const {
+struct hash<Vector<vkt::RenderSubpass>> {
+    size_t operator()(const Vector<vkt::RenderSubpass>& render_subpasses) const {
         size_t res = 0;
         for (const auto& subpass : render_subpasses) {
-            vkt::hashCombine(res, subpass);
+            hashCombine(res, subpass);
         }
         return res;
     }

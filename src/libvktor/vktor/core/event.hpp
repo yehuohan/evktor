@@ -13,7 +13,7 @@ private:
     VkEventCreateInfo event_ci{};
 
 public:
-    explicit EventState(Name&& name = "Event") : CoreStater(std::move(name)) {
+    explicit EventState(String&& name = "Event") : CoreStater(std::move(name)) {
         event_ci = Itor::EventCreateInfo();
     }
 

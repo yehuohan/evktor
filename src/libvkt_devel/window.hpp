@@ -15,7 +15,7 @@ protected:
     uint32_t width;
     uint32_t height;
     GLFWwindow* window = nullptr;
-    vkt::Box<ICamera> camera = nullptr;
+    Box<ICamera> camera = nullptr;
     bool framebuffer_resized = false;
     float fps = 0.0f;
 

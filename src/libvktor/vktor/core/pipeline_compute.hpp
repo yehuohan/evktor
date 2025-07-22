@@ -17,7 +17,7 @@ private:
     VkPipelineLayout layout = VK_NULL_HANDLE;
 
 public:
-    explicit ComputePipelineState(Name&& name = "GraphicsPipeline") : CoreStater(std::move(name)) {}
+    explicit ComputePipelineState(String&& name = "GraphicsPipeline") : CoreStater(std::move(name)) {}
 
     Self setFlags(VkPipelineCreateFlags flags);
     Self setShader(ShaderModule&& shader);
@@ -47,9 +47,9 @@ struct hash<vkt::core::ComputePipelineState> {
     size_t operator()(const vkt::core::ComputePipelineState& pso) const {
         size_t res = 0;
         if (pso.shader.has_value()) {
-            vkt::hashCombine(res, pso.shader.value());
+            hashCombine(res, pso.shader.value());
         }
-        vkt::hashCombine(res, pso.layout);
+        hashCombine(res, pso.layout);
         return res;
     }
 };

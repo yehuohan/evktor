@@ -3,8 +3,6 @@
 #include <optional>
 #include <variant>
 
-namespace vkt {
-
 template <typename T>
 struct Ok {
     T value;
@@ -125,5 +123,3 @@ using Res = Result<T, std::runtime_error>;
  * @brief An empty struct for Res<Void>
  */
 struct Void {};
-
-} // namespace vkt

@@ -17,7 +17,7 @@ private:
     uint32_t layers = 0;
 
 public:
-    explicit FramebufferState(Name&& name = "Framebuffer") : CoreStater(std::move(name)) {}
+    explicit FramebufferState(String&& name = "Framebuffer") : CoreStater(std::move(name)) {}
 
     Self setRenderPass(VkRenderPass render_pass);
     Self addAttachment(VkImageView imageview);

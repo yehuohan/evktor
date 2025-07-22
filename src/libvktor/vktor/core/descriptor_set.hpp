@@ -63,10 +63,10 @@ struct hash<vkt::core::DescriptorInfo> {
     size_t operator()(const vkt::core::DescriptorInfo& desc_info) const {
         size_t res = 0;
         for (const auto& item : desc_info.bufs) {
-            vkt::hashCombine(res, item.second);
+            hashCombine(res, item.second);
         }
         for (const auto& item : desc_info.imgs) {
-            vkt::hashCombine(res, item.second);
+            hashCombine(res, item.second);
         }
         return res;
     }
@@ -78,12 +78,12 @@ struct hash<vkt::core::DescriptorArrayInfo> {
         size_t res = 0;
         for (const auto& item : desc_arrinfo.bufs) {
             for (const auto& buf : item.second) {
-                vkt::hashCombine(res, buf);
+                hashCombine(res, buf);
             }
         }
         for (const auto& item : desc_arrinfo.imgs) {
             for (const auto& img : item.second) {
-                vkt::hashCombine(res, img);
+                hashCombine(res, img);
             }
         }
         return res;

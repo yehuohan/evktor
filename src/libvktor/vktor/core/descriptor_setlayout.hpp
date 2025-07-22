@@ -14,7 +14,7 @@ private:
     Map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
 
 public:
-    explicit DescriptorSetLayoutState(Name&& name = "DescriptorSetLayout") : CoreStater(std::move(name)) {}
+    explicit DescriptorSetLayoutState(String&& name = "DescriptorSetLayout") : CoreStater(std::move(name)) {}
 
     Self setFlags(VkDescriptorSetLayoutCreateFlags flags);
     Self addBinding(const VkDescriptorSetLayoutBinding& binding);

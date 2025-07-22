@@ -16,7 +16,7 @@ private:
     Vector<VkPushConstantRange> constant_ranges{};
 
 public:
-    explicit PipelineLayoutState(Name&& name = "PipelineLayout") : CoreStater(std::move(name)) {}
+    explicit PipelineLayoutState(String&& name = "PipelineLayout") : CoreStater(std::move(name)) {}
 
     Self setFlags(VkPipelineLayoutCreateFlags flags);
     Self addDescriptorSetLayout(VkDescriptorSetLayout setlayout);

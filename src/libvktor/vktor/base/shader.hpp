@@ -142,12 +142,12 @@ struct hash<vkt::Shader> {
 };
 
 template <>
-struct hash<vkt::Vector<vkt::Shader>> {
+struct hash<Vector<vkt::Shader>> {
     // C++ doesn't support store Shader& in Vector, so use Shader* instead.
-    inline size_t operator()(const vkt::Vector<vkt::Shader>& shaders) const {
+    inline size_t operator()(const Vector<vkt::Shader>& shaders) const {
         size_t res = 0;
         for (const auto& s : shaders) {
-            vkt::hashCombine(res, s);
+            hashCombine(res, s);
         }
         return res;
     }

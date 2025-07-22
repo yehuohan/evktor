@@ -13,7 +13,7 @@ private:
     VkSamplerCreateInfo sampler_ci{};
 
 public:
-    explicit SamplerState(Name&& name = "Sampler") : CoreStater(std::move(name)) {
+    explicit SamplerState(String&& name = "Sampler") : CoreStater(std::move(name)) {
         sampler_ci = Itor::SamplerCreateInfo();
         setNearest();
     }

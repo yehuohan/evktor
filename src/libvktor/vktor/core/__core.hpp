@@ -23,7 +23,7 @@ struct CoreResource : public CoreHandle<T> {
     explicit CoreResource(const CoreApi& api) : api(api) {}
     virtual ~CoreResource() {}
 
-    inline VkResult setDebugName(const Name& name) const {
+    inline VkResult setDebugName(const String& name) const {
         return api.setDebugName(OBJECT_TYPE, u64(reinterpret_cast<uint64_t>(this->handle)), name.c_str());
     }
 };

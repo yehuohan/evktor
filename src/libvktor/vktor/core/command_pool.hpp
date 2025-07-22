@@ -15,7 +15,7 @@ private:
     uint32_t queue_family_index = 0;
 
 public:
-    explicit CommandPoolState(Name&& name = "CommandPool") : CoreStater(std::move(name)) {}
+    explicit CommandPoolState(String&& name = "CommandPool") : CoreStater(std::move(name)) {}
 
     Self setFlags(VkCommandPoolCreateFlags flags);
     Self setQueueFamilyIndex(uint32_t index);
@@ -46,7 +46,7 @@ public:
      * Store allocated CommandBuffer within this CommandPool, so return the referrence of the CommandBuffer.
      * And free CommandBuffer by removing CommandBuffer from `primaries` or `secondaries`.
      */
-    Res<Ref<CommandBuffer>> allocate(Level level, const Name& name = "CommandBuffer");
+    Res<Ref<CommandBuffer>> allocate(Level level, const String& name = "CommandBuffer");
     void resetPool();
 
     static Res<CommandPool> from(const CoreApi& api, const CommandPoolState& info);

@@ -7,15 +7,10 @@
 #include <unordered_map>
 #include <vector>
 
-namespace vkt {
-
 #define newBox  std::make_unique
 #define newPtr  std::make_shared
 #define newRef  std::ref
 #define newCRef std::cref
-
-/** A lite string as name */
-typedef std::string Name;
 
 typedef std::string String;
 
@@ -116,5 +111,3 @@ auto vec2str(const Vector<T>& vec) -> String {
 
     return std::move(str);
 }
-
-} // namespace vkt

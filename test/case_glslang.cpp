@@ -5,13 +5,13 @@
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/SPIRV/GlslangToSpv.h>
 
-std::vector<unsigned int> glsl2spv(const vkt::String& filename) {
-    vkt::String shader_code = read_shader(filename);
+std::vector<unsigned int> glsl2spv(const String& filename) {
+    String shader_code = read_shader(filename);
     const char* shader_strings[] = {shader_code.c_str()};
     const int shader_lengths[] = {(int)shader_code.size()};
     const char* shader_filenames[] = {filename.c_str()};
     const char* preamble = "#define TST_ERROR 1";
-    const std::vector<vkt::String> processes{"DTST_ERROR=1"};
+    const std::vector<String> processes{"DTST_ERROR=1"};
 
     EShMessages messages = static_cast<EShMessages>(EShMessages::EShMsgDefault | EShMessages::EShMsgVulkanRules |
                                                     EShMessages::EShMsgSpvRules);
@@ -50,7 +50,7 @@ std::vector<unsigned int> glsl2spv(const vkt::String& filename) {
 }
 
 void case_glslang() {
-    const vkt::String filename = vktdev::Assets::shaderFile("test/triangle.vert");
+    const String filename = vktdev::Assets::shaderFile("test/triangle.vert");
     std::vector<unsigned int> spirv = glsl2spv(filename);
     tstOut("spv size: {}", spirv.size());
 }

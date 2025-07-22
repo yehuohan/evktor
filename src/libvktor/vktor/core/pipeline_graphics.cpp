@@ -5,7 +5,7 @@ NAMESPACE_BEGIN(core)
 
 using Self = GraphicsPipelineState::Self;
 
-GraphicsPipelineState::GraphicsPipelineState(Name&& name) : CoreStater(std::move(name)) {
+GraphicsPipelineState::GraphicsPipelineState(String&& name) : CoreStater(std::move(name)) {
     input_assembly = Itor::PipelineInputAssemblyStateCreateInfo();
     input_assembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     input_assembly.primitiveRestartEnable = VK_FALSE;

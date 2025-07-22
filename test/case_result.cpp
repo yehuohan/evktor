@@ -39,9 +39,9 @@ public:
     }
 };
 
-using vktOk = vkt::Ok<Vec>;
-using vktErr = vkt::Err<std::runtime_error>;
-using vktRes = vkt::Result<Vec, std::runtime_error>;
+using vktOk = Ok<Vec>;
+using vktErr = Err<std::runtime_error>;
+using vktRes = Result<Vec, std::runtime_error>;
 
 vktRes get() {
     Vec v;

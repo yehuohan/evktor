@@ -22,7 +22,7 @@ private:
     VkResult createMemAllocator(const Instance& instance, const PhysicalDevice& physical_device, Device& device) const;
 
 public:
-    explicit DeviceState(Name&& name = "Device") : CoreStater(std::move(name)) {}
+    explicit DeviceState(String&& name = "Device") : CoreStater(std::move(name)) {}
 
     Self setNext(const void* next);
     Self setMaxQueueCount(uint32_t count);

@@ -85,7 +85,7 @@ private:
     Vector<RenderSubpassInfo> subpasses{};
 
 public:
-    explicit RenderPassState(Name&& name = "RenderPass") : CoreStater(std::move(name)) {}
+    explicit RenderPassState(String&& name = "RenderPass") : CoreStater(std::move(name)) {}
 
     Self addAttachment(VkFormat format,
                        VkSampleCountFlagBits samples,

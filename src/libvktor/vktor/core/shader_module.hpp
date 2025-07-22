@@ -18,7 +18,7 @@ private:
     size_t code_id = 0;   /**< Hash of spir-v `code` for unique ShaderModule */
 
 public:
-    explicit ShaderModuleState(Name&& name = "ShaderModule") : CoreStater(std::move(name)) {}
+    explicit ShaderModuleState(String&& name = "ShaderModule") : CoreStater(std::move(name)) {}
 
     Self setStage(VkShaderStageFlagBits stage);
     Self setFilename(const String& filename);
@@ -60,11 +60,11 @@ struct hash<vkt::core::ShaderModule> {
 };
 
 template <>
-struct hash<vkt::Vector<vkt::core::ShaderModule>> {
-    inline size_t operator()(const vkt::Vector<vkt::core::ShaderModule>& shader_modules) const {
+struct hash<Vector<vkt::core::ShaderModule>> {
+    inline size_t operator()(const Vector<vkt::core::ShaderModule>& shader_modules) const {
         size_t res = 0;
         for (const auto& s : shader_modules) {
-            vkt::hashCombine(res, s);
+            hashCombine(res, s);
         }
         return res;
     }

@@ -146,7 +146,7 @@ Res<Device> Device::from(const Instance& instance,
         uint32_t max_count = std::min<uint32_t>(info.max_queue_count, q.second.count);
         for (uint32_t index = 0; index < max_count; index++) {
             Queue queue(family_index, index);
-            const Name name = "Queue" + std::to_string(family_index) + "." + std::to_string(index);
+            const String name = "Queue" + std::to_string(family_index) + "." + std::to_string(index);
             vkGetDeviceQueue(device, family_index, 0, queue);
             OnRet(debug.setDebugName(device, VK_OBJECT_TYPE_QUEUE, reinterpret_cast<uint64_t>(queue.handle), name.c_str()),
                   "Failed to set debug name: {}",

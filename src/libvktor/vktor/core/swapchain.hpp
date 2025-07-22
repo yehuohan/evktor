@@ -28,7 +28,7 @@ private:
     VkExtent2D chooseExtent(const VkSurfaceCapabilitiesKHR& capalibities) const;
 
 public:
-    explicit SwapchainState(Surface&& surface, Name&& name = "Swapchain")
+    explicit SwapchainState(Surface&& surface, String&& name = "Swapchain")
         : CoreStater(std::move(name))
         , surface(std::move(surface)) {}
     SwapchainState(SwapchainState&&);

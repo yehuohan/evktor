@@ -7,9 +7,9 @@ template <>
 struct hash<VkDescriptorBufferInfo> {
     inline size_t operator()(const VkDescriptorBufferInfo& desc_buf) const {
         size_t res = 0;
-        vkt::hashCombine(res, desc_buf.buffer);
-        vkt::hashCombine(res, desc_buf.offset);
-        vkt::hashCombine(res, desc_buf.range);
+        hashCombine(res, desc_buf.buffer);
+        hashCombine(res, desc_buf.offset);
+        hashCombine(res, desc_buf.range);
         return res;
     }
 };
@@ -18,9 +18,9 @@ template <>
 struct hash<VkDescriptorImageInfo> {
     inline size_t operator()(const VkDescriptorImageInfo& desc_img) const {
         size_t res = 0;
-        vkt::hashCombine(res, desc_img.sampler);
-        vkt::hashCombine(res, desc_img.imageView);
-        vkt::hashCombine(res, desc_img.imageLayout);
+        hashCombine(res, desc_img.sampler);
+        hashCombine(res, desc_img.imageView);
+        hashCombine(res, desc_img.imageLayout);
         return res;
     }
 };
@@ -29,9 +29,9 @@ template <>
 struct hash<VkVertexInputBindingDescription> {
     inline size_t operator()(const VkVertexInputBindingDescription& binding) const {
         size_t res = 0;
-        vkt::hashCombine(res, binding.binding);
-        vkt::hashCombine(res, binding.stride);
-        vkt::hashCombine(res, binding.inputRate);
+        hashCombine(res, binding.binding);
+        hashCombine(res, binding.stride);
+        hashCombine(res, binding.inputRate);
         return res;
     }
 };
@@ -40,10 +40,10 @@ template <>
 struct hash<VkVertexInputAttributeDescription> {
     inline size_t operator()(const VkVertexInputAttributeDescription& attribute) const {
         size_t res = 0;
-        vkt::hashCombine(res, attribute.location);
-        vkt::hashCombine(res, attribute.binding);
-        vkt::hashCombine(res, attribute.format);
-        vkt::hashCombine(res, attribute.offset);
+        hashCombine(res, attribute.location);
+        hashCombine(res, attribute.binding);
+        hashCombine(res, attribute.format);
+        hashCombine(res, attribute.offset);
         return res;
     }
 };
@@ -52,8 +52,8 @@ template <>
 struct hash<VkPipelineInputAssemblyStateCreateInfo> {
     inline size_t operator()(const VkPipelineInputAssemblyStateCreateInfo& input_assembly) const {
         size_t res = 0;
-        vkt::hashCombine(res, input_assembly.topology);
-        vkt::hashCombine(res, input_assembly.primitiveRestartEnable);
+        hashCombine(res, input_assembly.topology);
+        hashCombine(res, input_assembly.primitiveRestartEnable);
         return res;
     }
 };
@@ -62,12 +62,12 @@ template <>
 struct hash<VkViewport> {
     inline size_t operator()(const VkViewport& viewport) const {
         size_t res = 0;
-        vkt::hashCombine(res, viewport.x);
-        vkt::hashCombine(res, viewport.y);
-        vkt::hashCombine(res, viewport.width);
-        vkt::hashCombine(res, viewport.height);
-        vkt::hashCombine(res, viewport.minDepth);
-        vkt::hashCombine(res, viewport.maxDepth);
+        hashCombine(res, viewport.x);
+        hashCombine(res, viewport.y);
+        hashCombine(res, viewport.width);
+        hashCombine(res, viewport.height);
+        hashCombine(res, viewport.minDepth);
+        hashCombine(res, viewport.maxDepth);
         return res;
     }
 };
@@ -76,10 +76,10 @@ template <>
 struct hash<VkRect2D> {
     inline size_t operator()(const VkRect2D& scissor) const {
         size_t res = 0;
-        vkt::hashCombine(res, scissor.extent.width);
-        vkt::hashCombine(res, scissor.extent.height);
-        vkt::hashCombine(res, scissor.offset.x);
-        vkt::hashCombine(res, scissor.offset.y);
+        hashCombine(res, scissor.extent.width);
+        hashCombine(res, scissor.extent.height);
+        hashCombine(res, scissor.offset.x);
+        hashCombine(res, scissor.offset.y);
         return res;
     }
 };
@@ -88,16 +88,16 @@ template <>
 struct hash<VkPipelineRasterizationStateCreateInfo> {
     inline size_t operator()(const VkPipelineRasterizationStateCreateInfo& rasterization) const {
         size_t res = 0;
-        vkt::hashCombine(res, rasterization.depthClampEnable);
-        vkt::hashCombine(res, rasterization.rasterizerDiscardEnable);
-        vkt::hashCombine(res, rasterization.polygonMode);
-        vkt::hashCombine(res, rasterization.cullMode);
-        vkt::hashCombine(res, rasterization.frontFace);
-        vkt::hashCombine(res, rasterization.depthBiasEnable);
-        vkt::hashCombine(res, rasterization.depthBiasConstantFactor);
-        vkt::hashCombine(res, rasterization.depthBiasClamp);
-        vkt::hashCombine(res, rasterization.depthBiasSlopeFactor);
-        vkt::hashCombine(res, rasterization.lineWidth);
+        hashCombine(res, rasterization.depthClampEnable);
+        hashCombine(res, rasterization.rasterizerDiscardEnable);
+        hashCombine(res, rasterization.polygonMode);
+        hashCombine(res, rasterization.cullMode);
+        hashCombine(res, rasterization.frontFace);
+        hashCombine(res, rasterization.depthBiasEnable);
+        hashCombine(res, rasterization.depthBiasConstantFactor);
+        hashCombine(res, rasterization.depthBiasClamp);
+        hashCombine(res, rasterization.depthBiasSlopeFactor);
+        hashCombine(res, rasterization.lineWidth);
         return res;
     }
 };
@@ -106,16 +106,16 @@ template <>
 struct hash<VkPipelineMultisampleStateCreateInfo> {
     inline size_t operator()(const VkPipelineMultisampleStateCreateInfo& multisample) const {
         size_t res = 0;
-        vkt::hashCombine(res, multisample.rasterizationSamples);
-        vkt::hashCombine(res, multisample.sampleShadingEnable);
-        vkt::hashCombine(res, multisample.minSampleShading);
+        hashCombine(res, multisample.rasterizationSamples);
+        hashCombine(res, multisample.sampleShadingEnable);
+        hashCombine(res, multisample.minSampleShading);
         if (multisample.pSampleMask) {
             for (size_t k = 0; k < multisample.rasterizationSamples / 32; k++) {
-                vkt::hashCombine(res, multisample.pSampleMask[k]);
+                hashCombine(res, multisample.pSampleMask[k]);
             }
         }
-        vkt::hashCombine(res, multisample.alphaToCoverageEnable);
-        vkt::hashCombine(res, multisample.alphaToOneEnable);
+        hashCombine(res, multisample.alphaToCoverageEnable);
+        hashCombine(res, multisample.alphaToOneEnable);
         return res;
     }
 };
@@ -124,13 +124,13 @@ template <>
 struct hash<VkStencilOpState> {
     inline size_t operator()(const VkStencilOpState& stencil_op) const {
         size_t res = 0;
-        vkt::hashCombine(res, stencil_op.failOp);
-        vkt::hashCombine(res, stencil_op.passOp);
-        vkt::hashCombine(res, stencil_op.depthFailOp);
-        vkt::hashCombine(res, stencil_op.compareOp);
-        vkt::hashCombine(res, stencil_op.compareMask);
-        vkt::hashCombine(res, stencil_op.writeMask);
-        vkt::hashCombine(res, stencil_op.reference);
+        hashCombine(res, stencil_op.failOp);
+        hashCombine(res, stencil_op.passOp);
+        hashCombine(res, stencil_op.depthFailOp);
+        hashCombine(res, stencil_op.compareOp);
+        hashCombine(res, stencil_op.compareMask);
+        hashCombine(res, stencil_op.writeMask);
+        hashCombine(res, stencil_op.reference);
         return res;
     }
 };
@@ -139,15 +139,15 @@ template <>
 struct hash<VkPipelineDepthStencilStateCreateInfo> {
     inline size_t operator()(const VkPipelineDepthStencilStateCreateInfo& depth_stencil) const {
         size_t res = 0;
-        vkt::hashCombine(res, depth_stencil.depthTestEnable);
-        vkt::hashCombine(res, depth_stencil.depthWriteEnable);
-        vkt::hashCombine(res, depth_stencil.depthCompareOp);
-        vkt::hashCombine(res, depth_stencil.depthBoundsTestEnable);
-        vkt::hashCombine(res, depth_stencil.stencilTestEnable);
-        vkt::hashCombine(res, depth_stencil.front);
-        vkt::hashCombine(res, depth_stencil.back);
-        vkt::hashCombine(res, depth_stencil.minDepthBounds);
-        vkt::hashCombine(res, depth_stencil.maxDepthBounds);
+        hashCombine(res, depth_stencil.depthTestEnable);
+        hashCombine(res, depth_stencil.depthWriteEnable);
+        hashCombine(res, depth_stencil.depthCompareOp);
+        hashCombine(res, depth_stencil.depthBoundsTestEnable);
+        hashCombine(res, depth_stencil.stencilTestEnable);
+        hashCombine(res, depth_stencil.front);
+        hashCombine(res, depth_stencil.back);
+        hashCombine(res, depth_stencil.minDepthBounds);
+        hashCombine(res, depth_stencil.maxDepthBounds);
         return res;
     }
 };
@@ -156,14 +156,14 @@ template <>
 struct hash<VkPipelineColorBlendAttachmentState> {
     inline size_t operator()(const VkPipelineColorBlendAttachmentState& color_blend_attm) const {
         size_t res = 0;
-        vkt::hashCombine(res, color_blend_attm.blendEnable);
-        vkt::hashCombine(res, color_blend_attm.srcColorBlendFactor);
-        vkt::hashCombine(res, color_blend_attm.dstColorBlendFactor);
-        vkt::hashCombine(res, color_blend_attm.colorBlendOp);
-        vkt::hashCombine(res, color_blend_attm.srcAlphaBlendFactor);
-        vkt::hashCombine(res, color_blend_attm.dstAlphaBlendFactor);
-        vkt::hashCombine(res, color_blend_attm.alphaBlendOp);
-        vkt::hashCombine(res, color_blend_attm.colorWriteMask);
+        hashCombine(res, color_blend_attm.blendEnable);
+        hashCombine(res, color_blend_attm.srcColorBlendFactor);
+        hashCombine(res, color_blend_attm.dstColorBlendFactor);
+        hashCombine(res, color_blend_attm.colorBlendOp);
+        hashCombine(res, color_blend_attm.srcAlphaBlendFactor);
+        hashCombine(res, color_blend_attm.dstAlphaBlendFactor);
+        hashCombine(res, color_blend_attm.alphaBlendOp);
+        hashCombine(res, color_blend_attm.colorWriteMask);
         return res;
     }
 };

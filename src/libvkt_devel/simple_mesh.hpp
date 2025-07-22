@@ -36,11 +36,11 @@ public:
         alignas(16) glm::mat4 proj;
     };
 
-    const vkt::Vector<Vertex> vertices;
-    const vkt::Vector<Index> indices;
+    const Vector<Vertex> vertices;
+    const Vector<Index> indices;
 
 public:
-    SimpleMesh(vkt::Vector<Vertex>&& vertices, vkt::Vector<Index>&& indices)
+    SimpleMesh(Vector<Vertex>&& vertices, Vector<Index>&& indices)
         : vertices(std::move(vertices))
         , indices(std::move(indices)) {}
     SimpleMesh(SimpleMesh&& rhs) : vertices(std::move(rhs.vertices)), indices(std::move(rhs.indices)) {}
@@ -63,8 +63,8 @@ public:
         };
     }
 
-    vkt::Vector<VkVertexInputAttributeDescription> vertexAttributes(uint32_t binding = 0) const {
-        vkt::Vector<VkVertexInputAttributeDescription> attrs{};
+    Vector<VkVertexInputAttributeDescription> vertexAttributes(uint32_t binding = 0) const {
+        Vector<VkVertexInputAttributeDescription> attrs{};
         attrs.push_back(VkVertexInputAttributeDescription{
             0,
             binding,

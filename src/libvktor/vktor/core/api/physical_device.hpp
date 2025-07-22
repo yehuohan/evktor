@@ -48,7 +48,7 @@ private:
     PhysicalDevice pickBestSuitable(const Vector<PhysicalDeviceDetails> details);
 
 public:
-    explicit PhysicalDeviceState(Name&& name = "PhysicalDevice") : CoreStater(std::move(name)) {}
+    explicit PhysicalDeviceState(String&& name = "PhysicalDevice") : CoreStater(std::move(name)) {}
 
     Self preferDiscreteGPU();
     Self preferIntegratedGPU();

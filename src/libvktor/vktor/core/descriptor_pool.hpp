@@ -16,7 +16,7 @@ private:
     uint32_t maxsets = 1;
 
 public:
-    explicit DescriptorPoolState(Name&& name = "DescriptorPool") : CoreStater(std::move(name)) {}
+    explicit DescriptorPoolState(String&& name = "DescriptorPool") : CoreStater(std::move(name)) {}
 
     Self setFlags(VkDescriptorPoolCreateFlags flags);
     Self setMaxsets(uint32_t maxsets);
@@ -47,7 +47,7 @@ public:
      *
      * This DescriptorPool doesn't store allocated DescriptorSet, so return DescriptorSet.
      */
-    Res<DescriptorSet> allocate(const Name& name = "DescriptorSet");
+    Res<DescriptorSet> allocate(const String& name = "DescriptorSet");
     bool free(const DescriptorSet& descset);
     bool available() const;
 

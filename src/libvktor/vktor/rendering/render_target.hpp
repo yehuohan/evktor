@@ -101,25 +101,25 @@ struct hash<vkt::RenderTarget> {
     size_t operator()(const vkt::RenderTarget& render_target) const {
         size_t res = 0;
         auto& image = render_target.getImage();
-        vkt::hashCombine(res, image.format);
-        vkt::hashCombine(res, image.samples);
-        vkt::hashCombine(res, image.usage);
-        vkt::hashCombine(res, render_target.ops.load);
-        vkt::hashCombine(res, render_target.ops.store);
-        vkt::hashCombine(res, render_target.stencil_ops.load);
-        vkt::hashCombine(res, render_target.stencil_ops.store);
-        vkt::hashCombine(res, render_target.layouts.initial);
-        vkt::hashCombine(res, render_target.layouts.final);
+        hashCombine(res, image.format);
+        hashCombine(res, image.samples);
+        hashCombine(res, image.usage);
+        hashCombine(res, render_target.ops.load);
+        hashCombine(res, render_target.ops.store);
+        hashCombine(res, render_target.stencil_ops.load);
+        hashCombine(res, render_target.stencil_ops.store);
+        hashCombine(res, render_target.layouts.initial);
+        hashCombine(res, render_target.layouts.final);
         return res;
     }
 };
 
 template <>
-struct hash<vkt::Vector<vkt::RenderTarget>> {
-    size_t operator()(const vkt::Vector<vkt::RenderTarget>& render_targets) const {
+struct hash<Vector<vkt::RenderTarget>> {
+    size_t operator()(const Vector<vkt::RenderTarget>& render_targets) const {
         size_t res = 0;
         for (const auto& rt : render_targets) {
-            vkt::hashCombine(res, rt);
+            hashCombine(res, rt);
         }
         return res;
     }
@@ -136,8 +136,8 @@ struct hash<vkt::RenderTargetTable> {
     size_t operator()(const vkt::RenderTargetTable& render_target_table) const {
         size_t res = 0;
         for (const auto& rt : render_target_table.getTargets()) {
-            vkt::hashCombine(res, rt.getImage());
-            vkt::hashCombine(res, rt.getImageView());
+            hashCombine(res, rt.getImage());
+            hashCombine(res, rt.getImageView());
         }
         return res;
     }

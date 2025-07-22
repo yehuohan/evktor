@@ -13,7 +13,7 @@ private:
     VkSemaphoreCreateInfo semaphore_ci{};
 
 public:
-    explicit SemaphoreState(Name&& name = "Semaphore") : CoreStater(std::move(name)) {
+    explicit SemaphoreState(String&& name = "Semaphore") : CoreStater(std::move(name)) {
         semaphore_ci = Itor::SemaphoreCreateInfo();
     }
 

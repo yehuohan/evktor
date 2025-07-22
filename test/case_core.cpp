@@ -52,7 +52,7 @@ Box<CoreApi> setupCoreApi() {
 }
 
 void computePass(const CoreApi& api) {
-    const vkt::String shader_file = vktdev::Assets::shaderFile("test/quad.comp");
+    const String shader_file = vktdev::Assets::shaderFile("test/quad.comp");
     const uint32_t wid = 9;
     const uint32_t hei = 9;
     const uint32_t cha = 4;
@@ -157,12 +157,12 @@ void computePass(const CoreApi& api) {
 
     // Check stage buffer
     stage.copyInto(buf);
-    tstOut("out_img: {}", vec2str(vkt::Vector<float>{buf, buf + 12}));
+    tstOut("out_img: {}", vec2str(Vector<float>{buf, buf + 12}));
 }
 
 void graphicsPass(const CoreApi& api) {
-    const vkt::String shader_vert_file = vktdev::Assets::shaderFile("test/triangle.vert");
-    const vkt::String shader_frag_file = vktdev::Assets::shaderFile("test/triangle.frag");
+    const String shader_vert_file = vktdev::Assets::shaderFile("test/triangle.vert");
+    const String shader_frag_file = vktdev::Assets::shaderFile("test/triangle.frag");
     const uint32_t wid = 9;
     const uint32_t hei = 9;
     const uint32_t cha = 4;

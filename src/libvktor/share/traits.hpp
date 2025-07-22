@@ -1,7 +1,5 @@
 #pragma once
 
-namespace vkt {
-
 /**
  * @brief Non-copyable
  *
@@ -31,5 +29,3 @@ protected:
     NonMoveable(NonMoveable&&) = delete;
     NonMoveable& operator=(NonMoveable&&) = delete;
 };
-
-} // namespace vkt

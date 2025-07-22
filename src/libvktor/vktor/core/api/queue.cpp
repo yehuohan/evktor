@@ -13,7 +13,7 @@ Queue::~Queue() {
     handle = VK_NULL_HANDLE;
 }
 
-VkResult Queue::submit(const std::vector<VkSubmitInfo>& submits, VkFence fence) const {
+VkResult Queue::submit(const Vector<VkSubmitInfo>& submits, VkFence fence) const {
     return vkQueueSubmit(handle, u32(submits.size()), submits.data(), fence);
 }
 

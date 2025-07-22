@@ -28,13 +28,13 @@ const VkLayerProperties& VktorLayerImpl::getLayerProps() const {
     return props;
 }
 
-const vkt::Vector<VkExtensionProperties>& VktorLayerImpl::getInstanceExtensions() const {
-    static const vkt::Vector<VkExtensionProperties> props{};
+const Vector<VkExtensionProperties>& VktorLayerImpl::getInstanceExtensions() const {
+    static const Vector<VkExtensionProperties> props{};
     return props;
 }
 
-const vkt::Vector<VkExtensionProperties>& VktorLayerImpl::getDeviceExtensions() const {
-    static const vkt::Vector<VkExtensionProperties> props{};
+const Vector<VkExtensionProperties>& VktorLayerImpl::getDeviceExtensions() const {
+    static const Vector<VkExtensionProperties> props{};
     return props;
 }
 

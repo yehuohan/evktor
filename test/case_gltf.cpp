@@ -7,7 +7,7 @@
 void case_gltf() {
     using namespace tinygltf;
 
-    const vkt::String gltf_file = vktdev::Assets::scene("Sponza/glTF/Sponza.gltf");
+    const String gltf_file = vktdev::Assets::scene("Sponza/glTF/Sponza.gltf");
 
     Model gmodel;
     TinyGLTF gloader;

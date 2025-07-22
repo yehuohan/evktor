@@ -13,7 +13,7 @@ private:
     VkFenceCreateInfo fence_ci{};
 
 public:
-    explicit FenceState(Name&& name = "Fence") : CoreStater(std::move(name)) {
+    explicit FenceState(String&& name = "Fence") : CoreStater(std::move(name)) {
         fence_ci = Itor::FenceCreateInfo();
     }
 

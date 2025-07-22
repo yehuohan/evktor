@@ -14,7 +14,7 @@ private:
     VkImageViewCreateInfo imageview_ci = Itor::ImageViewCreateInfo();
 
 public:
-    explicit ImageViewState(Name&& name = "ImageView") : CoreStater(std::move(name)) {}
+    explicit ImageViewState(String&& name = "ImageView") : CoreStater(std::move(name)) {}
 
     Self setFromImage(const Image& image);
     Self setImage(VkImage image);

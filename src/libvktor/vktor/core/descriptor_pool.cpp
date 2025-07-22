@@ -37,7 +37,7 @@ DescriptorPool::~DescriptorPool() {
     count = 0;
 }
 
-Res<DescriptorSet> DescriptorPool::allocate(const Name& name) {
+Res<DescriptorSet> DescriptorPool::allocate(const String& name) {
     auto descset = DescriptorSet(*this);
     auto descset_ai = Itor::DescriptorSetAllocateInfo();
     descset_ai.descriptorPool = *this;

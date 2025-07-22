@@ -17,7 +17,7 @@ private:
     Vector<const char*> extensions{};
 
 public:
-    explicit InstanceState(Name&& name = "Instance") : CoreStater(std::move(name)) {
+    explicit InstanceState(String&& name = "Instance") : CoreStater(std::move(name)) {
         app_info = Itor::ApplicationInfo();
         app_info.pApplicationName = "vktor";
         app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);

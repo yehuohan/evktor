@@ -4,33 +4,33 @@ NAMESPACE_BEGIN(vktdev)
 
 // clang-format off
 const SimpleMesh MESH_Triangle {
-    vkt::Vector<SimpleMesh::Vertex> {
+    Vector<SimpleMesh::Vertex> {
         // position,           color,              normal,             texcoord
         {{-1.0f, -1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}}, // 左下角
         {{ 1.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}}, // 右下角
         {{ 0.0f,  1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.5f, 1.0f}}, // 上中
     },
-    vkt::Vector<SimpleMesh::Index> {
+    Vector<SimpleMesh::Index> {
         0, 1, 2,
     },
 };
 
 const SimpleMesh MESH_Rectangle {
-    vkt::Vector<SimpleMesh::Vertex> {
+    Vector<SimpleMesh::Vertex> {
         // position,           color,              normal,             texcoord
         {{ 1.0f,  1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}}, // 右上
         {{ 1.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}}, // 右下
         {{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}}, // 左下
         {{-1.0f,  1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}, // 左上
     },
-    vkt::Vector<SimpleMesh::Index> {
+    Vector<SimpleMesh::Index> {
         0, 1, 2,
         2, 3, 0,
     },
 };
 
 const SimpleMesh MESH_Cube {
-    vkt::Vector<SimpleMesh::Vertex> {
+    Vector<SimpleMesh::Vertex> {
         // position,            color,              normal,               texcoord
         // Back face
         {{-1.0f, -1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}, {0.0f,  0.0f, -1.0f}, {0.0f, 0.0f}}, // Bottom-left
@@ -75,7 +75,7 @@ const SimpleMesh MESH_Cube {
         {{-1.0f,  1.0f, -1.0f}, {1.0f, 0.0f, 1.0f}, {0.0f,  1.0f,  0.0f}, {0.0f, 1.0f}}, // top-left
         {{-1.0f,  1.0f,  1.0f}, {1.0f, 0.0f, 1.0f}, {0.0f,  1.0f,  0.0f}, {0.0f, 0.0f}}, // bottom-left
     },
-    vkt::Vector<SimpleMesh::Index> {
+    Vector<SimpleMesh::Index> {
          0,  1,  2,  3,  4,  5,
          6,  7,  8,  9, 10, 11,
         12, 13, 14, 15, 16, 17,
@@ -86,7 +86,7 @@ const SimpleMesh MESH_Cube {
 };
 
 const SimpleMesh MESH_Frustum {
-    vkt::Vector<SimpleMesh::Vertex> {
+    Vector<SimpleMesh::Vertex> {
         // position,            color,              normal,               texcoord
         // Back face
         {{-1.0f, -1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}, {0.0f,  0.0f, -1.0f}, {0.0f, 0.0f}}, // Bottom-left
@@ -131,7 +131,7 @@ const SimpleMesh MESH_Frustum {
         {{-1.0f,  1.0f, -1.0f}, {1.0f, 0.0f, 1.0f}, {0.0f,  1.0f,  0.0f}, {0.0f, 1.0f}}, // top-left
         {{-0.5f,  0.5f,  1.0f}, {1.0f, 0.0f, 1.0f}, {0.0f,  1.0f,  0.0f}, {0.0f, 0.0f}}, // bottom-left
     },
-    vkt::Vector<SimpleMesh::Index> {
+    Vector<SimpleMesh::Index> {
          0,  1,  2,  3,  4,  5,
          6,  7,  8,  9, 10, 11,
         12, 13, 14, 15, 16, 17,

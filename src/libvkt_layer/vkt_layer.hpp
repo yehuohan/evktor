@@ -39,13 +39,13 @@
 NAMESPACE_BEGIN(vktlyr)
 
 typedef struct LayerDispatchKey_T* LayerDispatchKey;
-typedef vkt::HashMap<std::string, PFN_vkVoidFunction> LayerHookMap;
+typedef HashMap<std::string, PFN_vkVoidFunction> LayerHookMap;
 
 /**
  * @brief Layer dispatch table
  */
 template <typename T>
-class LayerDispatchTable : private vkt::NonCopyable, protected vkt::HashMap<LayerDispatchKey, T> {
+class LayerDispatchTable : private NonCopyable, protected HashMap<LayerDispatchKey, T> {
 public:
     template <typename K>
     inline LayerDispatchKey key(const K k) const {
@@ -69,7 +69,7 @@ public:
 
     template <typename K>
     inline const T* operator[](const K k) {
-        return &vkt::HashMap<LayerDispatchKey, T>::operator[](key(k));
+        return &HashMap<LayerDispatchKey, T>::operator[](key(k));
     }
 
     template <typename K>
@@ -81,7 +81,7 @@ public:
 /**
  * @brief Base Vulkan layer implementation
  */
-class VktorLayerImpl : private vkt::NonCopyable {
+class VktorLayerImpl : private NonCopyable {
 protected:
     /**
      * @brief Layer hooks
@@ -116,8 +116,8 @@ public:
     virtual const PFN_vkVoidFunction tryHook(VkInstance instance, const char* fname) const;
     virtual const PFN_vkVoidFunction tryHook(VkDevice device, const char* fname) const;
     virtual const VkLayerProperties& getLayerProps() const;
-    virtual const vkt::Vector<VkExtensionProperties>& getInstanceExtensions() const;
-    virtual const vkt::Vector<VkExtensionProperties>& getDeviceExtensions() const;
+    virtual const Vector<VkExtensionProperties>& getInstanceExtensions() const;
+    virtual const Vector<VkExtensionProperties>& getDeviceExtensions() const;
 
 public:
     // Helpers

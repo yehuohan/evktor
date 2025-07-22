@@ -20,7 +20,7 @@
 #define vktErrThrow(f, ...) std::runtime_error(vktFmt(f, ##__VA_ARGS__))
 #define vktErr(f, ...)      vktErrThrow(__FILE__ ":{}:0: error: " f, __LINE__, ##__VA_ARGS__)
 /** Alias Er to Err<std::runtime_error> */
-#define Er(f, ...) vkt::Err(vktErr(f, ##__VA_ARGS__))
+#define Er(f, ...) Err(vktErr(f, ##__VA_ARGS__))
 
 /**
  * @brief Return Er on non-success Vulkan result

@@ -41,7 +41,7 @@ CommandPool::~CommandPool() {
     handle = VK_NULL_HANDLE;
 }
 
-Res<Ref<CommandBuffer>> CommandPool::allocate(Level level, const Name& name) {
+Res<Ref<CommandBuffer>> CommandPool::allocate(Level level, const String& name) {
     CommandBuffer* ptr = nullptr;
     switch (level) {
     case Level::Primary:
