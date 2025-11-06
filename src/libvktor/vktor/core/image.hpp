@@ -35,7 +35,7 @@ public:
 
     Self setFormat(VkFormat format);
     Self setExtent(const VkExtent3D& extent);
-    Self setExtent(const VkExtent2D& extent) {
+    inline Self setExtent(const VkExtent2D& extent) {
         return setExtent(VkExtent3D{extent.width, extent.height, 1});
     }
     inline Self setExtent(uint32_t width, uint32_t height, uint32_t depth = 1) {

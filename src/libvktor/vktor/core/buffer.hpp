@@ -70,14 +70,6 @@ public:
     void unmap() const;
 
     static Res<Buffer> from(const CoreApi& api, const BufferState& info);
-#if 0
-    /**
-     * @brief Create buffer with native Vulkan api without device.mem_allocator for reference
-     */
-    static Res<Buffer> native_from(const Device& device,
-                                   const BufferState& info,
-                                   VkMemoryPropertyFlags memory_props = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-#endif
 };
 
 NAMESPACE_END(core)

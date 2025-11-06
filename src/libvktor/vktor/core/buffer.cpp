@@ -108,42 +108,5 @@ Res<Buffer> Buffer::from(const CoreApi& api, const BufferState& info) {
     return Ok(std::move(buffer));
 }
 
-#if 0
-Res<Buffer> Buffer::native_from(const Device& device, const BufferState& info, VkMemoryPropertyFlags memory_props) {
-    Buffer buffer(device);
-
-    OnRet(vkCreateBuffer(device, &info.buffer_ci, device.instance, buffer), "Failed to create buffer");
-    OnName(buffer, info.__name);
-    buffer.size = info.buffer_ci.size;
-
-    // Allocate memory for buffer
-    VkMemoryRequirements reqs;
-    vkGetBufferMemoryRequirements(device, buffer, &reqs);
-    VkPhysicalDeviceMemoryProperties props;
-    vkGetPhysicalDeviceMemoryProperties(device.physical_device, &props);
-    Opt<uint32_t> memory_typeidx{};
-    for (uint32_t k = 0; k < props.memoryTypeCount; k++) {
-        if ((reqs.memoryTypeBits & (1 << k)) && (props.memoryTypes[k].propertyFlags & memory_props) == memory_props) {
-            memory_typeidx = k;
-            break;
-        }
-    }
-    if (!memory_typeidx.has_value()) {
-        return Er("Failed to find suitable memory type for buffer");
-    }
-
-    auto memory_ai = Itor::MemoryAllocateInfo();
-    memory_ai.allocationSize = reqs.size;
-    memory_ai.memoryTypeIndex = memory_typeidx.value();
-    OnRet(vkAllocateMemory(device, &memory_ai, device.instance, &buffer.memory), "Failed to allocate buffer memory");
-    vkBindBufferMemory(device, buffer, buffer.memory, 0);
-
-    // vkMapMemory(device, memory, 0, size, 0, &data);
-    // vkUnmapMemory(device, memory);
-
-    return Ok(std::move(buffer));
-}
-#endif
-
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)
