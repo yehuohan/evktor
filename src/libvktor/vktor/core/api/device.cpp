@@ -59,11 +59,6 @@ VkResult DeviceState::createMemAllocator(const Instance& instance, const Physica
     return vmaCreateAllocator(&vma_allocator_ai, &device.mem_allocator);
 }
 
-Self DeviceState::setNext(const void* _next) {
-    next = _next;
-    return *this;
-}
-
 Self DeviceState::setMaxQueueCount(uint32_t count) {
     max_queue_count = std::max<uint32_t>(1, count);
     return *this;
@@ -117,15 +112,15 @@ Res<Device> Device::from(const Instance& instance,
     }
 
     // Create device
-    auto dev_ci = Itor::DeviceCreateInfo(info.next);
+    auto dev_ci = Itor::DeviceCreateInfo(info.__next);
     dev_ci.queueCreateInfoCount = u32(queues_ci.size());
     dev_ci.pQueueCreateInfos = queues_ci.data();
     // Device-only layers are deprecated at lastest Vulkan spec
-    //.enabledLayerCount = u32(validation_layers.size()),
-    //.ppEnabledLayerNames = validation_layers.data(),
+    // dev_ci.enabledLayerCount = u32(validation_layers.size());
+    // dev_ci.ppEnabledLayerNames = validation_layers.data();
     dev_ci.enabledExtensionCount = u32(phy_dev.extensions.size());
     dev_ci.ppEnabledExtensionNames = phy_dev.extensions.data();
-    dev_ci.pEnabledFeatures = traverse(info.next,
+    dev_ci.pEnabledFeatures = traverse(info.__next,
                                        [](const VkBaseInStructure& base) {
                                            return base.sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
                                        })
@@ -147,7 +142,7 @@ Res<Device> Device::from(const Instance& instance,
         for (uint32_t index = 0; index < max_count; index++) {
             Queue queue(family_index, index);
             const String name = "Queue" + std::to_string(family_index) + "." + std::to_string(index);
-            vkGetDeviceQueue(device, family_index, 0, queue);
+            vkGetDeviceQueue(device, family_index, index, queue);
             OnRet(debug.setDebugName(device, VK_OBJECT_TYPE_QUEUE, reinterpret_cast<uint64_t>(queue.handle), name.c_str()),
                   "Failed to set debug name: {}",
                   name);

@@ -15,7 +15,6 @@ class DeviceState : public CoreStater<DeviceState> {
     friend struct Device;
 
 private:
-    const void* next = nullptr;
     uint32_t max_queue_count = 1; /**< The max count of queues for each queue family, must >= 1. */
 
 private:
@@ -24,7 +23,6 @@ private:
 public:
     explicit DeviceState(String&& name = "Device") : CoreStater(std::move(name)) {}
 
-    Self setNext(const void* next);
     Self setMaxQueueCount(uint32_t count);
 
     Res<Device> into(const Instance& instance, const PhysicalDevice& phy_dev, const IDebug& debug);

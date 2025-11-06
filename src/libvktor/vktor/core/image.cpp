@@ -187,6 +187,7 @@ Res<Image> Image::from(const CoreApi& api, const ImageState& info) {
     allocation_ci.usage = info.memory_usage;
     VmaAllocationInfo allocation_info{};
 
+    info.image_ci.pNext = info.__next;
     OnRet(vmaCreateImage(api, &info.image_ci, &allocation_ci, image, &image.allocation, &allocation_info),
           "Failed to create image");
     OnName(image, info.__name);

@@ -12,11 +12,6 @@ Self InstanceState::setAllocationCallbacks(const VkAllocationCallbacks* allocati
     return *this;
 }
 
-Self InstanceState::setNext(const void* _next) {
-    next = _next;
-    return *this;
-}
-
 Self InstanceState::setAppName(const char* name) {
     app_info.pApplicationName = name;
     return *this;
@@ -110,7 +105,7 @@ Res<Instance> Instance::from(InstanceState& info) {
 
     // To debug issue in vkCreateInstance and vkDestroyInstance calls,
     // pass a VkDebugUtilsMessengerCreateInfoEXT struct to `instance_ci.pNext`.
-    auto instance_ci = Itor::InstanceCreateInfo(info.next);
+    auto instance_ci = Itor::InstanceCreateInfo(info.__next);
     instance_ci.pApplicationInfo = &info.app_info;
     if (info.layers.size() > 0) {
         if (!checkInstanceLayers(info.layers)) {

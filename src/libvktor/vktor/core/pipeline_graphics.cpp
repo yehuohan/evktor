@@ -274,7 +274,7 @@ Res<GraphicsPipeline> GraphicsPipeline::from(const CoreApi& api, const GraphicsP
 
     // Create graphics pipeline
     GraphicsPipeline pipeline(api);
-    auto pipeline_ci = Itor::GraphicsPipelineCreateInfo();
+    auto pipeline_ci = Itor::GraphicsPipelineCreateInfo(info.__next);
     pipeline_ci.flags = info.flags;
     pipeline_ci.stageCount = u32(shader_stages.size());
     pipeline_ci.pStages = shader_stages.data();

@@ -37,9 +37,9 @@ DescriptorPool::~DescriptorPool() {
     count = 0;
 }
 
-Res<DescriptorSet> DescriptorPool::allocate(const String& name) {
+Res<DescriptorSet> DescriptorPool::allocate(const void* next, const String& name) {
     auto descset = DescriptorSet(*this);
-    auto descset_ai = Itor::DescriptorSetAllocateInfo();
+    auto descset_ai = Itor::DescriptorSetAllocateInfo(next);
     descset_ai.descriptorPool = *this;
     descset_ai.descriptorSetCount = 1;
     descset_ai.pSetLayouts = desc_setlayout;
@@ -87,7 +87,7 @@ Res<DescriptorPool> DescriptorPool::from(const DescriptorSetLayout& setlayout, c
     // VkDescriptorSetLayoutBinding: `descriptorCount` specifies the number of `descriptorType` of the set's `binding`;
     // VkDescriptorPoolSize: `descriptorCount` specifies the total number of `type` can be allocated from the pool;
     // VkDescriptorPoolCreateInfo: `maxSets` specifies the number of descriptor set can be allocated from the pool;
-    auto descpool_ci = Itor::DescriptorPoolCreateInfo();
+    auto descpool_ci = Itor::DescriptorPoolCreateInfo(info.__next);
     descpool_ci.flags = info.flags;
     descpool_ci.maxSets = info.maxsets;
     descpool_ci.poolSizeCount = u32(poolsizes.size());

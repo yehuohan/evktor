@@ -98,6 +98,7 @@ Res<Buffer> Buffer::from(const CoreApi& api, const BufferState& info) {
     allocation_ci.usage = info.memory_usage;
     VmaAllocationInfo allocation_info{};
 
+    info.buffer_ci.pNext = info.__next;
     OnRet(vmaCreateBuffer(api, &info.buffer_ci, &allocation_ci, buffer, &buffer.allocation, &allocation_info),
           "Failed to create buffer");
     OnName(buffer, info.__name);

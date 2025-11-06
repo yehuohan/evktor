@@ -10,7 +10,7 @@ class SemaphoreState : public CoreStater<SemaphoreState> {
     friend struct Semaphore;
 
 private:
-    VkSemaphoreCreateInfo semaphore_ci{};
+    mutable VkSemaphoreCreateInfo semaphore_ci{};
 
 public:
     explicit SemaphoreState(String&& name = "Semaphore") : CoreStater(std::move(name)) {

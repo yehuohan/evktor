@@ -10,7 +10,7 @@ class SamplerState : public CoreStater<SamplerState> {
     friend struct Sampler;
 
 private:
-    VkSamplerCreateInfo sampler_ci{};
+    mutable VkSamplerCreateInfo sampler_ci{};
 
 public:
     explicit SamplerState(String&& name = "Sampler") : CoreStater(std::move(name)) {

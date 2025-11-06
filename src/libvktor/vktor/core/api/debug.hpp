@@ -35,7 +35,7 @@ struct DebugState : public CoreStater<DebugState> {
     friend struct Debug;
 
 private:
-    VkDebugUtilsMessengerCreateInfoEXT debug_ci{};
+    mutable VkDebugUtilsMessengerCreateInfoEXT debug_ci{};
 
 public:
     explicit DebugState(String&& name = "Debug") : CoreStater(std::move(name)) {
@@ -47,7 +47,8 @@ public:
                                VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
         debug_ci.pfnUserCallback = debugUtilsMessengerCallback;
     }
-    operator const void*() const {
+    operator const void*() {
+        debug_ci.pNext = __next;
         return &debug_ci;
     }
 

@@ -172,7 +172,7 @@ Res<Swapchain> Swapchain::from(const CoreApi& api, const SwapchainState& info) {
     }
 
     // Create swapchain
-    auto swapchain_ci = Itor::SwapchainCreateInfoKHR();
+    auto swapchain_ci = Itor::SwapchainCreateInfoKHR(info.__next);
     swapchain_ci.surface = info.surface;
     swapchain_ci.minImageCount = image_count;
     swapchain_ci.imageFormat = surface_format.format;

@@ -39,7 +39,7 @@ ComputePipeline::~ComputePipeline() {
 
 Res<ComputePipeline> ComputePipeline::from(const CoreApi& api, const ComputePipelineState& info) {
     ComputePipeline pipeline(api);
-    auto pipeline_ci = Itor::ComputePipelineCreateInfo();
+    auto pipeline_ci = Itor::ComputePipelineCreateInfo(info.__next);
     pipeline_ci.flags = info.flags;
     pipeline_ci.stage = Itor::PipelineShaderStageCreateInfo();
     pipeline_ci.stage.stage = VK_SHADER_STAGE_COMPUTE_BIT;

@@ -98,7 +98,7 @@ void CommandPool::resetPool() {
 Res<CommandPool> CommandPool::from(const CoreApi& api, const CommandPoolState& info) {
     CommandPool cmdpool(api);
 
-    auto cmdpool_ci = Itor::CommandPoolCreateInfo();
+    auto cmdpool_ci = Itor::CommandPoolCreateInfo(info.__next);
     cmdpool_ci.flags = info.flags;
     cmdpool_ci.queueFamilyIndex = info.queue_family_index;
     OnRet(vkCreateCommandPool(api, &cmdpool_ci, api, cmdpool), "Failed to create command pool");
