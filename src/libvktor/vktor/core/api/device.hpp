@@ -48,12 +48,27 @@ public:
     ~Device();
     OnConstType(VmaAllocator, mem_allocator);
 
+    inline VkMemoryRequirements getMemoryRequirements(VkBuffer buffer) const;
+    inline VkMemoryRequirements getMemoryRequirements(VkImage image) const;
+
     static Res<Device> from(const Instance& instance,
                             const PhysicalDevice& phy_dev,
                             const IDebug& debug,
                             const DeviceState& info);
     // static Res<VkDevice> borrow(const Instance& instance, const PhysicalDevice& phy_dev, VkDevice handle);
 };
+
+inline VkMemoryRequirements Device::getMemoryRequirements(VkBuffer buffer) const {
+    VkMemoryRequirements reqs{};
+    vkGetBufferMemoryRequirements(handle, buffer, &reqs);
+    return reqs;
+}
+
+inline VkMemoryRequirements Device::getMemoryRequirements(VkImage image) const {
+    VkMemoryRequirements reqs{};
+    vkGetImageMemoryRequirements(handle, image, &reqs);
+    return reqs;
+}
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)

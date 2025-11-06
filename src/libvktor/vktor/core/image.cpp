@@ -163,6 +163,7 @@ Res<void*> Image::map() const {
     OnRet(vmaMapMemory(api, allocation, &data), "Failed to map image memory");
     return Ok(data);
 }
+
 void Image::unmap() const {
     vmaUnmapMemory(api, allocation);
 }
