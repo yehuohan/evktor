@@ -91,6 +91,7 @@ void Debug::cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const {
 
 Res<Debug> Debug::from(const Instance& instance, const DebugState& info) {
     Debug debug(instance);
+    info.debug_ci.pNext = info.__next;
     OnRet(vkCreateDebugUtilsMessengerEXT(instance, &info.debug_ci, instance, &debug.handle),
           "Failed to create debug utils messenger");
     return Ok(std::move(debug));

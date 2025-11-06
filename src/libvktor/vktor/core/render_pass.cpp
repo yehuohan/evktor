@@ -130,7 +130,7 @@ Res<RenderPass> RenderPass::from(const CoreApi& api, const RenderPassState& info
         dep.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
     }
 
-    auto render_pass_ci = Itor::RenderPassCreateInfo();
+    auto render_pass_ci = Itor::RenderPassCreateInfo(info.__next);
     render_pass_ci.attachmentCount = u32(info.attm_descs.size());
     render_pass_ci.pAttachments = info.attm_descs.data();
     render_pass_ci.subpassCount = u32(subpasses.size());

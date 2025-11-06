@@ -90,9 +90,14 @@ protected:
 public:
     using Self = S&;
 
+    const void* __next = nullptr; /**< Next chain */
     String __name = "";           /**< Debug name */
     bool __verbose = VKT_CORE_VERBOSE;
 
+    inline Self setNext(const void* next) {
+        __next = next;
+        return static_cast<Self>(*this);
+    }
     inline Self setDebugName(String&& name) {
         __name = std::move(name);
         return static_cast<Self>(*this);

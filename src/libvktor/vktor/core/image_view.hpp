@@ -11,7 +11,7 @@ class ImageViewState : public CoreStater<ImageViewState> {
     friend struct ImageView;
 
 private:
-    VkImageViewCreateInfo imageview_ci = Itor::ImageViewCreateInfo();
+    mutable VkImageViewCreateInfo imageview_ci = Itor::ImageViewCreateInfo();
 
 public:
     explicit ImageViewState(String&& name = "ImageView") : CoreStater(std::move(name)) {}

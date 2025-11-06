@@ -11,7 +11,6 @@ struct InstanceState : public CoreStater<InstanceState> {
 
 private:
     const VkAllocationCallbacks* allocator = nullptr;
-    const void* next = nullptr;
     VkApplicationInfo app_info{};
     Vector<const char*> layers{};
     Vector<const char*> extensions{};
@@ -27,7 +26,6 @@ public:
     }
 
     Self setAllocationCallbacks(const VkAllocationCallbacks* allocation_callbacks);
-    Self setNext(const void* next);
     Self setAppName(const char* name);
     Self setAppVerion(uint32_t version);
     Self setEngineName(const char* name);

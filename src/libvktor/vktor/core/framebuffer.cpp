@@ -47,7 +47,7 @@ Framebuffer::~Framebuffer() {
 Res<Framebuffer> Framebuffer::from(const CoreApi& api, const FramebufferState& info) {
     Framebuffer framebuffer(api);
 
-    auto framebuffer_ci = Itor::FramebufferCreateInfo();
+    auto framebuffer_ci = Itor::FramebufferCreateInfo(info.__next);
     framebuffer_ci.renderPass = info.render_pass;
     framebuffer_ci.attachmentCount = u32(info.imageviews.size());
     framebuffer_ci.pAttachments = info.imageviews.data();

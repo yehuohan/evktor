@@ -63,7 +63,7 @@ Res<DescriptorSetLayout> DescriptorSetLayout::from(const CoreApi& api, const Des
         bindings.push_back(item.second);
     }
 
-    auto layout_ci = Itor::DescriptorSetLayoutCreateInfo();
+    auto layout_ci = Itor::DescriptorSetLayoutCreateInfo(info.__next);
     layout_ci.flags = info.flags;
     layout_ci.bindingCount = u32(bindings.size());
     layout_ci.pBindings = bindings.data();

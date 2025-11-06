@@ -17,7 +17,7 @@ private:
     VkPipelineLayout layout = VK_NULL_HANDLE;
 
 public:
-    explicit ComputePipelineState(String&& name = "GraphicsPipeline") : CoreStater(std::move(name)) {}
+    explicit ComputePipelineState(String&& name = "ComputePipeline") : CoreStater(std::move(name)) {}
 
     Self setFlags(VkPipelineCreateFlags flags);
     Self setShader(ShaderModule&& shader);

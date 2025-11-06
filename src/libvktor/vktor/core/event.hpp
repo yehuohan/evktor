@@ -10,7 +10,7 @@ class EventState : public CoreStater<EventState> {
     friend struct Event;
 
 private:
-    VkEventCreateInfo event_ci{};
+    mutable VkEventCreateInfo event_ci{};
 
 public:
     explicit EventState(String&& name = "Event") : CoreStater(std::move(name)) {

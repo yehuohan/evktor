@@ -40,7 +40,7 @@ PipelineLayout::~PipelineLayout() {
 Res<PipelineLayout> PipelineLayout::from(const CoreApi& api, const PipelineLayoutState& info) {
     PipelineLayout pipeline_layout(api);
 
-    auto pipeline_layout_ci = Itor::PipelineLayoutCreateInfo();
+    auto pipeline_layout_ci = Itor::PipelineLayoutCreateInfo(info.__next);
     pipeline_layout_ci.setLayoutCount = u32(info.desc_setlayouts.size());
     pipeline_layout_ci.pSetLayouts = info.desc_setlayouts.data();
     pipeline_layout_ci.pushConstantRangeCount = u32(info.constant_ranges.size());

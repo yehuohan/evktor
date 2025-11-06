@@ -38,6 +38,7 @@ VkResult Fence::reset() const {
 Res<Fence> Fence::from(const CoreApi& api, const FenceState& info) {
     Fence fence(api);
 
+    info.fence_ci.pNext = info.__next;
     OnRet(vkCreateFence(api, &info.fence_ci, api, fence), "Failed to create fence");
     OnName(fence, info.__name);
 

@@ -47,7 +47,7 @@ public:
      *
      * This DescriptorPool doesn't store allocated DescriptorSet, so return DescriptorSet.
      */
-    Res<DescriptorSet> allocate(const String& name = "DescriptorSet");
+    Res<DescriptorSet> allocate(const void* next = nullptr, const String& name = "DescriptorSet");
     bool free(const DescriptorSet& descset);
     bool available() const;
 
