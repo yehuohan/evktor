@@ -1,0 +1,75 @@
+
+snippet core-hpp
+    #pragma once
+    #include "__core.hpp"
+
+    NAMESPACE_BEGIN(vkt)
+    NAMESPACE_BEGIN(core)
+
+    struct ${1:name};
+
+    class ${1}State : public CoreStater<${1}State> {
+        friend struct ${1};
+
+    private:
+
+    public:
+        explicit ${1}State(String&& name = "${1}") : CoreStater(std::move(name)) {}
+
+        Self setFlags(Vk${1}CreateFlags flags);
+
+        Res<${1}> into(const CoreApi& api) const;
+    };
+
+    struct ${1} : public CoreResource<Vk${1}, ${2:object}> {
+    protected:
+        explicit ${1}(const CoreApi& api) : CoreResource(api) {}
+
+    public:
+        ${1}(${1}&&);
+        ~${1}();
+
+        static Res<${1}> from(const CoreApi& api, const ${1}State& info);
+    };
+
+    NAMESPACE_END(core)
+    NAMESPACE_END(vkt)
+
+snippet core-cpp
+    NAMESPACE_BEGIN(vkt)
+    NAMESPACE_BEGIN(core)
+
+    using Self = ${1:name}State::Self;
+
+    Self ${1}State::setFlags(Vk${1}CreateFlags flags) {
+        return *this;
+    }
+
+    Res<${1}> ${1}State::into(const CoreApi& api) const {
+        return ${1}::from(api, *this);
+    }
+
+    ${1}::${1}(${1}&& rhs) : CoreResource(rhs.api) {
+        handle = rhs.handle;
+        rhs.handle = VK_NULL_HANDLE;
+        __borrowed = rhs.__borrowed;
+    }
+
+    ${1}::~${1}() {
+        if (!__borrowed && handle) {
+            vkDestroy${1}(api, handle, api);
+        }
+        handle = VK_NULL_HANDLE;
+    }
+
+    Res<${1}> ${1}::from(const CoreApi& api, const ${1}State& info) {
+        ${1} ${2:var}(api);
+
+        OnRet(vkCreate${1}(api, &${2}_ci, api, ${2}), "${3:emsg}");
+        OnName(${2}, info.__name);
+
+        return Ok(std::move(${2}));
+    }
+
+    NAMESPACE_END(core)
+    NAMESPACE_END(vkt)
