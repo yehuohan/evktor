@@ -43,6 +43,8 @@ protected:
     Device device;
     Box<IDebug> debug;
 
+    // HashMap<uint32_t, Vector<Queue>> queues{}; /**< Map queue family index to corresponding queue array */
+
 public:
     CoreApi(Instance&& instance, PhysicalDevice&& physical_device, Device&& device, Box<IDebug>&& debug)
         : instance(std::move(instance))

@@ -45,9 +45,29 @@ Res<CRef<Device>> CoreApiState::init(DeviceState& info) {
     }
     // Must reset device before info.into()
     device.reset();
-    auto res = info.into(*instance, *physical_device, *debug);
+    auto res = info.into(*instance, *physical_device);
     OnErr(res);
     device = newBox<Device>(res.unwrap());
+
+    // OnRet(debug.setDebugName(device, VK_OBJECT_TYPE_DEVICE, reinterpret_cast<uint64_t>(device.handle), info.__name.c_str()),
+    //       "Failed to set debug name: {}",
+    //       info.__name);
+
+    // Queues are automatically created along with device, and we need to retrieve their handles.
+    for (const auto& q : phy_dev.queue_family_props) {
+        uint32_t family_index = q.first;
+        uint32_t max_count = std::min<uint32_t>(info.max_queue_count, q.second.count);
+        for (uint32_t index = 0; index < max_count; index++) {
+            Queue queue(family_index, index);
+            const String name = "Queue" + std::to_string(family_index) + "." + std::to_string(index);
+            vkGetDeviceQueue(device, family_index, index, queue);
+            OnRet(debug.setDebugName(device, VK_OBJECT_TYPE_QUEUE, reinterpret_cast<uint64_t>(queue.handle), name.c_str()),
+                  "Failed to set debug name: {}",
+                  name);
+            device.queues[family_index].push_back(std::move(queue));
+        }
+    }
+
     return Ok(newCRef(*device));
 }
 
