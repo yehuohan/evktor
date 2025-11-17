@@ -66,8 +66,6 @@ Instance::Instance(Instance&& rhs) {
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
     api_version = rhs.api_version;
-    layers = std::move(rhs.layers);
-    extensions = std::move(rhs.extensions);
 }
 
 Instance::~Instance() {
@@ -75,30 +73,30 @@ Instance::~Instance() {
         vkDestroyInstance(handle, allocator);
     }
     handle = VK_NULL_HANDLE;
-    layers.clear();
-    extensions.clear();
 };
 
-bool Instance::isLayerEnabled(const char* layer) const {
-    return std::find_if(layers.begin(), layers.end(), [&layer](auto& lyr) {
-               return std::strcmp(layer, lyr) == 0;
-           }) != layers.end();
-}
+Instance& Instance::operator=(Instance&& rhs) {
+    if (this != &rhs) {
+        if (!__borrowed && handle) {
+            vkDestroyInstance(handle, allocator);
+        }
 
-bool Instance::isExtensionEnabled(const char* extension) const {
-    return std::find_if(extensions.begin(), extensions.end(), [&extension](auto& ext) {
-               return std::strcmp(extension, ext) == 0;
-           }) != extensions.end();
+        handle = rhs.handle;
+        rhs.handle = VK_NULL_HANDLE;
+        __borrowed = rhs.__borrowed;
+        api_version = rhs.api_version;
+    }
+    return *this;
 }
 
 Res<Instance> Instance::from(InstanceState& info) {
-    // Initialize Vulkan loader
+    // Initialize Vulkan loader:
+    //      * get vkGetInstanceProcAddr from vulkan.so/dll
+    //      * call volkGenLoadLoader(VK_NULL_HANDLE, vkGetInstanceProcAddr))
     OnRet(volkInitialize(), "Unable to initialize Vulkan loader");
 
-    if (info.app_info.apiVersion >= VK_API_VERSION_1_1) {
-        // Add required extensions for memory allocator
-        info.addExtension(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-    }
+    // Add required extensions for memory allocator (>= VK_API_VERSION_1_1)
+    info.addExtension(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
     std::sort(info.extensions.begin(), info.extensions.end(), strLess);
     auto new_end = std::unique(info.extensions.begin(), info.extensions.end());
     info.extensions.erase(new_end, info.extensions.end());
@@ -109,14 +107,14 @@ Res<Instance> Instance::from(InstanceState& info) {
     instance_ci.pApplicationInfo = &info.app_info;
     if (info.layers.size() > 0) {
         if (!checkInstanceLayers(info.layers)) {
-            return Er("Not all the required layers are supported");
+            return Er("Not all the required instance layers are supported");
         }
         instance_ci.enabledLayerCount = u32(info.layers.size());
         instance_ci.ppEnabledLayerNames = info.layers.data();
     }
     if (info.extensions.size() > 0) {
         if (!checkInstanceExtensions(info.extensions)) {
-            return Er("Not all the required extensions are supported");
+            return Er("Not all the required instance extensions are supported");
         }
         instance_ci.enabledExtensionCount = u32(info.extensions.size());
         instance_ci.ppEnabledExtensionNames = info.extensions.data();
@@ -131,8 +129,26 @@ Res<Instance> Instance::from(InstanceState& info) {
     OnRet(vkCreateInstance(&instance_ci, info.allocator, instance), "Failed to create instance");
     instance.allocator = info.allocator;
     instance.api_version = info.app_info.apiVersion;
-    instance.layers = std::move(info.layers);
-    instance.extensions = std::move(info.extensions);
+
+    volkLoadInstance(instance);
+
+    return Ok(std::move(instance));
+}
+
+Res<Instance> Instance::borrow(VkInstance handle,
+                               PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
+                               uint32_t api_version,
+                               VkAllocationCallbacks* allocator) {
+    // Initialize Vulkan loader:
+    //      * provide vkGetInstanceProcAddr
+    //      * call volkGenLoadLoader(VK_NULL_HANDLE, vkGetInstanceProcAddr))
+    volkInitializeCustom(fpGetInstanceProcAddr);
+
+    Instance instance{};
+    instance.__borrowed = true;
+    instance.handle = handle;
+    instance.allocator = allocator;
+    instance.api_version = api_version;
 
     volkLoadInstance(instance);
 

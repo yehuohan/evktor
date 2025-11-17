@@ -7,6 +7,7 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/share SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/core SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/core/api SRC)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/core/api/exts SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/base SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor/rendering SRC)
 

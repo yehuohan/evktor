@@ -1,6 +1,6 @@
 #pragma once
-#include "__api.hpp"
-#include "instance.hpp"
+#include "../__api.hpp"
+#include "../instance.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -55,7 +55,7 @@ public:
     Self setCallback(PFN_vkDebugUtilsMessengerCallbackEXT callback);
     Self setUserData(void* user_data);
 
-    Res<Debug> into(const Instance& instance) const;
+    Res<Debug> into(CRef<Instance> instance) const;
 };
 
 /**
@@ -64,11 +64,10 @@ public:
  * VK_EXT_DEBUG_UTILS_EXTENSION_NAME works after vkCreateInstance and before vkDestroyInstance
  */
 struct Debug : public IDebug {
-    const VkAllocationCallbacks* allocator = nullptr;
-    const VkInstance instance = VK_NULL_HANDLE;
+    CRef<Instance> instance;
 
 protected:
-    explicit Debug(const Instance& instance) : instance(instance), allocator(instance) {}
+    explicit Debug(CRef<Instance> instance) : instance(instance) {}
 
 public:
     Debug(Debug&&);
@@ -85,7 +84,7 @@ public:
     virtual void cmdEndLabel(VkCommandBuffer cmdbuf) const override;
     virtual void cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const override;
 
-    static Res<Debug> from(const Instance& instance, const DebugState& info);
+    static Res<Debug> from(CRef<Instance> instance, const DebugState& info);
 };
 
 NAMESPACE_END(core)

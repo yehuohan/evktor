@@ -9,23 +9,26 @@ Surface::Surface(Surface&& rhs) : instance(rhs.instance) {
     __borrowed = rhs.__borrowed;
 }
 
+Surface::~Surface() {
+    if (!__borrowed && handle) {
+        vkDestroySurfaceKHR(instance.get(), handle, instance.get());
+    }
+    handle = VK_NULL_HANDLE;
+}
+
 Surface& Surface::operator=(Surface&& rhs) {
     if (this != &rhs) {
+        if (!__borrowed && handle) {
+            vkDestroySurfaceKHR(instance.get(), handle, instance.get());
+        }
+
         handle = rhs.handle;
         rhs.handle = VK_NULL_HANDLE;
         __borrowed = rhs.__borrowed;
     }
     return *this;
 }
-
-Surface::~Surface() {
-    if (!__borrowed && handle) {
-        vkDestroySurfaceKHR(instance, handle, allocator);
-    }
-    handle = VK_NULL_HANDLE;
-}
-
-Res<Surface> Surface::from(const Instance& instance, VkSurfaceKHR& _surface) {
+Res<Surface> Surface::from(CRef<Instance> instance, VkSurfaceKHR& _surface) {
     Surface surface(instance);
     surface.handle = _surface;
     _surface = VK_NULL_HANDLE;

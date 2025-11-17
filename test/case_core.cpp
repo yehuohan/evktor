@@ -9,39 +9,35 @@ using namespace vkt;
 using namespace vkt::core;
 
 Box<CoreApi> setupCoreApi() {
-    CoreApiState aso{};
+    Box<CoreApi> api = newBox<CoreApi>();
     DebugState dso{};
 
     // Create instance
-    aso.init(InstanceState()
-                 .setNext(dso)
-                 .setAppName("tst_core")
-                 .setAppVerion(VK_MAKE_VERSION(1, 0, 0))
-                 .setEngineName("vktor")
-                 .setEngineVersion(VK_MAKE_VERSION(1, 0, 0))
-                 .setApiVerion(VK_API_VERSION_1_2)
-                 .enableLayerValidation()
-                 .enableExtensionDebugUtils()
-                 .setVerbose(true))
+    api->init(InstanceState()
+                  .setNext(dso)
+                  .setAppName("tst_core")
+                  .setAppVerion(VK_MAKE_VERSION(1, 0, 0))
+                  .setEngineName("vktor")
+                  .setEngineVersion(VK_MAKE_VERSION(1, 0, 0))
+                  .enableLayerValidation()
+                  .enableExtensionDebugUtils()
+                  .setVerbose(true))
         .unwrap();
 
-    aso.init(dso).unwrap();
+    api->add(dso).unwrap();
 
     // Select physical device
-    aso.init(PhysicalDeviceState()
-                 .preferDiscreteGPU()
-                 // .preferIntegratedGPU()
-                 .requireGraphicsQueue()
-                 .requireComputeQueue()
-                 .addRequiredExtension(VK_KHR_MAINTENANCE1_EXTENSION_NAME)
-                 .setVerbose(true))
+    api->init(PhysicalDeviceState()
+                  .preferDiscreteGPU()
+                  // .preferIntegratedGPU()
+                  .requireGraphicsQueue()
+                  .requireComputeQueue()
+                  .setVerbose(true))
         .unwrap();
 
     // Create device
-    aso.init(DeviceState().setMaxQueueCount(1).setVerbose(true)).unwrap();
-
-    // Create core api
-    Box<CoreApi> api = aso.into().unwrap();
+    api->init(DeviceState().setMaxQueueCount(1).addRequiredExtension(VK_KHR_MAINTENANCE1_EXTENSION_NAME).setVerbose(true))
+        .unwrap();
 
     tstOut("Instance: {}, Physical Device: {}, Device: {}",
            fmt::ptr((VkInstance)*api),
@@ -185,7 +181,7 @@ void graphicsPass(const CoreApi& api) {
     static float buf[num];
 
     // Create command buffer
-    auto& queue = api.computeQueue().unwrap().get();
+    auto& queue = api.graphicsQueue().unwrap().get();
     auto cmdpool = CommandPoolState{}.setQueueFamilyIndex(queue.family_index).into(api).unwrap();
     auto& cmdbuf = cmdpool.allocate(CommandPool::Level::Primary).unwrap().get();
     tstOut("Comamnd buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));

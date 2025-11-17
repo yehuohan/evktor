@@ -147,19 +147,19 @@ Res<ImageView> Swapchain::newImageView(uint32_t index) const {
 }
 
 Res<Swapchain> Swapchain::from(const CoreApi& api, const SwapchainState& info) {
-    const PhysicalDevice& phy_dev = api;
-    if ((!phy_dev.queue_families.present.has_value()) || (!phy_dev.queue_families.graphics.has_value())) {
+    auto& indices = api.queueFamilyIndices();
+    if ((indices.present == VK_QUEUE_FAMILY_IGNORED) || (indices.graphics == VK_QUEUE_FAMILY_IGNORED)) {
         return Er("Swapchain requires valid present and graphics queue family index");
     }
 
     VkSurfaceCapabilitiesKHR surface_capalibities{};
     Vector<VkSurfaceFormatKHR> surface_formats{};
     Vector<VkPresentModeKHR> present_modes{};
-    OnRet(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(phy_dev, info.surface, &surface_capalibities),
+    OnRet(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(api, info.surface, &surface_capalibities),
           "Failed to get surface capabilities of physical device");
-    OnRet(enumerate(surface_formats, vkGetPhysicalDeviceSurfaceFormatsKHR, phy_dev, info.surface),
+    OnRet(enumerate(surface_formats, vkGetPhysicalDeviceSurfaceFormatsKHR, api, info.surface),
           "Failed to get list of surface formats");
-    OnRet(enumerate(present_modes, vkGetPhysicalDeviceSurfacePresentModesKHR, phy_dev, info.surface),
+    OnRet(enumerate(present_modes, vkGetPhysicalDeviceSurfacePresentModesKHR, api, info.surface),
           "Failed to get list of present modes");
     VkSurfaceFormatKHR surface_format = info.chooseSurfaceFormat(surface_formats);
     VkPresentModeKHR present_mode = info.choosePresentMode(present_modes);
@@ -185,11 +185,8 @@ Res<Swapchain> Swapchain::from(const CoreApi& api, const SwapchainState& info) {
     swapchain_ci.presentMode = present_mode;
     swapchain_ci.clipped = VK_TRUE;
     swapchain_ci.oldSwapchain = info.old;
-    uint32_t queue_family_indices[] = {
-        phy_dev.queue_families.present.value(),
-        phy_dev.queue_families.graphics.value(),
-    };
-    if (phy_dev.queue_families.graphics != phy_dev.queue_families.present) {
+    uint32_t queue_family_indices[] = {indices.present, indices.graphics};
+    if (indices.graphics != indices.present) {
         swapchain_ci.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
         swapchain_ci.queueFamilyIndexCount = 2;
         swapchain_ci.pQueueFamilyIndices = queue_family_indices;

@@ -22,7 +22,8 @@ struct Queue : public CoreHandle<VkQueue> {
  * @brief Queue family properties
  */
 struct QueueFamilyProps {
-    uint32_t count = 1;    /**< Count of queues in this queue family that >= 1 */
+    uint32_t count = 1; /**< Count of queues in this queue family that >= 1 */
+    VkQueueFlags flags = 0;
     bool present = false;  /**< Queue family supports present */
     bool graphics = false; /**< Queue family supports graphics */
     bool compute = false;  /**< Queue family supports compute */
@@ -30,58 +31,13 @@ struct QueueFamilyProps {
 };
 
 /**
- * @brief Queue families with indices
- *
- * If there's no value in optional, the queue family is not required or not supported.
+ * @brief Queue family indices
  */
-struct QueueFamilies {
-    Opt<uint32_t> present{};
-    Opt<uint32_t> graphics{};
-    Opt<uint32_t> compute{};
-    Opt<uint32_t> transfer{};
-
-    inline void clear() {
-        present.reset();
-        graphics.reset();
-        compute.reset();
-        transfer.reset();
-    }
-};
-
-/**
- * @brief Queues
- *
- * If the queue is nullptr, the queue is not required or not supported.
- */
-struct Queues {
-    Queue* present = nullptr;
-    Queue* graphics = nullptr;
-    Queue* compute = nullptr;
-    Queue* transfer = nullptr;
-
-    Queues() = default;
-    Queues(Queues&& rhs) {
-        present = rhs.present;
-        graphics = rhs.graphics;
-        compute = rhs.compute;
-        transfer = rhs.transfer;
-        rhs.clear();
-    }
-    Queues& operator=(Queues&& rhs) {
-        present = rhs.present;
-        graphics = rhs.graphics;
-        compute = rhs.compute;
-        transfer = rhs.transfer;
-        rhs.clear();
-        return *this;
-    }
-
-    inline void clear() {
-        present = nullptr;
-        graphics = nullptr;
-        compute = nullptr;
-        transfer = nullptr;
-    }
+struct QueueFamilyIndices {
+    uint32_t present = VK_QUEUE_FAMILY_IGNORED;
+    uint32_t graphics = VK_QUEUE_FAMILY_IGNORED;
+    uint32_t compute = VK_QUEUE_FAMILY_IGNORED;
+    uint32_t transfer = VK_QUEUE_FAMILY_IGNORED;
 };
 
 NAMESPACE_END(core)

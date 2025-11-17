@@ -1,14 +1,12 @@
 #pragma once
 #include "__api.hpp"
-#include "debug.hpp"
-#include "instance.hpp"
 #include "physical_device.hpp"
-#include "queue.hpp"
 #include <vk_mem_alloc.h>
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
+class CoreApi;
 struct Device;
 
 class DeviceState : public CoreStater<DeviceState> {
@@ -16,46 +14,45 @@ class DeviceState : public CoreStater<DeviceState> {
 
 private:
     uint32_t max_queue_count = 1; /**< The max count of queues for each queue family, must >= 1. */
-
-private:
-    VkResult createMemAllocator(const Instance& instance, const PhysicalDevice& physical_device, Device& device) const;
+    Vector<const char*> required_extensions{};
+    VkPhysicalDeviceFeatures required_features{};
 
 public:
     explicit DeviceState(String&& name = "Device") : CoreStater(std::move(name)) {}
 
     Self setMaxQueueCount(uint32_t count);
+    Self addRequiredExtension(const char* extension);
+    Self addRequiredExtensions(const Vector<const char*> extensions);
+    Self setRequiredFeatures(const VkPhysicalDeviceFeatures& features);
 
-    Res<Device> into(const Instance& instance, const PhysicalDevice& phy_dev, const IDebug& debug);
+    Res<Device> into(CRef<PhysicalDevice> phy_dev);
 };
 
 struct Device : public CoreHandle<VkDevice> {
-    const VkAllocationCallbacks* allocator = nullptr;
-    const VkInstance instance = VK_NULL_HANDLE;
-    const VkPhysicalDevice physical_device = VK_NULL_HANDLE;
+    friend CoreApi;
 
-    Queues queues{};                                  /**< Corresponding queues for PhysicalDevice::queue_families */
-    HashMap<uint32_t, Vector<Queue>> queue_indices{}; /**< Map queue family index to corresponding queue array */
+    CRef<PhysicalDevice> physical_device;
+
     VmaAllocator mem_allocator = VK_NULL_HANDLE;
 
 protected:
-    explicit Device(const Instance& instance, const PhysicalDevice& physical_device)
-        : allocator(instance.allocator)
-        , instance(instance)
-        , physical_device(physical_device) {}
+    explicit Device(CRef<PhysicalDevice> physical_device) : physical_device(physical_device) {}
+
+    VkResult createMemAllocator();
 
 public:
     Device(Device&&);
     ~Device();
+    Device& operator=(Device&&);
     OnConstType(VmaAllocator, mem_allocator);
 
     inline VkMemoryRequirements getMemoryRequirements(VkBuffer buffer) const;
     inline VkMemoryRequirements getMemoryRequirements(VkImage image) const;
 
-    static Res<Device> from(const Instance& instance,
-                            const PhysicalDevice& phy_dev,
-                            const IDebug& debug,
-                            const DeviceState& info);
-    // static Res<VkDevice> borrow(const Instance& instance, const PhysicalDevice& phy_dev, VkDevice handle);
+    static Res<Device> from(CRef<PhysicalDevice> phy_dev, DeviceState& info);
+    static Res<Device> borrow(CRef<PhysicalDevice> phy_dev,
+                              VkDevice handle,
+                              PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr = VK_NULL_HANDLE);
 };
 
 inline VkMemoryRequirements Device::getMemoryRequirements(VkBuffer buffer) const {
@@ -69,6 +66,11 @@ inline VkMemoryRequirements Device::getMemoryRequirements(VkImage image) const {
     vkGetImageMemoryRequirements(handle, image, &reqs);
     return reqs;
 }
+
+bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& device_extensions);
+void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions);
+bool checkDeviceFeatures(VkPhysicalDevice pd, const VkPhysicalDeviceFeatures& device_features);
+void printDeviceFeatures(VkPhysicalDevice pd, const VkPhysicalDeviceFeatures& enabled_features);
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)

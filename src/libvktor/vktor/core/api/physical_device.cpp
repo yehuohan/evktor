@@ -1,75 +1,82 @@
 #include "physical_device.hpp"
-#include <algorithm>
-#include <set>
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
 using Self = PhysicalDeviceState::Self;
 
-void PhysicalDeviceDetails::collect(PhysicalDeviceDetails& details) {
-    details.queue_family_props = enumerate<VkQueueFamilyProperties>(vkGetPhysicalDeviceQueueFamilyProperties,
-                                                                    details.physical_device);
-    for (uint32_t idx = 0; idx < u32(details.queue_family_props.size()); idx++) {
-        const VkQueueFamilyProperties& p = details.queue_family_props[idx];
-        if (details.surface) {
-            VkBool32 present = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(details.physical_device, idx, details.surface, &present);
-            if (present) {
-                details.present_indices.push_back(idx);
-            }
-        }
-        if (p.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-            details.graphics_indices.push_back(idx);
-        }
-        if (p.queueFlags & VK_QUEUE_COMPUTE_BIT) {
-            details.compute_indices.push_back(idx);
-        }
-        if (p.queueFlags & VK_QUEUE_TRANSFER_BIT) {
-            details.transfer_indices.push_back(idx);
-        }
-    }
-}
-
-void PhysicalDeviceDetails::print(const PhysicalDeviceDetails& details) {
+void PhysicalDeviceDetails::print() const {
     VkPhysicalDeviceProperties props;
-    vkGetPhysicalDeviceProperties(details.physical_device, &props);
-
-    const char* pdev_type = "Unkown";
-    switch (props.deviceType) {
-    case VK_PHYSICAL_DEVICE_TYPE_OTHER: pdev_type = "Other"; break;
-    case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU: pdev_type = "Integrated GPU"; break;
-    case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU: pdev_type = "Discrete GPU"; break;
-    case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU: pdev_type = "Virtual GPU"; break;
-    case VK_PHYSICAL_DEVICE_TYPE_CPU: pdev_type = "CPU"; break;
-    default: break;
-    }
-
+    vkGetPhysicalDeviceProperties(physical_device, &props);
     vktOut("{} {{\n"
-           "    vender id: {:#04x}\n"
-           "    device id: {:#04x}\n"
-           "    device type: {}\n"
-           "    api version: {}.{}.{}\n"
-           "    driver version: {}.{}.{}\n"
-           "    present indices: {}\n"
-           "    graphics indices: {}\n"
-           "    compute indices: {}\n"
-           "    transfer indices: {}\n"
+           "\tvender id: {:#04x}\n"
+           "\tdevice id: {:#04x}\n"
+           "\tdevice type: {}\n"
+           "\tapi version: {}.{}.{}\n"
+           "\tdriver version: {}.{}.{}\n"
+           "\tpresent indices: {}\n"
+           "\tgraphics indices: {}\n"
+           "\tcompute indices: {}\n"
+           "\ttransfer indices: {}\n"
            "}}",
            props.deviceName,
            props.vendorID,
            props.deviceID,
-           pdev_type,
+           VkStr(VkPhysicalDeviceType, props.deviceType),
            VK_API_VERSION_MAJOR(props.apiVersion),
            VK_API_VERSION_MINOR(props.apiVersion),
            VK_API_VERSION_PATCH(props.apiVersion),
            VK_VERSION_MAJOR(props.driverVersion),
            VK_VERSION_MINOR(props.driverVersion),
            VK_VERSION_PATCH(props.driverVersion),
-           vec2str(details.present_indices),
-           vec2str(details.graphics_indices),
-           vec2str(details.compute_indices),
-           vec2str(details.transfer_indices));
+           vec2str(present_indices),
+           vec2str(graphics_indices),
+           vec2str(compute_indices),
+           vec2str(transfer_indices));
+}
+
+void PhysicalDeviceDetails::collect() {
+    queue_family_props = enumerate<VkQueueFamilyProperties>(vkGetPhysicalDeviceQueueFamilyProperties, physical_device);
+    for (uint32_t idx = 0; idx < u32(queue_family_props.size()); idx++) {
+        const VkQueueFamilyProperties& p = queue_family_props[idx];
+        if (surface) {
+            VkBool32 present = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, idx, surface, &present);
+            if (present) {
+                present_indices.push_back(idx);
+            }
+        }
+        if (p.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+            graphics_indices.push_back(idx);
+        }
+        if (p.queueFlags & VK_QUEUE_COMPUTE_BIT) {
+            compute_indices.push_back(idx);
+        }
+        if (p.queueFlags & VK_QUEUE_TRANSFER_BIT) {
+            transfer_indices.push_back(idx);
+        }
+    }
+}
+
+HashMap<uint32_t, QueueFamilyProps> PhysicalDeviceDetails::convert() const {
+    HashMap<uint32_t, QueueFamilyProps> res{};
+    for (uint32_t idx = 0; idx < u32(queue_family_props.size()); idx++) {
+        res[idx].count = queue_family_props[idx].queueCount;
+        res[idx].flags = queue_family_props[idx].queueFlags;
+    }
+    for (uint32_t idx : present_indices) {
+        res[idx].present = true;
+    }
+    for (uint32_t idx : graphics_indices) {
+        res[idx].graphics = true;
+    }
+    for (uint32_t idx : compute_indices) {
+        res[idx].compute = true;
+    }
+    for (uint32_t idx : transfer_indices) {
+        res[idx].transfer = true;
+    }
+    return std::move(res);
 }
 
 Self PhysicalDeviceState::preferDiscreteGPU() {
@@ -103,43 +110,16 @@ Self PhysicalDeviceState::requireTransferQueue(bool require) {
     return *this;
 }
 
-Self PhysicalDeviceState::addRequiredExtension(const char* extension) {
-    required_extensions.push_back(extension);
-    return *this;
-}
-
-Self PhysicalDeviceState::addRequiredExtensions(const Vector<const char*> extensions) {
-    required_extensions.insert(required_extensions.end(), extensions.begin(), extensions.end());
-    return *this;
-}
-
-Self PhysicalDeviceState::setRequiredFeatures(const VkPhysicalDeviceFeatures& features) {
-    required_features = features;
-    return *this;
-}
-
 Self PhysicalDeviceState::addChecker(std::function<bool(VkInstance, VkPhysicalDevice)> checker) {
     checkers.push_back(checker);
     return *this;
 }
 
 bool PhysicalDeviceState::checkSuitable(VkInstance instance, const PhysicalDeviceDetails& details) {
-    if (require_present_queue && details.present_indices.size() == 0) {
-        return false;
-    }
-    if (require_graphics_queue && details.graphics_indices.size() == 0) {
-        return false;
-    }
-    if (require_compute_queue && details.compute_indices.size() == 0) {
-        return false;
-    }
-    if (require_transfer_queue && details.transfer_indices.size() == 0) {
-        return false;
-    }
-    if (!checkDeviceExtensions(details.physical_device, required_extensions)) {
-        return false;
-    }
-    if (!checkDeviceFeatures(details.physical_device, required_features)) {
+    if ((require_present_queue && details.present_indices.empty()) ||
+        (require_graphics_queue && details.graphics_indices.empty()) ||
+        (require_compute_queue && details.compute_indices.empty()) ||
+        (require_transfer_queue && details.transfer_indices.empty())) {
         return false;
     }
     for (const auto& checker : checkers) {
@@ -150,336 +130,93 @@ bool PhysicalDeviceState::checkSuitable(VkInstance instance, const PhysicalDevic
     return true;
 }
 
-PhysicalDevice PhysicalDeviceState::pickBestSuitable(const Vector<PhysicalDeviceDetails> details) {
-    const PhysicalDeviceDetails* pd = nullptr;
-    for (const auto& d : details) {
+size_t PhysicalDeviceState::pickBestSuitable(const Vector<PhysicalDeviceDetails>& details) {
+    for (size_t k = 0; k < details.size(); k++) {
         VkPhysicalDeviceProperties props;
-        vkGetPhysicalDeviceProperties(d.physical_device, &props);
+        vkGetPhysicalDeviceProperties(details[k].physical_device, &props);
         if (preferred_type == props.deviceType) {
-            pd = &d;
-            break;
+            vktOut("{} is selected", props.deviceName);
+            return k;
         }
     }
-    if (!pd) {
-        pd = &details.at(0);
-    }
-    VkPhysicalDeviceProperties props;
-    vkGetPhysicalDeviceProperties(pd->physical_device, &props);
-
-    String str(vktFmt("{} is selected {{\n", props.deviceName));
-    PhysicalDevice phy_dev{};
-    phy_dev.handle = pd->physical_device;
-
-    // Select the first queue family index by default
-    if (require_present_queue) {
-        uint32_t index = pd->present_indices[0];
-        phy_dev.queue_families.present = index;
-        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
-        phy_dev.queue_family_props[index].present = true;
-        str += vktFmt("    present: index = {}, count = {}\n", index, pd->queue_family_props[index].queueCount);
-    }
-    if (require_graphics_queue) {
-        uint32_t index = pd->graphics_indices[0];
-        phy_dev.queue_families.graphics = index;
-        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
-        phy_dev.queue_family_props[index].graphics = true;
-        str += vktFmt("    graphics: index = {}, count = {}\n", index, pd->queue_family_props[index].queueCount);
-    }
-    if (require_compute_queue) {
-        uint32_t index = pd->compute_indices[0];
-        phy_dev.queue_families.compute = index;
-        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
-        phy_dev.queue_family_props[index].compute = true;
-        str += vktFmt("    compute: index = {}, count = {}\n", index, pd->queue_family_props[index].queueCount);
-    }
-    if (require_transfer_queue) {
-        uint32_t index = pd->transfer_indices[0];
-        phy_dev.queue_families.transfer = index;
-        phy_dev.queue_family_props[index].count = pd->queue_family_props[index].queueCount;
-        phy_dev.queue_family_props[index].transfer = true;
-        str += vktFmt("    transfer: index = {}, count = {}\n", index, pd->queue_family_props[index].queueCount);
-    }
-
-    str += "}";
-    vktOut("{}", str);
-
-    phy_dev.extensions = std::move(required_extensions);
-    phy_dev.features = std::move(required_features);
-    return std::move(phy_dev);
+    vktOut("The first is selected");
+    return 0;
 }
 
-Res<PhysicalDevice> PhysicalDeviceState::into(const Instance& instance) {
+Res<PhysicalDevice> PhysicalDeviceState::into(CRef<Instance> instance) {
     return PhysicalDevice::from(instance, *this);
 }
 
-PhysicalDevice::PhysicalDevice(PhysicalDevice&& rhs) {
+PhysicalDevice::PhysicalDevice(PhysicalDevice&& rhs) : instance(rhs.instance) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
-    queue_families = std::move(rhs.queue_families);
     queue_family_props = std::move(rhs.queue_family_props);
-    extensions = std::move(rhs.extensions);
-    features = std::move(rhs.features);
-    properties = std::move(rhs.properties);
-    memory_properties = std::move(rhs.memory_properties);
 }
 
 PhysicalDevice::~PhysicalDevice() {
     handle = VK_NULL_HANDLE;
-    queue_families.clear();
     queue_family_props.clear();
-    extensions.clear();
 }
 
-bool PhysicalDevice::isExtensionEnabled(const char* extension) const {
-    return std::find_if(extensions.begin(), extensions.end(), [&extension](auto& ext) {
-               return std::strcmp(extension, ext) == 0;
-           }) != extensions.end();
-}
-
-Res<PhysicalDevice> PhysicalDevice::from(const Instance& instance, PhysicalDeviceState& info) {
-    // Add required extensions for memory allocator
-    if (instance.api_version >= VK_API_VERSION_1_1) {
-        info.addRequiredExtension(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
-        info.addRequiredExtension(VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME);
-        info.addRequiredExtension(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
-        info.addRequiredExtension(VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
-        std::sort(info.required_extensions.begin(), info.required_extensions.end(), strLess);
-        auto new_end = std::unique(info.required_extensions.begin(), info.required_extensions.end());
-        info.required_extensions.erase(new_end, info.required_extensions.end());
+PhysicalDevice& PhysicalDevice::operator=(PhysicalDevice&& rhs) {
+    if (this != &rhs) {
+        handle = rhs.handle;
+        rhs.handle = VK_NULL_HANDLE;
+        __borrowed = rhs.__borrowed;
+        queue_family_props = std::move(rhs.queue_family_props);
     }
+    return *this;
+}
 
+Res<PhysicalDevice> PhysicalDevice::from(CRef<Instance> instance, PhysicalDeviceState& info) {
     if (info.require_present_queue && (!info.surface)) {
         return Er("Physical device's supporting 'present' needs a valid surface");
     }
 
     // Get physical devices list
     Vector<VkPhysicalDevice> devs{};
-    OnRet(enumerate(devs, vkEnumeratePhysicalDevices, instance), "Failed to get list of physical devices");
-    if (devs.size() == 0) {
-        return Er("There is no Vulkan supported GPU");
+    OnRet(enumerate(devs, vkEnumeratePhysicalDevices, instance.get()), "Failed to get list of physical devices");
+    if (devs.empty()) {
+        return Er("There is no GPU supports Vulkan");
     }
 
     // Get all suitable physical device on account of properties, features and extensions and so on
     Vector<PhysicalDeviceDetails> suitables{};
     for (const auto& d : devs) {
         PhysicalDeviceDetails details{d, info.surface};
-        PhysicalDeviceDetails::collect(details);
+        details.collect();
         if (info.__verbose) {
-            PhysicalDeviceDetails::print(details);
+            details.print();
         }
-        if (info.checkSuitable(instance, details)) {
+        if (info.checkSuitable(instance.get(), details)) {
             suitables.push_back(std::move(details));
         }
     }
-    if (suitables.size() == 0) {
-        return Er("Can NOT find a suitable GPU device");
+    if (suitables.empty()) {
+        return Er("Can not find a suitable GPU device");
     }
 
     // Pick the best suitable
-    PhysicalDevice phy_dev = info.pickBestSuitable(suitables);
-    vkGetPhysicalDeviceProperties(phy_dev, &phy_dev.properties);
-    vkGetPhysicalDeviceMemoryProperties(phy_dev, &phy_dev.memory_properties);
-    if (info.__verbose) {
-        printDeviceExtensions(phy_dev, phy_dev.extensions);
-        printDeviceFeatures(phy_dev, phy_dev.features);
-    }
+    size_t best = info.pickBestSuitable(suitables);
+
+    PhysicalDevice phy_dev{instance};
+    phy_dev.handle = suitables[best].physical_device;
+    phy_dev.queue_family_props = suitables[best].convert();
 
     return Ok(std::move(phy_dev));
 }
 
-bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& device_extensions) {
-    Vector<VkExtensionProperties> exts{};
-    VkResult res = enumerate(exts, vkEnumerateDeviceExtensionProperties, pd, nullptr);
-    if (res != VK_SUCCESS) {
-        vktLogE("Failed to get properties of device extensions: {}", VkStr(VkResult, res));
-        return false;
-    }
+Res<PhysicalDevice> PhysicalDevice::borrow(CRef<Instance> instance, VkPhysicalDevice handle, VkSurfaceKHR surface) {
+    PhysicalDevice phy_dev{instance};
+    phy_dev.__borrowed = true;
+    phy_dev.handle = handle;
 
-    std::set<String> device_exts(device_extensions.begin(), device_extensions.end());
-    for (const auto& e : exts) {
-        device_exts.erase(e.extensionName);
-    }
+    PhysicalDeviceDetails details{handle, surface};
+    details.collect();
+    phy_dev.queue_family_props = details.convert();
 
-    bool empty = device_exts.empty();
-    if (!empty) {
-        vktLogW("Not supported device extensions:");
-        for (const auto& e : device_exts) {
-            vktLogW("\t{}", e);
-        }
-    }
-    return empty;
-}
-
-void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions) {
-    Vector<VkExtensionProperties> ext_props{};
-    VkResult res = enumerate(ext_props, vkEnumerateDeviceExtensionProperties, pd, nullptr);
-    if (res != VK_SUCCESS) {
-        vktLogE("Failed to get properties of device extensions: {}", VkStr(VkResult, res));
-        return;
-    }
-
-    String str("Available device extensions {\n");
-    for (const auto& e : ext_props) {
-        str += vktFmt("\t{}\n", e.extensionName);
-    }
-    str += "}\n";
-
-    str += "Enabled device extensions {\n";
-    for (const auto& e : enabled_extensions) {
-        str += vktFmt("\t{}\n", e);
-    }
-    str += "}";
-
-    vktOut("{}", str);
-}
-
-bool checkDeviceFeatures(VkPhysicalDevice pd, const VkPhysicalDeviceFeatures& device_features) {
-    VkPhysicalDeviceFeatures feats{};
-    vkGetPhysicalDeviceFeatures(pd, &feats);
-
-#define Check(f)                         \
-    if (device_features.f && !feats.f) { \
-        return false;                    \
-    }
-
-    Check(robustBufferAccess);
-    Check(fullDrawIndexUint32);
-    Check(imageCubeArray);
-    Check(independentBlend);
-    Check(geometryShader);
-    Check(tessellationShader);
-    Check(sampleRateShading);
-    Check(dualSrcBlend);
-    Check(logicOp);
-    Check(multiDrawIndirect);
-    Check(drawIndirectFirstInstance);
-    Check(depthClamp);
-    Check(depthBiasClamp);
-    Check(fillModeNonSolid);
-    Check(depthBounds);
-    Check(wideLines);
-    Check(largePoints);
-    Check(alphaToOne);
-    Check(multiViewport);
-    Check(samplerAnisotropy);
-    Check(textureCompressionETC2);
-    Check(textureCompressionASTC_LDR);
-    Check(textureCompressionBC);
-    Check(occlusionQueryPrecise);
-    Check(pipelineStatisticsQuery);
-    Check(vertexPipelineStoresAndAtomics);
-    Check(fragmentStoresAndAtomics);
-    Check(shaderTessellationAndGeometryPointSize);
-    Check(shaderImageGatherExtended);
-    Check(shaderStorageImageExtendedFormats);
-    Check(shaderStorageImageMultisample);
-    Check(shaderStorageImageReadWithoutFormat);
-    Check(shaderStorageImageWriteWithoutFormat);
-    Check(shaderUniformBufferArrayDynamicIndexing);
-    Check(shaderSampledImageArrayDynamicIndexing);
-    Check(shaderStorageBufferArrayDynamicIndexing);
-    Check(shaderStorageImageArrayDynamicIndexing);
-    Check(shaderClipDistance);
-    Check(shaderCullDistance);
-    Check(shaderFloat64);
-    Check(shaderInt64);
-    Check(shaderInt16);
-    Check(shaderResourceResidency);
-    Check(shaderResourceMinLod);
-    Check(sparseBinding);
-    Check(sparseResidencyBuffer);
-    Check(sparseResidencyImage2D);
-    Check(sparseResidencyImage3D);
-    Check(sparseResidency2Samples);
-    Check(sparseResidency4Samples);
-    Check(sparseResidency8Samples);
-    Check(sparseResidency16Samples);
-    Check(sparseResidencyAliased);
-    Check(variableMultisampleRate);
-    Check(inheritedQueries);
-
-#undef Check
-
-    return true;
-}
-
-void printDeviceFeatures(VkPhysicalDevice pd, const VkPhysicalDeviceFeatures& required_features) {
-    VkPhysicalDeviceFeatures feats{};
-    vkGetPhysicalDeviceFeatures(pd, &feats);
-
-    String sa("Available device features {\n");
-    String sr("Required device features {\n");
-
-#define Print(f)                    \
-    if (feats.f) {                  \
-        sa += vktFmt("\t{}\n", #f); \
-    }                               \
-    if (required_features.f) {      \
-        sr += vktFmt("\t{}\n", #f); \
-    }
-
-    Print(robustBufferAccess);
-    Print(fullDrawIndexUint32);
-    Print(imageCubeArray);
-    Print(independentBlend);
-    Print(geometryShader);
-    Print(tessellationShader);
-    Print(sampleRateShading);
-    Print(dualSrcBlend);
-    Print(logicOp);
-    Print(multiDrawIndirect);
-    Print(drawIndirectFirstInstance);
-    Print(depthClamp);
-    Print(depthBiasClamp);
-    Print(fillModeNonSolid);
-    Print(depthBounds);
-    Print(wideLines);
-    Print(largePoints);
-    Print(alphaToOne);
-    Print(multiViewport);
-    Print(samplerAnisotropy);
-    Print(textureCompressionETC2);
-    Print(textureCompressionASTC_LDR);
-    Print(textureCompressionBC);
-    Print(occlusionQueryPrecise);
-    Print(pipelineStatisticsQuery);
-    Print(vertexPipelineStoresAndAtomics);
-    Print(fragmentStoresAndAtomics);
-    Print(shaderTessellationAndGeometryPointSize);
-    Print(shaderImageGatherExtended);
-    Print(shaderStorageImageExtendedFormats);
-    Print(shaderStorageImageMultisample);
-    Print(shaderStorageImageReadWithoutFormat);
-    Print(shaderStorageImageWriteWithoutFormat);
-    Print(shaderUniformBufferArrayDynamicIndexing);
-    Print(shaderSampledImageArrayDynamicIndexing);
-    Print(shaderStorageBufferArrayDynamicIndexing);
-    Print(shaderStorageImageArrayDynamicIndexing);
-    Print(shaderClipDistance);
-    Print(shaderCullDistance);
-    Print(shaderFloat64);
-    Print(shaderInt64);
-    Print(shaderInt16);
-    Print(shaderResourceResidency);
-    Print(shaderResourceMinLod);
-    Print(sparseBinding);
-    Print(sparseResidencyBuffer);
-    Print(sparseResidencyImage2D);
-    Print(sparseResidencyImage3D);
-    Print(sparseResidency2Samples);
-    Print(sparseResidency4Samples);
-    Print(sparseResidency8Samples);
-    Print(sparseResidency16Samples);
-    Print(sparseResidencyAliased);
-    Print(variableMultisampleRate);
-    Print(inheritedQueries);
-
-#undef Print
-
-    sa += "}\n";
-    sr += "}";
-    vktOut("{}", sa + sr);
+    return Ok(std::move(phy_dev));
 }
 
 NAMESPACE_END(core)

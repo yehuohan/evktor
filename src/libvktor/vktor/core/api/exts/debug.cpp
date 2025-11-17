@@ -1,5 +1,4 @@
 #include "debug.hpp"
-#include "instance.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -40,7 +39,7 @@ Self DebugState::setUserData(void* user_data) {
     return *this;
 }
 
-Res<Debug> DebugState::into(const Instance& instance) const {
+Res<Debug> DebugState::into(CRef<Instance> instance) const {
     return Debug::from(instance, *this);
 }
 
@@ -51,8 +50,8 @@ Debug::Debug(Debug&& rhs) : instance(rhs.instance) {
 }
 
 Debug::~Debug() {
-    if (!__borrowed && instance && handle) {
-        vkDestroyDebugUtilsMessengerEXT(instance, handle, allocator);
+    if (!__borrowed && handle) {
+        vkDestroyDebugUtilsMessengerEXT(instance.get(), handle, instance.get());
     }
     handle = VK_NULL_HANDLE;
 }
@@ -89,10 +88,10 @@ void Debug::cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const {
     vkCmdInsertDebugUtilsLabelEXT(cmdbuf, &label_info);
 }
 
-Res<Debug> Debug::from(const Instance& instance, const DebugState& info) {
+Res<Debug> Debug::from(CRef<Instance> instance, const DebugState& info) {
     Debug debug(instance);
     info.debug_ci.pNext = info.__next;
-    OnRet(vkCreateDebugUtilsMessengerEXT(instance, &info.debug_ci, instance, &debug.handle),
+    OnRet(vkCreateDebugUtilsMessengerEXT(instance.get(), &info.debug_ci, instance.get(), &debug.handle),
           "Failed to create debug utils messenger");
     return Ok(std::move(debug));
 }

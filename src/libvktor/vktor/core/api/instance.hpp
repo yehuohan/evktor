@@ -4,6 +4,7 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
+class CoreApi;
 struct Instance;
 
 struct InstanceState : public CoreStater<InstanceState> {
@@ -22,7 +23,7 @@ public:
         app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         app_info.pEngineName = "vktor";
         app_info.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-        app_info.apiVersion = VK_API_VERSION_1_0;
+        app_info.apiVersion = VKT_CORE_VK_API_VERSION;
     }
 
     Self setAllocationCallbacks(const VkAllocationCallbacks* allocation_callbacks);
@@ -46,10 +47,10 @@ public:
 };
 
 struct Instance : public CoreHandle<VkInstance> {
+    friend CoreApi;
+
     const VkAllocationCallbacks* allocator = nullptr;
-    uint32_t api_version = VK_API_VERSION_1_0;
-    Vector<const char*> layers{};     /**< Enabled instance layers */
-    Vector<const char*> extensions{}; /**< Enabled instance extensions */
+    uint32_t api_version = VKT_CORE_VK_API_VERSION;
 
 protected:
     explicit Instance() {}
@@ -57,16 +58,17 @@ protected:
 public:
     Instance(Instance&&);
     ~Instance();
+    Instance& operator=(Instance&&);
 
     operator const VkAllocationCallbacks*() const {
         return allocator;
     }
 
-    bool isLayerEnabled(const char* layer) const;
-    bool isExtensionEnabled(const char* extension) const;
-
     static Res<Instance> from(InstanceState& info);
-    // static Res<Instance> borrow(VkInstance handle);
+    static Res<Instance> borrow(VkInstance handle,
+                                PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
+                                uint32_t api_version = VKT_CORE_VK_API_VERSION,
+                                VkAllocationCallbacks* allocator = nullptr);
 };
 
 bool checkInstanceLayers(const Vector<const char*>& layers);

@@ -1,35 +1,13 @@
 #pragma once
-#include "debug.hpp"
 #include "device.hpp"
+#include "exts/debug.hpp"
+#include "exts/surface.hpp"
 #include "instance.hpp"
 #include "physical_device.hpp"
 #include "queue.hpp"
-#include "surface.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
-
-class CoreApi;
-
-class CoreApiState : private NonCopyable {
-protected:
-    Box<Instance> instance = nullptr;
-    Box<IDebug> debug = newBox<IDebug>();
-    Box<PhysicalDevice> physical_device = nullptr;
-    Box<Device> device = nullptr;
-
-public:
-    /** Initialize instance (the old will be destroyed) */
-    Res<CRef<Instance>> init(InstanceState& info);
-    /** Initialize debug (the old will be destroyed) */
-    Res<CRef<IDebug>> init(DebugState& info);
-    /** Initialize physical device (the old will be destroyed) */
-    Res<CRef<PhysicalDevice>> init(PhysicalDeviceState& info);
-    /** Initialize device (the old will be destroyed) */
-    Res<CRef<Device>> init(DeviceState& info);
-    /** Initialize core api */
-    Res<Box<CoreApi>> into();
-};
 
 /**
  * @brief Vulkan core api
@@ -41,14 +19,24 @@ protected:
     Instance instance;
     PhysicalDevice physical_device;
     Device device;
-    Box<IDebug> debug;
+    HashMap<uint32_t, Vector<Queue>> queues{}; /**< Map queue family index to corresponding queue array */
+    QueueFamilyIndices queue_family_indices{}; /**< Queue family indices for frequently-used queues */
+
+protected:
+    Box<IDebug> debug = newBox<IDebug>();
 
 public:
-    CoreApi(Instance&& instance, PhysicalDevice&& physical_device, Device&& device, Box<IDebug>&& debug)
-        : instance(std::move(instance))
-        , physical_device(std::move(physical_device))
-        , device(std::move(device))
-        , debug(std::move(debug)) {}
+    /** Normal constructor */
+    explicit CoreApi() : instance{}, physical_device(newCRef(instance)), device(newCRef(physical_device)) {}
+    /** Borrow constructor */
+    // explicit CoreApi(VkInstance instance,
+    //                  VkPhysicalDevice phy_dev,
+    //                  VkDevice device,
+    //                  PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
+    //                  PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr = VK_NULL_HANDLE,
+    //                  VkSurfaceKHR surface = VK_NULL_HANDLE,
+    //                  uint32_t api_version = VKT_CORE_VK_API_VERSION,
+    //                  VkAllocationCallbacks* allocator = nullptr);
     virtual ~CoreApi() {}
 
     operator const VkAllocationCallbacks*() const {
@@ -67,9 +55,25 @@ public:
     operator const Device&() const {
         return device;
     }
-    static Res<Box<CoreApi>> from(CoreApiState& info) {
-        return info.into();
+
+    Res<CRef<Instance>> init(InstanceState& info);
+    Res<CRef<PhysicalDevice>> init(PhysicalDeviceState& info);
+    Res<CRef<Device>> init(DeviceState& info);
+
+    inline const QueueFamilyIndices& queueFamilyIndices() const {
+        return queue_family_indices;
     }
+    Res<CRef<Queue>> presentQueue(const uint32_t index = 0) const;
+    Res<CRef<Queue>> graphicsQueue(const uint32_t index = 0) const;
+    Res<CRef<Queue>> computeQueue(const uint32_t index = 0) const;
+    Res<CRef<Queue>> transferQueue(const uint32_t index = 0) const;
+
+    inline VkResult waitIdle() const {
+        return vkDeviceWaitIdle(device);
+    }
+
+public:
+    Res<CRef<IDebug>> add(DebugState& info);
     inline Res<Surface> newSurface(VkSurfaceKHR& surface) const {
         return Surface::from(*this, surface);
     }
@@ -85,15 +89,6 @@ public:
     }
     inline void cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const {
         return debug->cmdInsertLabel(cmdbuf, name);
-    }
-
-    Res<CRef<Queue>> presentQueue() const;
-    Res<CRef<Queue>> graphicsQueue() const;
-    Res<CRef<Queue>> computeQueue() const;
-    Res<CRef<Queue>> transferQueue() const;
-
-    inline VkResult waitIdle() const {
-        return vkDeviceWaitIdle(device);
     }
 };
 
