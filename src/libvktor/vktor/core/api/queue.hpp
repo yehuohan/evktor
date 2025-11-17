@@ -29,23 +29,11 @@ struct QueueFamilyProps {
     bool transfer = false; /**< Queue family supports transfer */
 };
 
-/**
- * @brief Queue families with indices
- *
- * If there's no value in optional, the queue family is not required or not supported.
- */
-struct QueueFamilies {
-    Opt<uint32_t> present{};
-    Opt<uint32_t> graphics{};
-    Opt<uint32_t> compute{};
-    Opt<uint32_t> transfer{};
-
-    inline void clear() {
-        present.reset();
-        graphics.reset();
-        compute.reset();
-        transfer.reset();
-    }
+struct QueueFamilyIndices {
+    uint32_t present = VK_QUEUE_FAMILY_IGNORED;
+    uint32_t graphics = VK_QUEUE_FAMILY_IGNORED;
+    uint32_t compute = VK_QUEUE_FAMILY_IGNORED;
+    uint32_t transfer = VK_QUEUE_FAMILY_IGNORED;
 };
 
 /**

@@ -92,13 +92,13 @@ bool Instance::isExtensionEnabled(const char* extension) const {
 }
 
 Res<Instance> Instance::from(InstanceState& info) {
-    // Initialize Vulkan loader
+    // Initialize Vulkan loader:
+    //      * get vkGetInstanceProcAddr from vulkan.so/dll
+    //      * call volkGenLoadLoader(VK_NULL_HANDLE, vkGetInstanceProcAddr))
     OnRet(volkInitialize(), "Unable to initialize Vulkan loader");
 
-    if (info.app_info.apiVersion >= VK_API_VERSION_1_1) {
-        // Add required extensions for memory allocator
-        info.addExtension(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-    }
+    // Add required extensions for memory allocator (>= VK_API_VERSION_1_1)
+    info.addExtension(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
     std::sort(info.extensions.begin(), info.extensions.end(), strLess);
     auto new_end = std::unique(info.extensions.begin(), info.extensions.end());
     info.extensions.erase(new_end, info.extensions.end());
@@ -109,14 +109,14 @@ Res<Instance> Instance::from(InstanceState& info) {
     instance_ci.pApplicationInfo = &info.app_info;
     if (info.layers.size() > 0) {
         if (!checkInstanceLayers(info.layers)) {
-            return Er("Not all the required layers are supported");
+            return Er("Not all the required instance layers are supported");
         }
         instance_ci.enabledLayerCount = u32(info.layers.size());
         instance_ci.ppEnabledLayerNames = info.layers.data();
     }
     if (info.extensions.size() > 0) {
         if (!checkInstanceExtensions(info.extensions)) {
-            return Er("Not all the required extensions are supported");
+            return Er("Not all the required instance extensions are supported");
         }
         instance_ci.enabledExtensionCount = u32(info.extensions.size());
         instance_ci.ppEnabledExtensionNames = info.extensions.data();
@@ -133,6 +133,30 @@ Res<Instance> Instance::from(InstanceState& info) {
     instance.api_version = info.app_info.apiVersion;
     instance.layers = std::move(info.layers);
     instance.extensions = std::move(info.extensions);
+
+    volkLoadInstance(instance);
+
+    return Ok(std::move(instance));
+}
+
+Res<Instance> Instance::borrow(VkInstance handle,
+                               PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
+                               // bool inside_layer = false,
+                               uint32_t api_version,
+                               VkAllocationCallbacks* allocator) {
+    // Initialize Vulkan loader:
+    //      * provide vkGetInstanceProcAddr
+    //      * call volkGenLoadLoader(VK_NULL_HANDLE, vkGetInstanceProcAddr))
+    // When initialize inside layer:
+    //      * get vkGetInstanceProcAddr from prev_layer
+    //      * call volkGenLoadLoader(prev_layer.VkInstance, vkGetInstanceProcAddr))
+    volkInitializeCustom(fpGetInstanceProcAddr);
+
+    Instance instance{};
+    instance.__borrowed = true;
+    instance.handle = handle;
+    instance.allocator = allocator;
+    instance.api_version = api_version;
 
     volkLoadInstance(instance);
 

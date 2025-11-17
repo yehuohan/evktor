@@ -23,8 +23,9 @@ struct PhysicalDeviceDetails {
     Vector<uint32_t> transfer_indices{};     /**< Transfer queue family index for queue_family_props */
     Vector<VkQueueFamilyProperties> queue_family_props{};
 
-    static void collect(PhysicalDeviceDetails& details);
-    static void print(const PhysicalDeviceDetails& details);
+    void print() const;
+    void collect();
+    HashMap<uint32_t, QueueFamilyProps> convert() const;
 };
 
 class PhysicalDeviceState : public CoreStater<PhysicalDeviceState> {
@@ -37,44 +38,31 @@ private:
     bool require_graphics_queue = false;
     bool require_compute_queue = false;
     bool require_transfer_queue = false;
-    Vector<const char*> required_extensions{};
-    VkPhysicalDeviceFeatures required_features{};
     Vector<std::function<bool(VkInstance, VkPhysicalDevice)>> checkers{};
 
 private:
     /** Check required items */
     bool checkSuitable(VkInstance instance, const PhysicalDeviceDetails& details);
     /** Check preferred items */
-    PhysicalDevice pickBestSuitable(const Vector<PhysicalDeviceDetails> details);
+    size_t pickBestSuitable(const Vector<PhysicalDeviceDetails>& details);
 
 public:
     explicit PhysicalDeviceState(String&& name = "PhysicalDevice") : CoreStater(std::move(name)) {}
 
+    // Self selectGPU();
     Self preferDiscreteGPU();
     Self preferIntegratedGPU();
     Self requirePresentQueue(VkSurfaceKHR surface, bool require = true);
     Self requireGraphicsQueue(bool require = true);
     Self requireComputeQueue(bool require = true);
     Self requireTransferQueue(bool require = true);
-    // Self requireDedicatedComputeQueue(bool require = true);
-    // Self requireDedicatedTransferQueue(bool require = true);
-    // Self requireSeparateComputeQueue(bool require = true);
-    // Self requireSeparateTransferQueue(bool require = true);
-    Self addRequiredExtension(const char* extension);
-    Self addRequiredExtensions(const Vector<const char*> extensions);
-    Self setRequiredFeatures(const VkPhysicalDeviceFeatures& features);
     Self addChecker(std::function<bool(VkInstance, VkPhysicalDevice)> checker);
 
     Res<PhysicalDevice> into(const Instance& instance);
 };
 
 struct PhysicalDevice : public CoreHandle<VkPhysicalDevice> {
-    QueueFamilies queue_families{};
     HashMap<uint32_t, QueueFamilyProps> queue_family_props{}; /**< Map queue family index to it's properties */
-    Vector<const char*> extensions{};                         /**< Enabled extensions for device */
-    VkPhysicalDeviceFeatures features{};
-    VkPhysicalDeviceProperties properties{};
-    VkPhysicalDeviceMemoryProperties memory_properties{};
 
 protected:
     friend struct PhysicalDeviceState;
@@ -84,16 +72,32 @@ protected:
 public:
     PhysicalDevice(PhysicalDevice&&);
     ~PhysicalDevice();
-    bool isExtensionEnabled(const char* extension) const;
+
+    inline VkPhysicalDeviceFeatures getPhysicalDeviceFeatures() const;
+    inline VkPhysicalDeviceProperties getPhysicalDeviceProperties() const;
+    inline VkPhysicalDeviceMemoryProperties getPhysicalDeviceMemoryProperties() const;
 
     static Res<PhysicalDevice> from(const Instance& instance, PhysicalDeviceState& info);
-    // static Res<PhysicalDevice> borrow(VkPhysicalDevice handle);
+    static Res<PhysicalDevice> borrow(VkPhysicalDevice handle);
 };
 
-bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& device_extensions);
-void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions);
-bool checkDeviceFeatures(VkPhysicalDevice pd, const VkPhysicalDeviceFeatures& device_features);
-void printDeviceFeatures(VkPhysicalDevice pd, const VkPhysicalDeviceFeatures& enabled_features);
+inline VkPhysicalDeviceFeatures PhysicalDevice::getPhysicalDeviceFeatures() const {
+    VkPhysicalDeviceFeatures feats{};
+    vkGetPhysicalDeviceFeatures(handle, &feats);
+    return feats;
+}
+
+inline VkPhysicalDeviceProperties PhysicalDevice::getPhysicalDeviceProperties() const {
+    VkPhysicalDeviceProperties props{};
+    vkGetPhysicalDeviceProperties(handle, &props);
+    return props;
+}
+
+inline VkPhysicalDeviceMemoryProperties PhysicalDevice::getPhysicalDeviceMemoryProperties() const {
+    VkPhysicalDeviceMemoryProperties props{};
+    vkGetPhysicalDeviceMemoryProperties(handle, &props);
+    return props;
+}
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)
