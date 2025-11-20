@@ -3,7 +3,7 @@
  * @brief Graphics framework
  *
  * The libvktor supports:
- * - Vulkan only
+ * - The latest Vulkan only
  * - Core state api: `auto xxx = XXXState().into().unwrap()` and `auto xxx = XXX::from().unwrap()`
  * - Error handler: wrap unexpected returns/results/errors with Res for custom processing
  *

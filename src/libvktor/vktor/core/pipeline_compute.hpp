@@ -21,6 +21,7 @@ public:
 
     Self setFlags(VkPipelineCreateFlags flags);
     Self setShader(ShaderModule&& shader);
+    Self setShader(VkShaderModule shader, const char* name);
     Self setPipelineLayout(VkPipelineLayout layout);
 
     Res<ComputePipeline> into(const CoreApi& api) const;
