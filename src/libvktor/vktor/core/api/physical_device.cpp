@@ -135,11 +135,13 @@ size_t PhysicalDeviceState::pickBestSuitable(const Vector<PhysicalDeviceDetails>
         VkPhysicalDeviceProperties props;
         vkGetPhysicalDeviceProperties(details[k].physical_device, &props);
         if (preferred_type == props.deviceType) {
-            vktOut("{} is selected", props.deviceName);
+            vktLogD("{} is selected", props.deviceName);
             return k;
         }
     }
-    vktOut("The first is selected");
+    VkPhysicalDeviceProperties props;
+    vkGetPhysicalDeviceProperties(details[0].physical_device, &props);
+    vktLogD("The first physical device ({}) is selected", props.deviceName);
     return 0;
 }
 

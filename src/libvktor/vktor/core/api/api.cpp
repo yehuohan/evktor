@@ -102,6 +102,16 @@ Res<CRef<Device>> CoreApi::init(DeviceState& info) {
     queue_family_indices.graphics = findQueueFamilyIndex(physical_device.queue_family_props, VK_QUEUE_GRAPHICS_BIT);
     queue_family_indices.compute = findQueueFamilyIndex(physical_device.queue_family_props, VK_QUEUE_COMPUTE_BIT);
     queue_family_indices.transfer = findQueueFamilyIndex(physical_device.queue_family_props, VK_QUEUE_TRANSFER_BIT);
+    vktLogD("Selected queues: {{\n"
+            "\tpresent: {}\n"
+            "\tgraphics: {}\n"
+            "\tcompute: {}\n"
+            "\ttransfer: {}\n"
+            "}}",
+            queue_family_indices.present,
+            queue_family_indices.graphics,
+            queue_family_indices.compute,
+            queue_family_indices.transfer);
 
     return Ok(newCRef(device));
 }

@@ -13,6 +13,7 @@
 #define vktOut(f, ...)    vkt::print(vktFmt("[vkt] " f "\n", ##__VA_ARGS__))
 #define vktLog(l, f, ...) vkt::print(vktFmt("[vkt][{}] " f, l, ##__VA_ARGS__))
 
+#define vktLogD(f, ...) vktLog("D", f "\n", ##__VA_ARGS__)
 #define vktLogW(f, ...) vktLog("W", f "\n", ##__VA_ARGS__)
 // #define vktLogE(f, ...) vktLog("E", f "\n", ##__VA_ARGS__)
 #define vktLogE(f, ...) vkt::print(vktFmt("[vkt][E({}:{})] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__))
