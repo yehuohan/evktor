@@ -26,18 +26,8 @@ protected:
     Box<IDebug> debug = newBox<IDebug>();
 
 public:
-    /** Normal constructor */
-    explicit CoreApi() : instance{}, physical_device(newCRef(instance)), device(newCRef(physical_device)) {}
-    /** Borrow constructor */
-    // explicit CoreApi(VkInstance instance,
-    //                  VkPhysicalDevice phy_dev,
-    //                  VkDevice device,
-    //                  PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
-    //                  PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr = VK_NULL_HANDLE,
-    //                  VkSurfaceKHR surface = VK_NULL_HANDLE,
-    //                  uint32_t api_version = VKT_CORE_VK_API_VERSION,
-    //                  VkAllocationCallbacks* allocator = nullptr);
-    virtual ~CoreApi() {}
+    explicit CoreApi();
+    virtual ~CoreApi();
 
     operator const VkAllocationCallbacks*() const {
         return instance.allocator;
@@ -59,6 +49,14 @@ public:
     Res<CRef<Instance>> init(InstanceState& info);
     Res<CRef<PhysicalDevice>> init(PhysicalDeviceState& info);
     Res<CRef<Device>> init(DeviceState& info);
+    Res<CRef<Instance>> borrow(VkInstance handle,
+                               PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
+                               uint32_t api_version = VKT_CORE_VK_API_VERSION,
+                               VkAllocationCallbacks* allocator = nullptr);
+    Res<CRef<PhysicalDevice>> borrow(VkPhysicalDevice handle, VkSurfaceKHR surface = VK_NULL_HANDLE);
+    Res<CRef<Device>> borrow(VkDevice handle,
+                             PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr = VK_NULL_HANDLE,
+                             QueueFamilyIndices indices = {});
 
     inline const QueueFamilyIndices& queueFamilyIndices() const {
         return queue_family_indices;
@@ -68,16 +66,13 @@ public:
     Res<CRef<Queue>> computeQueue(const uint32_t index = 0) const;
     Res<CRef<Queue>> transferQueue(const uint32_t index = 0) const;
 
+public:
     inline VkResult waitIdle() const {
         return vkDeviceWaitIdle(device);
     }
 
 public:
     Res<CRef<IDebug>> add(DebugState& info);
-    inline Res<Surface> newSurface(VkSurfaceKHR& surface) const {
-        return Surface::from(*this, surface);
-    }
-
     inline VkResult setDebugName(VkObjectType type, uint64_t handle, const char* name) const {
         return debug->setDebugName(device, type, handle, name);
     }

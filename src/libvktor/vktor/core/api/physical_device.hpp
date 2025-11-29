@@ -67,7 +67,10 @@ struct PhysicalDevice : public CoreHandle<VkPhysicalDevice> {
 
     CRef<Instance> instance;
 
-    /** Map queue family index to it's properties, and the Device may update QueueFamilyProps.count */
+    /** Map queue family index to it's properties
+     *  - For `PhysicalDevice`: it's available queues to create for `Device`
+     *  - For `Device`: it's available queues to get from the `Device` (the `Device` may update `QueueFamilyProps.count`)
+     */
     mutable HashMap<uint32_t, QueueFamilyProps> queue_family_props{};
 
 protected:

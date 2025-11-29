@@ -11,6 +11,7 @@ using namespace vkt::core;
 Box<CoreApi> setupCoreApi() {
     Box<CoreApi> api = newBox<CoreApi>();
     DebugState dso{};
+    dso.setMessageSeverity(false, false);
 
     // Create instance
     api->init(InstanceState()
