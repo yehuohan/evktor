@@ -27,6 +27,42 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugUtilsMessengerCallback(VkDebugUtilsMessageSe
     return VK_FALSE;
 }
 
+Self DebugState::setMessageSeverity(bool verbose, bool info, bool warning, bool error) {
+    VkDebugUtilsMessageSeverityFlagsEXT severity = 0;
+    if (verbose) {
+        severity |= VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
+    }
+    if (info) {
+        severity |= VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
+    }
+    if (warning) {
+        severity |= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+    }
+    if (error) {
+        severity |= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    }
+    debug_ci.messageSeverity = severity;
+    return *this;
+}
+
+Self DebugState::setMessageType(bool general, bool validation, bool performance, bool device_address_binding) {
+    VkDebugUtilsMessageTypeFlagsEXT type = 0;
+    if (general) {
+        type |= VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT;
+    }
+    if (validation) {
+        type |= VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
+    }
+    if (performance) {
+        type |= VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+    }
+    if (device_address_binding) {
+        type |= VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT;
+    }
+    debug_ci.messageType = type;
+    return *this;
+}
+
 Self DebugState::setCallback(PFN_vkDebugUtilsMessengerCallbackEXT callback) {
     if (callback) {
         debug_ci.pfnUserCallback = callback;

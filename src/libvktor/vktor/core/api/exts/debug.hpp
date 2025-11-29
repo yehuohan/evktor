@@ -52,6 +52,11 @@ public:
         return &debug_ci;
     }
 
+    Self setMessageSeverity(bool verbose = true, bool info = true, bool warning = true, bool error = true);
+    Self setMessageType(bool general = true,
+                        bool validation = true,
+                        bool performance = true,
+                        bool device_address_binding = true);
     Self setCallback(PFN_vkDebugUtilsMessengerCallbackEXT callback);
     Self setUserData(void* user_data);
 
