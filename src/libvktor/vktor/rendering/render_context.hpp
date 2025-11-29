@@ -13,7 +13,7 @@
 #include "vktor/core/pipeline_graphics.hpp"
 #include "vktor/core/pipeline_layout.hpp"
 #include "vktor/core/render_pass.hpp"
-#include "vktor/core/swapchain.hpp"
+#include "vktor/core/exts/swapchain.hpp"
 #include <functional>
 
 NAMESPACE_BEGIN(vkt)

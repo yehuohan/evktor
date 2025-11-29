@@ -2,7 +2,7 @@
 #include "vktor/base/texture.hpp"
 #include "vktor/core/api/api.hpp"
 #include "vktor/core/render_pass.hpp"
-#include "vktor/core/swapchain.hpp"
+#include "vktor/core/exts/swapchain.hpp"
 
 NAMESPACE_BEGIN(vkt)
 

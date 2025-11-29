@@ -1,7 +1,7 @@
 #pragma once
-#include "__core.hpp"
-#include "image.hpp"
-#include "image_view.hpp"
+#include "../__core.hpp"
+#include "../image.hpp"
+#include "../image_view.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
