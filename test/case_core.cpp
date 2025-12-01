@@ -154,6 +154,10 @@ void computePass(const CoreApi& api) {
 
     // Check stage buffer
     stage.copyInto(buf);
+    const uint32_t rhs[] = {10, 20, 30, 1, 50, 60, 70, 1, 90, 100, 110, 1};
+    for (int k = 0; k < 12; k++) {
+        assert((uint32_t)buf[k] == rhs[k]);
+    }
     tstOut("out_img: {}", vec2str(Vector<float>{buf, buf + 12}));
 }
 
@@ -344,6 +348,17 @@ void graphicsPass(const CoreApi& api) {
 
     // Check stage buffer
     stage.copyInto(buf);
+    const char* rhs[] = {
+        "#########",
+        "####*####",
+        "####*####",
+        "###***###",
+        "###***###",
+        "##*****##",
+        "##*****##",
+        "#*******#",
+        "#########",
+    };
     tstOut("out_img:");
     for (size_t r = 0; r < hei; r++) {
         char line[wid + 1];
@@ -351,6 +366,7 @@ void graphicsPass(const CoreApi& api) {
             size_t idx = (r * wid + c) * cha;
             float gray = (buf[idx + 0] + buf[idx + 1] + buf[idx + 2]) / 3.0;
             line[c] = gray > 0.5 ? '*' : '#';
+            assert(line[c] == rhs[r][c]);
         }
         line[wid] = '\0';
         tstOut("{}", line);
