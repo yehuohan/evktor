@@ -24,6 +24,7 @@ protected:
 
 protected:
     Box<IDebug> debug = newBox<IDebug>();
+    Box<Surface> surface = nullptr;
 
 public:
     explicit CoreApi();
@@ -73,6 +74,12 @@ public:
 
 public:
     Res<CRef<IDebug>> add(DebugState& info);
+    Res<CRef<Surface>> add(VkSurfaceKHR surface, bool with_ownership);
+
+    operator const VkSurfaceKHR() const {
+        return surface ? surface->handle : VK_NULL_HANDLE;
+    }
+
     inline VkResult setDebugName(VkObjectType type, uint64_t handle, const char* name) const {
         return debug->setDebugName(device, type, handle, name);
     }

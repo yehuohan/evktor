@@ -17,6 +17,7 @@ Res<CRef<Instance>> CoreApi::init(InstanceState& info) {
 
     // Reset objects that depends on instance
     debug = newBox<IDebug>();
+    surface.reset();
 
     return Ok(newCRef(instance));
 }
@@ -31,6 +32,7 @@ Res<CRef<Instance>> CoreApi::borrow(VkInstance handle,
 
     // Reset objects that depends on instance
     debug = newBox<IDebug>();
+    surface.reset();
 
     return Ok(newCRef(instance));
 }
@@ -228,12 +230,22 @@ Res<CRef<Queue>> CoreApi::transferQueue(const uint32_t index) const {
 
 Res<CRef<IDebug>> CoreApi::add(DebugState& info) {
     if (!instance.handle) {
-        return Er("Must have initialized or borrowed a valid instance to initialize debug");
+        return Er("Must have initialized or borrowed a valid instance to add debug utils messenger");
     }
     auto res = info.into(instance);
     OnErr(res);
     debug = newBox<Debug>(res.unwrap());
     return Ok(newCRef(*debug));
+}
+
+Res<CRef<Surface>> CoreApi::add(VkSurfaceKHR _surface, bool with_ownership) {
+    if (!instance.handle) {
+        return Er("Must have initialized or borrowed a valid instance to add surface");
+    }
+    auto res = with_ownership ? Surface::from(newCRef(instance), _surface) : Surface::borrow(newCRef(instance), _surface);
+    OnErr(res);
+    surface = newBox<Surface>(res.unwrap());
+    return Ok(newCRef(*surface));
 }
 
 NAMESPACE_END(core)

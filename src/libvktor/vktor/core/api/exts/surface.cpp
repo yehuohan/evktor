@@ -28,13 +28,23 @@ Surface& Surface::operator=(Surface&& rhs) {
     }
     return *this;
 }
+
 Res<Surface> Surface::from(CRef<Instance> instance, VkSurfaceKHR& _surface) {
+    if (!_surface) {
+        return Er("From an invalid VkSurfaceKHR");
+    }
+
     Surface surface(instance);
+    surface.__borrowed = false;
     surface.handle = _surface;
     _surface = VK_NULL_HANDLE;
-    if (!surface.handle) {
-        return Er("Get an invalid VkSurfaceKHR");
-    }
+    return Ok(std::move(surface));
+}
+
+Res<Surface> Surface::borrow(CRef<Instance> instance, const VkSurfaceKHR& _surface) {
+    Surface surface(instance);
+    surface.__borrowed = true;
+    surface.handle = _surface;
     return Ok(std::move(surface));
 }
 

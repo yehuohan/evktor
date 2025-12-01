@@ -17,11 +17,15 @@ public:
     Surface& operator=(Surface&&);
 
     /**
-     * @brief A simple way to create core::Surface from VkSurfaceKHR
+     * @brief A simple way to create core::Surface from a created VkSurfaceKHR
      *
      * Be attention that the VkSurfaceKHR's ownership will transfer to the created core::Surface
      */
     static Res<Surface> from(CRef<Instance> instance, VkSurfaceKHR& surface);
+    /**
+     * @brief Borrow VkSurfaceKHR as core::Surface
+     */
+    static Res<Surface> borrow(CRef<Instance> instance, const VkSurfaceKHR& surface);
 };
 
 NAMESPACE_END(core)

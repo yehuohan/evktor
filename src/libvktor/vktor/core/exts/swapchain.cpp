@@ -6,18 +6,13 @@ NAMESPACE_BEGIN(core)
 
 using Self = SwapchainState::Self;
 
-SwapchainState::SwapchainState(SwapchainState&& rhs) : CoreStater(std::move(rhs.__name)), surface(std::move(rhs.surface)) {
+SwapchainState::SwapchainState(SwapchainState&& rhs) : CoreStater(std::move(rhs.__name)) {
     desired_formats = std::move(rhs.desired_formats);
     desired_present_modes = std::move(rhs.desired_present_modes);
     desired_extent = rhs.desired_extent;
     image_layers = rhs.image_layers;
     image_usage = rhs.image_usage;
     old = rhs.old;
-}
-
-Self SwapchainState::setSurface(Surface&& _surface) {
-    surface = std::move(_surface);
-    return *this;
 }
 
 Self SwapchainState::addDesiredFormat(const VkSurfaceFormatKHR& format) {
@@ -86,7 +81,7 @@ Res<Swapchain> SwapchainState::into(const CoreApi& api) const {
     return Swapchain::from(api, *this);
 }
 
-Swapchain::Swapchain(Swapchain&& rhs) : CoreResource(rhs.api), surface(std::move(rhs.surface)) {
+Swapchain::Swapchain(Swapchain&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -151,16 +146,17 @@ Res<Swapchain> Swapchain::from(const CoreApi& api, const SwapchainState& info) {
     if ((indices.present == VK_QUEUE_FAMILY_IGNORED) || (indices.graphics == VK_QUEUE_FAMILY_IGNORED)) {
         return Er("Swapchain requires valid present and graphics queue family index");
     }
+    if (!(VkSurfaceKHR)api) {
+        return Er("Swapchain requires CoreApi had added a surface");
+    }
 
     VkSurfaceCapabilitiesKHR surface_capalibities{};
     Vector<VkSurfaceFormatKHR> surface_formats{};
     Vector<VkPresentModeKHR> present_modes{};
-    OnRet(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(api, info.surface, &surface_capalibities),
+    OnRet(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(api, api, &surface_capalibities),
           "Failed to get surface capabilities of physical device");
-    OnRet(enumerate(surface_formats, vkGetPhysicalDeviceSurfaceFormatsKHR, api, info.surface),
-          "Failed to get list of surface formats");
-    OnRet(enumerate(present_modes, vkGetPhysicalDeviceSurfacePresentModesKHR, api, info.surface),
-          "Failed to get list of present modes");
+    OnRet(enumerate(surface_formats, vkGetPhysicalDeviceSurfaceFormatsKHR, api, api), "Failed to get list of surface formats");
+    OnRet(enumerate(present_modes, vkGetPhysicalDeviceSurfacePresentModesKHR, api, api), "Failed to get list of present modes");
     VkSurfaceFormatKHR surface_format = info.chooseSurfaceFormat(surface_formats);
     VkPresentModeKHR present_mode = info.choosePresentMode(present_modes);
     VkExtent2D image_extent = info.chooseExtent(surface_capalibities);
@@ -173,7 +169,7 @@ Res<Swapchain> Swapchain::from(const CoreApi& api, const SwapchainState& info) {
 
     // Create swapchain
     auto swapchain_ci = Itor::SwapchainCreateInfoKHR(info.__next);
-    swapchain_ci.surface = info.surface;
+    swapchain_ci.surface = api;
     swapchain_ci.minImageCount = image_count;
     swapchain_ci.imageFormat = surface_format.format;
     swapchain_ci.imageColorSpace = surface_format.colorSpace;
@@ -196,7 +192,7 @@ Res<Swapchain> Swapchain::from(const CoreApi& api, const SwapchainState& info) {
         swapchain_ci.pQueueFamilyIndices = nullptr;
     }
 
-    Swapchain swapchain(api, std::move(info.surface));
+    Swapchain swapchain(api);
     OnRet(vkCreateSwapchainKHR(api, &swapchain_ci, api, swapchain), "Failed to create swapchain");
     if (info.old) {
         vkDestroySwapchainKHR(api, info.old, api);

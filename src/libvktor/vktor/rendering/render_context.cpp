@@ -81,7 +81,7 @@ bool RenderContext::updateSwapchain(bool force) {
         return false;
     }
     VkSurfaceCapabilitiesKHR capalibities;
-    if (VK_SUCCESS != vkGetPhysicalDeviceSurfaceCapabilitiesKHR(api, swapchain->surface, &capalibities)) {
+    if (VK_SUCCESS != vkGetPhysicalDeviceSurfaceCapabilitiesKHR(api, api, &capalibities)) {
         vktLogE("Failed to get surface capalibities to update swapchain");
         return false;
     }
@@ -91,7 +91,6 @@ bool RenderContext::updateSwapchain(bool force) {
         api.waitIdle();
         resources.framebuffers.clear();
         // Update swapchain info then reinit swapchain
-        swapchain_state->setSurface(std::move(swapchain->surface));
         swapchain_state->setDesiredExtent(extent);
         swapchain_state->setOld(swapchain->take());
         reinitSwapchain();

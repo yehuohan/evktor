@@ -12,8 +12,6 @@ class SwapchainState : public CoreStater<SwapchainState> {
     friend struct Swapchain;
 
 private:
-    mutable Surface surface;
-
     Vector<VkSurfaceFormatKHR> desired_formats{};
     // VkFormatFeatureFlags format_feature_flags = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
     Vector<VkPresentModeKHR> desired_present_modes{};
@@ -28,12 +26,9 @@ private:
     VkExtent2D chooseExtent(const VkSurfaceCapabilitiesKHR& capalibities) const;
 
 public:
-    explicit SwapchainState(Surface&& surface, String&& name = "Swapchain")
-        : CoreStater(std::move(name))
-        , surface(std::move(surface)) {}
+    explicit SwapchainState(String&& name = "Swapchain") : CoreStater(std::move(name)) {}
     SwapchainState(SwapchainState&&);
 
-    Self setSurface(Surface&& surface);
     Self addDesiredFormat(const VkSurfaceFormatKHR& format);
     Self addDesiredPresentMode(VkPresentModeKHR mode);
     Self setDesiredExtent(const VkExtent2D& extent);
@@ -43,7 +38,6 @@ public:
 };
 
 struct Swapchain : public CoreResource<VkSwapchainKHR, VK_OBJECT_TYPE_SWAPCHAIN_KHR> {
-    Surface surface;               /**< Swapchain take surface's ownership */
     Vector<VkImage> images{};      /**< Handles of swapchain images */
     uint32_t image_count;          /**< VkImage number that has count == images.size() */
     VkFormat image_format;         /**< VkImage format */
@@ -52,7 +46,7 @@ struct Swapchain : public CoreResource<VkSwapchainKHR, VK_OBJECT_TYPE_SWAPCHAIN_
     VkImageUsageFlags image_usage; /**< VkImage usage */
 
 protected:
-    explicit Swapchain(const CoreApi& api, Surface&& surface) : CoreResource(api), surface(std::move(surface)) {}
+    explicit Swapchain(const CoreApi& api) : CoreResource(api) {}
 
 public:
     Swapchain(Swapchain&&);
