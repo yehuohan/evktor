@@ -73,7 +73,7 @@ void computePass(const CoreApi& api) {
                                .into(api)
                                .unwrap();
     auto pipeline_layout = PipelineLayoutState{}.addDescriptorSetLayout(desc_set_layout).into(api).unwrap();
-    auto pipeline = ComputePipelineState{}.setShader(std::move(shader)).setPipelineLayout(pipeline_layout).into(api).unwrap();
+    auto pipeline = ComputePipelineState{}.setShader(shader).setPipelineLayout(pipeline_layout).into(api).unwrap();
     tstOut("Compute pipeline: {}", fmt::ptr((VkPipeline)pipeline));
 
     // Create descriptors
@@ -207,8 +207,8 @@ void graphicsPass(const CoreApi& api) {
     auto pipeline_layout = PipelineLayoutState{}.addDescriptorSetLayout(desc_set_layout).into(api).unwrap();
 
     auto pipeline = GraphicsPipelineState{}
-                        .addShader(std::move(shader_vert))
-                        .addShader(std::move(shader_frag))
+                        .addVertShader(shader_vert)
+                        .addFragShader(shader_frag)
                         .addVertexInputBinding({0, 8 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX})
                         .addVertexInputAttribute({0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0})
                         .addVertexInputAttribute({1, 0, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float)})

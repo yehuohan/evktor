@@ -37,8 +37,13 @@ Self GraphicsPipelineState::setFlags(VkPipelineCreateFlags _flags) {
     return *this;
 }
 
-Self GraphicsPipelineState::addShader(ShaderModule&& shader) {
-    shaders.push_back(std::move(shader));
+Self GraphicsPipelineState::addVertShader(VkShaderModule shader, const String& entry) {
+    shaders.push_back({VK_SHADER_STAGE_VERTEX_BIT, shader, entry});
+    return *this;
+}
+
+Self GraphicsPipelineState::addFragShader(VkShaderModule shader, const String& entry) {
+    shaders.push_back({VK_SHADER_STAGE_FRAGMENT_BIT, shader, entry});
     return *this;
 }
 
@@ -222,7 +227,7 @@ Res<GraphicsPipeline> GraphicsPipeline::from(const CoreApi& api, const GraphicsP
     for (auto& s : info.shaders) {
         auto stage = Itor::PipelineShaderStageCreateInfo();
         stage.stage = s.stage;
-        stage.module = s;
+        stage.module = s.shader;
         stage.pName = s.entry.c_str();
         shader_stages.push_back(stage);
     }

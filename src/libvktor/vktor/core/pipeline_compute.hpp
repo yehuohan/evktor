@@ -13,14 +13,15 @@ class ComputePipelineState : public CoreStater<ComputePipelineState> {
 
 private:
     VkPipelineCreateFlags flags = 0;
-    Opt<ShaderModule> shader{};
+    String shader_entry = "main";
+    VkShaderModule shader = VK_NULL_HANDLE;
     VkPipelineLayout layout = VK_NULL_HANDLE;
 
 public:
     explicit ComputePipelineState(String&& name = "ComputePipeline") : CoreStater(std::move(name)) {}
 
     Self setFlags(VkPipelineCreateFlags flags);
-    Self setShader(ShaderModule&& shader);
+    Self setShader(VkShaderModule shader, const char* entry = "main");
     Self setPipelineLayout(VkPipelineLayout layout);
 
     Res<ComputePipeline> into(const CoreApi& api) const;
@@ -46,9 +47,9 @@ template <>
 struct hash<vkt::core::ComputePipelineState> {
     size_t operator()(const vkt::core::ComputePipelineState& pso) const {
         size_t res = 0;
-        if (pso.shader.has_value()) {
-            hashCombine(res, pso.shader.value());
-        }
+        hashCombine(res, pso.flags);
+        hashCombine(res, pso.shader);
+        hashCombine(res, pso.shader_entry);
         hashCombine(res, pso.layout);
         return res;
     }

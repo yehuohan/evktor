@@ -30,9 +30,6 @@ template <typename T>
 using CRef = std::reference_wrapper<const T>;
 
 template <typename T>
-using Opt = std::optional<T>;
-
-template <typename T>
 using Vector = std::vector<T>;
 
 template <typename K, typename T, typename P = std::less<K>>

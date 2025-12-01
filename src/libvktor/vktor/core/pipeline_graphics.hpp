@@ -12,9 +12,16 @@ class GraphicsPipelineState : public CoreStater<GraphicsPipelineState> {
     friend struct GraphicsPipeline;
     friend struct std::hash<GraphicsPipelineState>;
 
+public:
+    struct Shader {
+        VkShaderStageFlagBits stage = VK_SHADER_STAGE_VERTEX_BIT;
+        VkShaderModule shader = VK_NULL_HANDLE;
+        String entry = "main";
+    };
+
 private:
     VkPipelineCreateFlags flags = 0;
-    Vector<ShaderModule> shaders{};
+    Vector<Shader> shaders{};
     struct VertexInputState {
         Vector<VkVertexInputBindingDescription> bindings{};
         Vector<VkVertexInputAttributeDescription> attributes{};
@@ -41,7 +48,8 @@ public:
     explicit GraphicsPipelineState(String&& name = "GraphicsPipeline");
 
     Self setFlags(VkPipelineCreateFlags flags);
-    Self addShader(ShaderModule&& shader);
+    Self addVertShader(VkShaderModule shader, const String& entry = "main");
+    Self addFragShader(VkShaderModule shader, const String& entry = "main");
     Self addVertexInputBinding(const VkVertexInputBindingDescription& binding);
     Self addVertexInputBindings(const Vector<VkVertexInputBindingDescription>& bindings);
     Self addVertexInputAttribute(const VkVertexInputAttributeDescription& attribute);
@@ -98,7 +106,11 @@ struct hash<vkt::core::GraphicsPipelineState> {
     size_t operator()(const vkt::core::GraphicsPipelineState& pso) const {
         // TODO: Hash according to what contained in GraphicsPipelineState::dynamics
         size_t res = 0;
-        hashCombine(res, pso.shaders);
+        for (const auto& s : pso.shaders) {
+            hashCombine(res, s.stage);
+            hashCombine(res, s.shader);
+            hashCombine(res, s.entry);
+        }
         for (const auto& item : pso.vertex_input.bindings) {
             hashCombine(res, item);
         }

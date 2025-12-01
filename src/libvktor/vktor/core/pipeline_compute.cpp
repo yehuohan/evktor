@@ -10,8 +10,9 @@ Self ComputePipelineState::setFlags(VkPipelineCreateFlags _flags) {
     return *this;
 }
 
-Self ComputePipelineState::setShader(ShaderModule&& _shader) {
-    shader.emplace(std::move(_shader));
+Self ComputePipelineState::setShader(VkShaderModule _shader, const char* entry) {
+    shader = _shader;
+    shader_entry = String(entry);
     return *this;
 }
 
@@ -43,11 +44,8 @@ Res<ComputePipeline> ComputePipeline::from(const CoreApi& api, const ComputePipe
     pipeline_ci.flags = info.flags;
     pipeline_ci.stage = Itor::PipelineShaderStageCreateInfo();
     pipeline_ci.stage.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-    if (info.shader.has_value()) {
-        const auto& s = info.shader.value();
-        pipeline_ci.stage.module = s;
-        pipeline_ci.stage.pName = s.entry.c_str();
-    }
+    pipeline_ci.stage.module = info.shader;
+    pipeline_ci.stage.pName = info.shader_entry.c_str();
     pipeline_ci.layout = info.layout;
     pipeline_ci.basePipelineHandle = VK_NULL_HANDLE;
     pipeline_ci.basePipelineIndex = -1;
