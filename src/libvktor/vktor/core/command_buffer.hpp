@@ -38,11 +38,21 @@ public:
                          VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE) const;
     inline Self endRenderPass() const;
     inline Self cmdBindPipeline(VkPipelineBindPoint bind_point, VkPipeline pipeline) const;
+    inline Self cmdBindGraphicsPipeline(VkPipeline pipeline) const;
+    inline Self cmdBindComputePipeline(VkPipeline pipeline) const;
     inline Self cmdBindDescriptorSets(VkPipelineBindPoint bind_point,
                                       VkPipelineLayout pipeline_layout,
                                       uint32_t first_set = 0,
                                       const Vector<VkDescriptorSet>& descriptors = {},
                                       const Vector<uint32_t>& dynamics = {}) const;
+    inline Self cmdBindGraphicsDescriptorSets(VkPipelineLayout pipeline_layout,
+                                              uint32_t first_set = 0,
+                                              const Vector<VkDescriptorSet>& descriptors = {},
+                                              const Vector<uint32_t>& dynamics = {}) const;
+    inline Self cmdBindComputeDescriptorSets(VkPipelineLayout pipeline_layout,
+                                             uint32_t first_set = 0,
+                                             const Vector<VkDescriptorSet>& descriptors = {},
+                                             const Vector<uint32_t>& dynamics = {}) const;
     inline Self cmdBindIndexBuffer(VkBuffer buffer, VkDeviceSize offset, VkIndexType index_type) const;
     inline Self cmdBindVertexBuffers(uint32_t first_binding,
                                      const Vector<VkBuffer>& buffers,
@@ -226,6 +236,16 @@ inline CommandBuffer::Self CommandBuffer::cmdBindPipeline(VkPipelineBindPoint bi
     return *this;
 }
 
+inline CommandBuffer::Self CommandBuffer::cmdBindGraphicsPipeline(VkPipeline pipeline) const {
+    vkCmdBindPipeline(handle, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdBindComputePipeline(VkPipeline pipeline) const {
+    vkCmdBindPipeline(handle, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
+    return *this;
+}
+
 inline CommandBuffer::Self CommandBuffer::cmdBindDescriptorSets(VkPipelineBindPoint bind_point,
                                                                 VkPipelineLayout pipeline_layout,
                                                                 uint32_t first_set,
@@ -233,6 +253,36 @@ inline CommandBuffer::Self CommandBuffer::cmdBindDescriptorSets(VkPipelineBindPo
                                                                 const Vector<uint32_t>& dynamics) const {
     vkCmdBindDescriptorSets(handle,
                             bind_point,
+                            pipeline_layout,
+                            first_set,
+                            u32(descriptors.size()),
+                            descriptors.data(),
+                            u32(dynamics.size()),
+                            dynamics.data());
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdBindGraphicsDescriptorSets(VkPipelineLayout pipeline_layout,
+                                                                        uint32_t first_set,
+                                                                        const Vector<VkDescriptorSet>& descriptors,
+                                                                        const Vector<uint32_t>& dynamics) const {
+    vkCmdBindDescriptorSets(handle,
+                            VK_PIPELINE_BIND_POINT_GRAPHICS,
+                            pipeline_layout,
+                            first_set,
+                            u32(descriptors.size()),
+                            descriptors.data(),
+                            u32(dynamics.size()),
+                            dynamics.data());
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdBindComputeDescriptorSets(VkPipelineLayout pipeline_layout,
+                                                                       uint32_t first_set,
+                                                                       const Vector<VkDescriptorSet>& descriptors,
+                                                                       const Vector<uint32_t>& dynamics) const {
+    vkCmdBindDescriptorSets(handle,
+                            VK_PIPELINE_BIND_POINT_COMPUTE,
                             pipeline_layout,
                             first_set,
                             u32(descriptors.size()),
