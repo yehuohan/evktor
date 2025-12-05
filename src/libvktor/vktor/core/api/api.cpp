@@ -74,7 +74,7 @@ static uint32_t findQueueFamilyIndex(const HashMap<uint32_t, QueueFamilyProps>& 
     }
 
     // Prefer dedicated queue
-    const VkQueueFlags tmp = VK_QUEUE_COMPUTE_BIT | VK_QUEUE_TRANSFER_BIT;
+    const VkQueueFlags tmp = VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT | VK_QUEUE_TRANSFER_BIT;
     for (const auto& q : props) {
         const auto& prop = q.second;
         if ((prop.flags & tmp) == flags) {
