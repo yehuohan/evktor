@@ -113,10 +113,40 @@ public:
 
 public:
     // Interfaces
+    /**
+     * @brief Hook required custom layer functions
+     */
     virtual const PFN_vkVoidFunction tryHook(VkInstance instance, const char* fname) const;
+    /**
+     * @brief Hook required custom layer functions
+     */
     virtual const PFN_vkVoidFunction tryHook(VkDevice device, const char* fname) const;
+    /**
+     * @brief Hook vkCreateInstance to provide custom VkInstanceCreateInfo
+     */
+    virtual VkResult createInstance(PFN_vkCreateInstance fpCreateInstance,
+                                    const VkInstanceCreateInfo* pCreateInfo,
+                                    const VkAllocationCallbacks* pAllocator,
+                                    VkInstance* pInstance);
+    /**
+     * @brief Hook vkCreateDevice to provide custom VkDeviceCreateInfo
+     */
+    virtual VkResult createDevice(PFN_vkCreateDevice fpCreateDevice,
+                                  VkPhysicalDevice physicalDevice,
+                                  const VkDeviceCreateInfo* pCreateInfo,
+                                  const VkAllocationCallbacks* pAllocator,
+                                  VkDevice* pDevice);
+    /**
+     * @brief Provide custom layer properties
+     */
     virtual const VkLayerProperties& getLayerProps() const;
+    /**
+     * @brief Required instance extensions exposed by the custom layer
+     */
     virtual const Vector<VkExtensionProperties>& getInstanceExtensions() const;
+    /**
+     * @brief Required device extensions exposed by the custom layer
+     */
     virtual const Vector<VkExtensionProperties>& getDeviceExtensions() const;
 
 public:

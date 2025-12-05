@@ -161,6 +161,7 @@ VKAPI_ATTR void VKAPI_CALL DestroyDevice(VkDevice device, const VkAllocationCall
 }
 
 VKAPI_ATTR VkResult VKAPI_CALL EnumerateInstanceLayerProperties(uint32_t* pPropertyCount, VkLayerProperties* pProperties) {
+    // Only need provide current layer's properties, then Vulkan loader will merge all layer's properties.
     return __impl.copyLayerProperties(1, &__impl.getLayerProps(), pPropertyCount, pProperties);
 }
 
@@ -169,6 +170,7 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateInstanceExtensionProperties(const char* 
                                                                     VkExtensionProperties* pProperties) {
     auto& props = __impl.getLayerProps();
     if (pLayerName && !strcmp(pLayerName, props.layerName)) {
+        // Append instance extensions required by the custom layer
         auto& exts = __impl.getInstanceExtensions();
         return __impl.copyExtensionProperties(exts.size(), exts.data(), pPropertyCount, pProperties);
     }

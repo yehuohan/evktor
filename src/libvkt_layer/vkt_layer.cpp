@@ -18,9 +18,24 @@ const PFN_vkVoidFunction VktorLayerImpl::tryHook(VkDevice device, const char* fn
     return VK_NULL_HANDLE;
 }
 
+VkResult VktorLayerImpl::createInstance(PFN_vkCreateInstance fpCreateInstance,
+                                        const VkInstanceCreateInfo* pCreateInfo,
+                                        const VkAllocationCallbacks* pAllocator,
+                                        VkInstance* pInstance) {
+    return fpCreateInstance(pCreateInfo, pAllocator, pInstance);
+}
+
+VkResult VktorLayerImpl::createDevice(PFN_vkCreateDevice fpCreateDevice,
+                                      VkPhysicalDevice physicalDevice,
+                                      const VkDeviceCreateInfo* pCreateInfo,
+                                      const VkAllocationCallbacks* pAllocator,
+                                      VkDevice* pDevice) {
+    return fpCreateDevice(physicalDevice, pCreateInfo, pAllocator, pDevice);
+}
+
 const VkLayerProperties& VktorLayerImpl::getLayerProps() const {
     static const VkLayerProperties props{
-        "VK_LAYER_VKTOR_Unknow",
+        "VK_LAYER_VKTOR_Unknown",
         VK_API_VERSION_1_0,
         1,
         "Vulkan layer with evktor/libvkt_layer",
