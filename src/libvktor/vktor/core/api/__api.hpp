@@ -63,7 +63,7 @@ public:
  *
  * Example code:
  * ```cpp
- *      class TypeState : public CoreStater {
+ *      class TypeState : public CoreState {
  *          friend struct Type;
  *          Self set() { ...; return *this; };
  *          Self add() { ...; return *this; };
@@ -81,9 +81,9 @@ public:
  * ```
  */
 template <typename S>
-class CoreStater : private NonCopyable {
+class CoreState : private NonCopyable {
 protected:
-    explicit CoreStater(String&& name) {
+    explicit CoreState(String&& name) {
         __name = std::move(name);
     }
 

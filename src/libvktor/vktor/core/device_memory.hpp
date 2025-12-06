@@ -6,7 +6,7 @@ NAMESPACE_BEGIN(core)
 
 struct DeviceMemory;
 
-class DeviceMemoryState : public CoreStater<DeviceMemoryState> {
+class DeviceMemoryState : public CoreState<DeviceMemoryState> {
     friend struct DeviceMemory;
 
 private:
@@ -14,7 +14,7 @@ private:
     VkMemoryPropertyFlags prop_flags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 
 public:
-    explicit DeviceMemoryState(String&& name = "DeviceMemory") : CoreStater(std::move(name)) {}
+    explicit DeviceMemoryState(String&& name = "DeviceMemory") : CoreState(std::move(name)) {}
 
     Self setPropertyFlags(VkMemoryPropertyFlags flags);
     Self setRequirements(VkMemoryRequirements reqs);

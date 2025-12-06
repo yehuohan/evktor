@@ -6,14 +6,14 @@ NAMESPACE_BEGIN(core)
 
 struct Sampler;
 
-class SamplerState : public CoreStater<SamplerState> {
+class SamplerState : public CoreState<SamplerState> {
     friend struct Sampler;
 
 private:
     mutable VkSamplerCreateInfo sampler_ci{};
 
 public:
-    explicit SamplerState(String&& name = "Sampler") : CoreStater(std::move(name)) {
+    explicit SamplerState(String&& name = "Sampler") : CoreState(std::move(name)) {
         sampler_ci = Itor::SamplerCreateInfo();
         setNearest();
     }

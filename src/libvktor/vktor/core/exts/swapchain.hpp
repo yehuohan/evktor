@@ -8,7 +8,7 @@ NAMESPACE_BEGIN(core)
 
 struct Swapchain;
 
-class SwapchainState : public CoreStater<SwapchainState> {
+class SwapchainState : public CoreState<SwapchainState> {
     friend struct Swapchain;
 
 private:
@@ -26,7 +26,7 @@ private:
     VkExtent2D chooseExtent(const VkSurfaceCapabilitiesKHR& capalibities) const;
 
 public:
-    explicit SwapchainState(String&& name = "Swapchain") : CoreStater(std::move(name)) {}
+    explicit SwapchainState(String&& name = "Swapchain") : CoreState(std::move(name)) {}
     SwapchainState(SwapchainState&&);
 
     Self addDesiredFormat(const VkSurfaceFormatKHR& format);

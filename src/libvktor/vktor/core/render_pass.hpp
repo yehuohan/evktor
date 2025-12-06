@@ -76,7 +76,7 @@ struct RenderSubpassInfo {
     uint32_t depthstencil = VK_ATTACHMENT_UNUSED;
 };
 
-class RenderPassState : public CoreStater<RenderPassState> {
+class RenderPassState : public CoreState<RenderPassState> {
     friend struct RenderPass;
 
 private:
@@ -85,7 +85,7 @@ private:
     Vector<RenderSubpassInfo> subpasses{};
 
 public:
-    explicit RenderPassState(String&& name = "RenderPass") : CoreStater(std::move(name)) {}
+    explicit RenderPassState(String&& name = "RenderPass") : CoreState(std::move(name)) {}
 
     Self addAttachment(VkFormat format,
                        VkSampleCountFlagBits samples,

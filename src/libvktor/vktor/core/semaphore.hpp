@@ -6,14 +6,14 @@ NAMESPACE_BEGIN(core)
 
 struct Semaphore;
 
-class SemaphoreState : public CoreStater<SemaphoreState> {
+class SemaphoreState : public CoreState<SemaphoreState> {
     friend struct Semaphore;
 
 private:
     mutable VkSemaphoreCreateInfo semaphore_ci{};
 
 public:
-    explicit SemaphoreState(String&& name = "Semaphore") : CoreStater(std::move(name)) {
+    explicit SemaphoreState(String&& name = "Semaphore") : CoreState(std::move(name)) {
         semaphore_ci = Itor::SemaphoreCreateInfo();
     }
 

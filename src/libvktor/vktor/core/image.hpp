@@ -6,7 +6,7 @@ NAMESPACE_BEGIN(core)
 
 struct Image;
 
-class ImageState : public CoreStater<ImageState> {
+class ImageState : public CoreState<ImageState> {
     friend struct Image;
 
 private:
@@ -15,7 +15,7 @@ private:
     VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO;
 
 public:
-    explicit ImageState(String&& name = "Image") : CoreStater(std::move(name)) {
+    explicit ImageState(String&& name = "Image") : CoreState(std::move(name)) {
         image_ci = Itor::ImageCreateInfo();
         image_ci.flags = 0;
         image_ci.imageType = VK_IMAGE_TYPE_2D;

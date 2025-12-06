@@ -7,7 +7,7 @@ NAMESPACE_BEGIN(core)
 class CoreApi;
 struct Instance;
 
-struct InstanceState : public CoreStater<InstanceState> {
+struct InstanceState : public CoreState<InstanceState> {
     friend struct Instance;
 
 private:
@@ -17,7 +17,7 @@ private:
     Vector<const char*> extensions{};
 
 public:
-    explicit InstanceState(String&& name = "Instance") : CoreStater(std::move(name)) {
+    explicit InstanceState(String&& name = "Instance") : CoreState(std::move(name)) {
         app_info = Itor::ApplicationInfo();
         app_info.pApplicationName = "vktor";
         app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);

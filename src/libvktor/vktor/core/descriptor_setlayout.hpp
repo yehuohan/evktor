@@ -6,7 +6,7 @@ NAMESPACE_BEGIN(core)
 
 struct DescriptorSetLayout;
 
-class DescriptorSetLayoutState : public CoreStater<DescriptorSetLayoutState> {
+class DescriptorSetLayoutState : public CoreState<DescriptorSetLayoutState> {
     friend struct DescriptorSetLayout;
 
 private:
@@ -14,7 +14,7 @@ private:
     Map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
 
 public:
-    explicit DescriptorSetLayoutState(String&& name = "DescriptorSetLayout") : CoreStater(std::move(name)) {}
+    explicit DescriptorSetLayoutState(String&& name = "DescriptorSetLayout") : CoreState(std::move(name)) {}
 
     Self setFlags(VkDescriptorSetLayoutCreateFlags flags);
     Self addBinding(const VkDescriptorSetLayoutBinding& binding);

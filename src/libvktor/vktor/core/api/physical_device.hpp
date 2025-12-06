@@ -29,7 +29,7 @@ struct PhysicalDeviceDetails {
     HashMap<uint32_t, QueueFamilyProps> convert() const;
 };
 
-class PhysicalDeviceState : public CoreStater<PhysicalDeviceState> {
+class PhysicalDeviceState : public CoreState<PhysicalDeviceState> {
     friend struct PhysicalDevice;
 
 private:
@@ -48,7 +48,7 @@ private:
     size_t pickBestSuitable(const Vector<PhysicalDeviceDetails>& details);
 
 public:
-    explicit PhysicalDeviceState(String&& name = "PhysicalDevice") : CoreStater(std::move(name)) {}
+    explicit PhysicalDeviceState(String&& name = "PhysicalDevice") : CoreState(std::move(name)) {}
 
     // Self selectGPU();
     Self preferDiscreteGPU();

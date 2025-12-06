@@ -8,7 +8,7 @@ NAMESPACE_BEGIN(core)
 
 struct GraphicsPipeline;
 
-class GraphicsPipelineState : public CoreStater<GraphicsPipelineState> {
+class GraphicsPipelineState : public CoreState<GraphicsPipelineState> {
     friend struct GraphicsPipeline;
     friend struct std::hash<GraphicsPipelineState>;
 

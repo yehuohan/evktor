@@ -31,14 +31,14 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugUtilsMessengerCallback(VkDebugUtilsMessageSe
                                                            const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
                                                            void* pUserData);
 
-struct DebugState : public CoreStater<DebugState> {
+struct DebugState : public CoreState<DebugState> {
     friend struct Debug;
 
 private:
     mutable VkDebugUtilsMessengerCreateInfoEXT debug_ci{};
 
 public:
-    explicit DebugState(String&& name = "Debug") : CoreStater(std::move(name)) {
+    explicit DebugState(String&& name = "Debug") : CoreState(std::move(name)) {
         debug_ci = Itor::DebugUtilsMessengerCreateInfoEXT();
         debug_ci.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
                                    VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |

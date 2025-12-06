@@ -6,7 +6,7 @@ NAMESPACE_BEGIN(core)
 
 struct Buffer;
 
-class BufferState : public CoreStater<BufferState> {
+class BufferState : public CoreState<BufferState> {
     friend struct Buffer;
 
 private:
@@ -15,7 +15,7 @@ private:
     VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO;
 
 public:
-    explicit BufferState(String&& name = "Buffer") : CoreStater(std::move(name)) {
+    explicit BufferState(String&& name = "Buffer") : CoreState(std::move(name)) {
         buffer_ci = Itor::BufferCreateInfo();
         buffer_ci.flags = 0;
         buffer_ci.size = 0;

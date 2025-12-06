@@ -6,14 +6,14 @@ NAMESPACE_BEGIN(core)
 
 struct Fence;
 
-class FenceState : public CoreStater<FenceState> {
+class FenceState : public CoreState<FenceState> {
     friend struct Fence;
 
 private:
     mutable VkFenceCreateInfo fence_ci{};
 
 public:
-    explicit FenceState(String&& name = "Fence") : CoreStater(std::move(name)) {
+    explicit FenceState(String&& name = "Fence") : CoreState(std::move(name)) {
         fence_ci = Itor::FenceCreateInfo();
     }
 

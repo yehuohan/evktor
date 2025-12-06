@@ -6,14 +6,14 @@ NAMESPACE_BEGIN(core)
 
 struct PipelineCache;
 
-class PipelineCacheState : public CoreStater<PipelineCacheState> {
+class PipelineCacheState : public CoreState<PipelineCacheState> {
     friend struct PipelineCache;
 
 private:
     mutable VkPipelineCacheCreateInfo cache_ci = Itor::PipelineCacheCreateInfo();
 
 public:
-    explicit PipelineCacheState(String&& name = "PipelineCache") : CoreStater(std::move(name)) {}
+    explicit PipelineCacheState(String&& name = "PipelineCache") : CoreState(std::move(name)) {}
 
     Self setFlags(VkPipelineCacheCreateFlags flags);
     Self setInitialData(const void* data, size_t data_size);

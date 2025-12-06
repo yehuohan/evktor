@@ -6,7 +6,7 @@ NAMESPACE_BEGIN(core)
 
 struct Framebuffer;
 
-class FramebufferState : public CoreStater<FramebufferState> {
+class FramebufferState : public CoreState<FramebufferState> {
     friend struct Framebuffer;
 
 private:
@@ -17,7 +17,7 @@ private:
     uint32_t layers = 0;
 
 public:
-    explicit FramebufferState(String&& name = "Framebuffer") : CoreStater(std::move(name)) {}
+    explicit FramebufferState(String&& name = "Framebuffer") : CoreState(std::move(name)) {}
 
     Self setRenderPass(VkRenderPass render_pass);
     Self addAttachment(VkImageView imageview);

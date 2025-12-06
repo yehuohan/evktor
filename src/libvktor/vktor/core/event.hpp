@@ -6,14 +6,14 @@ NAMESPACE_BEGIN(core)
 
 struct Event;
 
-class EventState : public CoreStater<EventState> {
+class EventState : public CoreState<EventState> {
     friend struct Event;
 
 private:
     mutable VkEventCreateInfo event_ci{};
 
 public:
-    explicit EventState(String&& name = "Event") : CoreStater(std::move(name)) {
+    explicit EventState(String&& name = "Event") : CoreState(std::move(name)) {
         event_ci = Itor::EventCreateInfo();
     }
 

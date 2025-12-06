@@ -7,7 +7,7 @@ NAMESPACE_BEGIN(core)
 
 struct PipelineLayout;
 
-class PipelineLayoutState : public CoreStater<PipelineLayoutState> {
+class PipelineLayoutState : public CoreState<PipelineLayoutState> {
     friend struct PipelineLayout;
 
 private:
@@ -16,7 +16,7 @@ private:
     Vector<VkPushConstantRange> constant_ranges{};
 
 public:
-    explicit PipelineLayoutState(String&& name = "PipelineLayout") : CoreStater(std::move(name)) {}
+    explicit PipelineLayoutState(String&& name = "PipelineLayout") : CoreState(std::move(name)) {}
 
     Self setFlags(VkPipelineLayoutCreateFlags flags);
     Self addDescriptorSetLayout(VkDescriptorSetLayout setlayout);

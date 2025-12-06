@@ -7,14 +7,14 @@ NAMESPACE_BEGIN(core)
 
 struct ImageView;
 
-class ImageViewState : public CoreStater<ImageViewState> {
+class ImageViewState : public CoreState<ImageViewState> {
     friend struct ImageView;
 
 private:
     mutable VkImageViewCreateInfo imageview_ci = Itor::ImageViewCreateInfo();
 
 public:
-    explicit ImageViewState(String&& name = "ImageView") : CoreStater(std::move(name)) {}
+    explicit ImageViewState(String&& name = "ImageView") : CoreState(std::move(name)) {}
 
     Self setFromImage(const Image& image);
     Self setImage(VkImage image);

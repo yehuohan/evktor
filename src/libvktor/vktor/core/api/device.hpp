@@ -9,7 +9,7 @@ NAMESPACE_BEGIN(core)
 class CoreApi;
 struct Device;
 
-class DeviceState : public CoreStater<DeviceState> {
+class DeviceState : public CoreState<DeviceState> {
     friend struct Device;
 
 private:
@@ -18,7 +18,7 @@ private:
     VkPhysicalDeviceFeatures required_features{};
 
 public:
-    explicit DeviceState(String&& name = "Device") : CoreStater(std::move(name)) {}
+    explicit DeviceState(String&& name = "Device") : CoreState(std::move(name)) {}
 
     Self setMaxQueueCount(uint32_t count);
     Self addRequiredExtension(const char* extension);

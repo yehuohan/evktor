@@ -7,7 +7,7 @@ NAMESPACE_BEGIN(core)
 
 struct ComputePipeline;
 
-class ComputePipelineState : public CoreStater<ComputePipelineState> {
+class ComputePipelineState : public CoreState<ComputePipelineState> {
     friend struct ComputePipeline;
     friend struct std::hash<ComputePipelineState>;
 
@@ -18,7 +18,7 @@ private:
     VkPipelineLayout layout = VK_NULL_HANDLE;
 
 public:
-    explicit ComputePipelineState(String&& name = "ComputePipeline") : CoreStater(std::move(name)) {}
+    explicit ComputePipelineState(String&& name = "ComputePipeline") : CoreState(std::move(name)) {}
 
     Self setFlags(VkPipelineCreateFlags flags);
     Self setShader(VkShaderModule shader, const char* entry = "main");

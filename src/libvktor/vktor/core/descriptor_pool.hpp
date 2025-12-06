@@ -8,7 +8,7 @@ NAMESPACE_BEGIN(core)
 
 struct DescriptorPool;
 
-class DescriptorPoolState : public CoreStater<DescriptorPoolState> {
+class DescriptorPoolState : public CoreState<DescriptorPoolState> {
     friend struct DescriptorPool;
 
 private:
@@ -16,7 +16,7 @@ private:
     uint32_t maxsets = 1;
 
 public:
-    explicit DescriptorPoolState(String&& name = "DescriptorPool") : CoreStater(std::move(name)) {}
+    explicit DescriptorPoolState(String&& name = "DescriptorPool") : CoreState(std::move(name)) {}
 
     Self setFlags(VkDescriptorPoolCreateFlags flags);
     Self setMaxsets(uint32_t maxsets);

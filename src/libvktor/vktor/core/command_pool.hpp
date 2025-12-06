@@ -7,7 +7,7 @@ NAMESPACE_BEGIN(core)
 
 struct CommandPool;
 
-class CommandPoolState : public CoreStater<CommandPoolState> {
+class CommandPoolState : public CoreState<CommandPoolState> {
     friend struct CommandPool;
 
 private:
@@ -15,7 +15,7 @@ private:
     uint32_t queue_family_index = 0;
 
 public:
-    explicit CommandPoolState(String&& name = "CommandPool") : CoreStater(std::move(name)) {}
+    explicit CommandPoolState(String&& name = "CommandPool") : CoreState(std::move(name)) {}
 
     Self setFlags(VkCommandPoolCreateFlags flags);
     Self setQueueFamilyIndex(uint32_t index);

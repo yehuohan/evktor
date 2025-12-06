@@ -6,7 +6,7 @@ NAMESPACE_BEGIN(core)
 
 using Self = SwapchainState::Self;
 
-SwapchainState::SwapchainState(SwapchainState&& rhs) : CoreStater(std::move(rhs.__name)) {
+SwapchainState::SwapchainState(SwapchainState&& rhs) : CoreState(std::move(rhs.__name)) {
     desired_formats = std::move(rhs.desired_formats);
     desired_present_modes = std::move(rhs.desired_present_modes);
     desired_extent = rhs.desired_extent;

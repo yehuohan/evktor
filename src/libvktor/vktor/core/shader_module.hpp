@@ -6,7 +6,7 @@ NAMESPACE_BEGIN(core)
 
 struct ShaderModule;
 
-class ShaderModuleState : public CoreStater<ShaderModuleState> {
+class ShaderModuleState : public CoreState<ShaderModuleState> {
     friend struct ShaderModule;
 
 private:
@@ -18,7 +18,7 @@ private:
     size_t code_id = 0;   /**< Hash of spir-v `code` for unique ShaderModule */
 
 public:
-    explicit ShaderModuleState(String&& name = "ShaderModule") : CoreStater(std::move(name)) {}
+    explicit ShaderModuleState(String&& name = "ShaderModule") : CoreState(std::move(name)) {}
 
     Self setStage(VkShaderStageFlagBits stage);
     Self setFilename(const String& filename);
