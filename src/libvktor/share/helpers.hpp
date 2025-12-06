@@ -1,9 +1,11 @@
 #pragma once
+#include <array>
 #include <cstring>
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
+#include <tuple>
+#include <type_traits>
 #include <unordered_map>
 #include <vector>
 
@@ -31,6 +33,12 @@ using CRef = std::reference_wrapper<const T>;
 
 template <typename T>
 using Vector = std::vector<T>;
+
+template <typename T, size_t N>
+using Array = std::array<T, N>;
+
+template <typename... Ts>
+using Tuple = std::tuple<Ts...>;
 
 template <typename K, typename T, typename P = std::less<K>>
 using Map = std::map<K, T, P>;

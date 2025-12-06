@@ -109,6 +109,63 @@ public:
 };
 
 /**
+ * @brief Next chain template
+ */
+template <typename... Ts>
+class NextState {
+protected:
+    Tuple<Ts...> nexts;
+
+public:
+    NextState() : nexts(Ts()...) {}
+    NextState(const Ts&... args) : nexts(args...) {}
+    NextState(Ts&&... args) : nexts(std::forward<Ts>(args)...) {}
+
+    /**
+     * @brief Access by index
+     */
+    template <size_t N>
+    auto& get() {
+        static_assert(N < sizeof...(Ts), "Index is out of bounds");
+        return std::get<N>(nexts);
+    }
+    template <size_t N>
+    const auto& get() const {
+        static_assert(N < sizeof...(Ts), "Index is out of bounds");
+        return std::get<N>(nexts);
+    }
+
+    /**
+     * @brief Access by type
+     */
+    template <typename T>
+    T& get() {
+        static_assert((std::is_same_v<T, Ts> || ...), "Type is not found in NextState");
+        return std::get<T>(nexts);
+    }
+    template <typename T>
+    const T& get() const {
+        static_assert((std::is_same_v<T, Ts> || ...), "Type is not found in NextState");
+        return std::get<T>(nexts);
+    }
+
+    /**
+     * @brief Chain all nexts
+     */
+    void* into() {
+        auto nodes = std::apply(
+            [](auto&... args) {
+                return Array{reinterpret_cast<VkBaseOutStructure*>(&args)...};
+            },
+            nexts);
+        for (size_t k = 1; k < nodes.size(); k++) {
+            nodes[k - 1]->pNext = nodes[k];
+        }
+        return nodes[0];
+    }
+};
+
+/**
  * @brief Enumerate template for Vulkan
  *
  * Function 'F' should return VkResult

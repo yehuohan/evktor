@@ -4,50 +4,50 @@
 using namespace vkt;
 using namespace vkt::core;
 
-void check(const CoreApi& api,
-           const Instance& instance,
-           const PhysicalDevice& phy_dev,
-           const Device& device,
-           const Debug& debug)
+void testCoreApi() {
+    auto check = [](const CoreApi& api,
+                    const Instance& instance,
+                    const PhysicalDevice& phy_dev,
+                    const Device& device,
+                    const Debug& debug)
 
-{
-    Vector<VkInstance> vec_instance{(VkInstance)api,
-                                    ((const Instance&)api).handle,
-                                    ((const PhysicalDevice&)api).instance.get().handle,
-                                    ((const Device&)api).physical_device.get().instance.get().handle,
-                                    instance.handle,
-                                    debug.instance.get().handle,
-                                    phy_dev.instance.get().handle,
-                                    device.physical_device.get().instance.get().handle};
-    Vector<VkPhysicalDevice> vec_phy_dev{
-        (VkPhysicalDevice)api,
-        ((const PhysicalDevice&)api).handle,
-        ((const Device&)api).physical_device.get().handle,
-        phy_dev.handle,
-        device.physical_device.get().handle,
+    {
+        Vector<VkInstance> vec_instance{(VkInstance)api,
+                                        ((const Instance&)api).handle,
+                                        ((const PhysicalDevice&)api).instance.get().handle,
+                                        ((const Device&)api).physical_device.get().instance.get().handle,
+                                        instance.handle,
+                                        debug.instance.get().handle,
+                                        phy_dev.instance.get().handle,
+                                        device.physical_device.get().instance.get().handle};
+        Vector<VkPhysicalDevice> vec_phy_dev{
+            (VkPhysicalDevice)api,
+            ((const PhysicalDevice&)api).handle,
+            ((const Device&)api).physical_device.get().handle,
+            phy_dev.handle,
+            device.physical_device.get().handle,
+        };
+        Vector<VkDevice> vec_dev{
+            (VkDevice)api,
+            ((const Device&)api).handle,
+            device.handle,
+        };
+        for (size_t k = 1; k < vec_instance.size(); k++) {
+            assert(vec_instance[0] == vec_instance[k]);
+        }
+        for (size_t k = 1; k < vec_phy_dev.size(); k++) {
+            assert(vec_phy_dev[0] == vec_phy_dev[k]);
+        }
+        for (size_t k = 1; k < vec_dev.size(); k++) {
+            assert(vec_dev[0] == vec_dev[k]);
+        }
+
+        tstOut("\tInstance: {}", fmt::ptr(vec_instance[0]));
+        tstOut("\tPhysical Device: {}", fmt::ptr(vec_phy_dev[0]));
+        tstOut("\tDevice: {}", fmt::ptr(vec_dev[0]));
+        tstOut("\tDebug: {}", fmt::ptr(debug.handle));
     };
-    Vector<VkDevice> vec_dev{
-        (VkDevice)api,
-        ((const Device&)api).handle,
-        device.handle,
-    };
-    for (size_t k = 1; k < vec_instance.size(); k++) {
-        assert(vec_instance[0] == vec_instance[k]);
-    }
-    for (size_t k = 1; k < vec_phy_dev.size(); k++) {
-        assert(vec_phy_dev[0] == vec_phy_dev[k]);
-    }
-    for (size_t k = 1; k < vec_dev.size(); k++) {
-        assert(vec_dev[0] == vec_dev[k]);
-    }
 
-    tstOut("\tInstance: {}", fmt::ptr(vec_instance[0]));
-    tstOut("\tPhysical Device: {}", fmt::ptr(vec_phy_dev[0]));
-    tstOut("\tDevice: {}", fmt::ptr(vec_dev[0]));
-    tstOut("\tDebug: {}", fmt::ptr(debug.handle));
-}
-
-void case_core_api() {
     CoreApi api;
     {
         DebugState dso{};
@@ -73,4 +73,42 @@ void case_core_api() {
         tstOut("Check borrowed:");
         check(api_, instance, phy_dev, device, debug);
     }
+}
+
+void testNextState() {
+    NextState nso{Itor::InstanceCreateInfo(),
+                  Itor::PhysicalDeviceFeatures2(),
+                  Itor::DeviceCreateInfo(),
+                  Itor::DeviceQueueInfo2(),
+                  Itor::CommandBufferAllocateInfo()};
+
+    nso.get<0>().enabledLayerCount = 123;
+    nso.get<VkDeviceCreateInfo>().enabledLayerCount = 321;
+
+    const VkBaseInStructure* ptr = (VkBaseInStructure*)nso.into();
+    assert(ptr->sType == VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO);
+    assert(ptr == (const VkBaseInStructure*)&nso.get<0>());
+    assert(((VkInstanceCreateInfo*)ptr)->enabledLayerCount == 123);
+
+    ptr = ptr->pNext;
+    assert(ptr->sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2);
+    assert(ptr == (const VkBaseInStructure*)&nso.get<1>());
+
+    ptr = ptr->pNext;
+    assert(ptr->sType == VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO);
+    assert(ptr == (const VkBaseInStructure*)&nso.get<VkDeviceCreateInfo>());
+    assert(((VkDeviceCreateInfo*)ptr)->enabledLayerCount == 321);
+
+    ptr = ptr->pNext;
+    assert(ptr->sType == VK_STRUCTURE_TYPE_DEVICE_QUEUE_INFO_2);
+    assert(ptr == (const VkBaseInStructure*)&nso.get<VkDeviceQueueInfo2>());
+
+    ptr = ptr->pNext;
+    assert(ptr->sType == VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO);
+    assert(ptr == (const VkBaseInStructure*)&nso.get<VkCommandBufferAllocateInfo>());
+}
+
+void case_core_api() {
+    testCoreApi();
+    testNextState();
 }
