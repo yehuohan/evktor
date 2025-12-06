@@ -46,6 +46,8 @@ void compute_jitter() {
     glm::mat4 mproj = glm::perspective(glm::radians(45.0), 1.0 / 1.0, 0.1, 100.0);
     glm::vec4 mpos = glm::vec4(0.5, 0.5, 1.0, 1.0);
 
+    std::cout << glm::io::width(10) << glm::io::precision(6);
+
     glm::vec4 ndc;
     glm::vec2 pos;
     {
@@ -54,16 +56,24 @@ void compute_jitter() {
         ndc = vp * mpos;
         ndc /= ndc.w;
         pos = ((glm::vec2(ndc) + 1.0f) / 2.0f) * msize;
-        std::cout << "pos:\n" << pos << std::endl;
+        std::cout << "pos: " << pos << std::endl;
     }
 
     // Apply jitter
+    bool unreal_or_unity = true;
     glm::vec2 jitter(0.125, -0.375);
     glm::vec2 jitter_ndc = jitter / msize * 2.0f;
     {
         std::cout << "jitter: " << jitter << std::endl;
-        mproj[2][0] += jitter_ndc.x;
-        mproj[2][1] += jitter_ndc.y;
+        if (unreal_or_unity) {
+            mproj[2][0] += jitter_ndc.x;
+            mproj[2][1] += jitter_ndc.y;
+        } else {
+            mproj = glm::translate(glm::mat4(1.0), glm::vec3(jitter_ndc, 0.0)) * mproj;
+            // Equal to
+            // mproj[2][0] -= jitter_ndc.x;
+            // mproj[2][1] -= jitter_ndc.y;
+        }
     }
 
     {
@@ -72,8 +82,13 @@ void compute_jitter() {
         ndc = vp * mpos;
         ndc /= ndc.w;
         pos = ((glm::vec2(ndc) + 1.0f) / 2.0f) * msize;
-        std::cout << "pos:\n" << pos << std::endl;
-        std::cout << "pos+jitter:\n" << pos + jitter << std::endl;
+        std::cout << "pos: " << pos << std::endl;
+        // 按6位小数打印时不完全相等，貌似精度不够
+        if (unreal_or_unity) {
+            std::cout << "pos+jitter: " << pos + jitter << std::endl;
+        } else {
+            std::cout << "pos-jitter: " << pos - jitter << std::endl;
+        }
     }
 }
 
@@ -97,7 +112,7 @@ void compute_quat() {
 }
 
 void case_glm() {
-    compute_mvp();
+    // compute_mvp();
     compute_jitter();
-    compute_quat();
+    // compute_quat();
 }
