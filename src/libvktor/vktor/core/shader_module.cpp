@@ -5,32 +5,15 @@ NAMESPACE_BEGIN(core)
 
 using Self = ShaderModuleState::Self;
 
-Self ShaderModuleState::setStage(VkShaderStageFlagBits _stage) {
-    stage = _stage;
-    return *this;
-}
-
-Self ShaderModuleState::setFilename(const String& _filename) {
-    filename = _filename;
-    return *this;
-}
-
-Self ShaderModuleState::setCode(const uint32_t* _code, size_t _code_size, size_t _code_id) {
+Self ShaderModuleState::setCode(const uint32_t* _code, size_t _code_size) {
     code = _code;
     code_size = _code_size;
-    code_id = _code_id;
     return *this;
 }
 
-Self ShaderModuleState::setCode(const Vector<uint32_t>& _code, size_t _code_id) {
+Self ShaderModuleState::setCode(const Vector<uint32_t>& _code) {
     code = _code.data();
     code_size = _code.size() * sizeof(uint32_t);
-    code_id = _code_id;
-    return *this;
-}
-
-Self ShaderModuleState::setEntry(const String& _entry) {
-    entry = _entry;
     return *this;
 }
 
@@ -42,9 +25,6 @@ ShaderModule::ShaderModule(ShaderModule&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
-    stage = rhs.stage;
-    entry = std::move(rhs.entry);
-    code_id = rhs.code_id;
 }
 
 ShaderModule::~ShaderModule() {
@@ -60,10 +40,8 @@ Res<ShaderModule> ShaderModule::from(const CoreApi& api, const ShaderModuleState
     auto shader_ci = Itor::ShaderModuleCreateInfo(info.__next);
     shader_ci.codeSize = info.code_size;
     shader_ci.pCode = info.code;
-    OnRet(vkCreateShaderModule(api, &shader_ci, api, shader_module), "Failed to create shader module for {}", info.filename);
+    OnRet(vkCreateShaderModule(api, &shader_ci, api, shader_module), "Failed to create shader module");
     OnName(shader_module, info.__name);
-    shader_module.entry = std::move(info.entry);
-    shader_module.stage = info.stage;
 
     return Ok(std::move(shader_module));
 }

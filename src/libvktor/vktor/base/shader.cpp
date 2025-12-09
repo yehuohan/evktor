@@ -121,12 +121,7 @@ Res<Vector<uint32_t>> Shader::glsl2spv(const String& code) {
 }
 
 Res<ShaderModule> Shader::into(const CoreApi& api) const {
-    return ShaderModuleState("VertShaderModule")
-        .setStage(stage)
-        .setFilename(filename)
-        .setCode(spv_code, id)
-        .setEntry(entry)
-        .into(api);
+    return ShaderModuleState("VertShaderModule").setCode(spv_code).into(api);
 }
 
 NAMESPACE_END(vkt)
