@@ -1,12 +1,10 @@
 #pragma once
-#include "share/helpers.hpp"
-#include "share/result.hpp"
-#include "share/share.hpp"
-#include "share/traits.hpp"
+#include "helpers.hpp"
+#include "result.hpp"
+#include "share.hpp"
+#include "traits.hpp"
 #include <functional>
 #include <mutex>
-
-NAMESPACE_BEGIN(vkt)
 
 template <typename T>
 class ResourceCache : private NonCopyable {
@@ -68,5 +66,3 @@ private:
         return map.insert({key, std::move(value)}).first;
     }
 };
-
-NAMESPACE_END(vkt)
