@@ -46,7 +46,7 @@ struct AttachmentLayouts {
     }
 };
 
-struct RenderSubpassInfo {
+struct RenderSubpassState {
     /** Input attachment indices for `attm_descs` (layout(input_attachment_index) in)
      *
      * Example:
@@ -82,7 +82,7 @@ class RenderPassState : public CoreState<RenderPassState> {
 private:
     /** All attachment description for all subpasses of render pass */
     Vector<VkAttachmentDescription> attm_descs{};
-    Vector<RenderSubpassInfo> subpasses{};
+    Vector<RenderSubpassState> subpasses{};
 
 public:
     explicit RenderPassState(String&& name = "RenderPass") : CoreState(std::move(name)) {}
@@ -109,7 +109,7 @@ public:
                              AttachmentLayouts::depthstencil());
     }
     Self addSubpass(Vector<uint32_t>&& input, Vector<uint32_t>&& color, uint32_t depthstencil = VK_ATTACHMENT_UNUSED);
-    Self addSubpass(const RenderSubpassInfo& subpass);
+    Self addSubpass(const RenderSubpassState& subpass);
 
     Res<RenderPass> into(const CoreApi& api) const;
 };

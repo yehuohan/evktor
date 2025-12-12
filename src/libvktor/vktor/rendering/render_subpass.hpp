@@ -15,7 +15,7 @@ private:
      *
      * By default the color attachment is RT-0
      */
-    core::RenderSubpassInfo info{{}, {0}, VK_ATTACHMENT_UNUSED};
+    core::RenderSubpassState state{{}, {0}, VK_ATTACHMENT_UNUSED};
 
 public:
     explicit RenderSubpass(Shader&& vert, Shader&& frag) {
@@ -35,18 +35,18 @@ public:
     }
     /** Set input render targets (alias input attachments) */
     inline void setRTInputs(Vector<uint32_t>&& inputs) {
-        info.inputs = std::move(inputs);
+        state.inputs = std::move(inputs);
     }
     /** Set color render targets (alias color attachments) */
     inline void setRTColors(Vector<uint32_t>&& colors) {
-        info.colors = std::move(colors);
+        state.colors = std::move(colors);
     }
     /** Set depth stencil render target (alias depth stencil attachment) */
     inline void setRTDepthStencil(uint32_t depthstencil) {
-        info.depthstencil = depthstencil;
+        state.depthstencil = depthstencil;
     }
-    inline const core::RenderSubpassInfo& getInfo() const {
-        return info;
+    inline const core::RenderSubpassState& getState() const {
+        return state;
     }
 };
 
@@ -58,7 +58,7 @@ template <>
 struct hash<vkt::RenderSubpass> {
     size_t operator()(const vkt::RenderSubpass& render_subpass) const {
         size_t res = 0;
-        const auto& info = render_subpass.getInfo();
+        const auto& info = render_subpass.getState();
         for (const auto a : info.inputs) {
             hashCombine(res, a);
         }

@@ -6,7 +6,7 @@ using namespace core;
 
 RenderSubpass::RenderSubpass(RenderSubpass&& rhs) {
     shaders = std::move(rhs.shaders);
-    info = std::move(rhs.info);
+    state = std::move(rhs.state);
 };
 
 NAMESPACE_END(vkt)

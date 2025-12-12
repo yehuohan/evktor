@@ -16,7 +16,7 @@ Res<RenderPass> RenderPipeline::newRenderPass(const RenderTargetTable& render_ta
         rso.addAttachment(image.format, image.samples, rt.ops, rt.stencil_ops, rt.layouts);
     }
     for (const auto& subpass : subpasses) {
-        rso.addSubpass(subpass.getInfo());
+        rso.addSubpass(subpass.getState());
     }
 
     return rso.into(api);
