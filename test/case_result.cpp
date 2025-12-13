@@ -69,21 +69,21 @@ public:
     }
 };
 
-using tstOk = Ok<Vec>;
-using tstErr = Err<std::runtime_error>;
-using tstRes = Result<Vec, std::runtime_error>;
+using TstOk = Ok<Vec>;
+using TstErr = Err<std::runtime_error>;
+using TstRes = Result<Vec, std::runtime_error>;
 
-tstRes createVec(uint32_t type) {
+TstRes createVec(uint32_t type) {
     switch (type) {
     case 1:
         {
-            return tstOk(Vec{});
+            return TstOk(Vec{});
         }
         break;
     case 2:
         {
             Vec v;
-            tstOk r = std::move(v);
+            TstOk r = std::move(v);
             return r;
         }
         break;
@@ -91,14 +91,14 @@ tstRes createVec(uint32_t type) {
         {
 
             Vec v;
-            tstRes r = tstOk(std::move(v));
+            TstRes r = TstOk(std::move(v));
             return r;
         }
         break;
     case 22:
         {
             Vec v;
-            tstOk r = v;
+            TstOk r = v;
             return r;
         }
         break;
@@ -106,13 +106,13 @@ tstRes createVec(uint32_t type) {
         {
 
             Vec v;
-            tstRes r = tstOk(v);
+            TstRes r = TstOk(v);
             return r;
         }
         break;
     default:
         {
-            return tstErr(std::runtime_error("Vec.Error"));
+            return TstErr(std::runtime_error("Vec.Error"));
         }
         break;
     }
@@ -121,39 +121,44 @@ tstRes createVec(uint32_t type) {
 void case_result() {
     {
         resetCnt();
-        tstRes r = createVec(1);
+        TstRes r = createVec(1);
         assert(r.isOk());
-        assertCnt(1, 0, 2, 0, 0);
-    }
-    {
-        resetCnt();
-        tstRes r = createVec(2);
-        assert(r.isOk());
-        assertCnt(1, 0, 2, 0, 0);
-    }
-    {
-        resetCnt();
-        tstRes r = createVec(3);
-        assert(r.isOk());
+        auto v = r.unwrap();
         assertCnt(1, 0, 3, 0, 0);
     }
-
     {
         resetCnt();
-        tstRes r = createVec(22);
+        TstRes r = createVec(2);
         assert(r.isOk());
-        assertCnt(1, 1, 1, 0, 0);
+        auto v = r.unwrap();
+        assertCnt(1, 0, 3, 0, 0);
     }
     {
         resetCnt();
-        tstRes r = createVec(33);
+        TstRes r = createVec(3);
         assert(r.isOk());
+        auto v = r.unwrap();
+        assertCnt(1, 0, 4, 0, 0);
+    }
+
+    {
+        resetCnt();
+        TstRes r = createVec(22);
+        assert(r.isOk());
+        auto v = r.unwrap();
         assertCnt(1, 1, 2, 0, 0);
     }
+    {
+        resetCnt();
+        TstRes r = createVec(33);
+        assert(r.isOk());
+        auto v = r.unwrap();
+        assertCnt(1, 1, 3, 0, 0);
+    }
 
     {
         resetCnt();
-        tstRes r = createVec(0);
+        TstRes r = createVec(0);
         assert(r.isErr());
         assertCnt(0, 0, 0, 0, 0);
 
