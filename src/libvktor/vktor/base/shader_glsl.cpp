@@ -39,7 +39,8 @@ EShLanguage ShaderGlsl::getShaderLanguage(const VkShaderStageFlagBits stage) {
 Res<Vector<uint32_t>> ShaderGlsl::compile(VkShaderStageFlagBits stage,
                                           const String& filename,
                                           const String& code,
-                                          const String& entry) {
+                                          const String& entry,
+                                          const String& preamble) {
     const char* shader_strings[] = {code.c_str()};
     const int shader_lengths[] = {(int)code.size()};
     const char* shader_filenames[] = {filename.c_str()};
@@ -50,8 +51,9 @@ Res<Vector<uint32_t>> ShaderGlsl::compile(VkShaderStageFlagBits stage,
 
     glslang::TShader shader(language);
     shader.setStringsWithLengthsAndNames(shader_strings, shader_lengths, shader_filenames, 1);
-    shader.setEntryPoint(entry.c_str());
-    shader.setSourceEntryPoint(entry.c_str());
+    shader.setSourceEntryPoint(entry.c_str()); // Select entry point of glsl
+    shader.setEntryPoint(entry.c_str());       // Rename entry point of spir-v
+    shader.setPreamble(preamble.c_str());
     shader.setEnvTarget(spv, spv_version);
     if (!shader.parse(resouce, glsl_version, glsl_profile, false, false, messages, glsl_includer)) {
         vktOut("{}", shader.getInfoLog());

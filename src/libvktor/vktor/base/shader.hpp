@@ -23,6 +23,9 @@ public:
     ShaderSource(ShaderSource&&);
 };
 
+/**
+ * @brief Shader state for compiling glsl
+ */
 class ShaderState : private NonCopyable {
     friend class Shader;
     friend struct std::hash<ShaderState>;
@@ -30,6 +33,7 @@ class ShaderState : private NonCopyable {
 private:
     VkShaderStageFlagBits stage = (VkShaderStageFlagBits)0;
     String entry = "main";
+    Vector<std::pair<String, String>> defines{};
 
 public:
     using Self = ShaderState&;
@@ -43,7 +47,10 @@ public:
         return *this;
     }
 
-    // Self addDefine(const String& name, const String& value = "");
+    Self setDefine(const String& name, const String& value = "");
+    Self delDefine(const String& name);
+    Self delAllDefines();
+    String getPreamble() const;
 };
 
 struct ShaderDescriptor {

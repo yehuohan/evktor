@@ -10,8 +10,7 @@ std::vector<unsigned int> glsl2spv(const String& filename) {
     const char* shader_strings[] = {shader_code.c_str()};
     const int shader_lengths[] = {(int)shader_code.size()};
     const char* shader_filenames[] = {filename.c_str()};
-    const char* preamble = "#define TST_ERROR 1";
-    const std::vector<String> processes{"DTST_ERROR=1"};
+    const char* preamble = "#define TST_ERROR 1\n";
 
     EShMessages messages = static_cast<EShMessages>(EShMessages::EShMsgDefault | EShMessages::EShMsgVulkanRules |
                                                     EShMessages::EShMsgSpvRules);
@@ -21,10 +20,9 @@ std::vector<unsigned int> glsl2spv(const String& filename) {
 
     glslang::TShader shader(language);
     shader.setStringsWithLengthsAndNames(shader_strings, shader_lengths, shader_filenames, 1);
-    shader.setEntryPoint("main");
-    shader.setSourceEntryPoint("main");
+    shader.setSourceEntryPoint("main"); // Select entry point of glsl
+    shader.setEntryPoint("main");       // Rename entry point of spir-v
     // shader.setPreamble(preamble);
-    // shader.addProcesses(processes);
     shader.setEnvTarget(glslang::EShTargetLanguage::EShTargetSpv, glslang::EShTargetLanguageVersion::EShTargetSpv_1_0);
     if (!shader.parse(GetDefaultResources(), 100, false, messages)) {
         tstOut("{}", shader.getInfoLog());

@@ -20,7 +20,7 @@ class ShaderGlsl : public Singleton<ShaderGlsl> {
 
 private:
     glslang::EShTargetLanguage spv = glslang::EShTargetLanguage::EShTargetSpv;
-    glslang::EShTargetLanguageVersion spv_version = glslang::EShTargetLanguageVersion::EShTargetSpv_1_6;
+    glslang::EShTargetLanguageVersion spv_version = glslang::EShTargetLanguageVersion::EShTargetSpv_1_5;
 
     int glsl_version = 450;
     EProfile glsl_profile = ECoreProfile;
@@ -45,7 +45,11 @@ public:
     /**
      * @brief Compile glsl into spir-v code
      */
-    Res<Vector<uint32_t>> compile(VkShaderStageFlagBits stage, const String& filename, const String& code, const String& entry);
+    Res<Vector<uint32_t>> compile(VkShaderStageFlagBits stage,
+                                  const String& filename,
+                                  const String& code,
+                                  const String& entry,
+                                  const String& preamble);
 };
 
 NAMESPACE_END(std)

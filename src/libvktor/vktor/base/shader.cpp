@@ -1,10 +1,47 @@
 #include "shader.hpp"
 #include "shader_glsl.hpp"
+#include <algorithm>
 #include <fstream>
 
 NAMESPACE_BEGIN(vkt)
 
 using namespace core;
+
+ShaderState::Self ShaderState::setDefine(const String& name, const String& value) {
+    auto iter = std::find_if(defines.begin(), defines.end(), [&name](const std::pair<String, String> item) {
+        return name == item.first;
+    });
+    if (iter != defines.end()) {
+        iter->first = name;
+        iter->second = value;
+    } else {
+        defines.push_back(std::make_pair(name, value));
+    }
+    return *this;
+}
+
+ShaderState::Self ShaderState::delDefine(const String& name) {
+    auto iter = std::find_if(defines.begin(), defines.end(), [&name](const std::pair<String, String> item) {
+        return name == item.first;
+    });
+    if (iter != defines.end()) {
+        defines.erase(iter);
+    }
+    return *this;
+}
+
+ShaderState::Self ShaderState::delAllDefines() {
+    defines.clear();
+    return *this;
+}
+
+String ShaderState::getPreamble() const {
+    String preamble("");
+    for (const auto& item : defines) {
+        preamble += vktFmt("#define {} {}\n", item.first, item.second);
+    }
+    return std::move(preamble);
+}
 
 ShaderSource::ShaderSource(const String& _filename, String&& _code) {
     filename = _filename;
@@ -21,7 +58,8 @@ ShaderSource::ShaderSource(ShaderSource&& rhs) {
 
 Res<Shader> Shader::from(const ShaderSource& source, const ShaderState& state) {
     Shader shader{state.stage, source.filename, state.entry};
-    auto res = ShaderGlsl::get().compile(shader.stage, shader.filename, source.code, shader.entry);
+
+    auto res = ShaderGlsl::get().compile(shader.stage, shader.filename, source.code, shader.entry, state.getPreamble());
     OnErr(res);
     shader.spv_code = res.unwrap();
     shader.id = hash(String{reinterpret_cast<const char*>(shader.spv_code.data()),
