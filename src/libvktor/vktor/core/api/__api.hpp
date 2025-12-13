@@ -63,21 +63,21 @@ public:
  *
  * Example code:
  * ```cpp
- *      class TypeState : public CoreState {
- *          friend struct Type;
- *          Self set() { ...; return *this; };
- *          Self add() { ...; return *this; };
- *          Res<Type> into() const {}
- *      };
- *      struct Type : public CoreHandle<VkXXX> {
- *          static Res<Type> from(const TypeState& info) {}
- *      };
+ *  class TypeState : public CoreState {
+ *      friend struct Type;
+ *      Self set() { ...; return *this; };
+ *      Self add() { ...; return *this; };
+ *      Res<Type> into() const {}
+ *  };
+ *  struct Type : public CoreHandle<VkXXX> {
+ *      static Res<Type> from(const TypeState& info) {}
+ *  };
  *
- *      auto tso = TypeState();
- *      tso.set().add();
- *      auto ty1 = Type::from(tso).unwrap();
- *      tso = TypeState();
- *      auto ty2 = tso.set().add().info().unwrap();
+ *  auto tso = TypeState();
+ *  tso.set().add();
+ *  auto ty1 = Type::from(tso).unwrap();
+ *  tso = TypeState();
+ *  auto ty2 = tso.set().add().info().unwrap();
  * ```
  */
 template <typename S>

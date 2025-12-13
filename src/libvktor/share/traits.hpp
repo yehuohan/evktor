@@ -29,3 +29,35 @@ protected:
     NonMoveable(NonMoveable&&) = delete;
     NonMoveable& operator=(NonMoveable&&) = delete;
 };
+
+/**
+ * @brief Singleton base class
+ *
+ * Example code:
+ * ```cpp
+ *  class Object : public Singleton<Object> {
+ *      friend class Singleton<Object>;
+ *
+ *      private:
+ *          Object();
+ *          ~Object();
+ *  };
+ * ```
+ */
+template <typename T>
+class Singleton {
+protected:
+    Singleton() = default;
+    virtual ~Singleton() = default;
+
+    Singleton(const Singleton&) = delete;
+    Singleton(Singleton&&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
+    Singleton& operator=(Singleton&&) = delete;
+
+public:
+    static T& get() {
+        static T instance{};
+        return instance;
+    }
+};
