@@ -200,10 +200,10 @@ Ref<RenderFrame> RenderContext::getFrame() {
     return newRef(frames[frame_index]);
 }
 
-Res<Ref<Shader>> RenderContext::requestShader(const ShaderSource& shader_source) {
-    size_t key = hash(shader_source);
-    return resources.shaders.request(key, [this, &shader_source]() {
-        return Shader::from(shader_source);
+Res<Ref<Shader>> RenderContext::requestShader(const ShaderSource& shader_source, const ShaderState& shader_state) {
+    size_t key = hash(shader_source, shader_state);
+    return resources.shaders.request(key, [this, &shader_source, &shader_state]() {
+        return Shader::from(shader_source, shader_state);
     });
 }
 

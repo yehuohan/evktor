@@ -49,7 +49,7 @@ Box<CoreApi> setupCoreApi() {
 }
 
 void computePass(const CoreApi& api) {
-    const String shader_file = vktdev::Assets::shaderFile("test/quad.comp");
+    const String shader_file = vktdev::Assets::shader("test/quad.comp");
     const uint32_t wid = 9;
     const uint32_t hei = 9;
     const uint32_t cha = 4;
@@ -63,8 +63,10 @@ void computePass(const CoreApi& api) {
     tstOut("Comamnd buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
-    auto shader_source = ShaderSource::from(ShaderSource::Comp, read_shader(shader_file)).unwrap();
-    auto shader = Shader::from(shader_source).unwrap().into(api).unwrap();
+    ShaderState shader_state;
+    shader_state.setStage(VK_SHADER_STAGE_COMPUTE_BIT).setEntry("main");
+    auto shader_source = ShaderSource(shader_file, read_shader(shader_file));
+    auto shader = Shader::from(shader_source, shader_state).unwrap().into(api).unwrap();
 
     // Create pipeline
     auto desc_set_layout = DescriptorSetLayoutState{}
@@ -162,8 +164,8 @@ void computePass(const CoreApi& api) {
 }
 
 void graphicsPass(const CoreApi& api) {
-    const String shader_vert_file = vktdev::Assets::shaderFile("test/triangle.vert");
-    const String shader_frag_file = vktdev::Assets::shaderFile("test/triangle.frag");
+    const String vert_file = vktdev::Assets::shader("test/triangle.vert");
+    const String frag_file = vktdev::Assets::shader("test/triangle.frag");
     const uint32_t wid = 9;
     const uint32_t hei = 9;
     const uint32_t cha = 4;
@@ -192,10 +194,13 @@ void graphicsPass(const CoreApi& api) {
     tstOut("Comamnd buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
-    auto shader_vert_source = vkt::ShaderSource::from(ShaderSource::Vert, read_shader(shader_vert_file)).unwrap();
-    auto shader_vert = vkt::Shader::from(shader_vert_source).unwrap().into(api).unwrap();
-    auto shader_frag_source = vkt::ShaderSource::from(ShaderSource::Frag, read_shader(shader_frag_file)).unwrap();
-    auto shader_frag = vkt::Shader::from(shader_frag_source).unwrap().into(api).unwrap();
+    ShaderState shader_state;
+    auto vert_source = ShaderSource(vert_file, vktdev::Assets::shaderSource(vert_file));
+    auto frag_source = ShaderSource(frag_file, vktdev::Assets::shaderSource(frag_file));
+    shader_state.setStage(VK_SHADER_STAGE_VERTEX_BIT).setEntry("main");
+    auto shader_vert = vkt::Shader::from(vert_source, shader_state).unwrap().into(api).unwrap();
+    shader_state.setStage(VK_SHADER_STAGE_FRAGMENT_BIT);
+    auto shader_frag = vkt::Shader::from(frag_source, shader_state).unwrap().into(api).unwrap();
 
     // Create pipeline
     auto render_pass = RenderPassState{}

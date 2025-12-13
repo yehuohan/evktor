@@ -151,7 +151,7 @@ public:
     }
 
 public:
-    Res<Ref<Shader>> requestShader(const ShaderSource& shader_source);
+    Res<Ref<Shader>> requestShader(const ShaderSource& shader_source, const ShaderState& shader_state);
     Res<Ref<core::DescriptorSetLayout>> requestDescriptorSetLayout(const uint32_t set, const Vector<Shader>& shaders);
     Res<Ref<core::PipelineLayout>> requestPipelineLayout(const Vector<Shader>& shaders);
     Res<Ref<core::GraphicsPipeline>> requestGraphicsPipeline(const core::GraphicsPipelineState& pso);

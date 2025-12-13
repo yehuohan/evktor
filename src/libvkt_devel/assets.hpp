@@ -1,37 +1,35 @@
 #pragma once
-#include <share/helpers.hpp>
-#include <vktor/base/shader.hpp>
+#include <fmt/core.h>
+#include <string>
 
-NAMESPACE_BEGIN(vktdev)
+namespace vktdev {
 
 class Assets {
 public:
-    static String assets;
-    static String shader;
+    static std::string path_assets;
+    static std::string path_shader;
 
 public:
     Assets() = delete;
 
-    static void setDirs(const String& assets_dir, const String& shader_dir = ".");
+    static void setDirs(const std::string& assets_dir, const std::string& shader_dir = ".");
 
-    inline static String tex(const String& filename) {
-        return fmt::format("{}/textures/{}", Assets::assets, filename);
+    inline static std::string tex(const std::string& filename) {
+        return fmt::format("{}/textures/{}", Assets::path_assets, filename);
     }
-    inline static String font(const String& filename) {
-        return fmt::format("{}/fonts/{}", Assets::assets, filename);
+    inline static std::string font(const std::string& filename) {
+        return fmt::format("{}/fonts/{}", Assets::path_assets, filename);
     }
-    inline static String obj(const String& filename) {
-        return fmt::format("{}/objects/{}", Assets::assets, filename);
+    inline static std::string obj(const std::string& filename) {
+        return fmt::format("{}/objects/{}", Assets::path_assets, filename);
     }
-    inline static String scene(const String& filename) {
-        return fmt::format("{}/scenes/{}", Assets::assets, filename);
+    inline static std::string scene(const std::string& filename) {
+        return fmt::format("{}/scenes/{}", Assets::path_assets, filename);
     }
-
-    inline static String shaderFile(const String& filename) {
-        return fmt::format("{}/{}", Assets::shader, filename);
+    inline static std::string shader(const std::string& filename) {
+        return fmt::format("{}/{}", Assets::path_shader, filename);
     }
-    static vkt::ShaderSource::Stage shaderStage(const String& filename);
-    static String shaderSource(const String& filename);
+    static std::string shaderSource(const std::string& filename);
 };
 
-NAMESPACE_END(vktdev)
+} // namespace vktdev

@@ -50,7 +50,7 @@ std::vector<unsigned int> glsl2spv(const String& filename) {
 }
 
 void case_glslang() {
-    const String filename = vktdev::Assets::shaderFile("test/triangle.vert");
+    const String filename = vktdev::Assets::shader("test/triangle.vert");
     std::vector<unsigned int> spirv = glsl2spv(filename);
     tstOut("spv size: {}", spirv.size());
 }

@@ -6,40 +6,44 @@ NAMESPACE_BEGIN(vkt)
 
 class Shader;
 
-// class ShaderVariant : private NonCopyable {
-//     Self defMacro(const String& macro);
-// };
-
 /**
- * @brief Shader glsl source code
+ * @brief Shader source code to compile to spir-v code
  */
 class ShaderSource : private NonCopyable {
     friend class Shader;
-
-public:
-    enum Stage {
-        Vert = VK_SHADER_STAGE_VERTEX_BIT,
-        Frag = VK_SHADER_STAGE_FRAGMENT_BIT,
-        Comp = VK_SHADER_STAGE_COMPUTE_BIT,
-    };
+    friend struct std::hash<ShaderSource>;
 
 private:
-    Stage stage;
     String filename{""};
-    String entry = "main";
     String code{""};
     size_t id = 0; /**< id = hash(code) */
 
+public:
+    ShaderSource(const String& filename, String&& code);
+    ShaderSource(ShaderSource&&);
+};
+
+class ShaderState : private NonCopyable {
+    friend class Shader;
+    friend struct std::hash<ShaderState>;
+
 private:
-    ShaderSource() {};
+    VkShaderStageFlagBits stage = (VkShaderStageFlagBits)0;
+    String entry = "main";
 
 public:
-    static Res<ShaderSource> from(ShaderSource::Stage stage, String&& code);
-    ShaderSource(ShaderSource&&);
+    using Self = ShaderState&;
 
-    inline size_t getId() const {
-        return id;
+    inline Self setStage(VkShaderStageFlagBits _stage) {
+        stage = _stage;
+        return *this;
     }
+    inline Self setEntry(const String& _entry) {
+        entry = _entry;
+        return *this;
+    }
+
+    // Self addDefine(const String& name, const String& value = "");
 };
 
 struct ShaderDescriptor {
@@ -75,25 +79,30 @@ struct ShaderDescriptor {
  * @brief Shader spir-v code
  */
 class Shader : private NonCopyable {
+    friend struct std::hash<Shader>;
+
 private:
-    VkShaderStageFlagBits stage;
-    String filename{""};
-    String entry = "main";
+    const VkShaderStageFlagBits stage;
+    const String filename;
+    const String entry;
     Vector<uint32_t> spv_code{};
     size_t id = 0; /**< id = hash(spv_code) */
+
     /** Map descriptor set index to it's all descriptor */
     HashMap<uint32_t, Vector<ShaderDescriptor>> desc_sets{};
 
 private:
-    Shader() {};
-
-    Res<Vector<uint32_t>> glsl2spv(const String& code);
+    Shader(const VkShaderStageFlagBits stage, const String& filename, const String& entry)
+        : stage(stage)
+        , filename(filename)
+        , entry(entry) {}
 
 public:
-    static Res<Shader> from(const ShaderSource& source);
     Shader(Shader&&);
 
+    static Res<Shader> from(const ShaderSource& source, const ShaderState& state);
     Res<core::ShaderModule> into(const core::CoreApi& api) const;
+
     inline VkShaderStageFlagBits getStage() const {
         return stage;
     }
@@ -103,12 +112,7 @@ public:
     inline const String& getEntry() const {
         return entry;
     }
-    inline const Vector<uint32_t>& getSpvCode() const {
-        return spv_code;
-    }
-    inline size_t getId() const {
-        return id;
-    }
+
     inline void addDescriptor(ShaderDescriptor::Type type, uint32_t binding, uint32_t set = 0, uint32_t count = 1) {
         desc_sets[set].push_back(ShaderDescriptor(type, set, binding, count));
     }
@@ -127,7 +131,20 @@ NAMESPACE_BEGIN(std)
 template <>
 struct hash<vkt::ShaderSource> {
     inline size_t operator()(const vkt::ShaderSource& shader_source) const {
-        return shader_source.getId();
+        return shader_source.id;
+    }
+};
+
+/**
+ * @brief Hash vkt::ShaderSource for unique vkt::Shader
+ */
+template <>
+struct hash<vkt::ShaderState> {
+    inline size_t operator()(const vkt::ShaderState& shader_state) const {
+        size_t res = 0;
+        hashCombine(res, shader_state.stage);
+        hashCombine(res, shader_state.entry);
+        return res;
     }
 };
 
@@ -137,7 +154,7 @@ struct hash<vkt::ShaderSource> {
 template <>
 struct hash<vkt::Shader> {
     inline size_t operator()(const vkt::Shader& shader) const {
-        return shader.getId();
+        return shader.id;
     }
 };
 

@@ -1,45 +1,22 @@
 #include "assets.hpp"
-#include <fmt/core.h>
 #include <fstream>
 
-NAMESPACE_BEGIN(vktdev)
+namespace vktdev {
 
-using namespace vkt;
+std::string Assets::path_assets = std::string(".");
+std::string Assets::path_shader = std::string(".");
 
-String Assets::assets = String(".");
-String Assets::shader = String(".");
-
-void Assets::setDirs(const String& assets_dir, const String& shader_dir) {
-    Assets::assets = assets_dir;
-    Assets::shader = shader_dir;
+void Assets::setDirs(const std::string& assets_dir, const std::string& shader_dir) {
+    Assets::path_assets = assets_dir;
+    Assets::path_shader = shader_dir;
 }
 
-vkt::ShaderSource::Stage Assets::shaderStage(const String& filename) {
-    String::size_type n = filename.rfind('.');
-    if (n == String::npos) {
-        throw vktErr("Failed to get shader stage: {}", filename);
-    }
-    String suffix = filename.substr(n + 1);
-
-    ShaderSource::Stage stage;
-    if ("vert" == suffix) {
-        stage = ShaderSource::Stage::Vert;
-    } else if ("frag" == suffix) {
-        stage = ShaderSource::Stage::Frag;
-    } else if ("comp" == suffix) {
-        stage = ShaderSource::Stage::Comp;
-    } else {
-        throw vktErr("Unrecognized shader type: {}", suffix);
-    }
-    return stage;
-}
-
-String Assets::shaderSource(const String& filename) {
+std::string Assets::shaderSource(const std::string& filename) {
     std::ifstream fin(filename, std::ios::in);
     if (!fin.is_open()) {
-        throw vktErr("Failed to read shader: {}", filename);
+        throw std::runtime_error(fmt::format("Failed to read shader: {}", filename));
     }
-    return String({std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()});
+    return std::string({std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()});
 }
 
-NAMESPACE_END(vktdev)
+} // namespace vktdev
