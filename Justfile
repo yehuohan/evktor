@@ -1,3 +1,4 @@
+# vim@code{ efm = [[[vkt] ERROR: %f:%l: %m]], efm_fts = { 'cmake', 'cpp', 'glsl', 'python' } }:
 set shell := ['bash', '-uc']
 set dotenv-load
 set ignore-comments
@@ -7,7 +8,6 @@ dir_root := replace(justfile_directory(), '\', '/')
 build_type := env('BUILD_TYPE', 'Debug')
 # build_type := env('BUILD_TYPE', 'Release')
 build_gen := env('BUILD_GEN', 'Ninja')
-# build_gen := env('BUILD_GEN', '"Unix Makefiles"')
 build_job := '-j4'
 dir_build := dir_root / '_VOut' / build_type
 dir_install := dir_root / 'install' / build_type
