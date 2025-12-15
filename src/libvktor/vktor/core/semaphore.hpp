@@ -30,6 +30,11 @@ public:
     Semaphore(Semaphore&&);
     ~Semaphore();
 
+    VkResult waitAll(uint64_t value, uint64_t timeout = UINT64_MAX) const;
+    VkResult waitAny(uint64_t value, uint64_t timeout = UINT64_MAX) const;
+    VkResult signal(uint64_t value) const;
+    VkResult getCounter(uint64_t* pvalue) const;
+
     static Res<Semaphore> from(const CoreApi& api, const SemaphoreState& info);
 };
 
