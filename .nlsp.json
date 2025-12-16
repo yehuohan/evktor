@@ -1,0 +1,13 @@
+/// Local .nlsp.json
+{
+    "Lua": {
+        "runtime.version": "LuaJIT", // "Lua 5.2", "LuaJIT"
+        "workspace.library": ["deps/repos/xmake-luals-addon"],
+        "diagnostics.disable": [
+            "inject-field",
+            "missing-fields",
+            "undefined-field"
+        ]
+    }
+}
+

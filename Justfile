@@ -1,18 +1,25 @@
-# vim@code{ efm = [[[vkt] ERROR: %f:%l: %m]], efm_fts = { 'cmake', 'cpp', 'glsl', 'rust', 'python' } }:
+# vim@code{ efm = [[[vkt] ERROR: %f:%l: %m,error: %f:%l:%c: %m]], efm_fts = { 'cmake', 'cpp', 'glsl', 'rust', 'python' } }:
 set shell := ['bash', '-uc']
 set dotenv-load
 set ignore-comments
 
 dir_root := replace(justfile_directory(), '\', '/')
 
-build_type := env('BUILD_TYPE', 'Debug')
-# build_type := env('BUILD_TYPE', 'Release')
+xplat := env('XPLAT', if os() == "windows" { 'mingw' } else { 'linux' })
+xarch := env('XARCH', 'x86_64')
+xmode := env('XBUILD', 'debug')
+dir_xbuild := dir_root / '_VOut'
+dir_xinstall := dir_root / 'install'
+
+build_type := env('BUILD_TYPE', 'Debug') # 'Release'
 build_gen := env('BUILD_GEN', 'Ninja')
-build_job := '-j4'
 dir_build := dir_root / '_VOut' / build_type
 dir_install := dir_root / 'install' / build_type
 
 export LD_LIBRARY_PATH := dir_install / 'lib'
+
+export XMAKE_CONFIGDIR := dir_xbuild / 'xmake'
+export XMAKE_MAIN_REPO := 'https://gitee.com/tboox/xmake-repo.git'
 
 export VCPKG_ROOT := replace(env('DOT_APPS'), '\', '/') / 'vcpkg'
 export VCPKG_TRIPLET := if os() == "windows" { 'x64-mingw-mix' } else { 'x64-linux-mix' }
@@ -20,6 +27,20 @@ VCPKG_XSCRIPT := '"clear;x-script,bash ' + dir_root + '/scripts/vcpkg_xscript.sh
 DEPS_DIR := dir_root / 'deps'
 
 
+
+x-all: x-evktor
+
+x-evktor: x-src
+    @echo [Run] evktor...
+    {{dir_xinstall}}/bin/evktor {{dir_root}}/../assets {{dir_root}}/glsl
+
+x-sigma: x-src
+    @echo [Run] evktor/test/tst_main core
+    VK_LAYER_PATH={{dir_xinstall}}/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_xinstall}}/bin/tst_main core
+
+x-test case="": x-src
+    @echo [Run] evktor/test
+    {{dir_xinstall}}/bin/tst_main {{case}}
 
 all: evktor #omega
 
@@ -33,10 +54,10 @@ omega: src
 
 sigma: src
     @echo [Run] evktor/test/tst_main core
-    # Only search layers from VK_LAYER_PATH
-    VK_LAYER_PATH=install/Debug/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_main core
+    # Replace layers with VK_LAYER_PATH
+    VK_LAYER_PATH={{dir_install}}/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_main core
     # Append layers from VK_ADD_LAYER_PATH (why VK_ADD_LAYER_PATH not work?)
-    # VK_ADD_LAYER_PATH=install/Debug/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_main core
+    # VK_ADD_LAYER_PATH={{dir_install}}/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_main core
 
 test case="": src
     @echo [Run] evktor/test
@@ -45,9 +66,23 @@ test case="": src
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Build src
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+x-src: x-gen
+    @echo [src] Build evktor...
+    xmake b -j4
+    xmake i --installdir={{dir_xinstall}}
+
+x-gen:
+    @echo [src] Generate evktor...
+    xmake g --proxy_pac={{dir_root}}/scripts/xmake_pac.lua
+    xmake f -y \
+        --plat={{xplat}} --arch={{xarch}} --mode={{xmode}} \
+        --mingw=c:/apps/msys64/ucrt64 \
+        --builddir={{dir_xbuild}}
+    xmake project -k compile_commands
+
 src: gen
     @echo [src] Build evktor...
-    cmake --build {{dir_build}} {{build_job}}
+    cmake --build {{dir_build}} -j4
     cmake --install {{dir_build}}
 
 gen:
@@ -63,8 +98,11 @@ gen:
         -DVCPKG_MANIFEST_INSTALL=OFF \
         -S . -B {{dir_build}}
 
+x-tags: x-gen
+    xmake b tags
+
 tags: gen
-    cmake --build {{dir_build}} {{build_job}} --target tags
+    cmake --build {{dir_build}} --target tags
 
 clean:
     -rm -rf {{dir_build}}
@@ -84,6 +122,7 @@ deps:
 
 deps-repos:
     @echo Prepare deps-repos...
+    -git clone --depth=1 https://github.com/LelouchHe/xmake-luals-addon.git {{DEPS_DIR}}/repos/xmake-luals-addon
     -git clone --depth=1 -b vulkan-sdk-1.4.321 https://github.com/zeux/volk.git {{DEPS_DIR}}/repos/volk
     -git clone --depth=1 -b vulkan-sdk-1.4.321 https://github.com/KhronosGroup/Vulkan-Headers.git {{DEPS_DIR}}/repos/Vulkan-Headers
     -git clone --depth=1 -b vulkan-sdk-1.4.321 https://github.com/KhronosGroup/Vulkan-ValidationLayers.git {{DEPS_DIR}}/repos/Vulkan-ValidationLayers

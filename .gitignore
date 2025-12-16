@@ -13,3 +13,6 @@ __pycache__
 /deps
 /install
 /target
+
+/xmake
+/.xmake
