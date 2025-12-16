@@ -3,7 +3,8 @@ set(REPOS_DIR ${PROJECT_ROOT}/deps/repos)
 
 
 # Target: Vulkan::Headers
-find_package(VulkanHeaders CONFIG REQUIRED)
+# find_package(VulkanHeaders CONFIG REQUIRED)
+add_subdirectory(${REPOS_DIR}/Vulkan-Headers)
 
 # Target: volk
 # Prefer Vulkan-Headers than Vulkan SDK
@@ -26,10 +27,6 @@ set(glslang_glslangValidator ${DEPS_DIR}/tools/glslang/glslangValidator)
 
 # Target: GPUOpen::VulkanMemoryAllocator
 find_package(VulkanMemoryAllocator CONFIG REQUIRED)
-# Fetch Vulkan function with volk loader for vma
-target_compile_definitions(GPUOpen::VulkanMemoryAllocator
-    INTERFACE VMA_STATIC_VULKAN_FUNCTIONS=0
-    INTERFACE VMA_DYNAMIC_VULKAN_FUNCTIONS=0)
 
 # Target: glad
 project(glad)
