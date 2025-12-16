@@ -3,12 +3,10 @@
 import os
 import sys
 
-__VCPKG_TRIPLET = os.environ["VCPKG_TRIPLET"]
-
 __DIR_THIS = os.path.dirname(os.path.abspath(__file__))
 __DIR_ROOT = os.path.dirname(__DIR_THIS)
 __DIR_VkValidationLayers = f"{__DIR_ROOT}/deps/repos/Vulkan-ValidationLayers/scripts"
-__DIR_VkHeaders = f"{__DIR_ROOT}/deps/{__VCPKG_TRIPLET}/share/vulkan/registry"
+__DIR_VkHeaders = f"{__DIR_ROOT}/deps/repos/Vulkan-Headers/registry"
 sys.path.insert(0, __DIR_VkHeaders)
 sys.path.insert(0, __DIR_VkValidationLayers)
 
@@ -16,8 +14,7 @@ import shutil
 import subprocess
 from xml.etree import ElementTree
 from reg import Registry
-from generators.base_generator import SetOutputDirectory, SetTargetApiName, SetMergedApiNames
-from generators.base_generator import BaseGeneratorOptions
+from base_generator import SetOutputDirectory, SetTargetApiName, SetMergedApiNames, BaseGeneratorOptions
 from generators.ldt_generator import LDTGenerator
 from generators.initializer_generator import InitializerGenerator
 from generators.onstring_generator import OnStringGenerator

@@ -146,39 +146,10 @@ Res<Device> Device::borrow(CRef<PhysicalDevice> phy_dev, VkDevice handle, PFN_vk
 }
 
 VkResult Device::createMemAllocator() {
+    // Use default VMA_DYNAMIC_VULKAN_FUNCTIONS = 1
     VmaVulkanFunctions fns{};
-    fns.vkGetPhysicalDeviceProperties = vkGetPhysicalDeviceProperties;
-    fns.vkGetPhysicalDeviceMemoryProperties = vkGetPhysicalDeviceMemoryProperties;
-    fns.vkAllocateMemory = vkAllocateMemory;
-    fns.vkFreeMemory = vkFreeMemory;
-    fns.vkMapMemory = vkMapMemory;
-    fns.vkUnmapMemory = vkUnmapMemory;
-    fns.vkFlushMappedMemoryRanges = vkFlushMappedMemoryRanges;
-    fns.vkInvalidateMappedMemoryRanges = vkInvalidateMappedMemoryRanges;
-    fns.vkBindBufferMemory = vkBindBufferMemory;
-    fns.vkBindImageMemory = vkBindImageMemory;
-    fns.vkGetBufferMemoryRequirements = vkGetBufferMemoryRequirements;
-    fns.vkGetImageMemoryRequirements = vkGetImageMemoryRequirements;
-    fns.vkCreateBuffer = vkCreateBuffer;
-    fns.vkDestroyBuffer = vkDestroyBuffer;
-    fns.vkCreateImage = vkCreateImage;
-    fns.vkDestroyImage = vkDestroyImage;
-    fns.vkCmdCopyBuffer = vkCmdCopyBuffer;
-    {
-        // >= VK_API_VERSION_1_1
-        // VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME, VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME
-        fns.vkGetBufferMemoryRequirements2KHR = vkGetBufferMemoryRequirements2KHR;
-        fns.vkGetImageMemoryRequirements2KHR = vkGetImageMemoryRequirements2KHR;
-        // VK_KHR_BIND_MEMORY_2_EXTENSION_NAME
-        fns.vkBindBufferMemory2KHR = vkBindBufferMemory2KHR;
-        fns.vkBindImageMemory2KHR = vkBindImageMemory2KHR;
-        // VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, VK_EXT_MEMORY_BUDGET_EXTENSION_NAME
-        fns.vkGetPhysicalDeviceMemoryProperties2KHR = vkGetPhysicalDeviceMemoryProperties2KHR;
-        // >= VK_API_VERSION_1_3 || enabled(VK_KHR_MAINTENANCE_4_EXTENSION_NAME)
-        fns.vkGetDeviceBufferMemoryRequirements = vkGetDeviceBufferMemoryRequirements;
-        fns.vkGetDeviceImageMemoryRequirements = vkGetDeviceImageMemoryRequirements;
-    }
-
+    fns.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
+    fns.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
     VmaAllocatorCreateInfo vma_allocator_ai{};
     vma_allocator_ai.vulkanApiVersion = physical_device.get().instance.get().api_version;
     vma_allocator_ai.instance = physical_device.get().instance.get();

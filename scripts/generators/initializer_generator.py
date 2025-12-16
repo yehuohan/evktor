@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from generators.base_generator import BaseGenerator
+from base_generator import BaseGenerator
 from generators.generator_utils import PlatformGuardHelper
 
 LBracket = "{"

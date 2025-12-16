@@ -152,7 +152,17 @@ typedef struct VkLayerInstanceDispatchTable {
     PFN_vkCreateScreenSurfaceQNX CreateScreenSurfaceQNX;
     PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX GetPhysicalDeviceScreenPresentationSupportQNX;
 #endif // VK_USE_PLATFORM_SCREEN_QNX
+    PFN_vkGetPhysicalDeviceExternalTensorPropertiesARM GetPhysicalDeviceExternalTensorPropertiesARM;
     PFN_vkGetPhysicalDeviceOpticalFlowImageFormatsNV GetPhysicalDeviceOpticalFlowImageFormatsNV;
+    PFN_vkGetPhysicalDeviceCooperativeVectorPropertiesNV GetPhysicalDeviceCooperativeVectorPropertiesNV;
+    PFN_vkGetPhysicalDeviceQueueFamilyDataGraphPropertiesARM GetPhysicalDeviceQueueFamilyDataGraphPropertiesARM;
+    PFN_vkGetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM
+        GetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM;
+#ifdef VK_USE_PLATFORM_OHOS
+    PFN_vkCreateSurfaceOHOS CreateSurfaceOHOS;
+#endif // VK_USE_PLATFORM_OHOS
+    PFN_vkGetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV
+        GetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV;
 } VkLayerInstanceDispatchTable;
 
 // Device dispatch table
@@ -345,6 +355,25 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkGetDeviceBufferMemoryRequirements GetDeviceBufferMemoryRequirements;
     PFN_vkGetDeviceImageMemoryRequirements GetDeviceImageMemoryRequirements;
     PFN_vkGetDeviceImageSparseMemoryRequirements GetDeviceImageSparseMemoryRequirements;
+    PFN_vkCmdSetLineStipple CmdSetLineStipple;
+    PFN_vkMapMemory2 MapMemory2;
+    PFN_vkUnmapMemory2 UnmapMemory2;
+    PFN_vkCmdBindIndexBuffer2 CmdBindIndexBuffer2;
+    PFN_vkGetRenderingAreaGranularity GetRenderingAreaGranularity;
+    PFN_vkGetDeviceImageSubresourceLayout GetDeviceImageSubresourceLayout;
+    PFN_vkGetImageSubresourceLayout2 GetImageSubresourceLayout2;
+    PFN_vkCmdPushDescriptorSet CmdPushDescriptorSet;
+    PFN_vkCmdPushDescriptorSetWithTemplate CmdPushDescriptorSetWithTemplate;
+    PFN_vkCmdSetRenderingAttachmentLocations CmdSetRenderingAttachmentLocations;
+    PFN_vkCmdSetRenderingInputAttachmentIndices CmdSetRenderingInputAttachmentIndices;
+    PFN_vkCmdBindDescriptorSets2 CmdBindDescriptorSets2;
+    PFN_vkCmdPushConstants2 CmdPushConstants2;
+    PFN_vkCmdPushDescriptorSet2 CmdPushDescriptorSet2;
+    PFN_vkCmdPushDescriptorSetWithTemplate2 CmdPushDescriptorSetWithTemplate2;
+    PFN_vkCopyMemoryToImage CopyMemoryToImage;
+    PFN_vkCopyImageToMemory CopyImageToMemory;
+    PFN_vkCopyImageToImage CopyImageToImage;
+    PFN_vkTransitionImageLayout TransitionImageLayout;
     PFN_vkCreateSwapchainKHR CreateSwapchainKHR;
     PFN_vkDestroySwapchainKHR DestroySwapchainKHR;
     PFN_vkGetSwapchainImagesKHR GetSwapchainImagesKHR;
@@ -439,8 +468,6 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkCmdPipelineBarrier2KHR CmdPipelineBarrier2KHR;
     PFN_vkCmdWriteTimestamp2KHR CmdWriteTimestamp2KHR;
     PFN_vkQueueSubmit2KHR QueueSubmit2KHR;
-    PFN_vkCmdWriteBufferMarker2AMD CmdWriteBufferMarker2AMD;
-    PFN_vkGetQueueCheckpointData2NV GetQueueCheckpointData2NV;
     PFN_vkCmdCopyBuffer2KHR CmdCopyBuffer2KHR;
     PFN_vkCmdCopyImage2KHR CmdCopyImage2KHR;
     PFN_vkCmdCopyBufferToImage2KHR CmdCopyBufferToImage2KHR;
@@ -455,6 +482,13 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkGetRenderingAreaGranularityKHR GetRenderingAreaGranularityKHR;
     PFN_vkGetDeviceImageSubresourceLayoutKHR GetDeviceImageSubresourceLayoutKHR;
     PFN_vkGetImageSubresourceLayout2KHR GetImageSubresourceLayout2KHR;
+    PFN_vkWaitForPresent2KHR WaitForPresent2KHR;
+    PFN_vkCreatePipelineBinariesKHR CreatePipelineBinariesKHR;
+    PFN_vkDestroyPipelineBinaryKHR DestroyPipelineBinaryKHR;
+    PFN_vkGetPipelineKeyKHR GetPipelineKeyKHR;
+    PFN_vkGetPipelineBinaryDataKHR GetPipelineBinaryDataKHR;
+    PFN_vkReleaseCapturedPipelineDataKHR ReleaseCapturedPipelineDataKHR;
+    PFN_vkReleaseSwapchainImagesKHR ReleaseSwapchainImagesKHR;
     PFN_vkCmdSetLineStippleKHR CmdSetLineStippleKHR;
     PFN_vkGetCalibratedTimestampsKHR GetCalibratedTimestampsKHR;
     PFN_vkCmdBindDescriptorSets2KHR CmdBindDescriptorSets2KHR;
@@ -480,6 +514,7 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkDestroyCuFunctionNVX DestroyCuFunctionNVX;
     PFN_vkCmdCuLaunchKernelNVX CmdCuLaunchKernelNVX;
     PFN_vkGetImageViewHandleNVX GetImageViewHandleNVX;
+    PFN_vkGetImageViewHandle64NVX GetImageViewHandle64NVX;
     PFN_vkGetImageViewAddressNVX GetImageViewAddressNVX;
     PFN_vkCmdDrawIndirectCountAMD CmdDrawIndirectCountAMD;
     PFN_vkCmdDrawIndexedIndirectCountAMD CmdDrawIndexedIndirectCountAMD;
@@ -545,6 +580,7 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkCompileDeferredNV CompileDeferredNV;
     PFN_vkGetMemoryHostPointerPropertiesEXT GetMemoryHostPointerPropertiesEXT;
     PFN_vkCmdWriteBufferMarkerAMD CmdWriteBufferMarkerAMD;
+    PFN_vkCmdWriteBufferMarker2AMD CmdWriteBufferMarker2AMD;
     PFN_vkGetCalibratedTimestampsEXT GetCalibratedTimestampsEXT;
     PFN_vkCmdDrawMeshTasksNV CmdDrawMeshTasksNV;
     PFN_vkCmdDrawMeshTasksIndirectNV CmdDrawMeshTasksIndirectNV;
@@ -553,6 +589,7 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkCmdSetExclusiveScissorNV CmdSetExclusiveScissorNV;
     PFN_vkCmdSetCheckpointNV CmdSetCheckpointNV;
     PFN_vkGetQueueCheckpointDataNV GetQueueCheckpointDataNV;
+    PFN_vkGetQueueCheckpointData2NV GetQueueCheckpointData2NV;
     PFN_vkInitializePerformanceApiINTEL InitializePerformanceApiINTEL;
     PFN_vkUninitializePerformanceApiINTEL UninitializePerformanceApiINTEL;
     PFN_vkCmdSetPerformanceMarkerINTEL CmdSetPerformanceMarkerINTEL;
@@ -600,12 +637,17 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkDestroyPrivateDataSlotEXT DestroyPrivateDataSlotEXT;
     PFN_vkSetPrivateDataEXT SetPrivateDataEXT;
     PFN_vkGetPrivateDataEXT GetPrivateDataEXT;
+#ifdef VK_ENABLE_BETA_EXTENSIONS
     PFN_vkCreateCudaModuleNV CreateCudaModuleNV;
     PFN_vkGetCudaModuleCacheNV GetCudaModuleCacheNV;
     PFN_vkCreateCudaFunctionNV CreateCudaFunctionNV;
     PFN_vkDestroyCudaModuleNV DestroyCudaModuleNV;
     PFN_vkDestroyCudaFunctionNV DestroyCudaFunctionNV;
     PFN_vkCmdCudaLaunchKernelNV CmdCudaLaunchKernelNV;
+#endif // VK_ENABLE_BETA_EXTENSIONS
+    PFN_vkCmdDispatchTileQCOM CmdDispatchTileQCOM;
+    PFN_vkCmdBeginPerTileExecutionQCOM CmdBeginPerTileExecutionQCOM;
+    PFN_vkCmdEndPerTileExecutionQCOM CmdEndPerTileExecutionQCOM;
 #ifdef VK_USE_PLATFORM_METAL_EXT
     PFN_vkExportMetalObjectsEXT ExportMetalObjectsEXT;
 #endif // VK_USE_PLATFORM_METAL_EXT
@@ -704,27 +746,72 @@ typedef struct VkLayerDeviceDispatchTable {
     PFN_vkCmdSetShadingRateImageEnableNV CmdSetShadingRateImageEnableNV;
     PFN_vkCmdSetRepresentativeFragmentTestEnableNV CmdSetRepresentativeFragmentTestEnableNV;
     PFN_vkCmdSetCoverageReductionModeNV CmdSetCoverageReductionModeNV;
+    PFN_vkCreateTensorARM CreateTensorARM;
+    PFN_vkDestroyTensorARM DestroyTensorARM;
+    PFN_vkCreateTensorViewARM CreateTensorViewARM;
+    PFN_vkDestroyTensorViewARM DestroyTensorViewARM;
+    PFN_vkGetTensorMemoryRequirementsARM GetTensorMemoryRequirementsARM;
+    PFN_vkBindTensorMemoryARM BindTensorMemoryARM;
+    PFN_vkGetDeviceTensorMemoryRequirementsARM GetDeviceTensorMemoryRequirementsARM;
+    PFN_vkCmdCopyTensorARM CmdCopyTensorARM;
+    PFN_vkGetTensorOpaqueCaptureDescriptorDataARM GetTensorOpaqueCaptureDescriptorDataARM;
+    PFN_vkGetTensorViewOpaqueCaptureDescriptorDataARM GetTensorViewOpaqueCaptureDescriptorDataARM;
     PFN_vkGetShaderModuleIdentifierEXT GetShaderModuleIdentifierEXT;
     PFN_vkGetShaderModuleCreateInfoIdentifierEXT GetShaderModuleCreateInfoIdentifierEXT;
     PFN_vkCreateOpticalFlowSessionNV CreateOpticalFlowSessionNV;
     PFN_vkDestroyOpticalFlowSessionNV DestroyOpticalFlowSessionNV;
     PFN_vkBindOpticalFlowSessionImageNV BindOpticalFlowSessionImageNV;
     PFN_vkCmdOpticalFlowExecuteNV CmdOpticalFlowExecuteNV;
+    PFN_vkAntiLagUpdateAMD AntiLagUpdateAMD;
     PFN_vkCreateShadersEXT CreateShadersEXT;
     PFN_vkDestroyShaderEXT DestroyShaderEXT;
     PFN_vkGetShaderBinaryDataEXT GetShaderBinaryDataEXT;
     PFN_vkCmdBindShadersEXT CmdBindShadersEXT;
+    PFN_vkCmdSetDepthClampRangeEXT CmdSetDepthClampRangeEXT;
     PFN_vkGetFramebufferTilePropertiesQCOM GetFramebufferTilePropertiesQCOM;
     PFN_vkGetDynamicRenderingTilePropertiesQCOM GetDynamicRenderingTilePropertiesQCOM;
+    PFN_vkConvertCooperativeVectorMatrixNV ConvertCooperativeVectorMatrixNV;
+    PFN_vkCmdConvertCooperativeVectorMatrixNV CmdConvertCooperativeVectorMatrixNV;
     PFN_vkSetLatencySleepModeNV SetLatencySleepModeNV;
     PFN_vkLatencySleepNV LatencySleepNV;
     PFN_vkSetLatencyMarkerNV SetLatencyMarkerNV;
     PFN_vkGetLatencyTimingsNV GetLatencyTimingsNV;
     PFN_vkQueueNotifyOutOfBandNV QueueNotifyOutOfBandNV;
+    PFN_vkCreateDataGraphPipelinesARM CreateDataGraphPipelinesARM;
+    PFN_vkCreateDataGraphPipelineSessionARM CreateDataGraphPipelineSessionARM;
+    PFN_vkGetDataGraphPipelineSessionBindPointRequirementsARM GetDataGraphPipelineSessionBindPointRequirementsARM;
+    PFN_vkGetDataGraphPipelineSessionMemoryRequirementsARM GetDataGraphPipelineSessionMemoryRequirementsARM;
+    PFN_vkBindDataGraphPipelineSessionMemoryARM BindDataGraphPipelineSessionMemoryARM;
+    PFN_vkDestroyDataGraphPipelineSessionARM DestroyDataGraphPipelineSessionARM;
+    PFN_vkCmdDispatchDataGraphARM CmdDispatchDataGraphARM;
+    PFN_vkGetDataGraphPipelineAvailablePropertiesARM GetDataGraphPipelineAvailablePropertiesARM;
+    PFN_vkGetDataGraphPipelinePropertiesARM GetDataGraphPipelinePropertiesARM;
     PFN_vkCmdSetAttachmentFeedbackLoopEnableEXT CmdSetAttachmentFeedbackLoopEnableEXT;
 #ifdef VK_USE_PLATFORM_SCREEN_QNX
     PFN_vkGetScreenBufferPropertiesQNX GetScreenBufferPropertiesQNX;
 #endif // VK_USE_PLATFORM_SCREEN_QNX
+    PFN_vkCmdBindTileMemoryQCOM CmdBindTileMemoryQCOM;
+    PFN_vkCreateExternalComputeQueueNV CreateExternalComputeQueueNV;
+    PFN_vkDestroyExternalComputeQueueNV DestroyExternalComputeQueueNV;
+    PFN_vkGetExternalComputeQueueDataNV GetExternalComputeQueueDataNV;
+    PFN_vkGetClusterAccelerationStructureBuildSizesNV GetClusterAccelerationStructureBuildSizesNV;
+    PFN_vkCmdBuildClusterAccelerationStructureIndirectNV CmdBuildClusterAccelerationStructureIndirectNV;
+    PFN_vkGetPartitionedAccelerationStructuresBuildSizesNV GetPartitionedAccelerationStructuresBuildSizesNV;
+    PFN_vkCmdBuildPartitionedAccelerationStructuresNV CmdBuildPartitionedAccelerationStructuresNV;
+    PFN_vkGetGeneratedCommandsMemoryRequirementsEXT GetGeneratedCommandsMemoryRequirementsEXT;
+    PFN_vkCmdPreprocessGeneratedCommandsEXT CmdPreprocessGeneratedCommandsEXT;
+    PFN_vkCmdExecuteGeneratedCommandsEXT CmdExecuteGeneratedCommandsEXT;
+    PFN_vkCreateIndirectCommandsLayoutEXT CreateIndirectCommandsLayoutEXT;
+    PFN_vkDestroyIndirectCommandsLayoutEXT DestroyIndirectCommandsLayoutEXT;
+    PFN_vkCreateIndirectExecutionSetEXT CreateIndirectExecutionSetEXT;
+    PFN_vkDestroyIndirectExecutionSetEXT DestroyIndirectExecutionSetEXT;
+    PFN_vkUpdateIndirectExecutionSetPipelineEXT UpdateIndirectExecutionSetPipelineEXT;
+    PFN_vkUpdateIndirectExecutionSetShaderEXT UpdateIndirectExecutionSetShaderEXT;
+#ifdef VK_USE_PLATFORM_METAL_EXT
+    PFN_vkGetMemoryMetalHandleEXT GetMemoryMetalHandleEXT;
+    PFN_vkGetMemoryMetalHandlePropertiesEXT GetMemoryMetalHandlePropertiesEXT;
+#endif // VK_USE_PLATFORM_METAL_EXT
+    PFN_vkCmdEndRendering2EXT CmdEndRendering2EXT;
     PFN_vkCreateAccelerationStructureKHR CreateAccelerationStructureKHR;
     PFN_vkDestroyAccelerationStructureKHR DestroyAccelerationStructureKHR;
     PFN_vkCmdBuildAccelerationStructuresKHR CmdBuildAccelerationStructuresKHR;
@@ -901,7 +988,15 @@ static inline bool initLDT(VkLayerInstanceDispatchTable& ldt,
     GET(CreateScreenSurfaceQNX);
     GET(GetPhysicalDeviceScreenPresentationSupportQNX);
 #endif // VK_USE_PLATFORM_SCREEN_QNX
+    GET(GetPhysicalDeviceExternalTensorPropertiesARM);
     GET(GetPhysicalDeviceOpticalFlowImageFormatsNV);
+    GET(GetPhysicalDeviceCooperativeVectorPropertiesNV);
+    GET(GetPhysicalDeviceQueueFamilyDataGraphPropertiesARM);
+    GET(GetPhysicalDeviceQueueFamilyDataGraphProcessingEnginePropertiesARM);
+#ifdef VK_USE_PLATFORM_OHOS
+    GET(CreateSurfaceOHOS);
+#endif // VK_USE_PLATFORM_OHOS
+    GET(GetPhysicalDeviceCooperativeMatrixFlexibleDimensionsPropertiesNV);
 #undef GET
     return true;
 }
@@ -1101,6 +1196,25 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(GetDeviceBufferMemoryRequirements);
     GET(GetDeviceImageMemoryRequirements);
     GET(GetDeviceImageSparseMemoryRequirements);
+    GET(CmdSetLineStipple);
+    GET(MapMemory2);
+    GET(UnmapMemory2);
+    GET(CmdBindIndexBuffer2);
+    GET(GetRenderingAreaGranularity);
+    GET(GetDeviceImageSubresourceLayout);
+    GET(GetImageSubresourceLayout2);
+    GET(CmdPushDescriptorSet);
+    GET(CmdPushDescriptorSetWithTemplate);
+    GET(CmdSetRenderingAttachmentLocations);
+    GET(CmdSetRenderingInputAttachmentIndices);
+    GET(CmdBindDescriptorSets2);
+    GET(CmdPushConstants2);
+    GET(CmdPushDescriptorSet2);
+    GET(CmdPushDescriptorSetWithTemplate2);
+    GET(CopyMemoryToImage);
+    GET(CopyImageToMemory);
+    GET(CopyImageToImage);
+    GET(TransitionImageLayout);
     GET(CreateSwapchainKHR);
     GET(DestroySwapchainKHR);
     GET(GetSwapchainImagesKHR);
@@ -1195,8 +1309,6 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(CmdPipelineBarrier2KHR);
     GET(CmdWriteTimestamp2KHR);
     GET(QueueSubmit2KHR);
-    GET(CmdWriteBufferMarker2AMD);
-    GET(GetQueueCheckpointData2NV);
     GET(CmdCopyBuffer2KHR);
     GET(CmdCopyImage2KHR);
     GET(CmdCopyBufferToImage2KHR);
@@ -1211,6 +1323,13 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(GetRenderingAreaGranularityKHR);
     GET(GetDeviceImageSubresourceLayoutKHR);
     GET(GetImageSubresourceLayout2KHR);
+    GET(WaitForPresent2KHR);
+    GET(CreatePipelineBinariesKHR);
+    GET(DestroyPipelineBinaryKHR);
+    GET(GetPipelineKeyKHR);
+    GET(GetPipelineBinaryDataKHR);
+    GET(ReleaseCapturedPipelineDataKHR);
+    GET(ReleaseSwapchainImagesKHR);
     GET(CmdSetLineStippleKHR);
     GET(GetCalibratedTimestampsKHR);
     GET(CmdBindDescriptorSets2KHR);
@@ -1236,6 +1355,7 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(DestroyCuFunctionNVX);
     GET(CmdCuLaunchKernelNVX);
     GET(GetImageViewHandleNVX);
+    GET(GetImageViewHandle64NVX);
     GET(GetImageViewAddressNVX);
     GET(CmdDrawIndirectCountAMD);
     GET(CmdDrawIndexedIndirectCountAMD);
@@ -1301,6 +1421,7 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(CompileDeferredNV);
     GET(GetMemoryHostPointerPropertiesEXT);
     GET(CmdWriteBufferMarkerAMD);
+    GET(CmdWriteBufferMarker2AMD);
     GET(GetCalibratedTimestampsEXT);
     GET(CmdDrawMeshTasksNV);
     GET(CmdDrawMeshTasksIndirectNV);
@@ -1309,6 +1430,7 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(CmdSetExclusiveScissorNV);
     GET(CmdSetCheckpointNV);
     GET(GetQueueCheckpointDataNV);
+    GET(GetQueueCheckpointData2NV);
     GET(InitializePerformanceApiINTEL);
     GET(UninitializePerformanceApiINTEL);
     GET(CmdSetPerformanceMarkerINTEL);
@@ -1356,12 +1478,17 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(DestroyPrivateDataSlotEXT);
     GET(SetPrivateDataEXT);
     GET(GetPrivateDataEXT);
+#ifdef VK_ENABLE_BETA_EXTENSIONS
     GET(CreateCudaModuleNV);
     GET(GetCudaModuleCacheNV);
     GET(CreateCudaFunctionNV);
     GET(DestroyCudaModuleNV);
     GET(DestroyCudaFunctionNV);
     GET(CmdCudaLaunchKernelNV);
+#endif // VK_ENABLE_BETA_EXTENSIONS
+    GET(CmdDispatchTileQCOM);
+    GET(CmdBeginPerTileExecutionQCOM);
+    GET(CmdEndPerTileExecutionQCOM);
 #ifdef VK_USE_PLATFORM_METAL_EXT
     GET(ExportMetalObjectsEXT);
 #endif // VK_USE_PLATFORM_METAL_EXT
@@ -1460,27 +1587,72 @@ static inline bool initLDT(VkLayerDeviceDispatchTable& ldt,
     GET(CmdSetShadingRateImageEnableNV);
     GET(CmdSetRepresentativeFragmentTestEnableNV);
     GET(CmdSetCoverageReductionModeNV);
+    GET(CreateTensorARM);
+    GET(DestroyTensorARM);
+    GET(CreateTensorViewARM);
+    GET(DestroyTensorViewARM);
+    GET(GetTensorMemoryRequirementsARM);
+    GET(BindTensorMemoryARM);
+    GET(GetDeviceTensorMemoryRequirementsARM);
+    GET(CmdCopyTensorARM);
+    GET(GetTensorOpaqueCaptureDescriptorDataARM);
+    GET(GetTensorViewOpaqueCaptureDescriptorDataARM);
     GET(GetShaderModuleIdentifierEXT);
     GET(GetShaderModuleCreateInfoIdentifierEXT);
     GET(CreateOpticalFlowSessionNV);
     GET(DestroyOpticalFlowSessionNV);
     GET(BindOpticalFlowSessionImageNV);
     GET(CmdOpticalFlowExecuteNV);
+    GET(AntiLagUpdateAMD);
     GET(CreateShadersEXT);
     GET(DestroyShaderEXT);
     GET(GetShaderBinaryDataEXT);
     GET(CmdBindShadersEXT);
+    GET(CmdSetDepthClampRangeEXT);
     GET(GetFramebufferTilePropertiesQCOM);
     GET(GetDynamicRenderingTilePropertiesQCOM);
+    GET(ConvertCooperativeVectorMatrixNV);
+    GET(CmdConvertCooperativeVectorMatrixNV);
     GET(SetLatencySleepModeNV);
     GET(LatencySleepNV);
     GET(SetLatencyMarkerNV);
     GET(GetLatencyTimingsNV);
     GET(QueueNotifyOutOfBandNV);
+    GET(CreateDataGraphPipelinesARM);
+    GET(CreateDataGraphPipelineSessionARM);
+    GET(GetDataGraphPipelineSessionBindPointRequirementsARM);
+    GET(GetDataGraphPipelineSessionMemoryRequirementsARM);
+    GET(BindDataGraphPipelineSessionMemoryARM);
+    GET(DestroyDataGraphPipelineSessionARM);
+    GET(CmdDispatchDataGraphARM);
+    GET(GetDataGraphPipelineAvailablePropertiesARM);
+    GET(GetDataGraphPipelinePropertiesARM);
     GET(CmdSetAttachmentFeedbackLoopEnableEXT);
 #ifdef VK_USE_PLATFORM_SCREEN_QNX
     GET(GetScreenBufferPropertiesQNX);
 #endif // VK_USE_PLATFORM_SCREEN_QNX
+    GET(CmdBindTileMemoryQCOM);
+    GET(CreateExternalComputeQueueNV);
+    GET(DestroyExternalComputeQueueNV);
+    GET(GetExternalComputeQueueDataNV);
+    GET(GetClusterAccelerationStructureBuildSizesNV);
+    GET(CmdBuildClusterAccelerationStructureIndirectNV);
+    GET(GetPartitionedAccelerationStructuresBuildSizesNV);
+    GET(CmdBuildPartitionedAccelerationStructuresNV);
+    GET(GetGeneratedCommandsMemoryRequirementsEXT);
+    GET(CmdPreprocessGeneratedCommandsEXT);
+    GET(CmdExecuteGeneratedCommandsEXT);
+    GET(CreateIndirectCommandsLayoutEXT);
+    GET(DestroyIndirectCommandsLayoutEXT);
+    GET(CreateIndirectExecutionSetEXT);
+    GET(DestroyIndirectExecutionSetEXT);
+    GET(UpdateIndirectExecutionSetPipelineEXT);
+    GET(UpdateIndirectExecutionSetShaderEXT);
+#ifdef VK_USE_PLATFORM_METAL_EXT
+    GET(GetMemoryMetalHandleEXT);
+    GET(GetMemoryMetalHandlePropertiesEXT);
+#endif // VK_USE_PLATFORM_METAL_EXT
+    GET(CmdEndRendering2EXT);
     GET(CreateAccelerationStructureKHR);
     GET(DestroyAccelerationStructureKHR);
     GET(CmdBuildAccelerationStructuresKHR);
