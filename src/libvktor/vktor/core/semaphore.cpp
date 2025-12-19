@@ -27,18 +27,8 @@ Semaphore::~Semaphore() {
     handle = VK_NULL_HANDLE;
 }
 
-VkResult Semaphore::waitAll(uint64_t value, uint64_t timeout) const {
+VkResult Semaphore::wait(uint64_t value, uint64_t timeout) const {
     auto info = Itor::SemaphoreWaitInfo();
-    info.flags = 0;
-    info.pValues = &value;
-    info.pSemaphores = &handle;
-    info.semaphoreCount = 1;
-    return vkWaitSemaphores(api, &info, timeout);
-}
-
-VkResult Semaphore::waitAny(uint64_t value, uint64_t timeout) const {
-    auto info = Itor::SemaphoreWaitInfo();
-    info.flags = VK_SEMAPHORE_WAIT_ANY_BIT;
     info.pValues = &value;
     info.pSemaphores = &handle;
     info.semaphoreCount = 1;
