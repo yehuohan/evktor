@@ -8,13 +8,13 @@ snippet core-hpp
 
     struct ${1:name};
 
-    class ${1}State : public CoreStater<${1}State> {
+    class ${1}State : public CoreState<${1}State> {
         friend struct ${1};
 
     private:
 
     public:
-        explicit ${1}State(String&& name = "${1}") : CoreStater(std::move(name)) {}
+        explicit ${1}State(String&& name = "${1}") : CoreState(std::move(name)) {}
 
         Self setFlags(Vk${1}CreateFlags flags);
 
