@@ -7,7 +7,7 @@
 using namespace vkt;
 using namespace vkt::core;
 
-Box<CoreApi> setupCoreApi() {
+Box<CoreApi> setupCoreApi(const Vector<const char*> instance_exts = {}, const Vector<const char*> device_exts = {}) {
     Box<CoreApi> api = newBox<CoreApi>();
     DebugState dso{};
     dso.setMessageSeverity(false, false);
@@ -21,6 +21,7 @@ Box<CoreApi> setupCoreApi() {
                   .setEngineVersion(VK_MAKE_VERSION(1, 0, 0))
                   .enableLayerValidation()
                   .enableExtensionDebugUtils()
+                  .addExtensions(instance_exts)
                   .setVerbose(true))
         .unwrap();
 
@@ -36,7 +37,11 @@ Box<CoreApi> setupCoreApi() {
         .unwrap();
 
     // Create device
-    api->init(DeviceState().setMaxQueueCount(1).addRequiredExtension(VK_KHR_MAINTENANCE1_EXTENSION_NAME).setVerbose(true))
+    api->init(DeviceState()
+                  .setMaxQueueCount(1)
+                  .addExtension(VK_KHR_MAINTENANCE1_EXTENSION_NAME)
+                  .addExtensions(device_exts)
+                  .setVerbose(true))
         .unwrap();
 
     tstOut("Instance: {}, Physical Device: {}, Device: {}",

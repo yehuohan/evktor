@@ -14,16 +14,16 @@ class DeviceState : public CoreState<DeviceState> {
 
 private:
     uint32_t max_queue_count = 1; /**< The max count of queues for each queue family, must >= 1. */
-    Vector<const char*> required_extensions{};
-    VkPhysicalDeviceFeatures required_features{};
+    Vector<const char*> extensions{};
+    VkPhysicalDeviceFeatures features{};
 
 public:
     explicit DeviceState(String&& name = "Device") : CoreState(std::move(name)) {}
 
     Self setMaxQueueCount(uint32_t count);
-    Self addRequiredExtension(const char* extension);
-    Self addRequiredExtensions(const Vector<const char*> extensions);
-    Self setRequiredFeatures(const VkPhysicalDeviceFeatures& features);
+    Self addExtension(const char* extension);
+    Self addExtensions(const Vector<const char*> extensions);
+    Self setFeatures(const VkPhysicalDeviceFeatures& features);
 
     Res<Device> into(CRef<PhysicalDevice> phy_dev);
 };

@@ -12,18 +12,18 @@ Self DeviceState::setMaxQueueCount(uint32_t count) {
     return *this;
 }
 
-Self DeviceState::addRequiredExtension(const char* extension) {
-    required_extensions.push_back(extension);
+Self DeviceState::addExtension(const char* extension) {
+    extensions.push_back(extension);
     return *this;
 }
 
-Self DeviceState::addRequiredExtensions(const Vector<const char*> extensions) {
-    required_extensions.insert(required_extensions.end(), extensions.begin(), extensions.end());
+Self DeviceState::addExtensions(const Vector<const char*> _extensions) {
+    extensions.insert(extensions.end(), _extensions.begin(), _extensions.end());
     return *this;
 }
 
-Self DeviceState::setRequiredFeatures(const VkPhysicalDeviceFeatures& features) {
-    required_features = features;
+Self DeviceState::setFeatures(const VkPhysicalDeviceFeatures& _features) {
+    features = _features;
     return *this;
 }
 
@@ -72,23 +72,23 @@ Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     Device device(phy_dev);
 
     // Add required extensions for memory allocator (>= VK_API_VERSION_1_1)
-    info.addRequiredExtension(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
-    info.addRequiredExtension(VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME);
-    info.addRequiredExtension(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
-    info.addRequiredExtension(VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
-    std::sort(info.required_extensions.begin(), info.required_extensions.end(), strLess);
-    auto new_end = std::unique(info.required_extensions.begin(), info.required_extensions.end());
-    info.required_extensions.erase(new_end, info.required_extensions.end());
+    info.addExtension(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
+    info.addExtension(VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME);
+    info.addExtension(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
+    info.addExtension(VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
+    std::sort(info.extensions.begin(), info.extensions.end(), strLess);
+    auto new_end = std::unique(info.extensions.begin(), info.extensions.end());
+    info.extensions.erase(new_end, info.extensions.end());
 
-    if (!checkDeviceExtensions(phy_dev.get(), info.required_extensions)) {
+    if (!checkDeviceExtensions(phy_dev.get(), info.extensions)) {
         return Er("Not all the required device extensions are supported");
     }
-    if (!checkDeviceFeatures(phy_dev.get(), info.required_features)) {
+    if (!checkDeviceFeatures(phy_dev.get(), info.features)) {
         return Er("Not all the required device features are supported");
     }
     if (info.__verbose) {
-        printDeviceExtensions(phy_dev.get(), info.required_extensions);
-        printDeviceFeatures(phy_dev.get(), info.required_features);
+        printDeviceExtensions(phy_dev.get(), info.extensions);
+        printDeviceFeatures(phy_dev.get(), info.features);
     }
 
     // Create all queues
@@ -110,14 +110,14 @@ Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     auto dev_ci = Itor::DeviceCreateInfo(info.__next); // Device-only layers are deprecated
     dev_ci.queueCreateInfoCount = u32(queues_ci.size());
     dev_ci.pQueueCreateInfos = queues_ci.data();
-    dev_ci.enabledExtensionCount = u32(info.required_extensions.size());
-    dev_ci.ppEnabledExtensionNames = info.required_extensions.data();
+    dev_ci.enabledExtensionCount = u32(info.extensions.size());
+    dev_ci.ppEnabledExtensionNames = info.extensions.data();
     dev_ci.pEnabledFeatures = traverseNext(info.__next,
                                            [](const VkBaseInStructure& base) {
                                                return base.sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
                                            })
                                   ? nullptr
-                                  : &info.required_features;
+                                  : &info.features;
 
     OnRet(vkCreateDevice(phy_dev.get(), &dev_ci, phy_dev.get().instance.get(), device), "Failed to create device");
 
