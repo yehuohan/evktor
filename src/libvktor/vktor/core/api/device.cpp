@@ -71,11 +71,6 @@ Device& Device::operator=(Device&& rhs) {
 Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     Device device(phy_dev);
 
-    // Add required extensions for memory allocator (>= VK_API_VERSION_1_1)
-    info.addExtension(VK_KHR_GET_MEMORY_REQUIREMENTS_2_EXTENSION_NAME);
-    info.addExtension(VK_KHR_DEDICATED_ALLOCATION_EXTENSION_NAME);
-    info.addExtension(VK_KHR_BIND_MEMORY_2_EXTENSION_NAME);
-    info.addExtension(VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
     std::sort(info.extensions.begin(), info.extensions.end(), strLess);
     auto new_end = std::unique(info.extensions.begin(), info.extensions.end());
     info.extensions.erase(new_end, info.extensions.end());
@@ -146,16 +141,25 @@ Res<Device> Device::borrow(CRef<PhysicalDevice> phy_dev, VkDevice handle, PFN_vk
 }
 
 VkResult Device::createMemAllocator() {
-    // Use default VMA_DYNAMIC_VULKAN_FUNCTIONS = 1
     VmaVulkanFunctions fns{};
-    fns.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
-    fns.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
     VmaAllocatorCreateInfo vma_allocator_ai{};
     vma_allocator_ai.vulkanApiVersion = physical_device.get().instance.get().api_version;
     vma_allocator_ai.instance = physical_device.get().instance.get();
     vma_allocator_ai.physicalDevice = physical_device.get();
     vma_allocator_ai.device = handle;
     vma_allocator_ai.pVulkanFunctions = &fns;
+#if 1
+    // Define VMA_STATIC_VULKAN_FUNCTIONS=0 and VMA_DYNAMIC_VULKAN_FUNCTIONS=0 to work with volk
+    auto res = vmaImportVulkanFunctionsFromVolk(&vma_allocator_ai, &fns);
+    if (VK_SUCCESS != res) {
+        vktLogE("Failed to import Vulkan functions from Volk");
+        return res;
+    }
+#else
+    // Use default VMA_DYNAMIC_VULKAN_FUNCTIONS=1
+    fns.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
+    fns.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
+#endif
     return vmaCreateAllocator(&vma_allocator_ai, &mem_allocator);
 }
 

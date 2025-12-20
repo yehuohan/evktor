@@ -36,10 +36,10 @@ public:
     Self addLayers(const Vector<const char*> layers);
     Self addExtension(const char* extension);
     Self addExtensions(const Vector<const char*>& extensions);
-    inline Self enableLayerValidation() {
+    inline Self addValidationLayer() {
         return addLayer("VK_LAYER_KHRONOS_validation");
     }
-    inline Self enableExtensionDebugUtils() {
+    inline Self addDebugUtilsExtension() {
         return addExtension(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
 

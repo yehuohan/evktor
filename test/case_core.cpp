@@ -19,8 +19,8 @@ Box<CoreApi> setupCoreApi(const Vector<const char*> instance_exts = {}, const Ve
                   .setAppVerion(VK_MAKE_VERSION(1, 0, 0))
                   .setEngineName("vktor")
                   .setEngineVersion(VK_MAKE_VERSION(1, 0, 0))
-                  .enableLayerValidation()
-                  .enableExtensionDebugUtils()
+                  .addValidationLayer()
+                  .addDebugUtilsExtension()
                   .addExtensions(instance_exts)
                   .setVerbose(true))
         .unwrap();

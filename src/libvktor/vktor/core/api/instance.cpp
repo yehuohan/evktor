@@ -95,8 +95,6 @@ Res<Instance> Instance::from(InstanceState& info) {
     //      * call volkGenLoadLoader(VK_NULL_HANDLE, vkGetInstanceProcAddr))
     OnRet(volkInitialize(), "Unable to initialize Vulkan loader");
 
-    // Add required extensions for memory allocator (>= VK_API_VERSION_1_1)
-    info.addExtension(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
     std::sort(info.extensions.begin(), info.extensions.end(), strLess);
     auto new_end = std::unique(info.extensions.begin(), info.extensions.end());
     info.extensions.erase(new_end, info.extensions.end());

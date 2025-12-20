@@ -27,6 +27,9 @@ set(glslang_glslangValidator ${DEPS_DIR}/tools/glslang/glslangValidator)
 
 # Target: GPUOpen::VulkanMemoryAllocator
 find_package(VulkanMemoryAllocator CONFIG REQUIRED)
+target_compile_definitions(GPUOpen::VulkanMemoryAllocator
+    INTERFACE VMA_STATIC_VULKAN_FUNCTIONS=0
+    INTERFACE VMA_DYNAMIC_VULKAN_FUNCTIONS=0)
 
 # Target: glad
 project(glad)

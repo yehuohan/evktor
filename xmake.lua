@@ -52,6 +52,8 @@ target("vktor", function()
 	add_packages("vulkan-headers", "volk", "glslang", "vulkan-memory-allocator", "fmt", { public = true })
 
 	add_defines("VK_NO_PROTOTYPES", { public = true })
+	add_defines("VMA_STATIC_VULKAN_FUNCTIONS=0", { public = true })
+	add_defines("VMA_DYNAMIC_VULKAN_FUNCTIONS=0", { public = true })
 	if is_plat("windows") or is_plat("mingw") then
 		add_defines("VK_USE_PLATFORM_WIN32_KHR", { public = true })
 	elseif is_plat("linux") then
