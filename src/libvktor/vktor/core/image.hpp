@@ -1,5 +1,6 @@
 #pragma once
 #include "__core.hpp"
+#include "device_memory_pool.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -8,11 +9,13 @@ struct Image;
 
 class ImageState : public CoreState<ImageState> {
     friend struct Image;
+    friend struct DeviceMemoryPool;
 
 private:
     mutable VkImageCreateInfo image_ci{};
     VmaAllocationCreateFlags memory_flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
     VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO;
+    const DeviceMemoryPool* memory_pool = nullptr;
 
 public:
     explicit ImageState(String&& name = "Image") : CoreState(std::move(name)) {
@@ -50,6 +53,7 @@ public:
 
     Self setMemoryFlags(VmaAllocationCreateFlags flags);
     Self setMemoryUsage(VmaMemoryUsage usage);
+    Self setMemoryPool(const DeviceMemoryPool* pool);
 
     Res<Image> into(const CoreApi& api) const;
 };
@@ -123,6 +127,9 @@ public:
     bool copyInto(void* dst, const VkDeviceSize dst_size, uint32_t mip = 0, uint32_t layer = 0) const;
     Res<void*> map() const;
     void unmap() const;
+    VkResult getFd(int& fd, VkExternalMemoryHandleTypeFlagBits hdl_type = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT);
+    VkResult getWin32Handle(HANDLE& hdl,
+                            VkExternalMemoryHandleTypeFlagBits hdl_type = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT);
 
     static Res<Image> from(const CoreApi& api, const ImageState& info);
     /**

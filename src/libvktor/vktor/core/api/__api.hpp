@@ -209,17 +209,31 @@ auto enumerate(F&& f, Ts&&... ts) -> Vector<T> {
  * @retval true Exit traverse early when function 'F' returns true
  * @retval false Exit traverse until catch null next
  */
-template <typename F>
-auto traverse(const void* next, F&& f) -> bool {
+template <typename F, typename... Ts>
+auto traverseNext(const void* next, F&& f, Ts&&... ts) -> bool {
     const void* n = next;
     while (n) {
         const VkBaseInStructure& base = *static_cast<const VkBaseInStructure*>(n);
-        if (f(base)) {
+        if (f(base, ts...)) {
             return true;
         }
         n = base.pNext;
     }
     return false;
+}
+
+/**
+ * @brief Chain new next to Vulkan object create info
+ *
+ * @param next A `.pNext` chain
+ */
+template <typename T>
+void chainNext(T& create_info, const void* next) {
+    VkBaseOutStructure* n = (VkBaseOutStructure*)&create_info;
+    while (n->pNext) {
+        n = n->pNext;
+    }
+    n->pNext = (VkBaseOutStructure*)next;
 }
 
 NAMESPACE_END(core)

@@ -78,6 +78,11 @@ Self ImageState::setMemoryUsage(VmaMemoryUsage usage) {
     return *this;
 }
 
+Self ImageState::setMemoryPool(const DeviceMemoryPool* pool) {
+    memory_pool = pool;
+    return *this;
+}
+
 Res<Image> ImageState::into(const CoreApi& api) const {
     return Image::from(api, *this);
 }
@@ -168,9 +173,24 @@ void Image::unmap() const {
     vmaUnmapMemory(api, allocation);
 }
 
+VkResult Image::getFd(int& fd, VkExternalMemoryHandleTypeFlagBits hdl_type) {
+    auto fd_gi = Itor::MemoryGetFdInfoKHR();
+    fd_gi.memory = memory;
+    fd_gi.handleType = hdl_type;
+    return vkGetMemoryFdKHR(api, &fd_gi, &fd);
+}
+
+VkResult Image::getWin32Handle(HANDLE& hdl, VkExternalMemoryHandleTypeFlagBits hdl_type) {
+    auto hdl_gi = Itor::MemoryGetWin32HandleInfoKHR();
+    hdl_gi.memory = memory;
+    hdl_gi.handleType = hdl_type;
+    return vkGetMemoryWin32HandleKHR(api, &hdl_gi, &hdl);
+}
+
 Res<Image> Image::from(const CoreApi& api, const ImageState& info) {
     Image image(api);
 
+    info.image_ci.pNext = info.__next;
     if (info.image_ci.tiling == VK_IMAGE_TILING_OPTIMAL) {
         if ((info.memory_flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT) ||
             (info.memory_flags & VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT)) {
@@ -186,9 +206,16 @@ Res<Image> Image::from(const CoreApi& api, const ImageState& info) {
     VmaAllocationCreateInfo allocation_ci{};
     allocation_ci.flags = info.memory_flags;
     allocation_ci.usage = info.memory_usage;
+
+    auto external_memory_ci = Itor::ExternalMemoryImageCreateInfo();
+    if (info.memory_pool && info.memory_pool->export_memory_ai) {
+        external_memory_ci.handleTypes = info.memory_pool->export_memory_ai->handleTypes;
+        chainNext(info.image_ci, &external_memory_ci);
+        allocation_ci.pool = *info.memory_pool;
+    }
+
     VmaAllocationInfo allocation_info{};
 
-    info.image_ci.pNext = info.__next;
     OnRet(vmaCreateImage(api, &info.image_ci, &allocation_ci, image, &image.allocation, &allocation_info),
           "Failed to create image");
     OnName(image, info.__name);

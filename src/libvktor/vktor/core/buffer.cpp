@@ -10,8 +10,8 @@ Self BufferState::setSize(VkDeviceSize size) {
     return *this;
 }
 
-Self BufferState::setUsage(VkBufferUsageFlags flags) {
-    buffer_ci.usage = flags;
+Self BufferState::setUsage(VkBufferUsageFlags usage) {
+    buffer_ci.usage = usage;
     return *this;
 }
 
@@ -22,6 +22,11 @@ Self BufferState::setMemoryFlags(VmaAllocationCreateFlags flags) {
 
 Self BufferState::setMemoryUsage(VmaMemoryUsage usage) {
     memory_usage = usage;
+    return *this;
+}
+
+Self BufferState::setMemoryPool(const DeviceMemoryPool* pool) {
+    memory_pool = pool;
     return *this;
 }
 
@@ -90,15 +95,38 @@ void Buffer::unmap() const {
     vmaUnmapMemory(api, allocation);
 }
 
+VkResult Buffer::getFd(int& fd, VkExternalMemoryHandleTypeFlagBits hdl_type) {
+    auto fd_gi = Itor::MemoryGetFdInfoKHR();
+    fd_gi.memory = memory;
+    fd_gi.handleType = hdl_type;
+    return vkGetMemoryFdKHR(api, &fd_gi, &fd);
+}
+
+VkResult Buffer::getWin32Handle(HANDLE& hdl, VkExternalMemoryHandleTypeFlagBits hdl_type) {
+    auto hdl_gi = Itor::MemoryGetWin32HandleInfoKHR();
+    hdl_gi.memory = memory;
+    hdl_gi.handleType = hdl_type;
+    return vkGetMemoryWin32HandleKHR(api, &hdl_gi, &hdl);
+}
+
 Res<Buffer> Buffer::from(const CoreApi& api, const BufferState& info) {
     Buffer buffer(api);
+
+    info.buffer_ci.pNext = info.__next;
 
     VmaAllocationCreateInfo allocation_ci{};
     allocation_ci.flags = info.memory_flags;
     allocation_ci.usage = info.memory_usage;
+
+    auto external_memory_ci = Itor::ExternalMemoryBufferCreateInfo();
+    if (info.memory_pool && info.memory_pool->export_memory_ai) {
+        external_memory_ci.handleTypes = info.memory_pool->export_memory_ai->handleTypes;
+        chainNext(info.buffer_ci, &external_memory_ci);
+        allocation_ci.pool = *info.memory_pool;
+    }
+
     VmaAllocationInfo allocation_info{};
 
-    info.buffer_ci.pNext = info.__next;
     OnRet(vmaCreateBuffer(api, &info.buffer_ci, &allocation_ci, buffer, &buffer.allocation, &allocation_info),
           "Failed to create buffer");
     OnName(buffer, info.__name);

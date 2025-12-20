@@ -2,7 +2,6 @@
 #include <assets.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <iostream>
 #include <vktor.hpp>
 
 using namespace vkt;

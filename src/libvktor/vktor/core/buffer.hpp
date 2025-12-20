@@ -1,5 +1,6 @@
 #pragma once
 #include "__core.hpp"
+#include "device_memory_pool.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -8,11 +9,13 @@ struct Buffer;
 
 class BufferState : public CoreState<BufferState> {
     friend struct Buffer;
+    friend struct DeviceMemoryPool;
 
 private:
     mutable VkBufferCreateInfo buffer_ci{};
     VmaAllocationCreateFlags memory_flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT;
     VmaMemoryUsage memory_usage = VMA_MEMORY_USAGE_AUTO;
+    const DeviceMemoryPool* memory_pool = nullptr;
 
 public:
     explicit BufferState(String&& name = "Buffer") : CoreState(std::move(name)) {
@@ -27,10 +30,11 @@ public:
     }
 
     Self setSize(VkDeviceSize size);
-    Self setUsage(VkBufferUsageFlags flags);
+    Self setUsage(VkBufferUsageFlags usage);
 
     Self setMemoryFlags(VmaAllocationCreateFlags flags);
     Self setMemoryUsage(VmaMemoryUsage usage);
+    Self setMemoryPool(const DeviceMemoryPool* pool);
 
     Res<Buffer> into(const CoreApi& api) const;
 };
@@ -68,6 +72,9 @@ public:
     bool copyInto(void* dst, const VkDeviceSize copy_size = 0, VkDeviceSize offset = 0) const;
     Res<void*> map() const;
     void unmap() const;
+    VkResult getFd(int& fd, VkExternalMemoryHandleTypeFlagBits hdl_type = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT);
+    VkResult getWin32Handle(HANDLE& hdl,
+                            VkExternalMemoryHandleTypeFlagBits hdl_type = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT);
 
     static Res<Buffer> from(const CoreApi& api, const BufferState& info);
 };

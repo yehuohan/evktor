@@ -112,10 +112,10 @@ Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     dev_ci.pQueueCreateInfos = queues_ci.data();
     dev_ci.enabledExtensionCount = u32(info.required_extensions.size());
     dev_ci.ppEnabledExtensionNames = info.required_extensions.data();
-    dev_ci.pEnabledFeatures = traverse(info.__next,
-                                       [](const VkBaseInStructure& base) {
-                                           return base.sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-                                       })
+    dev_ci.pEnabledFeatures = traverseNext(info.__next,
+                                           [](const VkBaseInStructure& base) {
+                                               return base.sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+                                           })
                                   ? nullptr
                                   : &info.required_features;
 
