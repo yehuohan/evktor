@@ -149,14 +149,17 @@ Res<CRef<Device>> CoreApi::init(DeviceState& info) {
     return Ok(newCRef(device));
 }
 
-Res<CRef<Device>> CoreApi::borrow(VkDevice handle, PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr, QueueFamilyIndices indices) {
+Res<CRef<Device>> CoreApi::borrow(VkDevice handle,
+                                  PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr,
+                                  QueueFamilyIndices indices,
+                                  VmaAllocator mem_allocator) {
     if (!instance.handle) {
         return Er("Must have borrowed a valid instance to initialize device");
     }
     if (!physical_device.handle) {
         return Er("Must have borrowed a valid physical device");
     }
-    auto res = Device::borrow(newCRef(physical_device), handle, fpGetDeviceProcAddr);
+    auto res = Device::borrow(newCRef(physical_device), handle, fpGetDeviceProcAddr, mem_allocator);
     OnErr(res);
     device = std::move(res.unwrap());
 

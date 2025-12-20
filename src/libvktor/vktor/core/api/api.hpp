@@ -57,7 +57,8 @@ public:
     Res<CRef<PhysicalDevice>> borrow(VkPhysicalDevice handle, VkSurfaceKHR surface = VK_NULL_HANDLE);
     Res<CRef<Device>> borrow(VkDevice handle,
                              PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr = VK_NULL_HANDLE,
-                             QueueFamilyIndices indices = {});
+                             QueueFamilyIndices indices = {},
+                             VmaAllocator mem_allocator = VK_NULL_HANDLE);
 
     inline const QueueFamilyIndices& queueFamilyIndices() const {
         return queue_family_indices;

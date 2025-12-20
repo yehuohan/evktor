@@ -22,6 +22,11 @@ Self DeviceState::addExtensions(const Vector<const char*> _extensions) {
     return *this;
 }
 
+Self DeviceState::addExtensionsForVMA() {
+    require_extensions_for_vma = true;
+    return *this;
+}
+
 Self DeviceState::setFeatures(const VkPhysicalDeviceFeatures& _features) {
     features = _features;
     return *this;
@@ -71,6 +76,10 @@ Device& Device::operator=(Device&& rhs) {
 Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     Device device(phy_dev);
 
+    if (info.require_extensions_for_vma) {
+        info.addExtension(VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
+        info.addExtension(VK_EXT_MEMORY_PRIORITY_EXTENSION_NAME);
+    }
     std::sort(info.extensions.begin(), info.extensions.end(), strLess);
     auto new_end = std::unique(info.extensions.begin(), info.extensions.end());
     info.extensions.erase(new_end, info.extensions.end());
@@ -120,12 +129,19 @@ Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     volkLoadDevice(device);
 
     // Create memory allocator
-    OnRet(device.createMemAllocator(), "Failed to create memory allocator");
+    auto vma_flags = 0;
+    if (info.require_extensions_for_vma) {
+        vma_flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT | VMA_ALLOCATOR_CREATE_EXT_MEMORY_PRIORITY_BIT;
+    }
+    OnRet(device.createMemAllocator(vma_flags), "Failed to create memory allocator");
 
     return Ok(std::move(device));
 }
 
-Res<Device> Device::borrow(CRef<PhysicalDevice> phy_dev, VkDevice handle, PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr) {
+Res<Device> Device::borrow(CRef<PhysicalDevice> phy_dev,
+                           VkDevice handle,
+                           PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr,
+                           VmaAllocator mem_allocator) {
     Device device{phy_dev};
     device.__borrowed = true;
     device.handle = handle;
@@ -135,12 +151,16 @@ Res<Device> Device::borrow(CRef<PhysicalDevice> phy_dev, VkDevice handle, PFN_vk
     }
     volkLoadDevice(device);
 
-    OnRet(device.createMemAllocator(), "Failed to create memory allocator");
+    if (mem_allocator) {
+        device.mem_allocator = mem_allocator;
+    } else {
+        OnRet(device.createMemAllocator(), "Failed to create memory allocator");
+    }
 
     return Ok(std::move(device));
 }
 
-VkResult Device::createMemAllocator() {
+VkResult Device::createMemAllocator(VmaAllocatorCreateFlags flags) {
     VmaVulkanFunctions fns{};
     VmaAllocatorCreateInfo vma_allocator_ai{};
     vma_allocator_ai.vulkanApiVersion = physical_device.get().instance.get().api_version;
@@ -148,6 +168,7 @@ VkResult Device::createMemAllocator() {
     vma_allocator_ai.physicalDevice = physical_device.get();
     vma_allocator_ai.device = handle;
     vma_allocator_ai.pVulkanFunctions = &fns;
+    vma_allocator_ai.flags = flags;
 #if 1
     // Define VMA_STATIC_VULKAN_FUNCTIONS=0 and VMA_DYNAMIC_VULKAN_FUNCTIONS=0 to work with volk
     auto res = vmaImportVulkanFunctionsFromVolk(&vma_allocator_ai, &fns);

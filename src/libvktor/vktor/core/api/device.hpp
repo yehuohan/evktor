@@ -16,6 +16,7 @@ private:
     uint32_t max_queue_count = 1; /**< The max count of queues for each queue family, must >= 1. */
     Vector<const char*> extensions{};
     VkPhysicalDeviceFeatures features{};
+    bool require_extensions_for_vma = false;
 
 public:
     explicit DeviceState(String&& name = "Device") : CoreState(std::move(name)) {}
@@ -23,6 +24,7 @@ public:
     Self setMaxQueueCount(uint32_t count);
     Self addExtension(const char* extension);
     Self addExtensions(const Vector<const char*> extensions);
+    Self addExtensionsForVMA();
     Self setFeatures(const VkPhysicalDeviceFeatures& features);
 
     Res<Device> into(CRef<PhysicalDevice> phy_dev);
@@ -38,7 +40,7 @@ struct Device : public CoreHandle<VkDevice> {
 protected:
     explicit Device(CRef<PhysicalDevice> physical_device) : physical_device(physical_device) {}
 
-    VkResult createMemAllocator();
+    VkResult createMemAllocator(VmaAllocatorCreateFlags flags = 0);
 
 public:
     Device(Device&&);
@@ -52,7 +54,8 @@ public:
     static Res<Device> from(CRef<PhysicalDevice> phy_dev, DeviceState& info);
     static Res<Device> borrow(CRef<PhysicalDevice> phy_dev,
                               VkDevice handle,
-                              PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr = VK_NULL_HANDLE);
+                              PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr = VK_NULL_HANDLE,
+                              VmaAllocator mem_allocator = VK_NULL_HANDLE);
 };
 
 inline VkMemoryRequirements Device::getMemoryRequirements(VkBuffer buffer) const {
