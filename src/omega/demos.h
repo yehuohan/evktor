@@ -12,13 +12,13 @@
 #define DWID 800
 #define DHEI 600
 
-#define GLSL_VERT_MESH_DATA         Assets::getShader("omega/mesh_data.vert")
-#define GLSL_FRAG_MESH_DATA         Assets::getShader("omega/mesh_data.frag")
-#define GLSL_COMP_FILTER            Assets::getShader("omega/filter.comp")
-#define GLSL_VERT_BASE              Assets::getShader("omega/base.vert")
-#define GLSL_FRAG_BASE              Assets::getShader("omega/base.frag")
-#define GLSL_VERT_LIGHTING          Assets::getShader("omega/lighting.vert")
-#define GLSL_FRAG_LIGHTING          Assets::getShader("omega/lighting.frag")
+#define GLSL_VERT_MESH_DATA         Assets::shader("omega/mesh_data.vert")
+#define GLSL_FRAG_MESH_DATA         Assets::shader("omega/mesh_data.frag")
+#define GLSL_COMP_FILTER            Assets::shader("omega/filter.comp")
+#define GLSL_VERT_BASE              Assets::shader("omega/base.vert")
+#define GLSL_FRAG_BASE              Assets::shader("omega/base.frag")
+#define GLSL_VERT_LIGHTING          Assets::shader("omega/lighting.vert")
+#define GLSL_FRAG_LIGHTING          Assets::shader("omega/lighting.frag")
 
 
 class DemoFrustum : public LnGL {

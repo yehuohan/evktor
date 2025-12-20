@@ -20,7 +20,7 @@ DemoFilter::DemoFilter(int width, int height)
     // load texture
     tex_wid = 512;
     tex_hei = 512;
-    img = loadTexture(Assets::getTex("lena.jpg"));
+    img = loadTexture(Assets::tex("lena.jpg"));
     tex = createTexture(tex_wid, tex_hei);
 
     // load shader

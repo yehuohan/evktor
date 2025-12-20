@@ -25,7 +25,7 @@ DemoDeferred::DemoDeferred(int width, int height)
 }
 
 void DemoDeferred::initBasePass() {
-    Model mod(Assets::getObj("backpack/backpack.obj"));
+    Model mod(Assets::obj("backpack/backpack.obj"));
     model = loadModel(mod);
     for (int x = -1; x <= 1; x ++) {
         for (int z = -1; z <= 1; z ++) {
@@ -116,12 +116,12 @@ void DemoDeferred::initLightBoxes() {
 void DemoDeferred::initSkyBox() {
     cube = loadMeshData(MESH_DATA_Cube);
     cubemap = loadCubemap(std::vector<std::string> {
-        Assets::getTex("spacebox1/right.png"),
-        Assets::getTex("spacebox1/left.png"),
-        Assets::getTex("spacebox1/top.png"),
-        Assets::getTex("spacebox1/bottom.png"),
-        Assets::getTex("spacebox1/front.png"),
-        Assets::getTex("spacebox1/back.png"),
+        Assets::tex("spacebox1/right.png"),
+        Assets::tex("spacebox1/left.png"),
+        Assets::tex("spacebox1/top.png"),
+        Assets::tex("spacebox1/bottom.png"),
+        Assets::tex("spacebox1/front.png"),
+        Assets::tex("spacebox1/back.png"),
     });
 
     shader_skybox.load(GLSL_VERT_MESH_DATA, GLSL_FRAG_MESH_DATA);

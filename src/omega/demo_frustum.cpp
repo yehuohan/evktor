@@ -26,7 +26,7 @@ DemoFrustum::DemoFrustum(int width, int height)
     shader.setInt("meshType", 0);
 
     // load font
-    text_renderer.load(Assets::getFont("FantasqueSansNFM.ttf"), 18);
+    text_renderer.load(Assets::font("FantasqueSansNFM.ttf"), 18);
 
     initSubWin();
 }
