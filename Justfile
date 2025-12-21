@@ -21,6 +21,7 @@ export LD_LIBRARY_PATH := dir_install / 'lib'
 export XMAKE_CONFIGDIR := dir_xbuild / 'xmake'
 export XMAKE_MAIN_REPO := 'https://gitee.com/tboox/xmake-repo.git'
 
+export VCPKG_FORCE_SYSTEM_BINARIES := '1' # Use custom installed pwsh, jinja, cmake
 export VCPKG_ROOT := replace(env('DOT_APPS'), '\', '/') / 'vcpkg'
 export VCPKG_TRIPLET := if os() == "windows" { 'x64-mingw-mix' } else { 'x64-linux-mix' }
 VCPKG_XSCRIPT := '"clear;x-script,bash ' + dir_root + '/scripts/vcpkg_xscript.sh {url} {dst};x-block-origin"'
@@ -42,7 +43,7 @@ x-test case="": x-src
     @echo [Run] evktor/test
     {{dir_xinstall}}/bin/tst_main {{case}}
 
-all: evktor #omega
+all: evktor
 
 evktor: src
     @echo [Run] evktor...
@@ -80,6 +81,16 @@ x-gen:
         --builddir={{dir_xbuild}}
     xmake project -k compile_commands
 
+x-tags: x-gen
+    xmake b tags
+
+x-clean:
+    -rm -rf {{dir_xbuild}}/.build_cache
+    -rm -rf {{dir_xbuild}}/.gens
+    -rm -rf {{dir_xbuild}}/objs
+    -rm -rf {{dir_xbuild}}/deps
+    -rm -rf {{dir_xbuild}}/xmake
+
 src: gen
     @echo [src] Build evktor...
     cmake --build {{dir_build}} -j4
@@ -97,9 +108,6 @@ gen:
         -DVCPKG_INSTALLED_DIR={{DEPS_DIR}} \
         -DVCPKG_MANIFEST_INSTALL=OFF \
         -S . -B {{dir_build}}
-
-x-tags: x-gen
-    xmake b tags
 
 tags: gen
     cmake --build {{dir_build}} --target tags
