@@ -117,6 +117,9 @@ protected:
     Tuple<Ts...> nexts;
 
 public:
+    using NextHead = std::tuple_element_t<0, Tuple<Ts...>>;
+
+public:
     NextState() : nexts(Ts()...) {}
     NextState(const Ts&... args) : nexts(args...) {}
     NextState(Ts&&... args) : nexts(std::forward<Ts>(args)...) {}
@@ -152,7 +155,7 @@ public:
     /**
      * @brief Chain all nexts
      */
-    void* into() {
+    NextHead* into() {
         auto nodes = std::apply(
             [](auto&... args) {
                 return Array{reinterpret_cast<VkBaseOutStructure*>(&args)...};
@@ -161,7 +164,7 @@ public:
         for (size_t k = 1; k < nodes.size(); k++) {
             nodes[k - 1]->pNext = nodes[k];
         }
-        return nodes[0];
+        return reinterpret_cast<NextHead*>(nodes[0]);
     }
 };
 
