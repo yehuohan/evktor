@@ -28,14 +28,51 @@ public:
     inline VkResult end() const;
 
 public:
+#if VK_KHR_dynamic_rendering // As a block region
+    inline Self cmdBeginRendering(const VkRenderingInfo& rendering_bi) const;
+    /**
+     * @brief Begin dynamic rendering
+     *
+     * ```
+     * attms: | all attachments                     |
+     *        | colors    | depth     | stencil     |
+     *         ----------- =========== -------------
+     *         color_count depth_index stencil_index
+     * ```
+     *
+     * @param attms All required rendering attachments for color, depth and stencil
+     * @param color_count The number of color attachments from the start of `attms` (color_count > 0)
+     * @param depth_index The index of depth attachment from `attms` (VK_ATTACHMENT_UNUSED means no depth attachment)
+     * @param stencil_index The index of stencil attachment from `attms` (VK_ATTACHMENT_UNUSED means no stencil attachment)
+     */
+    Self cmdBeginRendering(const VkOffset2D offset,
+                           const VkExtent2D extent,
+                           const Vector<VkRenderingAttachmentInfo>& attms,
+                           const uint32_t color_count = 0,
+                           const uint32_t depth_index = VK_ATTACHMENT_UNUSED,
+                           const uint32_t stencil_index = VK_ATTACHMENT_UNUSED) const;
+    inline Self cmdBeginRendering(const VkExtent2D extent,
+                                  const Vector<VkRenderingAttachmentInfo>& attms,
+                                  const uint32_t color_count = 0,
+                                  const uint32_t depth_index = VK_ATTACHMENT_UNUSED,
+                                  const uint32_t stencil_index = VK_ATTACHMENT_UNUSED) const;
+    inline Self cmdEndRendering() const;
+#endif
+
+public:
     inline Self beginRenderPass(const VkRenderPassBeginInfo& render_pass_bi,
                                 VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE) const;
-    Self beginRenderPass(const VkRenderPass render_pass,
-                         const VkFramebuffer framebuffer,
-                         const VkOffset2D offset,
+    Self beginRenderPass(const VkOffset2D offset,
                          const VkExtent2D extent,
+                         const VkRenderPass render_pass,
+                         const VkFramebuffer framebuffer,
                          const Vector<VkClearValue>& clear_values,
                          VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE) const;
+    inline Self beginRenderPass(const VkExtent2D extent,
+                                const VkRenderPass render_pass,
+                                const VkFramebuffer framebuffer,
+                                const Vector<VkClearValue>& clear_values,
+                                VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE) const;
     inline Self endRenderPass() const;
     inline Self cmdBindPipeline(VkPipelineBindPoint bind_point, VkPipeline pipeline) const;
     inline Self cmdBindGraphicsPipeline(VkPipeline pipeline) const;
@@ -220,10 +257,38 @@ inline VkResult CommandBuffer::end() const {
     return vkEndCommandBuffer(handle);
 }
 
+#if VK_KHR_dynamic_rendering
+inline CommandBuffer::Self CommandBuffer::cmdBeginRendering(const VkRenderingInfo& rendering_bi) const {
+    vkCmdBeginRendering(handle, &rendering_bi);
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdBeginRendering(const VkExtent2D extent,
+                                                            const Vector<VkRenderingAttachmentInfo>& attms,
+                                                            const uint32_t color_count,
+                                                            const uint32_t depth_index,
+                                                            const uint32_t stencil_index) const {
+    return cmdBeginRendering({0, 0}, extent, attms, color_count, depth_index, stencil_index);
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdEndRendering() const {
+    vkCmdEndRendering(handle);
+    return *this;
+}
+#endif
+
 inline CommandBuffer::Self CommandBuffer::beginRenderPass(const VkRenderPassBeginInfo& render_pass_bi,
                                                           VkSubpassContents contents) const {
     vkCmdBeginRenderPass(handle, &render_pass_bi, contents);
     return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::beginRenderPass(const VkExtent2D extent,
+                                                          const VkRenderPass render_pass,
+                                                          const VkFramebuffer framebuffer,
+                                                          const Vector<VkClearValue>& clear_values,
+                                                          VkSubpassContents contents) const {
+    return beginRenderPass({0, 0}, extent, render_pass, framebuffer, clear_values, contents);
 }
 
 inline CommandBuffer::Self CommandBuffer::endRenderPass() const {

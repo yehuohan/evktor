@@ -60,6 +60,19 @@ Res<RenderTarget> RenderTarget::from(const Arg<Swapchain>& swapchain) {
     return Ok(std::move(rt));
 }
 
+VkRenderingAttachmentInfo RenderTarget::getAttachmentInfo(const void* next) const {
+    auto info = Itor::RenderingAttachmentInfo(next);
+    info.imageView = texture.getImageView();
+    info.imageLayout = layouts.final;
+    // info.resolveMode;
+    // info.resolveImageView;
+    // info.resolveImageLayout;
+    info.loadOp = ops.load;
+    info.storeOp = ops.store;
+    info.clearValue = clear;
+    return info;
+}
+
 Self RenderTarget::set(const AttachmentOps& _ops) {
     ops = _ops;
     return *this;
@@ -152,4 +165,24 @@ Vector<VkClearValue> RenderTargetTable::getClearValues() const {
     }
     return std::move(clears);
 }
+
+Vector<VkRenderingAttachmentInfo> RenderTargetTable::getAttachmentInfos() const {
+    Vector<VkRenderingAttachmentInfo> infos{};
+    Vector<uint32_t> depthstencil_indices{};
+    for (uint32_t k = 0; k < targets.size(); k++) {
+        const auto& rt = targets[k];
+        const auto format = rt.getImage().format;
+        if (isDepthOnlyFormat(format) || isStencilOnlyFormat(format) || isDepthStencilFormat(format)) {
+            depthstencil_indices.push_back(k);
+        } else {
+            infos.push_back(rt.getAttachmentInfo());
+        }
+    }
+    for (const auto& k : depthstencil_indices) {
+        infos.push_back(targets[k].getAttachmentInfo());
+    }
+
+    return std::move(infos);
+}
+
 NAMESPACE_END(vkt)

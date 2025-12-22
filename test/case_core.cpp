@@ -336,7 +336,7 @@ void graphicsPass(const CoreApi& api) {
                                  VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
                                  VK_IMAGE_LAYOUT_UNDEFINED,
                                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-    cmdbuf.beginRenderPass(render_pass, framebuffer, {0, 0}, {wid, hei}, {VkClearValue{}})
+    cmdbuf.beginRenderPass({wid, hei}, render_pass, framebuffer, {VkClearValue{}})
         .cmdBindPipeline(VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline)
         .cmdBindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, {desc_set})
         .cmdBindVertexBuffers(0, {vertex_buf}, {0})
@@ -347,7 +347,7 @@ void graphicsPass(const CoreApi& api) {
                                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
                                  VK_PIPELINE_STAGE_TRANSFER_BIT,
                                  VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                                 VK_ACCESS_TRANSFER_WRITE_BIT,
+                                 VK_ACCESS_TRANSFER_READ_BIT,
                                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
     cmdbuf.cmdCopyImageToBuffer(Arg{out_img}, stage);

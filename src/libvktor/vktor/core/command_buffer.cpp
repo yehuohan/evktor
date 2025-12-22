@@ -28,12 +28,35 @@ VkResult CommandBuffer::begin(VkCommandBufferUsageFlags flags) const {
     return vkBeginCommandBuffer(handle, &cmdbuf_bi);
 }
 
-CommandBuffer::Self CommandBuffer::beginRenderPass(const VkRenderPass render_pass,
-                                                   const VkFramebuffer framebuffer,
-                                                   const VkOffset2D offset,
-                                                   const VkExtent2D extent,
-                                                   const Vector<VkClearValue>& clear_values,
-                                                   VkSubpassContents contents) const {
+#if VK_KHR_dynamic_rendering
+Self CommandBuffer::cmdBeginRendering(const VkOffset2D offset,
+                                      const VkExtent2D extent,
+                                      const Vector<VkRenderingAttachmentInfo>& attms,
+                                      const uint32_t color_count,
+                                      const uint32_t depth_index,
+                                      const uint32_t stencil_index) const {
+    auto info = Itor::RenderingInfo();
+    info.renderArea = VkRect2D{offset, extent};
+    info.layerCount = 1;
+    info.colorAttachmentCount = color_count;
+    info.pColorAttachments = attms.data();
+    if (depth_index < attms.size()) {
+        info.pDepthAttachment = &attms[depth_index];
+    }
+    if (stencil_index < attms.size()) {
+        info.pStencilAttachment = &attms[stencil_index];
+    }
+    vkCmdBeginRendering(handle, &info);
+    return *this;
+}
+#endif
+
+Self CommandBuffer::beginRenderPass(const VkOffset2D offset,
+                                    const VkExtent2D extent,
+                                    const VkRenderPass render_pass,
+                                    const VkFramebuffer framebuffer,
+                                    const Vector<VkClearValue>& clear_values,
+                                    VkSubpassContents contents) const {
     auto render_pass_bi = Itor::RenderPassBeginInfo();
     render_pass_bi.renderPass = render_pass;
     render_pass_bi.framebuffer = framebuffer;

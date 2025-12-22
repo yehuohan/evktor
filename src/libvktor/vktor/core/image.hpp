@@ -152,6 +152,11 @@ public:
 bool isDepthOnlyFormat(VkFormat format);
 
 /**
+ * @brief Check format is stencil only
+ */
+bool isStencilOnlyFormat(VkFormat format);
+
+/**
  * @brief Check format is depth or stencil
  */
 bool isDepthStencilFormat(VkFormat format);

@@ -36,6 +36,9 @@ public:
     Self addExtensionsForVMA();
     template <typename T>
     Self setFeatures(std::function<void(T&)> fn);
+#if VK_KHR_dynamic_rendering // As a block region
+    Self enableDynamicRenderingFeature();
+#endif
 
     Res<Device> into(CRef<PhysicalDevice> phy_dev);
 };

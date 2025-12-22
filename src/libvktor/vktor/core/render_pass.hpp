@@ -108,7 +108,9 @@ public:
                              AttachmentOps::stencil(),
                              AttachmentLayouts::depthstencil());
     }
-    Self addSubpass(Vector<uint32_t>&& input, Vector<uint32_t>&& color, uint32_t depthstencil = VK_ATTACHMENT_UNUSED);
+    Self addSubpass(const Vector<uint32_t>& inputs,
+                    const Vector<uint32_t>& colors,
+                    uint32_t depthstencil = VK_ATTACHMENT_UNUSED);
     Self addSubpass(const RenderSubpassState& subpass);
 
     Res<RenderPass> into(const CoreApi& api) const;

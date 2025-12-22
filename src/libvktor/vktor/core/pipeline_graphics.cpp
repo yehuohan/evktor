@@ -204,6 +204,16 @@ Self GraphicsPipelineState::setRenderPass(VkRenderPass _render_pass, uint32_t su
     return *this;
 }
 
+#if VK_KHR_dynamic_rendering
+Self GraphicsPipelineState::chainRendering(const Vector<VkFormat>& colors, VkFormat depth, VkFormat stencil) {
+    has_rendering = true;
+    color_formats = colors;
+    depth_format = depth;
+    stencil_format = stencil;
+    return *this;
+}
+#endif
+
 Res<GraphicsPipeline> GraphicsPipelineState::into(const CoreApi& api) const {
     return GraphicsPipeline::from(api, *this);
 }
@@ -297,6 +307,17 @@ Res<GraphicsPipeline> GraphicsPipeline::from(const CoreApi& api, const GraphicsP
     pipeline_ci.subpass = info.subpass;
     pipeline_ci.basePipelineHandle = VK_NULL_HANDLE;
     pipeline_ci.basePipelineIndex = -1;
+
+#if VK_KHR_dynamic_rendering
+    auto rendering_ci = Itor::PipelineRenderingCreateInfo();
+    if (info.has_rendering) {
+        rendering_ci.colorAttachmentCount = u32(info.color_formats.size());
+        rendering_ci.pColorAttachmentFormats = info.color_formats.data();
+        rendering_ci.depthAttachmentFormat = info.depth_format;
+        rendering_ci.stencilAttachmentFormat = info.stencil_format;
+        chainNext(pipeline_ci, &rendering_ci);
+    }
+#endif
 
     OnRet(vkCreateGraphicsPipelines(api, VK_NULL_HANDLE, 1, &pipeline_ci, api, pipeline), "Failed to create graphics pipeline");
     OnName(pipeline, info.__name);

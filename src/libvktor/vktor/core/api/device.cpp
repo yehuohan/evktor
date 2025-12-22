@@ -27,6 +27,11 @@ Self DeviceState::addExtensionsForVMA() {
     return *this;
 }
 
+Self DeviceState::enableDynamicRenderingFeature() {
+    features.get<VkPhysicalDeviceVulkan13Features>().dynamicRendering = VK_TRUE;
+    return *this;
+}
+
 Res<Device> DeviceState::into(CRef<PhysicalDevice> phy_dev) {
     return Device::from(phy_dev, *this);
 }

@@ -1,8 +1,8 @@
 #pragma once
 #include "vktor/base/texture.hpp"
 #include "vktor/core/api/api.hpp"
-#include "vktor/core/render_pass.hpp"
 #include "vktor/core/exts/swapchain.hpp"
+#include "vktor/core/render_pass.hpp"
 
 NAMESPACE_BEGIN(vkt)
 
@@ -44,6 +44,12 @@ public:
     inline const core::ImageView& getImageView() const {
         return texture.getImageView();
     }
+    /**
+     * @brief Construct rendering attachment from render target
+     *
+     * Must transit image layout to `layouts.final` manually
+     */
+    VkRenderingAttachmentInfo getAttachmentInfo(const void* next = nullptr) const;
     Self set(const core::AttachmentOps& ops);
     Self set(const core::AttachmentOps& ops, const core::AttachmentOps& stencil_ops);
     Self set(const core::AttachmentLayouts& layouts);
@@ -84,6 +90,12 @@ public:
     }
     Vector<VkImageView> getImageViews() const;
     Vector<VkClearValue> getClearValues() const;
+    /**
+     * @brief Construct rendering attachments from render target table
+     *
+     * All color attachments will be always placed at the start of vector
+     */
+    Vector<VkRenderingAttachmentInfo> getAttachmentInfos() const;
 };
 
 NAMESPACE_END(vkt)

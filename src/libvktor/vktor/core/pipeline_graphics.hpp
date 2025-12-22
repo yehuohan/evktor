@@ -44,6 +44,14 @@ private:
     VkRenderPass render_pass = VK_NULL_HANDLE;
     uint32_t subpass = 0;
 
+private:
+#if VK_KHR_dynamic_rendering // As a block region
+    bool has_rendering = false;
+    Vector<VkFormat> color_formats{};
+    VkFormat depth_format = VK_FORMAT_UNDEFINED;
+    VkFormat stencil_format = VK_FORMAT_UNDEFINED;
+#endif
+
 public:
     explicit GraphicsPipelineState(String&& name = "GraphicsPipeline");
 
@@ -81,6 +89,16 @@ public:
     Self addDynamics(const Vector<VkDynamicState>& dynamics);
     Self setPipelineLayout(VkPipelineLayout layout);
     Self setRenderPass(VkRenderPass render_pass, uint32_t subpass_index = 0);
+
+public:
+#if VK_KHR_dynamic_rendering
+    /**
+     * @brief Chain VkPipelineRenderingCreateInfo for dynamic rendering
+     */
+    Self chainRendering(const Vector<VkFormat>& colors,
+                        VkFormat depth = VK_FORMAT_UNDEFINED,
+                        VkFormat stencil = VK_FORMAT_UNDEFINED);
+#endif
 
     Res<GraphicsPipeline> into(const CoreApi& api) const;
 };
