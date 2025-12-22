@@ -1,5 +1,6 @@
 #include "assets.hpp"
 #include <fstream>
+#include <stb_image.h>
 
 namespace vktdev {
 
@@ -11,10 +12,32 @@ void Assets::setDirs(const std::string& assets_dir, const std::string& shader_di
     Assets::path_shader = shader_dir;
 }
 
-std::string Assets::shaderSource(const std::string& filename) {
+static std::tuple<std::vector<uint8_t>, uint32_t, uint32_t> loadTexC8(const std::string& filename, int channel) {
+    std::vector<uint8_t> pixels{};
+    int w, h, c;
+    {
+        stbi_uc* raw = stbi_load(filename.c_str(), &w, &h, &c, channel);
+        if (!raw || c != channel) {
+            throw std::runtime_error(fmt::format("Failed to load texture({}) with channel: {} != {}", filename, channel, c));
+        }
+        pixels = {raw, raw + w * h * c};
+        stbi_image_free(raw);
+    }
+    return {std::move(pixels), w, h};
+}
+
+std::tuple<std::vector<uint8_t>, uint32_t, uint32_t> Assets::loadTexRGB8(const std::string& filename) {
+    return std::move(loadTexC8(filename, STBI_rgb));
+}
+
+std::tuple<std::vector<uint8_t>, uint32_t, uint32_t> Assets::loadTexRGBA8(const std::string& filename) {
+    return std::move(loadTexC8(filename, STBI_rgb_alpha));
+}
+
+std::string Assets::loadShader(const std::string& filename) {
     std::ifstream fin(filename, std::ios::in);
     if (!fin.is_open()) {
-        throw std::runtime_error(fmt::format("Failed to read shader: {}", filename));
+        throw std::runtime_error(fmt::format("Failed to load shader: {}", filename));
     }
     return std::string({std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()});
 }

@@ -10,4 +10,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     glfw
     glm::glm
     imgui::imgui)
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME}
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+    PRIVATE ${Stb_INCLUDE_DIR})

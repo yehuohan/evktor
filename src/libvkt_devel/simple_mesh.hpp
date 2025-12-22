@@ -55,12 +55,14 @@ public:
         return vertices.size() * sizeof(Vertex);
     }
 
-    VkVertexInputBindingDescription vertexBindings(uint32_t binding = 0) const {
-        return VkVertexInputBindingDescription{
+    Vector<VkVertexInputBindingDescription> vertexBindings(uint32_t binding = 0) const {
+        Vector<VkVertexInputBindingDescription> bindings{};
+        bindings.push_back(VkVertexInputBindingDescription{
             binding,
             sizeof(SimpleMesh::Vertex),
             VK_VERTEX_INPUT_RATE_VERTEX,
-        };
+        });
+        return std::move(bindings);
     }
 
     Vector<VkVertexInputAttributeDescription> vertexAttributes(uint32_t binding = 0) const {

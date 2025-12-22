@@ -6,7 +6,8 @@
 #include <glslang/SPIRV/GlslangToSpv.h>
 
 std::vector<unsigned int> glsl2spv(const String& filename) {
-    String shader_code = read_shader(filename);
+    auto shader_code = vktdev::Assets::loadShader(filename);
+
     const char* shader_strings[] = {shader_code.c_str()};
     const int shader_lengths[] = {(int)shader_code.size()};
     const char* shader_filenames[] = {filename.c_str()};
