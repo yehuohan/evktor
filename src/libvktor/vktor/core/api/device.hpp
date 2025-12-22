@@ -12,10 +12,19 @@ struct Device;
 class DeviceState : public CoreState<DeviceState> {
     friend struct Device;
 
+public:
+    using VulkanFeatures = NextState<VkPhysicalDeviceFeatures2,
+                                     VkPhysicalDeviceVulkan11Features,
+                                     VkPhysicalDeviceVulkan12Features,
+                                     VkPhysicalDeviceVulkan13Features>;
+
 private:
     uint32_t max_queue_count = 1; /**< The max count of queues for each queue family, must >= 1. */
     Vector<const char*> extensions{};
-    VkPhysicalDeviceFeatures features{};
+    VulkanFeatures features{Itor::PhysicalDeviceFeatures2(),
+                            Itor::PhysicalDeviceVulkan11Features(),
+                            Itor::PhysicalDeviceVulkan12Features(),
+                            Itor::PhysicalDeviceVulkan13Features()};
     bool require_extensions_for_vma = false;
 
 public:
@@ -25,7 +34,8 @@ public:
     Self addExtension(const char* extension);
     Self addExtensions(const Vector<const char*> extensions);
     Self addExtensionsForVMA();
-    Self setFeatures(const VkPhysicalDeviceFeatures& features);
+    template <typename T>
+    Self setFeatures(std::function<void(T&)> fn);
 
     Res<Device> into(CRef<PhysicalDevice> phy_dev);
 };
@@ -58,6 +68,12 @@ public:
                               VmaAllocator mem_allocator = VK_NULL_HANDLE);
 };
 
+template <typename T>
+DeviceState::Self DeviceState::setFeatures(std::function<void(T&)> fn) {
+    fn(features.get<T>());
+    return *this;
+}
+
 inline VkMemoryRequirements Device::getMemoryRequirements(VkBuffer buffer) const {
     VkMemoryRequirements reqs{};
     vkGetBufferMemoryRequirements(handle, buffer, &reqs);
@@ -72,8 +88,6 @@ inline VkMemoryRequirements Device::getMemoryRequirements(VkImage image) const {
 
 bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& device_extensions);
 void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions);
-bool checkDeviceFeatures(VkPhysicalDevice pd, const VkPhysicalDeviceFeatures& device_features);
-void printDeviceFeatures(VkPhysicalDevice pd, const VkPhysicalDeviceFeatures& enabled_features);
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)

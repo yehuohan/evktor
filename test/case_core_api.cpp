@@ -79,13 +79,13 @@ void testNextState() {
     NextState nso{Itor::InstanceCreateInfo(),
                   Itor::PhysicalDeviceFeatures2(),
                   Itor::DeviceCreateInfo(),
-                  Itor::DeviceQueueInfo2(),
-                  Itor::CommandBufferAllocateInfo()};
+                  Itor::DeviceQueueInfo2()};
+    auto cmdbuf_ai = Itor::CommandBufferAllocateInfo();
 
     nso.get<0>().enabledLayerCount = 123;
     nso.get<VkDeviceCreateInfo>().enabledLayerCount = 321;
 
-    const VkBaseInStructure* ptr = (VkBaseInStructure*)nso.into();
+    const VkBaseInStructure* ptr = (VkBaseInStructure*)nso.into(&cmdbuf_ai);
     assert(ptr->sType == VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO);
     assert(ptr == (const VkBaseInStructure*)&nso.get<0>());
     assert(((VkInstanceCreateInfo*)ptr)->enabledLayerCount == 123);
@@ -105,7 +105,6 @@ void testNextState() {
 
     ptr = ptr->pNext;
     assert(ptr->sType == VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO);
-    assert(ptr == (const VkBaseInStructure*)&nso.get<VkCommandBufferAllocateInfo>());
 }
 
 void case_core_api() {

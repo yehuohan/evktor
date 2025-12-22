@@ -27,11 +27,6 @@ Self DeviceState::addExtensionsForVMA() {
     return *this;
 }
 
-Self DeviceState::setFeatures(const VkPhysicalDeviceFeatures& _features) {
-    features = _features;
-    return *this;
-}
-
 Res<Device> DeviceState::into(CRef<PhysicalDevice> phy_dev) {
     return Device::from(phy_dev, *this);
 }
@@ -87,12 +82,8 @@ Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     if (!checkDeviceExtensions(phy_dev.get(), info.extensions)) {
         return Er("Not all the required device extensions are supported");
     }
-    if (!checkDeviceFeatures(phy_dev.get(), info.features)) {
-        return Er("Not all the required device features are supported");
-    }
     if (info.__verbose) {
         printDeviceExtensions(phy_dev.get(), info.extensions);
-        printDeviceFeatures(phy_dev.get(), info.features);
     }
 
     // Create all queues
@@ -111,17 +102,24 @@ Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     }
 
     // Create device
-    auto dev_ci = Itor::DeviceCreateInfo(info.__next); // Device-only layers are deprecated
+    traverseNext(info.__next, [](const VkBaseInStructure& node) {
+        if (node.sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2) {
+            vktLogW("VkPhysicalDeviceFeatures2 is not unnecessary for Device will always provide it");
+        } else if (node.sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES) {
+            vktLogW("VkPhysicalDeviceVulkan11Features is not unnecessary for Device will always provide it");
+        } else if (node.sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_PROPERTIES) {
+            vktLogW("VkPhysicalDeviceVulkan12Features is not unnecessary for Device will always provide it");
+        } else if (node.sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_PROPERTIES) {
+            vktLogW("VkPhysicalDeviceVulkan13Features is not unnecessary for Device will always provide it");
+        }
+        return false;
+    });
+    auto dev_ci = Itor::DeviceCreateInfo(info.features.into(info.__next)); // Device-only layers are deprecated
     dev_ci.queueCreateInfoCount = u32(queues_ci.size());
     dev_ci.pQueueCreateInfos = queues_ci.data();
     dev_ci.enabledExtensionCount = u32(info.extensions.size());
     dev_ci.ppEnabledExtensionNames = info.extensions.data();
-    dev_ci.pEnabledFeatures = traverseNext(info.__next,
-                                           [](const VkBaseInStructure& base) {
-                                               return base.sType == VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-                                           })
-                                  ? nullptr
-                                  : &info.features;
+    dev_ci.pEnabledFeatures = nullptr; // Always set features by VkPhysicalDeviceFeatures2.features
 
     OnRet(vkCreateDevice(phy_dev.get(), &dev_ci, phy_dev.get().instance.get(), device), "Failed to create device");
 
@@ -228,154 +226,6 @@ void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabl
     str += "}";
 
     vktOut("{}", str);
-}
-
-bool checkDeviceFeatures(VkPhysicalDevice pd, const VkPhysicalDeviceFeatures& device_features) {
-    VkPhysicalDeviceFeatures feats{};
-    vkGetPhysicalDeviceFeatures(pd, &feats);
-
-#define Check(f)                         \
-    if (device_features.f && !feats.f) { \
-        return false;                    \
-    }
-
-    Check(robustBufferAccess);
-    Check(fullDrawIndexUint32);
-    Check(imageCubeArray);
-    Check(independentBlend);
-    Check(geometryShader);
-    Check(tessellationShader);
-    Check(sampleRateShading);
-    Check(dualSrcBlend);
-    Check(logicOp);
-    Check(multiDrawIndirect);
-    Check(drawIndirectFirstInstance);
-    Check(depthClamp);
-    Check(depthBiasClamp);
-    Check(fillModeNonSolid);
-    Check(depthBounds);
-    Check(wideLines);
-    Check(largePoints);
-    Check(alphaToOne);
-    Check(multiViewport);
-    Check(samplerAnisotropy);
-    Check(textureCompressionETC2);
-    Check(textureCompressionASTC_LDR);
-    Check(textureCompressionBC);
-    Check(occlusionQueryPrecise);
-    Check(pipelineStatisticsQuery);
-    Check(vertexPipelineStoresAndAtomics);
-    Check(fragmentStoresAndAtomics);
-    Check(shaderTessellationAndGeometryPointSize);
-    Check(shaderImageGatherExtended);
-    Check(shaderStorageImageExtendedFormats);
-    Check(shaderStorageImageMultisample);
-    Check(shaderStorageImageReadWithoutFormat);
-    Check(shaderStorageImageWriteWithoutFormat);
-    Check(shaderUniformBufferArrayDynamicIndexing);
-    Check(shaderSampledImageArrayDynamicIndexing);
-    Check(shaderStorageBufferArrayDynamicIndexing);
-    Check(shaderStorageImageArrayDynamicIndexing);
-    Check(shaderClipDistance);
-    Check(shaderCullDistance);
-    Check(shaderFloat64);
-    Check(shaderInt64);
-    Check(shaderInt16);
-    Check(shaderResourceResidency);
-    Check(shaderResourceMinLod);
-    Check(sparseBinding);
-    Check(sparseResidencyBuffer);
-    Check(sparseResidencyImage2D);
-    Check(sparseResidencyImage3D);
-    Check(sparseResidency2Samples);
-    Check(sparseResidency4Samples);
-    Check(sparseResidency8Samples);
-    Check(sparseResidency16Samples);
-    Check(sparseResidencyAliased);
-    Check(variableMultisampleRate);
-    Check(inheritedQueries);
-
-#undef Check
-
-    return true;
-}
-
-void printDeviceFeatures(VkPhysicalDevice pd, const VkPhysicalDeviceFeatures& required_features) {
-    VkPhysicalDeviceFeatures feats{};
-    vkGetPhysicalDeviceFeatures(pd, &feats);
-
-    String sa("Available device features {\n");
-    String sr("Required device features {\n");
-
-#define Print(f)                    \
-    if (feats.f) {                  \
-        sa += vktFmt("\t{}\n", #f); \
-    }                               \
-    if (required_features.f) {      \
-        sr += vktFmt("\t{}\n", #f); \
-    }
-
-    Print(robustBufferAccess);
-    Print(fullDrawIndexUint32);
-    Print(imageCubeArray);
-    Print(independentBlend);
-    Print(geometryShader);
-    Print(tessellationShader);
-    Print(sampleRateShading);
-    Print(dualSrcBlend);
-    Print(logicOp);
-    Print(multiDrawIndirect);
-    Print(drawIndirectFirstInstance);
-    Print(depthClamp);
-    Print(depthBiasClamp);
-    Print(fillModeNonSolid);
-    Print(depthBounds);
-    Print(wideLines);
-    Print(largePoints);
-    Print(alphaToOne);
-    Print(multiViewport);
-    Print(samplerAnisotropy);
-    Print(textureCompressionETC2);
-    Print(textureCompressionASTC_LDR);
-    Print(textureCompressionBC);
-    Print(occlusionQueryPrecise);
-    Print(pipelineStatisticsQuery);
-    Print(vertexPipelineStoresAndAtomics);
-    Print(fragmentStoresAndAtomics);
-    Print(shaderTessellationAndGeometryPointSize);
-    Print(shaderImageGatherExtended);
-    Print(shaderStorageImageExtendedFormats);
-    Print(shaderStorageImageMultisample);
-    Print(shaderStorageImageReadWithoutFormat);
-    Print(shaderStorageImageWriteWithoutFormat);
-    Print(shaderUniformBufferArrayDynamicIndexing);
-    Print(shaderSampledImageArrayDynamicIndexing);
-    Print(shaderStorageBufferArrayDynamicIndexing);
-    Print(shaderStorageImageArrayDynamicIndexing);
-    Print(shaderClipDistance);
-    Print(shaderCullDistance);
-    Print(shaderFloat64);
-    Print(shaderInt64);
-    Print(shaderInt16);
-    Print(shaderResourceResidency);
-    Print(shaderResourceMinLod);
-    Print(sparseBinding);
-    Print(sparseResidencyBuffer);
-    Print(sparseResidencyImage2D);
-    Print(sparseResidencyImage3D);
-    Print(sparseResidency2Samples);
-    Print(sparseResidency4Samples);
-    Print(sparseResidency8Samples);
-    Print(sparseResidency16Samples);
-    Print(sparseResidencyAliased);
-    Print(variableMultisampleRate);
-    Print(inheritedQueries);
-
-#undef Print
-
-    sa += "}\n";
-    sr += "}";
-    vktOut("{}", sa + sr);
 }
 
 NAMESPACE_END(core)

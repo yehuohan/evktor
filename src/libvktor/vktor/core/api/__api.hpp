@@ -155,7 +155,7 @@ public:
     /**
      * @brief Chain all nexts
      */
-    NextHead* into() {
+    NextHead* into(const void* next = nullptr) {
         auto nodes = std::apply(
             [](auto&... args) {
                 return Array{reinterpret_cast<VkBaseOutStructure*>(&args)...};
@@ -164,6 +164,7 @@ public:
         for (size_t k = 1; k < nodes.size(); k++) {
             nodes[k - 1]->pNext = nodes[k];
         }
+        nodes[nodes.size() - 1]->pNext = (VkBaseOutStructure*)next;
         return reinterpret_cast<NextHead*>(nodes[0]);
     }
 };
