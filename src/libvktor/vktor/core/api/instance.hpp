@@ -33,7 +33,7 @@ public:
     Self setEngineVersion(uint32_t version);
     Self setApiVerion(uint32_t version);
     Self addLayer(const char* layer);
-    Self addLayers(const Vector<const char*> layers);
+    Self addLayers(const Vector<const char*>& layers);
     Self addExtension(const char* extension);
     Self addExtensions(const Vector<const char*>& extensions);
     inline Self addValidationLayer() {

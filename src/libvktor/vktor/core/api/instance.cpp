@@ -42,7 +42,7 @@ Self InstanceState::addLayer(const char* layer) {
     return *this;
 }
 
-Self InstanceState::addLayers(const Vector<const char*> _layers) {
+Self InstanceState::addLayers(const Vector<const char*>& _layers) {
     layers.insert(layers.end(), _layers.begin(), _layers.end());
     return *this;
 }

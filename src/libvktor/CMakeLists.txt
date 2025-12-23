@@ -2,6 +2,7 @@
 project(vktor)
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SRC)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/generated SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/share SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vktor SRC)

@@ -24,6 +24,14 @@ public:
         return *api;
     }
 
+    /**
+     * @brief Create a default CoreApi
+     */
+    core::CoreApi& createApi(const Vector<const char*>& inst_exts = {},
+                             const Vector<const char*>& dev_exts = {},
+                             std::function<VkSurfaceKHR(const core::Instance& instance)> create_surface = nullptr);
+
+public:
     // Box<RenderGraph> newRdg();
     inline Box<RenderContext> newRctx(uint32_t frame_count = 3, size_t thread_count = 1) const {
         return newBox<RenderContext>(RenderContext::from(*api, frame_count, thread_count).unwrap());

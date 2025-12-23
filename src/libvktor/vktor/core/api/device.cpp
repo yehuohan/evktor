@@ -17,7 +17,7 @@ Self DeviceState::addExtension(const char* extension) {
     return *this;
 }
 
-Self DeviceState::addExtensions(const Vector<const char*> _extensions) {
+Self DeviceState::addExtensions(const Vector<const char*>& _extensions) {
     extensions.insert(extensions.end(), _extensions.begin(), _extensions.end());
     return *this;
 }

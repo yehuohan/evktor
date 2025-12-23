@@ -32,7 +32,7 @@ public:
 
     Self setMaxQueueCount(uint32_t count);
     Self addExtension(const char* extension);
-    Self addExtensions(const Vector<const char*> extensions);
+    Self addExtensions(const Vector<const char*>& extensions);
     Self addExtensionsForVMA();
     template <typename T>
     Self setFeatures(std::function<void(T&)> fn);
