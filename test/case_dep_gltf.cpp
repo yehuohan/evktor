@@ -1,10 +1,8 @@
 #include "__helpers.hpp"
-#include <assets.hpp>
-#include <string>
 // libvkt_scene has compiled TINYGLTF_IMPLEMENTATION
 #include <tiny_gltf.h>
 
-void case_gltf() {
+void case_dep_gltf() {
     using namespace tinygltf;
 
     const String gltf_file = vktdev::Assets::scene("Sponza/glTF/Sponza.gltf");

@@ -1,5 +1,4 @@
 #include "__helpers.hpp"
-#include <assets.hpp>
 #include <iostream>
 #include <map>
 

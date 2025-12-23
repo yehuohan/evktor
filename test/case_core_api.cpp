@@ -1,8 +1,4 @@
 #include "__helpers.hpp"
-#include <vktor.hpp>
-
-using namespace vkt;
-using namespace vkt::core;
 
 void testCoreApi() {
     auto check = [](const CoreApi& api,

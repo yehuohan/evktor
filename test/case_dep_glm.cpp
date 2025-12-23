@@ -1,6 +1,4 @@
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/io.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <iostream>
@@ -111,7 +109,7 @@ void compute_quat() {
     std::cout << "rot * pos: " << pos << std::endl;
 }
 
-void case_glm() {
+void case_dep_glm() {
     // compute_mvp();
     compute_jitter();
     // compute_quat();

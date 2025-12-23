@@ -1,21 +1,16 @@
 #include "__helpers.hpp"
-#include <vktor.hpp>
-
-using namespace vkt;
-using namespace vkt::core;
-
-extern Box<CoreApi> setupCoreApi(const Vector<const char*> instance_exts = {}, const Vector<const char*> device_exts = {});
 
 void case_core_memory() {
-    auto api = setupCoreApi({},
-                            {
-                                VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME,
+    auto api = createCoreApi({},
+                             {
+                                 VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME,
 #ifdef VK_USE_PLATFORM_WIN32_KHR
-                                VK_KHR_EXTERNAL_MEMORY_WIN32_EXTENSION_NAME,
+                                 VK_KHR_EXTERNAL_MEMORY_WIN32_EXTENSION_NAME,
 #else
-                                VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME,
+                                 VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME,
 #endif
-                            });
+
+                             });
 
 #ifdef VK_USE_PLATFORM_WIN32_KHR
     auto hdl_type = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT;

@@ -1,5 +1,4 @@
 #include "__helpers.hpp"
-#include <share/result.hpp>
 
 static uint32_t cnt = 0;
 static uint32_t cnt_copy = 0;
@@ -118,7 +117,7 @@ TstRes createVec(uint32_t type) {
     }
 }
 
-void case_result() {
+void case_share_result() {
     {
         resetCnt();
         TstRes r = createVec(1);
