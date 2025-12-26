@@ -1,4 +1,4 @@
-# vim@code{ efm = [[[vkt] ERROR: %f:%l: %m,error: %f:%l:%c: %m]], efm_fts = { 'cmake', 'cpp', 'glsl', 'rust', 'python' } }:
+# vim@code{ efm = [[error: %f:%l:%c: %m,%.%#error: %f:%l: %m]], efm_fts = { 'cmake', 'cpp', 'glsl', 'rust', 'python' } }:
 set shell := ['bash', '-uc']
 set dotenv-load
 set ignore-comments
@@ -28,7 +28,9 @@ VCPKG_XSCRIPT := '"clear;x-script,bash ' + dir_root + '/scripts/vcpkg_xscript.sh
 DEPS_DIR := dir_root / 'deps'
 
 
+all: evktor
 
+# 目前xmake使用相对路径build，会导致Neovim的QuickFix不能正确解析路径
 x-all: x-evktor
 
 x-evktor: x-src
@@ -42,8 +44,6 @@ x-sigma: x-src
 x-test case="": x-src
     @echo [Run] evktor/test
     {{dir_xinstall}}/bin/tst_main {{case}}
-
-all: evktor
 
 evktor: src
     @echo [Run] evktor...
