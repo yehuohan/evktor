@@ -48,7 +48,7 @@ void testCoreApi() {
     {
         DebugState dso{};
         dso.setMessageSeverity(false, false);
-        auto& instance = api.init(InstanceState().setNext(dso).addDebugUtilsExtension()).unwrap().get();
+        auto& instance = api.init(InstanceState().setNext(dso).tryAddDebugUtilsExtension()).unwrap().get();
         auto& idebug = api.add(dso).unwrap().get();
         auto& debug = *dynamic_cast<const Debug*>(&idebug);
         auto& phy_dev = api.init(PhysicalDeviceState().preferDiscreteGPU().requireGraphicsQueue()).unwrap().get();

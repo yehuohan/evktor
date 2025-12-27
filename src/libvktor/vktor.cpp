@@ -18,8 +18,8 @@ core::CoreApi& Vktor::createApi(const Vector<const char*>& inst_exts,
                   .setAppVerion(VK_MAKE_VERSION(1, 0, 0))
                   .setEngineName("vktor")
                   .setEngineVersion(VK_MAKE_VERSION(1, 0, 0))
-                  .addValidationLayer()
-                  .addDebugUtilsExtension()
+                  .tryAddValidationLayer()
+                  .tryAddDebugUtilsExtension()
                   .addExtensions(inst_exts)
                   .setVerbose(false))
         .unwrap();
@@ -45,7 +45,6 @@ core::CoreApi& Vktor::createApi(const Vector<const char*>& inst_exts,
     // Create device
     api->init(DeviceState()
                   .setMaxQueueCount(1)
-                  .addExtensionsForVMA()
                   .addExtensions(exts)
                   .addExtensions(dev_exts)
                   .enableDynamicRenderingFeature()

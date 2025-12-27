@@ -22,8 +22,8 @@ Self DeviceState::addExtensions(const Vector<const char*>& _extensions) {
     return *this;
 }
 
-Self DeviceState::addExtensionsForVMA() {
-    require_extensions_for_vma = true;
+Self DeviceState::tryAddExtension(const char* extension) {
+    try_extensions.push_back(extension);
     return *this;
 }
 
@@ -76,19 +76,29 @@ Device& Device::operator=(Device&& rhs) {
 Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     Device device(phy_dev);
 
-    if (info.require_extensions_for_vma) {
-        info.addExtension(VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
-        info.addExtension(VK_EXT_MEMORY_PRIORITY_EXTENSION_NAME);
-    }
-    std::sort(info.extensions.begin(), info.extensions.end(), strLess);
-    auto new_end = std::unique(info.extensions.begin(), info.extensions.end());
-    info.extensions.erase(new_end, info.extensions.end());
+    Vector<VkExtensionProperties> available_extensions{};
+    OnRet(enumerate(available_extensions, vkEnumerateDeviceExtensionProperties, phy_dev.get(), nullptr),
+          "Failed to get properties of device extensions");
 
-    if (!checkDeviceExtensions(phy_dev.get(), info.extensions)) {
+    info.tryAddExtension(VK_EXT_MEMORY_BUDGET_EXTENSION_NAME);
+    info.tryAddExtension(VK_EXT_MEMORY_PRIORITY_EXTENSION_NAME);
+    if (!checkExtensions("device extensions", available_extensions, info.extensions, info.try_extensions)) {
         return Er("Not all the required device extensions are supported");
     }
     if (info.__verbose) {
-        printDeviceExtensions(phy_dev.get(), info.extensions);
+        printExtensions("device extensions", available_extensions, info.extensions);
+    }
+
+    VmaAllocatorCreateFlags vma_flags = 0;
+    if (std::find_if(info.extensions.begin(), info.extensions.end(), [](const char* e) -> bool {
+            return strcmp(e, VK_EXT_MEMORY_BUDGET_EXTENSION_NAME) == 0;
+        }) != info.extensions.end()) {
+        vma_flags |= VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT;
+    }
+    if (std::find_if(info.extensions.begin(), info.extensions.end(), [](const char* e) -> bool {
+            return strcmp(e, VK_EXT_MEMORY_PRIORITY_EXTENSION_NAME) == 0;
+        }) != info.extensions.end()) {
+        vma_flags |= VMA_ALLOCATOR_CREATE_EXT_MEMORY_PRIORITY_BIT;
     }
 
     // Create all queues
@@ -132,10 +142,6 @@ Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     volkLoadDevice(device);
 
     // Create memory allocator
-    auto vma_flags = 0;
-    if (info.require_extensions_for_vma) {
-        vma_flags = VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT | VMA_ALLOCATOR_CREATE_EXT_MEMORY_PRIORITY_BIT;
-    }
     OnRet(device.createMemAllocator(vma_flags), "Failed to create memory allocator");
 
     return Ok(std::move(device));
@@ -185,52 +191,6 @@ VkResult Device::createMemAllocator(VmaAllocatorCreateFlags flags) {
     fns.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
 #endif
     return vmaCreateAllocator(&vma_allocator_ai, &mem_allocator);
-}
-
-bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& device_extensions) {
-    Vector<VkExtensionProperties> exts{};
-    VkResult res = enumerate(exts, vkEnumerateDeviceExtensionProperties, pd, nullptr);
-    if (res != VK_SUCCESS) {
-        vktLogE("Failed to get properties of device extensions: {}", VkStr(VkResult, res));
-        return false;
-    }
-
-    std::set<String> device_exts(device_extensions.begin(), device_extensions.end());
-    for (const auto& e : exts) {
-        device_exts.erase(e.extensionName);
-    }
-
-    bool empty = device_exts.empty();
-    if (!empty) {
-        vktLogW("Not supported device extensions:");
-        for (const auto& e : device_exts) {
-            vktLogW("\t{}", e);
-        }
-    }
-    return empty;
-}
-
-void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions) {
-    Vector<VkExtensionProperties> ext_props{};
-    VkResult res = enumerate(ext_props, vkEnumerateDeviceExtensionProperties, pd, nullptr);
-    if (res != VK_SUCCESS) {
-        vktLogE("Failed to get properties of device extensions: {}", VkStr(VkResult, res));
-        return;
-    }
-
-    String str("Available device extensions {\n");
-    for (const auto& e : ext_props) {
-        str += vktFmt("\t{}\n", e.extensionName);
-    }
-    str += "}\n";
-
-    str += "Enabled device extensions {\n";
-    for (const auto& e : enabled_extensions) {
-        str += vktFmt("\t{}\n", e);
-    }
-    str += "}";
-
-    vktOut("{}", str);
 }
 
 NAMESPACE_END(core)

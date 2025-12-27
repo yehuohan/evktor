@@ -1,6 +1,4 @@
 #include "instance.hpp"
-#include <algorithm>
-#include <set>
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -47,6 +45,11 @@ Self InstanceState::addLayers(const Vector<const char*>& _layers) {
     return *this;
 }
 
+Self InstanceState::tryAddLayer(const char* layer) {
+    try_layers.push_back(layer);
+    return *this;
+}
+
 Self InstanceState::addExtension(const char* extension) {
     extensions.push_back(extension);
     return *this;
@@ -54,6 +57,11 @@ Self InstanceState::addExtension(const char* extension) {
 
 Self InstanceState::addExtensions(const Vector<const char*>& _extensions) {
     extensions.insert(extensions.end(), _extensions.begin(), _extensions.end());
+    return *this;
+}
+
+Self InstanceState::tryAddExtension(const char* extension) {
+    try_extensions.push_back(extension);
     return *this;
 }
 
@@ -95,32 +103,33 @@ Res<Instance> Instance::from(InstanceState& info) {
     //      * call volkGenLoadLoader(VK_NULL_HANDLE, vkGetInstanceProcAddr))
     OnRet(volkInitialize(), "Unable to initialize Vulkan loader");
 
-    std::sort(info.extensions.begin(), info.extensions.end(), strLess);
-    auto new_end = std::unique(info.extensions.begin(), info.extensions.end());
-    info.extensions.erase(new_end, info.extensions.end());
+    Vector<VkLayerProperties> available_layers{};
+    OnRet(enumerate(available_layers, vkEnumerateInstanceLayerProperties), "Failed to get properties of instance layers");
+    if (!checkExtensions("instance layers", available_layers, info.layers, info.try_layers)) {
+        return Er("Not all the required instance layers are supported");
+    }
+    Vector<VkExtensionProperties> available_extensions{};
+    OnRet(enumerate(available_extensions, vkEnumerateInstanceExtensionProperties, nullptr),
+          "Failed to get properties of instance extensions");
+    if (!checkExtensions("instance extensions", available_extensions, info.extensions, info.try_extensions)) {
+        return Er("Not all the required instance extensions are supported");
+    }
+    if (info.__verbose) {
+        printExtensions("instance layers", available_layers, info.layers);
+        printExtensions("instance extensions", available_extensions, info.extensions);
+    }
 
     // To debug issue in vkCreateInstance and vkDestroyInstance calls,
     // pass a VkDebugUtilsMessengerCreateInfoEXT struct to `instance_ci.pNext`.
     auto instance_ci = Itor::InstanceCreateInfo(info.__next);
     instance_ci.pApplicationInfo = &info.app_info;
     if (info.layers.size() > 0) {
-        if (!checkInstanceLayers(info.layers)) {
-            return Er("Not all the required instance layers are supported");
-        }
         instance_ci.enabledLayerCount = u32(info.layers.size());
         instance_ci.ppEnabledLayerNames = info.layers.data();
     }
     if (info.extensions.size() > 0) {
-        if (!checkInstanceExtensions(info.extensions)) {
-            return Er("Not all the required instance extensions are supported");
-        }
         instance_ci.enabledExtensionCount = u32(info.extensions.size());
         instance_ci.ppEnabledExtensionNames = info.extensions.data();
-    }
-
-    if (info.__verbose) {
-        printInstanceLayers(info.layers);
-        printInstanceExtensions(info.extensions);
     }
 
     Instance instance{};
@@ -151,98 +160,6 @@ Res<Instance> Instance::borrow(VkInstance handle,
     volkLoadInstance(instance);
 
     return Ok(std::move(instance));
-}
-
-bool checkInstanceLayers(const Vector<const char*>& layers) {
-    Vector<VkLayerProperties> lyrs{};
-    VkResult res = enumerate(lyrs, vkEnumerateInstanceLayerProperties);
-    if (res != VK_SUCCESS) {
-        vktLogE("Failed to get properties of instance layers: {}", VkStr(VkResult, res));
-        return false;
-    }
-
-    std::set<String> instance_lyrs(layers.begin(), layers.end());
-    for (const auto& l : lyrs) {
-        instance_lyrs.erase(l.layerName);
-    }
-
-    bool empty = instance_lyrs.empty();
-    if (!empty) {
-        vktLogW("Not supported instance layers:");
-        for (const auto& l : instance_lyrs) {
-            vktLogW("\t{}", l);
-        }
-    }
-    return empty;
-}
-
-bool checkInstanceExtensions(const Vector<const char*>& extensions) {
-    Vector<VkExtensionProperties> exts{};
-    VkResult res = enumerate(exts, vkEnumerateInstanceExtensionProperties, nullptr);
-    if (res != VK_SUCCESS) {
-        vktLogE("Failed to get properties of instance extensions: {}", VkStr(VkResult, res));
-        return false;
-    }
-
-    std::set<String> instance_exts(extensions.begin(), extensions.end());
-    for (const auto& e : exts) {
-        instance_exts.erase(e.extensionName);
-    }
-
-    bool empty = instance_exts.empty();
-    if (!empty) {
-        vktLogW("Not supported instance extensions:");
-        for (const auto& e : instance_exts) {
-            vktLogW("\t{}", e);
-        }
-    }
-    return empty;
-}
-
-void printInstanceLayers(const Vector<const char*>& enabled_layers) {
-    Vector<VkLayerProperties> lys{};
-    VkResult res = enumerate(lys, vkEnumerateInstanceLayerProperties);
-    if (res != VK_SUCCESS) {
-        vktLogE("Failed to get properties of instance layers: {}", VkStr(VkResult, res));
-        return;
-    }
-
-    String str("Available instance layers {\n");
-    for (const auto& y : lys) {
-        str += vktFmt("\t{}\n", y.layerName);
-    }
-    str += "}\n";
-
-    str += "Enabled instance layers {\n";
-    for (const auto& y : enabled_layers) {
-        str += vktFmt("\t{}\n", y);
-    }
-    str += "}";
-
-    vktOut("{}", str);
-}
-
-void printInstanceExtensions(const Vector<const char*>& enabled_extensions) {
-    Vector<VkExtensionProperties> ext_props{};
-    VkResult res = enumerate(ext_props, vkEnumerateInstanceExtensionProperties, nullptr);
-    if (res != VK_SUCCESS) {
-        vktLogE("Failed to get properties of instance extensions: {}", VkStr(VkResult, res));
-        return;
-    }
-
-    String str("Available instance extensions {\n");
-    for (const auto& e : ext_props) {
-        str += vktFmt("\t{}\n", e.extensionName);
-    }
-    str += "}\n";
-
-    str += "Enabled instance extensions {\n";
-    for (const auto& e : enabled_extensions) {
-        str += vktFmt("\t{}\n", e);
-    }
-    str += "}";
-
-    vktOut("{}", str);
 }
 
 NAMESPACE_END(core)

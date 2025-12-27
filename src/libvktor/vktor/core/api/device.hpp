@@ -19,13 +19,13 @@ public:
                                      VkPhysicalDeviceVulkan13Features>;
 
 private:
-    uint32_t max_queue_count = 1; /**< The max count of queues for each queue family, must >= 1. */
-    Vector<const char*> extensions{};
+    uint32_t max_queue_count = 1;         /**< The max count of queues for each queue family, must >= 1. */
+    Vector<const char*> extensions{};     /**< Required deivce extensions */
+    Vector<const char*> try_extensions{}; /**< Enabled device extensions if available */
     VulkanFeatures features{Itor::PhysicalDeviceFeatures2(),
                             Itor::PhysicalDeviceVulkan11Features(),
                             Itor::PhysicalDeviceVulkan12Features(),
                             Itor::PhysicalDeviceVulkan13Features()};
-    bool require_extensions_for_vma = false;
 
 public:
     explicit DeviceState(String&& name = "Device") : CoreState(std::move(name)) {}
@@ -33,7 +33,7 @@ public:
     Self setMaxQueueCount(uint32_t count);
     Self addExtension(const char* extension);
     Self addExtensions(const Vector<const char*>& extensions);
-    Self addExtensionsForVMA();
+    Self tryAddExtension(const char* extension);
     template <typename T>
     Self setFeatures(std::function<void(T&)> fn);
 #if VK_KHR_dynamic_rendering // As a block region
@@ -88,9 +88,6 @@ inline VkMemoryRequirements Device::getMemoryRequirements(VkImage image) const {
     vkGetImageMemoryRequirements(handle, image, &reqs);
     return reqs;
 }
-
-bool checkDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& device_extensions);
-void printDeviceExtensions(VkPhysicalDevice pd, const Vector<const char*>& enabled_extensions);
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)
