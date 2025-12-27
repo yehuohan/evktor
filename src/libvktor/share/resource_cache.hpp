@@ -21,6 +21,26 @@ public:
         return *this;
     }
 
+    auto begin() {
+        return map.begin();
+    }
+
+    auto end() {
+        return map.end();
+    }
+
+    const auto begin() const {
+        return map.begin();
+    }
+
+    const auto end() const {
+        return map.end();
+    }
+
+    inline size_t size() const {
+        return map.size();
+    }
+
     inline void clear() {
         map.clear();
     }
