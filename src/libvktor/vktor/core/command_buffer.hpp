@@ -90,7 +90,16 @@ public:
                                              uint32_t first_set = 0,
                                              const Vector<VkDescriptorSet>& descriptors = {},
                                              const Vector<uint32_t>& dynamics = {}) const;
+    inline Self cmdPushConstants(VkPipelineLayout layout,
+                                 VkShaderStageFlags stage,
+                                 const void* data,
+                                 uint32_t size,
+                                 uint32_t offset = 0) const;
+    inline Self cmdPushGraphicsConstants(VkPipelineLayout layout, const void* data, uint32_t size, uint32_t offset = 0) const;
+    inline Self cmdPushComputeConstants(VkPipelineLayout layout, const void* data, uint32_t size, uint32_t offset = 0) const;
     inline Self cmdBindIndexBuffer(VkBuffer buffer, VkDeviceSize offset, VkIndexType index_type) const;
+    inline Self cmdBindIndexBufferU32(VkBuffer buffer, VkDeviceSize offset = 0) const;
+    inline Self cmdBindIndexBufferU16(VkBuffer buffer, VkDeviceSize offset = 0) const;
     inline Self cmdBindVertexBuffers(uint32_t first_binding,
                                      const Vector<VkBuffer>& buffers,
                                      const Vector<VkDeviceSize>& offsets) const;
@@ -357,10 +366,45 @@ inline CommandBuffer::Self CommandBuffer::cmdBindComputeDescriptorSets(VkPipelin
     return *this;
 }
 
+inline CommandBuffer::Self CommandBuffer::cmdPushConstants(VkPipelineLayout layout,
+                                                           VkShaderStageFlags stage,
+                                                           const void* data,
+                                                           uint32_t size,
+                                                           uint32_t offset) const {
+    vkCmdPushConstants(handle, layout, stage, offset, size, data);
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdPushGraphicsConstants(VkPipelineLayout layout,
+                                                                   const void* data,
+                                                                   uint32_t size,
+                                                                   uint32_t offset) const {
+    vkCmdPushConstants(handle, layout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offset, size, data);
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdPushComputeConstants(VkPipelineLayout layout,
+                                                                  const void* data,
+                                                                  uint32_t size,
+                                                                  uint32_t offset) const {
+    vkCmdPushConstants(handle, layout, VK_SHADER_STAGE_COMPUTE_BIT, offset, size, data);
+    return *this;
+}
+
 inline CommandBuffer::Self CommandBuffer::cmdBindIndexBuffer(VkBuffer buffer,
                                                              VkDeviceSize offset,
                                                              VkIndexType index_type) const {
     vkCmdBindIndexBuffer(handle, buffer, offset, index_type);
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdBindIndexBufferU32(VkBuffer buffer, VkDeviceSize offset) const {
+    vkCmdBindIndexBuffer(handle, buffer, offset, VK_INDEX_TYPE_UINT32);
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdBindIndexBufferU16(VkBuffer buffer, VkDeviceSize offset) const {
+    vkCmdBindIndexBuffer(handle, buffer, offset, VK_INDEX_TYPE_UINT16);
     return *this;
 }
 

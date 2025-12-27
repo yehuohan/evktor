@@ -15,8 +15,23 @@ Self PipelineLayoutState::addDescriptorSetLayout(VkDescriptorSetLayout setlayout
     return *this;
 }
 
-Self PipelineLayoutState::addPushConstantRange(const VkPushConstantRange& range) {
-    constant_ranges.push_back(range);
+Self PipelineLayoutState::addPushConstant(const VkPushConstantRange& range) {
+    push_constants.push_back(range);
+    return *this;
+}
+
+Self PipelineLayoutState::addPushConstant(VkShaderStageFlags stage, uint32_t size, uint32_t offset) {
+    push_constants.push_back(VkPushConstantRange{stage, offset, size});
+    return *this;
+}
+
+Self PipelineLayoutState::addGraphicsPushConstant(uint32_t size, uint32_t offset) {
+    push_constants.push_back(VkPushConstantRange{VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offset, size});
+    return *this;
+}
+
+Self PipelineLayoutState::addComputePushConstant(uint32_t size, uint32_t offset) {
+    push_constants.push_back(VkPushConstantRange{VK_SHADER_STAGE_COMPUTE_BIT, offset, size});
     return *this;
 }
 
@@ -43,8 +58,8 @@ Res<PipelineLayout> PipelineLayout::from(const CoreApi& api, const PipelineLayou
     auto pipeline_layout_ci = Itor::PipelineLayoutCreateInfo(info.__next);
     pipeline_layout_ci.setLayoutCount = u32(info.desc_setlayouts.size());
     pipeline_layout_ci.pSetLayouts = info.desc_setlayouts.data();
-    pipeline_layout_ci.pushConstantRangeCount = u32(info.constant_ranges.size());
-    pipeline_layout_ci.pPushConstantRanges = info.constant_ranges.data();
+    pipeline_layout_ci.pushConstantRangeCount = u32(info.push_constants.size());
+    pipeline_layout_ci.pPushConstantRanges = info.push_constants.data();
     OnRet(vkCreatePipelineLayout(api, &pipeline_layout_ci, api, pipeline_layout), "Failed to create pipeline layout");
     OnName(pipeline_layout, info.__name);
 

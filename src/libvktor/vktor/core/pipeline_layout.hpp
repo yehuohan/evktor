@@ -13,14 +13,17 @@ class PipelineLayoutState : public CoreState<PipelineLayoutState> {
 private:
     VkPipelineLayoutCreateFlags flags = 0;
     Vector<VkDescriptorSetLayout> desc_setlayouts{};
-    Vector<VkPushConstantRange> constant_ranges{};
+    Vector<VkPushConstantRange> push_constants{};
 
 public:
     explicit PipelineLayoutState(String&& name = "PipelineLayout") : CoreState(std::move(name)) {}
 
     Self setFlags(VkPipelineLayoutCreateFlags flags);
     Self addDescriptorSetLayout(VkDescriptorSetLayout setlayout);
-    Self addPushConstantRange(const VkPushConstantRange& range);
+    Self addPushConstant(const VkPushConstantRange& range);
+    Self addPushConstant(VkShaderStageFlags stage, uint32_t size, uint32_t offset = 0);
+    Self addGraphicsPushConstant(uint32_t size, uint32_t offset = 0);
+    Self addComputePushConstant(uint32_t size, uint32_t offset = 0);
 
     Res<PipelineLayout> into(const CoreApi& api) const;
 };
