@@ -1,11 +1,14 @@
 /**
  * @file vktor.hpp
- * @brief Graphics framework
+ * @brief Vulkan based graphics framework
  *
- * The libvktor:
+ * Features:
  * - Requires: Vulkan >= v1.3
- * - Core api: `auto xxx = XXXState().into().unwrap()` and `auto xxx = XXX::from().unwrap()`
- * - Error handler: wrap unexpected returns/results/errors with Res to avoid crash and for custom processing
+ * - No crash: wrap unexpected returns/results/errors with `Res`
+ * - Module `core`: wrap Vulkan handles inside core handles with RAII
+ *      * `CoreApi`: `auto xxx = XXXState().into(CoreApi).unwrap()` and `auto xxx = XXX::from(CoreApi, XXXState).unwrap()`
+ * - Module `base`: advanced wrap core handles with more functionalities for Vulkan handles
+ * - Module `rendering`: graphics rendering with `core` and `base`
  *
  * @author yehuohan@qq.com
  */

@@ -15,6 +15,9 @@ private:
     VkPipelineCreateFlags flags = 0;
     String shader_entry = "main";
     VkShaderModule shader = VK_NULL_HANDLE;
+    const void* spec_data = nullptr;
+    size_t spec_data_size = 0;
+    Vector<VkSpecializationMapEntry> spec_entries{};
     VkPipelineLayout layout = VK_NULL_HANDLE;
 
 public:
@@ -22,6 +25,8 @@ public:
 
     Self setFlags(VkPipelineCreateFlags flags);
     Self setShader(VkShaderModule shader, const char* entry = "main");
+    Self setSpecializationData(const void* data, size_t data_size);
+    Self addSpecializationEntry(uint32_t id, uint32_t offset, size_t size);
     Self setPipelineLayout(VkPipelineLayout layout);
 
     Res<ComputePipeline> into(const CoreApi& api) const;
@@ -50,6 +55,14 @@ struct hash<vkt::core::ComputePipelineState> {
         hashCombine(res, pso.flags);
         hashCombine(res, pso.shader);
         hashCombine(res, pso.shader_entry);
+        if (pso.spec_data) {
+            for (const auto& e : pso.spec_entries) {
+                hashCombine(res, e.constantID);
+                for (uint32_t k = 0; k < e.size; k++) {
+                    hashCombine(res, ((uint8_t*)pso.spec_data)[e.offset + k]);
+                }
+            }
+        }
         hashCombine(res, pso.layout);
         return res;
     }

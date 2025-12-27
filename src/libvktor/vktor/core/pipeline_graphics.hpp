@@ -13,10 +13,16 @@ class GraphicsPipelineState : public CoreState<GraphicsPipelineState> {
     friend struct std::hash<GraphicsPipelineState>;
 
 public:
+    struct ShaderSpecialization {
+        const void* data = nullptr;
+        size_t data_size = 0;
+        Vector<VkSpecializationMapEntry> entries{};
+    };
     struct Shader {
-        VkShaderStageFlagBits stage = VK_SHADER_STAGE_VERTEX_BIT;
         VkShaderModule shader = VK_NULL_HANDLE;
+        VkShaderStageFlagBits stage = VK_SHADER_STAGE_VERTEX_BIT;
         String entry = "main";
+        ShaderSpecialization spec{};
     };
 
 private:
@@ -56,8 +62,16 @@ public:
     explicit GraphicsPipelineState(String&& name = "GraphicsPipeline");
 
     Self setFlags(VkPipelineCreateFlags flags);
-    Self addVertShader(VkShaderModule shader, const String& entry = "main");
-    Self addFragShader(VkShaderModule shader, const String& entry = "main");
+    Self addShader(VkShaderModule shader,
+                   VkShaderStageFlagBits stage,
+                   const String& entry = "main",
+                   const ShaderSpecialization& spec = {nullptr, 0, {}});
+    Self addVertShader(VkShaderModule shader,
+                       const String& entry = "main",
+                       const ShaderSpecialization& spec = {nullptr, 0, {}});
+    Self addFragShader(VkShaderModule shader,
+                       const String& entry = "main",
+                       const ShaderSpecialization& spec = {nullptr, 0, {}});
     Self addVertexInputBinding(const VkVertexInputBindingDescription& binding);
     Self addVertexInputBindings(const Vector<VkVertexInputBindingDescription>& bindings);
     Self addVertexInputAttribute(const VkVertexInputAttributeDescription& attribute);
@@ -128,6 +142,14 @@ struct hash<vkt::core::GraphicsPipelineState> {
             hashCombine(res, s.stage);
             hashCombine(res, s.shader);
             hashCombine(res, s.entry);
+            if (s.spec.data) {
+                for (const auto& e : s.spec.entries) {
+                    hashCombine(res, e.constantID);
+                    for (uint32_t k = 0; k < e.size; k++) {
+                        hashCombine(res, ((uint8_t*)s.spec.data)[e.offset + k]);
+                    }
+                }
+            }
         }
         for (const auto& item : pso.vertex_input.bindings) {
             hashCombine(res, item);

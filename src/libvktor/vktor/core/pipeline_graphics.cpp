@@ -37,13 +37,21 @@ Self GraphicsPipelineState::setFlags(VkPipelineCreateFlags _flags) {
     return *this;
 }
 
-Self GraphicsPipelineState::addVertShader(VkShaderModule shader, const String& entry) {
-    shaders.push_back({VK_SHADER_STAGE_VERTEX_BIT, shader, entry});
+Self GraphicsPipelineState::addShader(VkShaderModule shader,
+                                      VkShaderStageFlagBits stage,
+                                      const String& entry,
+                                      const ShaderSpecialization& spec) {
+    shaders.push_back(Shader{shader, stage, entry, spec});
     return *this;
 }
 
-Self GraphicsPipelineState::addFragShader(VkShaderModule shader, const String& entry) {
-    shaders.push_back({VK_SHADER_STAGE_FRAGMENT_BIT, shader, entry});
+Self GraphicsPipelineState::addVertShader(VkShaderModule shader, const String& entry, const ShaderSpecialization& spec) {
+    shaders.push_back(Shader{shader, VK_SHADER_STAGE_VERTEX_BIT, entry, spec});
+    return *this;
+}
+
+Self GraphicsPipelineState::addFragShader(VkShaderModule shader, const String& entry, const ShaderSpecialization& spec) {
+    shaders.push_back(Shader{shader, VK_SHADER_STAGE_FRAGMENT_BIT, entry, spec});
     return *this;
 }
 
@@ -234,11 +242,17 @@ GraphicsPipeline::~GraphicsPipeline() {
 Res<GraphicsPipeline> GraphicsPipeline::from(const CoreApi& api, const GraphicsPipelineState& info) {
     // Shader stages
     Vector<VkPipelineShaderStageCreateInfo> shader_stages{};
+    Vector<VkSpecializationInfo> shader_spec_infos{};
     for (auto& s : info.shaders) {
         auto stage = Itor::PipelineShaderStageCreateInfo();
         stage.stage = s.stage;
         stage.module = s.shader;
         stage.pName = s.entry.c_str();
+        if (s.spec.data && !s.spec.entries.empty()) {
+            shader_spec_infos.push_back(
+                VkSpecializationInfo{u32(s.spec.entries.size()), s.spec.entries.data(), s.spec.data_size, s.spec.data});
+            stage.pSpecializationInfo = &shader_spec_infos.back();
+        }
         shader_stages.push_back(stage);
     }
 
