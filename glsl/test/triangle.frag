@@ -7,7 +7,14 @@ layout(location = 0) out vec4 out_color;
 
 layout(set = 0, binding = 1) uniform sampler2D tex;
 
+layout(push_constant) uniform Args {
+    int flipy;
+    int scaler;
+} args;
+
+layout(constant_id = 0) const int alpha = 1;
+
 void main() {
-    vec3 color = mix(texture(tex, inp_uv).rgb, inp_color, 0.5);
-    out_color = vec4(color, 1.0);
+    vec3 color = inp_color + texture(tex, inp_uv).rgb;
+    out_color = vec4(color, float(alpha * args.scaler));
 }

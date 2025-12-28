@@ -12,8 +12,17 @@ layout(set = 0, binding = 0) uniform UBO {
     mat4 proj;
 } ubo;
 
+layout(push_constant) uniform Args {
+    int flipy;
+    int scaler;
+} args;
+
 void main() {
-    gl_Position = ubo.proj * ubo.view * vec4(inp_pos, 1.0);
+    vec4 pos = vec4(inp_pos, 1.0);
+    if (bool(args.flipy)) {
+        pos.y = -pos.y;
+    }
+    gl_Position = ubo.proj * ubo.view * pos;
     out_color = inp_color;
     out_uv = inp_uv;
 }

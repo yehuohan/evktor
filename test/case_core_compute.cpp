@@ -23,8 +23,18 @@ void case_core_compute() {
                                .addCompBinding(1, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
                                .into(api)
                                .unwrap();
-    auto pipeline_layout = PipelineLayoutState{}.addDescriptorSetLayout(desc_set_layout).into(api).unwrap();
-    auto pipeline = ComputePipelineState{}.setShader(shader).setPipelineLayout(pipeline_layout).into(api).unwrap();
+    auto pipeline_layout = PipelineLayoutState{}
+                               .addDescriptorSetLayout(desc_set_layout)
+                               .addComputePushConstant(sizeof(Quad::PushArgs))
+                               .into(api)
+                               .unwrap();
+    auto pipeline = ComputePipelineState{}
+                        .setShader(shader)
+                        .setSpecializationData(&quad.spec_args, sizeof(Quad::SpecArgs))
+                        .addSpecializationEntry(0, offsetof(Quad::SpecArgs, alpha), sizeof(int))
+                        .setPipelineLayout(pipeline_layout)
+                        .into(api)
+                        .unwrap();
     tstOut("Compute pipeline: {}", fmt::ptr((VkPipeline)pipeline));
 
     // Create descriptors
@@ -85,8 +95,9 @@ void case_core_compute() {
                                  VK_ACCESS_SHADER_WRITE_BIT,
                                  VK_IMAGE_LAYOUT_UNDEFINED,
                                  VK_IMAGE_LAYOUT_GENERAL);
-    cmdbuf.cmdBindPipeline(VK_PIPELINE_BIND_POINT_COMPUTE, pipeline)
-        .cmdBindDescriptorSets(VK_PIPELINE_BIND_POINT_COMPUTE, pipeline_layout, 0, {desc_set})
+    cmdbuf.cmdBindComputePipeline(pipeline)
+        .cmdBindComputeDescriptorSets(pipeline_layout, 0, {desc_set})
+        .cmdPushComputeConstants(pipeline_layout, &quad.push_args, sizeof(Quad::PushArgs))
         .cmdDispatch(quad.group_count_x, quad.group_count_y, quad.group_count_z);
     cmdbuf.cmdImageMemoryBarrier(Arg{out_img},
                                  VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,

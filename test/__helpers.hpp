@@ -21,6 +21,12 @@ struct Quad {
     uint32_t group_count_x;
     uint32_t group_count_y;
     uint32_t group_count_z;
+    struct PushArgs {
+        int scaler;
+    } push_args;
+    struct SpecArgs {
+        int alpha;
+    } spec_args;
     Vector<float> img;
 
     Quad();
@@ -40,6 +46,13 @@ struct Triangle {
 
     String vert_file;
     String frag_file;
+    struct PushArgs {
+        int flipy;
+        int scaler;
+    } push_args;
+    struct SpecArgs {
+        int alpha;
+    } spec_args;
     UBO ubo;
     Vector<float> tex;
     static float vertices[24];

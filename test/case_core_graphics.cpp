@@ -31,10 +31,18 @@ void case_core_graphics() {
                                .addFragBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
                                .into(api)
                                .unwrap();
-    auto pipeline_layout = PipelineLayoutState{}.addDescriptorSetLayout(desc_set_layout).into(api).unwrap();
+    auto pipeline_layout = PipelineLayoutState{}
+                               .addDescriptorSetLayout(desc_set_layout)
+                               .addGraphicsPushConstant(sizeof(Triangle::PushArgs))
+                               .into(api)
+                               .unwrap();
     auto pipeline = GraphicsPipelineState{}
                         .addVertShader(shader_vert)
-                        .addFragShader(shader_frag)
+                        .addFragShader(shader_frag,
+                                       "main",
+                                       {&tri.spec_args,
+                                        sizeof(Triangle::SpecArgs),
+                                        {{0, offsetof(Triangle::SpecArgs, alpha), sizeof(int)}}})
                         .addVertexInputBinding({0, 8 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX})
                         .addVertexInputAttribute({0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0})
                         .addVertexInputAttribute({1, 0, VK_FORMAT_R32G32B32_SFLOAT, 3 * sizeof(float)})
@@ -42,7 +50,8 @@ void case_core_graphics() {
                         // Vulkan use top-left as original (0, 0), flip the Y axis with negative viewport height
                         .addViewport(0, tri.hei, tri.wid, -float(tri.hei))
                         .addScissor(0, 0, tri.wid, tri.hei)
-                        .setRasterizationCullFace(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE)
+                        // Disable culling face to display flipped y axis
+                        .setRasterizationCullFace(VK_CULL_MODE_NONE)
                         .addColorBlendAttachment(VkPipelineColorBlendAttachmentState{
                             .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
                                               VK_COLOR_COMPONENT_A_BIT})
@@ -147,8 +156,9 @@ void case_core_graphics() {
                                  VK_IMAGE_LAYOUT_UNDEFINED,
                                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
     cmdbuf.beginRenderPass({tri.wid, tri.hei}, render_pass, framebuffer, {VkClearValue{}})
-        .cmdBindPipeline(VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline)
-        .cmdBindDescriptorSets(VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout, 0, {desc_set})
+        .cmdBindGraphicsPipeline(pipeline)
+        .cmdBindGraphicsDescriptorSets(pipeline_layout, 0, {desc_set})
+        .cmdPushGraphicsConstants(pipeline_layout, &tri.push_args, sizeof(Triangle::PushArgs))
         .cmdBindVertexBuffers(0, {vertex_buf}, {0})
         .cmdBindIndexBuffer(index_buf, 0, VK_INDEX_TYPE_UINT32)
         .cmdDrawIndexed(3, 1, 0, 0, 0)
