@@ -5,7 +5,7 @@
 #include "tst_generated.hpp"
 
 int main(int argc, char* argv[]) {
-    vktdev::Assets::setDirs("../assets", "./glsl");
+    vktdev::Assets::setDirs("../assets", "./shaders");
 
     std::cout << "[tst]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
     if (argc >= 2) {

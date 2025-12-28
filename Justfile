@@ -35,7 +35,7 @@ x-all: x-evktor
 
 x-evktor: x-src
     @echo [Run] evktor...
-    {{dir_xinstall}}/bin/evktor {{dir_root}}/../assets {{dir_root}}/glsl
+    {{dir_xinstall}}/bin/evktor {{dir_root}}/../assets {{dir_root}}/shaders
 
 x-sigma: x-src
     @echo [Run] evktor/test/tst_main core
@@ -47,11 +47,11 @@ x-test case="": x-src
 
 evktor: src
     @echo [Run] evktor...
-    {{dir_install}}/evktor {{dir_root}}/../assets {{dir_root}}/glsl
+    {{dir_install}}/evktor {{dir_root}}/../assets {{dir_root}}/shaders
 
 omega: src
     @echo [Run] evktor/omega...
-    {{dir_install}}/omega {{dir_root}}/../assets {{dir_root}}/glsl
+    {{dir_install}}/omega {{dir_root}}/../assets {{dir_root}}/shaders
 
 sigma: src
     @echo [Run] evktor/test/tst_main core
