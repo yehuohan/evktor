@@ -1,4 +1,4 @@
-# vim@code{ efm = [[error: %f:%l:%c: %m,%.%#error: %f:%l: %m]], efm_fts = { 'cmake', 'cpp', 'glsl', 'rust', 'python' } }:
+# vim@code{ efm = [[error: %f:%l:%c: %m,%.%#error: %f:%l: %m]], efm_fts = { 'cmake', 'cpp', 'glsl', 'shaderslang', 'rust', 'python' } }:
 set shell := ['bash', '-uc']
 set dotenv-load
 set ignore-comments

@@ -29,6 +29,14 @@ if(NOT HPP_HASH STREQUAL HPP_HASH_OLD)
     file(WRITE ${HPP} "${CASE_EXTS}${CASE_MAPS}")
 endif()
 
+# include(CompileShader)
+# file(GLOB SHADER_SRC
+#     ${PROJECT_SHADERS}/test/*.slang
+#     ${PROJECT_SHADERS}/test/*.comp
+#     ${PROJECT_SHADERS}/test/*.vert
+#     ${PROJECT_SHADERS}/test/*.frag)
+# add_shader_target(tst_shader ${SHADER_SRC})
+
 project(tst_main)
 
 add_executable(${PROJECT_NAME} ${SRC})

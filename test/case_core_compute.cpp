@@ -1,4 +1,5 @@
 #include "__helpers.hpp"
+// #include "quad.slang.h"
 
 void case_core_compute() {
     auto boxapi = createCoreApi();
@@ -16,6 +17,7 @@ void case_core_compute() {
     shader_state.setStage(VK_SHADER_STAGE_COMPUTE_BIT).setEntry("main");
     auto comp_source = ShaderSource(quad.comp_file, vktdev::Assets::loadShader(quad.comp_file));
     auto shader = Shader::from(comp_source, shader_state).unwrap().into(api).unwrap();
+    // auto shader  = ShaderModuleState().setCode(quad_slang, quad_slang_size).into(api).unwrap();
 
     // Create pipeline
     auto desc_set_layout = DescriptorSetLayoutState{}

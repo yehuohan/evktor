@@ -1,8 +1,11 @@
 
 # include(CompileShader)
-# file(GLOB SHADER_VERT_SRC ${PROJECT_GLSL}/*.vert)
-# file(GLOB SHADER_FRAG_SRC ${PROJECT_GLSL}/*.frag)
-# add_shader_target(evktor_shader ${SHADER_VERT_SRC} ${SHADER_FRAG_SRC})
+# file(GLOB SHADER_SRC
+#     ${PROJECT_SHADERS}/*.slang
+#     ${PROJECT_SHADERS}/*.comp
+#     ${PROJECT_SHADERS}/*.vert
+#     ${PROJECT_SHADERS}/*.frag)
+# add_shader_target(evktor_shader ${SHADER_SRC})
 
 project(evktor)
 
