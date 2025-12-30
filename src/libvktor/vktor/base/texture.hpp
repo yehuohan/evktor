@@ -1,5 +1,4 @@
 #pragma once
-#include "vktor/core/api/api.hpp"
 #include "vktor/core/image.hpp"
 #include "vktor/core/image_view.hpp"
 #include "vktor/core/sampler.hpp"

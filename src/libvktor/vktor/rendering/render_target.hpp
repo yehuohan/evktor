@@ -1,6 +1,5 @@
 #pragma once
 #include "vktor/base/texture.hpp"
-#include "vktor/core/api/api.hpp"
 #include "vktor/core/exts/swapchain.hpp"
 #include "vktor/core/render_pass.hpp"
 

@@ -1,6 +1,5 @@
 #pragma once
 #include "__core.hpp"
-#include "exts/swapchain.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)

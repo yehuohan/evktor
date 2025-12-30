@@ -1,5 +1,4 @@
 #pragma once
-#include "vktor/core/api/api.hpp"
 #include "vktor/core/shader_module.hpp"
 
 NAMESPACE_BEGIN(vkt)

@@ -1,6 +1,5 @@
 #pragma once
 #include "render_target.hpp"
-#include "vktor/core/api/api.hpp"
 #include "vktor/core/command_buffer.hpp"
 #include "vktor/core/command_pool.hpp"
 #include "vktor/core/descriptor_pool.hpp"
