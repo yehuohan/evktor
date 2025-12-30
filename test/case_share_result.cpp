@@ -76,36 +76,36 @@ TstRes createVec(uint32_t type) {
     switch (type) {
     case 1:
         {
-            return TstOk(Vec{});
+            return TstOk(Vec{}); // Construct, move construct
         }
         break;
     case 2:
         {
-            Vec v;
-            TstOk r = std::move(v);
+            Vec v;                  // Construct
+            TstOk r = std::move(v); // Move construct
+            return r;
+        }
+        break;
+    case 22:
+        {
+            Vec v;       // Construct
+            TstOk r = v; // Copy construct
             return r;
         }
         break;
     case 3:
         {
 
-            Vec v;
-            TstRes r = TstOk(std::move(v));
-            return r;
-        }
-        break;
-    case 22:
-        {
-            Vec v;
-            TstOk r = v;
+            Vec v;                          // Construct
+            TstRes r = TstOk(std::move(v)); // Move construct, move construct
             return r;
         }
         break;
     case 33:
         {
 
-            Vec v;
-            TstRes r = TstOk(v);
+            Vec v;               // Construct
+            TstRes r = TstOk(v); // Copy construct
             return r;
         }
         break;
@@ -120,39 +120,43 @@ TstRes createVec(uint32_t type) {
 void case_share_result() {
     {
         resetCnt();
-        TstRes r = createVec(1);
+        TstRes r = createVec(1); // Move construct
         assert(r.isOk());
-        auto v = r.unwrap();
+        auto v = r.unwrap(); // Move construct
         assertCnt(1, 0, 3, 0, 0);
-    }
-    {
-        resetCnt();
-        TstRes r = createVec(2);
-        assert(r.isOk());
-        auto v = r.unwrap();
-        assertCnt(1, 0, 3, 0, 0);
-    }
-    {
-        resetCnt();
-        TstRes r = createVec(3);
-        assert(r.isOk());
-        auto v = r.unwrap();
-        assertCnt(1, 0, 4, 0, 0);
     }
 
     {
         resetCnt();
-        TstRes r = createVec(22);
+        TstRes r = createVec(2); // Move construct
         assert(r.isOk());
-        auto v = r.unwrap();
-        assertCnt(1, 1, 2, 0, 0);
+        auto v = std::move(r.unwrap()); // Move construct, move construct
+        assertCnt(1, 0, 4, 0, 0);
     }
     {
         resetCnt();
-        TstRes r = createVec(33);
+        TstRes r = createVec(22); // Move construct
         assert(r.isOk());
-        auto v = r.unwrap();
-        assertCnt(1, 1, 3, 0, 0);
+        Vec v;          // Construct
+        v = r.unwrap(); // Move assign
+        assertCnt(2, 1, 2, 0, 1);
+    }
+
+    {
+        resetCnt();
+        TstRes r = createVec(3); // Move construct
+        assert(r.isOk());
+        auto v = r.unwrap(); // Move construct
+        assertCnt(1, 0, 4, 0, 0);
+    }
+    {
+        resetCnt();
+        TstRes r = createVec(33); // Move construct
+        assert(r.isOk());
+        auto v = r.unwrap(); // Move construct
+        Vec u;               // Construct
+        u = v;               // Copy assign
+        assertCnt(2, 1, 3, 1, 0);
     }
 
     {

@@ -13,7 +13,7 @@ CoreApi::~CoreApi() {
 Res<CRef<Instance>> CoreApi::init(InstanceState& info) {
     auto res = info.into();
     OnErr(res);
-    instance = std::move(res.unwrap());
+    instance = res.unwrap();
 
     // Reset objects that depends on instance
     debug = newBox<IDebug>();
@@ -28,7 +28,7 @@ Res<CRef<Instance>> CoreApi::borrow(VkInstance handle,
                                     VkAllocationCallbacks* allocator) {
     auto res = Instance::borrow(handle, fpGetInstanceProcAddr, api_version, allocator);
     OnErr(res);
-    instance = std::move(res.unwrap());
+    instance = res.unwrap();
 
     // Reset objects that depends on instance
     debug = newBox<IDebug>();
@@ -43,7 +43,7 @@ Res<CRef<PhysicalDevice>> CoreApi::init(PhysicalDeviceState& info) {
     }
     auto res = info.into(newCRef(instance));
     OnErr(res);
-    physical_device = std::move(res.unwrap());
+    physical_device = res.unwrap();
     return Ok(newCRef(physical_device));
 }
 
@@ -53,7 +53,7 @@ Res<CRef<PhysicalDevice>> CoreApi::borrow(VkPhysicalDevice handle, VkSurfaceKHR 
     }
     auto res = PhysicalDevice::borrow(newCRef(instance), handle, surface);
     OnErr(res);
-    physical_device = std::move(res.unwrap());
+    physical_device = res.unwrap();
     return Ok(newCRef(physical_device));
 }
 
@@ -107,7 +107,7 @@ Res<CRef<Device>> CoreApi::init(DeviceState& info) {
     }
     auto res = info.into(newCRef(physical_device));
     OnErr(res);
-    device = std::move(res.unwrap());
+    device = res.unwrap();
 
     OnRet(setDebugName(VK_OBJECT_TYPE_DEVICE, reinterpret_cast<uint64_t>(device.handle), info.__name.c_str()),
           "Failed to set debug name: {}",
@@ -161,7 +161,7 @@ Res<CRef<Device>> CoreApi::borrow(VkDevice handle,
     }
     auto res = Device::borrow(newCRef(physical_device), handle, fpGetDeviceProcAddr, mem_allocator);
     OnErr(res);
-    device = std::move(res.unwrap());
+    device = res.unwrap();
 
     // Only get one queue for each queue family
     queue_family_indices = indices;
