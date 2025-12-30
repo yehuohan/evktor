@@ -13,10 +13,7 @@ void case_core_compute() {
     tstOut("Comamnd buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
-    ShaderState shader_state;
-    shader_state.setStage(VK_SHADER_STAGE_COMPUTE_BIT).setEntry("main");
-    auto comp_source = ShaderSource(quad.comp_file, vktdev::Assets::loadShader(quad.comp_file));
-    auto shader = Shader::from(comp_source, shader_state).unwrap().into(api).unwrap();
+    auto shader_comp = Shader::fromComp(vktdev::Assets::loadShader(quad.comp_file), quad.comp_file).into(api).unwrap();
     // auto shader  = ShaderModuleState().setCode(quad_slang, quad_slang_size).into(api).unwrap();
 
     // Create pipeline
@@ -31,7 +28,7 @@ void case_core_compute() {
                                .into(api)
                                .unwrap();
     auto pipeline = ComputePipelineState{}
-                        .setShader(shader)
+                        .setShader(shader_comp)
                         .setSpecializationData(&quad.spec_args, sizeof(Quad::SpecArgs))
                         .addSpecializationEntry(0, offsetof(Quad::SpecArgs, alpha), sizeof(int))
                         .setPipelineLayout(pipeline_layout)

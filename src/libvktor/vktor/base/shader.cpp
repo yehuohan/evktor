@@ -7,76 +7,83 @@ NAMESPACE_BEGIN(vkt)
 
 using namespace core;
 
-ShaderState::Self ShaderState::setDefine(const String& name, const String& value) {
-    auto iter = std::find_if(defines.begin(), defines.end(), [&name](const std::pair<String, String> item) {
+using Self = Shader::Self;
+
+Shader::Shader(Shader&& rhs) {
+    src = std::move(rhs.src);
+    src_path = std::move(rhs.src_path);
+    src_id = rhs.src_id;
+    src_defs = std::move(rhs.src_defs);
+    rhs.src_id = 0;
+
+    stage = rhs.stage;
+    entry = rhs.entry;
+    spv = std::move(rhs.spv);
+    spv_id = rhs.spv_id;
+    rhs.spv_id = 0;
+
+    desc_sets = std::move(rhs.desc_sets);
+}
+
+Shader Shader::from(const VkShaderStageFlagBits stage, String&& source, const String& fullpath) {
+    Shader shader{};
+    shader.stage = stage;
+    shader.src = std::move(source);
+    shader.src_id = hash(shader.src);
+    shader.src_path = fullpath;
+    return std::move(shader);
+}
+
+Res<ShaderModule> Shader::into(const CoreApi& api) const {
+    auto cur_id = hash(*this);
+    if (spv_id != hash(*this)) {
+        auto res = ShaderGlsl::get().compile(stage, src, entry, getPreamble(), src_path);
+        OnErr(res);
+        spv = res.unwrap();
+        spv_id = cur_id;
+    }
+    return ShaderModuleState(vktFmt("ShaderModule({})", src_id)).setCode(spv).into(api);
+}
+
+Shader::Self Shader::setDefine(const String& name, const String& value) {
+    auto iter = std::find_if(src_defs.begin(), src_defs.end(), [&name](const std::pair<String, String> item) {
         return name == item.first;
     });
-    if (iter != defines.end()) {
+    if (iter != src_defs.end()) {
         iter->first = name;
         iter->second = value;
     } else {
-        defines.push_back(std::make_pair(name, value));
+        src_defs.push_back(std::make_pair(name, value));
     }
     return *this;
 }
 
-ShaderState::Self ShaderState::delDefine(const String& name) {
-    auto iter = std::find_if(defines.begin(), defines.end(), [&name](const std::pair<String, String> item) {
+Shader::Self Shader::delDefine(const String& name) {
+    auto iter = std::find_if(src_defs.begin(), src_defs.end(), [&name](const std::pair<String, String> item) {
         return name == item.first;
     });
-    if (iter != defines.end()) {
-        defines.erase(iter);
+    if (iter != src_defs.end()) {
+        src_defs.erase(iter);
     }
     return *this;
 }
 
-ShaderState::Self ShaderState::delAllDefines() {
-    defines.clear();
+Shader::Self Shader::delAllDefines() {
+    src_defs.clear();
     return *this;
 }
 
-String ShaderState::getPreamble() const {
+String Shader::getPreamble() const {
     String preamble("");
-    for (const auto& item : defines) {
+    for (const auto& item : src_defs) {
         preamble += vktFmt("#define {} {}\n", item.first, item.second);
     }
     return std::move(preamble);
 }
 
-ShaderSource::ShaderSource(const String& _filename, String&& _code) {
-    filename = _filename;
-    code = std::move(_code);
-    id = hash(code);
-}
-
-ShaderSource::ShaderSource(ShaderSource&& rhs) {
-    filename = std::move(rhs.filename);
-    code = std::move(rhs.code);
-    id = rhs.id;
-    rhs.id = 0;
-}
-
-Res<Shader> Shader::from(const ShaderSource& source, const ShaderState& state) {
-    Shader shader{state.stage, source.filename, state.entry};
-
-    auto res = ShaderGlsl::get().compile(shader.stage, shader.filename, source.code, shader.entry, state.getPreamble());
-    OnErr(res);
-    shader.spv_code = res.unwrap();
-    shader.id = hash(String{reinterpret_cast<const char*>(shader.spv_code.data()),
-                            reinterpret_cast<const char*>(shader.spv_code.data() + shader.spv_code.size())});
-
-    return Ok(std::move(shader));
-}
-
-Shader::Shader(Shader&& rhs) : stage(rhs.stage), filename(rhs.filename), entry(rhs.entry) {
-    spv_code = std::move(rhs.spv_code);
-    id = rhs.id;
-    rhs.id = 0;
-    desc_sets = std::move(rhs.desc_sets);
-}
-
-Res<ShaderModule> Shader::into(const CoreApi& api) const {
-    return ShaderModuleState(vktFmt("ShaderModule({})", filename)).setCode(spv_code).into(api);
+Self Shader::setEntry(const String& _entry) {
+    entry = _entry;
+    return *this;
 }
 
 NAMESPACE_END(vkt)

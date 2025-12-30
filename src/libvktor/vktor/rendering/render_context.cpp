@@ -200,18 +200,20 @@ Ref<RenderFrame> RenderContext::getFrame() {
     return newRef(frames[frame_index]);
 }
 
-Res<Ref<Shader>> RenderContext::requestShader(const ShaderSource& shader_source, const ShaderState& shader_state) {
-    size_t key = hash(shader_source, shader_state);
-    return resources.shaders.request(key, [this, &shader_source, &shader_state]() {
-        return Shader::from(shader_source, shader_state);
+Res<CRef<ShaderModule>> RenderContext::requestShaderModule(const Shader& shader) {
+    size_t key = hash(shader);
+    return resources.shader_modules.request(key, [this, &shader]() -> Res<ShaderModule> {
+        return shader.into(api);
     });
 }
 
-Res<Ref<DescriptorSetLayout>> RenderContext::requestDescriptorSetLayout(const uint32_t set, const Vector<Shader>& shaders) {
+Res<CRef<DescriptorSetLayout>> RenderContext::requestDescriptorSetLayout(const uint32_t set,
+                                                                         const Vector<CRef<Shader>>& shaders) {
     size_t key = hash(set, shaders);
     return resources.descriptor_setlayouts.request(key, [this, set, &shaders]() -> Res<DescriptorSetLayout> {
         DescriptorSetLayoutState dso{};
-        for (const auto& s : shaders) {
+        for (const auto& ref : shaders) {
+            auto& s = ref.get();
             switch (s.getStage()) {
             case VK_SHADER_STAGE_VERTEX_BIT:
             case VK_SHADER_STAGE_FRAGMENT_BIT:
@@ -228,7 +230,7 @@ Res<Ref<DescriptorSetLayout>> RenderContext::requestDescriptorSetLayout(const ui
                 break;
             default:
                 return Er("Request with unsupported shader ({}) stage: {}",
-                          s.getFilename(),
+                          s.getSourcePath(),
                           VkStr(VkShaderStageFlags, s.getStage()));
             }
         }
@@ -236,12 +238,13 @@ Res<Ref<DescriptorSetLayout>> RenderContext::requestDescriptorSetLayout(const ui
     });
 }
 
-Res<Ref<PipelineLayout>> RenderContext::requestPipelineLayout(const Vector<Shader>& shaders) {
+Res<CRef<PipelineLayout>> RenderContext::requestPipelineLayout(const Vector<CRef<Shader>>& shaders) {
     size_t key = hash(shaders);
     return resources.pipeline_layouts.request(key, [this, &shaders]() -> Res<PipelineLayout> {
         // Collect all set index
         std::set<uint32_t> sets{};
-        for (const auto& s : shaders) {
+        for (const auto& ref : shaders) {
+            auto& s = ref.get();
             const auto& desc_sets = s.getDescriptorSets();
             for (const auto& item : desc_sets) {
                 sets.insert(item.first);
@@ -258,30 +261,30 @@ Res<Ref<PipelineLayout>> RenderContext::requestPipelineLayout(const Vector<Shade
     });
 }
 
-Res<Ref<GraphicsPipeline>> RenderContext::requestGraphicsPipeline(const GraphicsPipelineState& pso) {
+Res<CRef<GraphicsPipeline>> RenderContext::requestGraphicsPipeline(const GraphicsPipelineState& pso) {
     size_t key = hash(pso);
     return resources.graphics_pipelines.request(key, [this, &pso]() {
         return pso.into(api);
     });
 }
 
-Res<Ref<ComputePipeline>> RenderContext::requestComputePipeline(const ComputePipelineState& pso) {
+Res<CRef<ComputePipeline>> RenderContext::requestComputePipeline(const ComputePipelineState& pso) {
     size_t key = hash(pso);
     return resources.compute_pipelines.request(key, [this, &pso]() {
         return pso.into(api);
     });
 }
 
-Res<Ref<RenderPass>> RenderContext::requestRenderPass(const RenderTargetTable& render_target_table,
-                                                      const RenderPipeline& render_pipeline) {
+Res<CRef<RenderPass>> RenderContext::requestRenderPass(const RenderTargetTable& render_target_table,
+                                                       const RenderPipeline& render_pipeline) {
     size_t key = hash(render_target_table.getTargets(), render_pipeline.getSubpasses());
     return resources.render_passes.request(key, [&render_target_table, &render_pipeline]() {
         return render_pipeline.newRenderPass(render_target_table);
     });
 }
 
-Res<Ref<Framebuffer>> RenderContext::requestFramebuffer(const RenderTargetTable& render_target_table,
-                                                        const RenderPass& render_pass) {
+Res<CRef<Framebuffer>> RenderContext::requestFramebuffer(const RenderTargetTable& render_target_table,
+                                                         const RenderPass& render_pass) {
     size_t key = hash(render_target_table, render_pass);
     return resources.framebuffers.request(key, [this, &render_target_table, &render_pass]() {
         FramebufferState fso{};

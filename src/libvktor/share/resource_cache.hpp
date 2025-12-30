@@ -55,8 +55,10 @@ public:
 
     /**
      * @brief Request resource that stored in `map`
+     *
+     * CRef<T>不应该长久持有，因为map中value的指针可能会变
      */
-    inline Res<Ref<T>> request(size_t key, std::function<Res<T>()> fn) {
+    inline Res<CRef<T>> request(size_t key, std::function<Res<T>()> fn) {
         std::lock_guard<std::mutex> guard(mtx);
 
         T* ptr;
@@ -72,7 +74,7 @@ public:
             }
         }
 
-        return Ok(newRef(*ptr));
+        return Ok(newCRef(*ptr));
     }
 
 private:

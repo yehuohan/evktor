@@ -6,11 +6,9 @@ NAMESPACE_BEGIN(vkt)
 
 class RenderSubpass : private NonCopyable {
 private:
-    enum {
-        VERT,
-        FRAG,
-    };
-    Vector<Shader> shaders{};
+    Shader vert_shader;
+    Shader frag_shader;
+
     /** Render targets info for subpass
      *
      * By default the color attachment is RT-0
@@ -18,20 +16,17 @@ private:
     core::RenderSubpassState state{{}, {0}, VK_ATTACHMENT_UNUSED};
 
 public:
-    explicit RenderSubpass(Shader&& vert, Shader&& frag) {
-        shaders.push_back(std::move(vert));
-        shaders.push_back(std::move(frag));
-    }
+    explicit RenderSubpass(Shader&& vert, Shader&& frag) : vert_shader(std::move(vert)), frag_shader(std::move(frag)) {}
     RenderSubpass(RenderSubpass&&);
 
-    inline const Vector<Shader>& Shaders() const {
-        return shaders;
+    inline const Vector<CRef<Shader>> Shaders() const {
+        return {newCRef(vert_shader), newCRef(frag_shader)};
     }
     inline const Shader& vertShader() const {
-        return shaders[VERT];
+        return vert_shader;
     }
     inline const Shader& fragShader() const {
-        return shaders[FRAG];
+        return frag_shader;
     }
     /** Set input render targets (alias input attachments) */
     inline void setRTInputs(Vector<uint32_t>&& inputs) {

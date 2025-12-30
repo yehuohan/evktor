@@ -46,7 +46,7 @@ public:
 
     /** Render context's resources */
     struct Resources {
-        ResourceCache<Shader> shaders{};
+        ResourceCache<core::ShaderModule> shader_modules{};
         ResourceCache<core::DescriptorSetLayout> descriptor_setlayouts{};
         ResourceCache<core::PipelineLayout> pipeline_layouts{};
         ResourceCache<core::GraphicsPipeline> graphics_pipelines{};
@@ -151,15 +151,15 @@ public:
     }
 
 public:
-    Res<Ref<Shader>> requestShader(const ShaderSource& shader_source, const ShaderState& shader_state);
-    Res<Ref<core::DescriptorSetLayout>> requestDescriptorSetLayout(const uint32_t set, const Vector<Shader>& shaders);
-    Res<Ref<core::PipelineLayout>> requestPipelineLayout(const Vector<Shader>& shaders);
-    Res<Ref<core::GraphicsPipeline>> requestGraphicsPipeline(const core::GraphicsPipelineState& pso);
-    Res<Ref<core::ComputePipeline>> requestComputePipeline(const core::ComputePipelineState& pso);
-    Res<Ref<core::RenderPass>> requestRenderPass(const RenderTargetTable& render_target_table,
-                                                 const RenderPipeline& render_pipeline);
-    Res<Ref<core::Framebuffer>> requestFramebuffer(const RenderTargetTable& render_target_table,
-                                                   const core::RenderPass& render_pass);
+    Res<CRef<core::ShaderModule>> requestShaderModule(const Shader& shader);
+    Res<CRef<core::DescriptorSetLayout>> requestDescriptorSetLayout(const uint32_t set, const Vector<CRef<Shader>>& shaders);
+    Res<CRef<core::PipelineLayout>> requestPipelineLayout(const Vector<CRef<Shader>>& shaders);
+    Res<CRef<core::GraphicsPipeline>> requestGraphicsPipeline(const core::GraphicsPipelineState& pso);
+    Res<CRef<core::ComputePipeline>> requestComputePipeline(const core::ComputePipelineState& pso);
+    Res<CRef<core::RenderPass>> requestRenderPass(const RenderTargetTable& render_target_table,
+                                                  const RenderPipeline& render_pipeline);
+    Res<CRef<core::Framebuffer>> requestFramebuffer(const RenderTargetTable& render_target_table,
+                                                    const core::RenderPass& render_pass);
 };
 
 NAMESPACE_END(vkt)

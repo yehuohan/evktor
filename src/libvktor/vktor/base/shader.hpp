@@ -4,55 +4,6 @@
 
 NAMESPACE_BEGIN(vkt)
 
-class Shader;
-
-/**
- * @brief Shader source code to compile to spir-v code
- */
-class ShaderSource : private NonCopyable {
-    friend class Shader;
-    friend struct std::hash<ShaderSource>;
-
-private:
-    String filename{""};
-    String code{""};
-    size_t id = 0; /**< id = hash(code) */
-
-public:
-    ShaderSource(const String& filename, String&& code);
-    ShaderSource(ShaderSource&&);
-};
-
-/**
- * @brief Shader state for compiling glsl
- */
-class ShaderState : private NonCopyable {
-    friend class Shader;
-    friend struct std::hash<ShaderState>;
-
-private:
-    VkShaderStageFlagBits stage = (VkShaderStageFlagBits)0;
-    String entry = "main";
-    Vector<std::pair<String, String>> defines{};
-
-public:
-    using Self = ShaderState&;
-
-    inline Self setStage(VkShaderStageFlagBits _stage) {
-        stage = _stage;
-        return *this;
-    }
-    inline Self setEntry(const String& _entry) {
-        entry = _entry;
-        return *this;
-    }
-
-    Self setDefine(const String& name, const String& value = "");
-    Self delDefine(const String& name);
-    Self delAllDefines();
-    String getPreamble() const;
-};
-
 struct ShaderDescriptor {
     /** Supported descriptor type */
     enum Type {
@@ -83,43 +34,69 @@ struct ShaderDescriptor {
 };
 
 /**
- * @brief Shader spir-v code
+ * @brief Shader for spir-v
  */
-class Shader : private NonCopyable {
+class Shader {
     friend struct std::hash<Shader>;
 
 private:
-    const VkShaderStageFlagBits stage;
-    const String filename;
-    const String entry;
-    Vector<uint32_t> spv_code{};
-    size_t id = 0; /**< id = hash(spv_code) */
+    String src = "";                              /**< Glsl or slang shader source */
+    size_t src_id = 0;                            /**< src_id = hash(src) */
+    String src_path = "";                         /**< Source fullpath for debug */
+    Vector<std::pair<String, String>> src_defs{}; /**< Source defines */
 
+private:
+    VkShaderStageFlagBits stage = (VkShaderStageFlagBits)0;
+    String entry = "main";          /**< Shader entry function */
+    mutable Vector<uint32_t> spv{}; /**< The spir-v code compiled from `src` */
+    mutable size_t spv_id = 0;      /**< spv_id = hash(*this) on this shader compiled the spv */
+
+private:
+    // TODO: automating shader resources
     /** Map descriptor set index to it's all descriptor */
     HashMap<uint32_t, Vector<ShaderDescriptor>> desc_sets{};
 
 private:
-    Shader(const VkShaderStageFlagBits stage, const String& filename, const String& entry)
-        : stage(stage)
-        , filename(filename)
-        , entry(entry) {}
+    Shader() = default;
 
 public:
+    using Self = Shader&;
+
+    Shader(const Shader& rhs) = default;
     Shader(Shader&&);
 
-    static Res<Shader> from(const ShaderSource& source, const ShaderState& state);
+    static Shader from(const VkShaderStageFlagBits stage, String&& source, const String& fullpath = "");
+    static Shader fromVert(String&& source, const String& fullpath = "") {
+        return std::move(from(VK_SHADER_STAGE_VERTEX_BIT, std::move(source), fullpath));
+    }
+    static Shader fromFrag(String&& source, const String& fullpath = "") {
+        return std::move(from(VK_SHADER_STAGE_FRAGMENT_BIT, std::move(source), fullpath));
+    }
+    static Shader fromComp(String&& source, const String& fullpath = "") {
+        return std::move(from(VK_SHADER_STAGE_COMPUTE_BIT, std::move(source), fullpath));
+    }
+
     Res<core::ShaderModule> into(const core::CoreApi& api) const;
 
+public:
+    Self setDefine(const String& name, const String& value = "");
+    Self delDefine(const String& name);
+    Self delAllDefines();
+    inline const String& getSourcePath() const {
+        return src_path;
+    }
+    String getPreamble() const;
+
+public:
+    Self setEntry(const String& entry);
     inline VkShaderStageFlagBits getStage() const {
         return stage;
-    }
-    inline const String& getFilename() const {
-        return filename;
     }
     inline const String& getEntry() const {
         return entry;
     }
 
+public:
     inline void addDescriptor(ShaderDescriptor::Type type, uint32_t binding, uint32_t set = 0, uint32_t count = 1) {
         desc_sets[set].push_back(ShaderDescriptor(type, set, binding, count));
     }
@@ -132,46 +109,25 @@ NAMESPACE_END(vkt)
 
 NAMESPACE_BEGIN(std)
 
-/**
- * @brief Hash vkt::ShaderSource for unique vkt::Shader
- */
 template <>
-struct hash<vkt::ShaderSource> {
-    inline size_t operator()(const vkt::ShaderSource& shader_source) const {
-        return shader_source.id;
-    }
-};
-
-/**
- * @brief Hash vkt::ShaderSource for unique vkt::Shader
- */
-template <>
-struct hash<vkt::ShaderState> {
-    inline size_t operator()(const vkt::ShaderState& shader_state) const {
+struct hash<vkt::Shader> {
+    inline size_t operator()(const vkt::Shader& shader) const {
         size_t res = 0;
-        hashCombine(res, shader_state.stage);
-        hashCombine(res, shader_state.entry);
+        // Source + preamble + stage + entry => unique key for spir-v code or shader module
+        hashCombine(res, shader.src_id);
+        hashCombine(res, shader.getPreamble());
+        hashCombine(res, shader.stage);
+        hashCombine(res, shader.entry);
         return res;
     }
 };
 
-/**
- * @brief Hash vkt::Shader for unique vkt::core::ShaderModule
- */
 template <>
-struct hash<vkt::Shader> {
-    inline size_t operator()(const vkt::Shader& shader) const {
-        return shader.id;
-    }
-};
-
-template <>
-struct hash<Vector<vkt::Shader>> {
-    // C++ doesn't support store Shader& in Vector, so use Shader* instead.
-    inline size_t operator()(const Vector<vkt::Shader>& shaders) const {
+struct hash<Vector<CRef<vkt::Shader>>> {
+    inline size_t operator()(const Vector<CRef<vkt::Shader>>& shaders) const {
         size_t res = 0;
         for (const auto& s : shaders) {
-            hashCombine(res, s);
+            hashCombine(res, s.get());
         }
         return res;
     }

@@ -46,10 +46,10 @@ public:
      * @brief Compile glsl into spir-v code
      */
     Res<Vector<uint32_t>> compile(VkShaderStageFlagBits stage,
-                                  const String& filename,
                                   const String& code,
                                   const String& entry,
-                                  const String& preamble);
+                                  const String& preamble,
+                                  const String& filename);
 };
 
 NAMESPACE_END(std)

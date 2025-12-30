@@ -37,10 +37,10 @@ EShLanguage ShaderGlsl::getShaderLanguage(const VkShaderStageFlagBits stage) {
 }
 
 Res<Vector<uint32_t>> ShaderGlsl::compile(VkShaderStageFlagBits stage,
-                                          const String& filename,
                                           const String& code,
                                           const String& entry,
-                                          const String& preamble) {
+                                          const String& preamble,
+                                          const String& filename) {
     const char* shader_strings[] = {code.c_str()};
     const int shader_lengths[] = {(int)code.size()};
     const char* shader_filenames[] = {filename.c_str()};

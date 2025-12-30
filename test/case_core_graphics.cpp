@@ -12,13 +12,8 @@ void case_core_graphics() {
     tstOut("Comamnd buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
-    ShaderState shader_state;
-    auto vert_source = ShaderSource(tri.vert_file, vktdev::Assets::loadShader(tri.vert_file));
-    auto frag_source = ShaderSource(tri.frag_file, vktdev::Assets::loadShader(tri.frag_file));
-    shader_state.setStage(VK_SHADER_STAGE_VERTEX_BIT).setEntry("main");
-    auto shader_vert = Shader::from(vert_source, shader_state).unwrap().into(api).unwrap();
-    shader_state.setStage(VK_SHADER_STAGE_FRAGMENT_BIT);
-    auto shader_frag = Shader::from(frag_source, shader_state).unwrap().into(api).unwrap();
+    auto shader_vert = Shader::fromVert(vktdev::Assets::loadShader(tri.vert_file), tri.vert_file).into(api).unwrap();
+    auto shader_frag = Shader::fromFrag(vktdev::Assets::loadShader(tri.frag_file), tri.frag_file).into(api).unwrap();
 
     // Create pipeline
     auto render_pass = RenderPassState{}
