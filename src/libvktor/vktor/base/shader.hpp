@@ -3,6 +3,10 @@
 
 NAMESPACE_BEGIN(vkt)
 
+struct ShaderInputOutput {
+    uint32_t location;
+};
+
 struct ShaderDescriptor {
     /** Supported descriptor type */
     enum Type {
@@ -21,6 +25,7 @@ struct ShaderDescriptor {
 
     // String name;
     Type type;
+    // uint32_t input_attachment_index;
     uint32_t set;
     uint32_t binding;
     uint32_t count;
@@ -30,6 +35,17 @@ struct ShaderDescriptor {
         , set(set)
         , binding(binding)
         , count(count) {}
+};
+
+struct ShaderPushConstant {
+    uint32_t size = 0; /** Size > 0 means shader has push constant */
+    uint32_t offset = 0;
+};
+
+struct ShaderSpecConstant {
+    typedef VkSpecializationMapEntry Entry;
+    Vector<uint8_t> data{};
+    Vector<Entry> entries{};
 };
 
 /**
@@ -52,8 +68,11 @@ private:
 
 private:
     // TODO: automating shader resources
-    /** Map descriptor set index to it's all descriptor */
-    HashMap<uint32_t, Vector<ShaderDescriptor>> desc_sets{};
+    // Vector<ShaderInputOutput> inputs{};
+    // Vector<ShaderInputOutput> outputs{};
+    HashMap<uint32_t, Vector<ShaderDescriptor>> desc_sets{}; /**< Map descriptor set index to it's all descriptor */
+    ShaderPushConstant push_constant{};
+    ShaderSpecConstant spec_constant{};
 
 private:
     Shader() = default;
@@ -96,11 +115,20 @@ public:
     }
 
 public:
-    inline void addDescriptor(ShaderDescriptor::Type type, uint32_t binding, uint32_t set = 0, uint32_t count = 1) {
-        desc_sets[set].push_back(ShaderDescriptor(type, set, binding, count));
-    }
+    Self addDescriptor(ShaderDescriptor::Type type, uint32_t binding, uint32_t set = 0, uint32_t count = 1);
+    Self setPushConstant(uint32_t size, uint32_t offset = 0);
+    Self addSpecConstant(uint32_t id, const uint8_t* data, size_t data_size);
     inline const HashMap<uint32_t, Vector<ShaderDescriptor>>& getDescriptorSets() const {
         return desc_sets;
+    }
+    inline const ShaderPushConstant& getPushConstant() const {
+        return push_constant;
+    }
+    inline const ShaderSpecConstant& getSpecConstant() const {
+        return spec_constant;
+    }
+    inline core::ShaderSpecialization getSpecialization() const {
+        return core::ShaderSpecialization{spec_constant.data.data(), spec_constant.data.size(), spec_constant.entries};
     }
 };
 

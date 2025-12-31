@@ -56,23 +56,28 @@ Res<CRef<DescriptorSetLayout>> RenderResource::requestDescriptorSetLayout(const 
 Res<CRef<PipelineLayout>> RenderResource::requestPipelineLayout(const Vector<CRef<Shader>>& shaders) {
     size_t key = hash(shaders);
     return pipeline_layouts.request(key, [this, &shaders]() -> Res<PipelineLayout> {
-        // Collect all set index
+        PipelineLayoutState plso{};
         std::set<uint32_t> sets{};
         for (const auto& ref : shaders) {
+            // Collect all set index
             auto& s = ref.get();
             const auto& desc_sets = s.getDescriptorSets();
             for (const auto& item : desc_sets) {
                 sets.insert(item.first);
             }
+            // Collect all push constants
+            const auto& push = s.getPushConstant();
+            if (push.size > 0) {
+                plso.addPushConstantRange(s.getStage(), push.size, push.offset);
+            }
         }
         // Collect all descriptor sets
-        PipelineLayoutState pso{};
         for (const auto& s : sets) {
             auto res = requestDescriptorSetLayout(s, shaders);
             OnErr(res);
-            pso.addDescriptorSetLayout(res.unwrap().get());
+            plso.addDescriptorSetLayout(res.unwrap().get());
         }
-        return pso.into(api);
+        return plso.into(api);
     });
 }
 

@@ -23,6 +23,8 @@ Shader::Shader(Shader&& rhs) {
     rhs.spv_id = 0;
 
     desc_sets = std::move(rhs.desc_sets);
+    push_constant = std::move(rhs.push_constant);
+    spec_constant = std::move(rhs.spec_constant);
 }
 
 Shader Shader::from(const VkShaderStageFlagBits stage, String&& source, const String& fullpath) {
@@ -83,6 +85,24 @@ String Shader::getPreamble() const {
 
 Self Shader::setEntry(const String& _entry) {
     entry = _entry;
+    return *this;
+}
+
+Self Shader::addDescriptor(ShaderDescriptor::Type type, uint32_t binding, uint32_t set, uint32_t count) {
+    desc_sets[set].push_back(ShaderDescriptor(type, set, binding, count));
+    return *this;
+}
+
+Self Shader::setPushConstant(uint32_t size, uint32_t offset) {
+    push_constant.size = size;
+    push_constant.offset = offset;
+    return *this;
+}
+
+Self Shader::addSpecConstant(uint32_t id, const uint8_t* data, size_t data_size) {
+    auto spec_entry = ShaderSpecConstant::Entry{id, static_cast<uint32_t>(spec_constant.data.size()), data_size};
+    spec_constant.data.insert(spec_constant.data.end(), data, data + data_size);
+    spec_constant.entries.push_back(spec_entry);
     return *this;
 }
 
