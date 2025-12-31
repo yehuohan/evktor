@@ -13,18 +13,14 @@ class ComputePipelineState : public CoreState<ComputePipelineState> {
 
 private:
     VkPipelineCreateFlags flags = 0;
-    String shader_entry = "main";
-    VkShaderModule shader = VK_NULL_HANDLE;
-    const void* spec_data = nullptr;
-    size_t spec_data_size = 0;
-    Vector<VkSpecializationMapEntry> spec_entries{};
+    PipelineShader shader{};
     VkPipelineLayout layout = VK_NULL_HANDLE;
 
 public:
     explicit ComputePipelineState(String&& name = "ComputePipeline") : CoreState(std::move(name)) {}
 
     Self setFlags(VkPipelineCreateFlags flags);
-    Self setShader(VkShaderModule shader, const char* entry = "main");
+    Self setShader(VkShaderModule shader, const String& entry = "main", const ShaderSpecialization& spec = {nullptr, 0, {}});
     Self setSpecializationData(const void* data, size_t data_size);
     Self addSpecializationEntry(uint32_t id, uint32_t offset, size_t size);
     Self setPipelineLayout(VkPipelineLayout layout);
@@ -53,13 +49,13 @@ struct hash<vkt::core::ComputePipelineState> {
     size_t operator()(const vkt::core::ComputePipelineState& pso) const {
         size_t res = 0;
         hashCombine(res, pso.flags);
-        hashCombine(res, pso.shader);
-        hashCombine(res, pso.shader_entry);
-        if (pso.spec_data) {
-            for (const auto& e : pso.spec_entries) {
+        hashCombine(res, pso.shader.shader);
+        hashCombine(res, pso.shader.entry);
+        if (pso.shader.spec.data) {
+            for (const auto& e : pso.shader.spec.entries) {
                 hashCombine(res, e.constantID);
                 for (uint32_t k = 0; k < e.size; k++) {
-                    hashCombine(res, ((uint8_t*)pso.spec_data)[e.offset + k]);
+                    hashCombine(res, ((uint8_t*)pso.shader.spec.data)[e.offset + k]);
                 }
             }
         }

@@ -10,20 +10,21 @@ Self ComputePipelineState::setFlags(VkPipelineCreateFlags _flags) {
     return *this;
 }
 
-Self ComputePipelineState::setShader(VkShaderModule _shader, const char* entry) {
-    shader = _shader;
-    shader_entry = String(entry);
+Self ComputePipelineState::setShader(VkShaderModule _shader, const String& entry, const ShaderSpecialization& spec) {
+    shader.shader = _shader;
+    shader.entry = entry;
+    shader.spec = spec;
     return *this;
 }
 
 Self ComputePipelineState::setSpecializationData(const void* data, size_t data_size) {
-    spec_data = data;
-    spec_data_size = data_size;
+    shader.spec.data = data;
+    shader.spec.data_size = data_size;
     return *this;
 }
 
 Self ComputePipelineState::addSpecializationEntry(uint32_t id, uint32_t offset, size_t size) {
-    spec_entries.push_back(VkSpecializationMapEntry{id, offset, size});
+    shader.spec.entries.push_back(VkSpecializationMapEntry{id, offset, size});
     return *this;
 }
 
@@ -53,16 +54,16 @@ Res<ComputePipeline> ComputePipeline::from(const CoreApi& api, const ComputePipe
     ComputePipeline pipeline(api);
 
     auto pipeline_ci = Itor::ComputePipelineCreateInfo(info.__next);
-    VkSpecializationInfo spec_info{u32(info.spec_entries.size()),
-                                   info.spec_entries.data(),
-                                   info.spec_data_size,
-                                   info.spec_data};
+    VkSpecializationInfo spec_info{u32(info.shader.spec.entries.size()),
+                                   info.shader.spec.entries.data(),
+                                   info.shader.spec.data_size,
+                                   info.shader.spec.data};
     pipeline_ci.flags = info.flags;
     pipeline_ci.stage = Itor::PipelineShaderStageCreateInfo();
     pipeline_ci.stage.stage = VK_SHADER_STAGE_COMPUTE_BIT;
-    pipeline_ci.stage.module = info.shader;
-    pipeline_ci.stage.pName = info.shader_entry.c_str();
-    if (info.spec_data && !info.spec_entries.empty()) {
+    pipeline_ci.stage.module = info.shader.shader;
+    pipeline_ci.stage.pName = info.shader.entry.c_str();
+    if (info.shader.spec.data && !info.shader.spec.entries.empty()) {
         pipeline_ci.stage.pSpecializationInfo = &spec_info;
     }
     pipeline_ci.layout = info.layout;

@@ -6,6 +6,25 @@ NAMESPACE_BEGIN(core)
 
 struct ShaderModule;
 
+/**
+ * @brief Shader specialization info
+ */
+struct ShaderSpecialization {
+    const void* data = nullptr;
+    size_t data_size = 0;
+    Vector<VkSpecializationMapEntry> entries{};
+};
+
+/**
+ * @brief Shader info for pipline
+ */
+struct PipelineShader {
+    VkShaderModule shader = VK_NULL_HANDLE;
+    VkShaderStageFlagBits stage = (VkShaderStageFlagBits)0;
+    String entry = "main";
+    ShaderSpecialization spec{};
+};
+
 class ShaderModuleState : public CoreState<ShaderModuleState> {
     friend struct ShaderModule;
 
@@ -42,17 +61,6 @@ template <>
 struct hash<vkt::core::ShaderModule> {
     inline size_t operator()(const vkt::core::ShaderModule& shader_module) const {
         return hash<VkShaderModule>{}(shader_module);
-    }
-};
-
-template <>
-struct hash<Vector<vkt::core::ShaderModule>> {
-    inline size_t operator()(const Vector<vkt::core::ShaderModule>& shader_modules) const {
-        size_t res = 0;
-        for (const auto& s : shader_modules) {
-            hashCombine(res, s);
-        }
-        return res;
     }
 };
 

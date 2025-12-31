@@ -41,17 +41,17 @@ Self GraphicsPipelineState::addShader(VkShaderModule shader,
                                       VkShaderStageFlagBits stage,
                                       const String& entry,
                                       const ShaderSpecialization& spec) {
-    shaders.push_back(Shader{shader, stage, entry, spec});
+    shaders.push_back(PipelineShader{shader, stage, entry, spec});
     return *this;
 }
 
 Self GraphicsPipelineState::addVertShader(VkShaderModule shader, const String& entry, const ShaderSpecialization& spec) {
-    shaders.push_back(Shader{shader, VK_SHADER_STAGE_VERTEX_BIT, entry, spec});
+    shaders.push_back(PipelineShader{shader, VK_SHADER_STAGE_VERTEX_BIT, entry, spec});
     return *this;
 }
 
 Self GraphicsPipelineState::addFragShader(VkShaderModule shader, const String& entry, const ShaderSpecialization& spec) {
-    shaders.push_back(Shader{shader, VK_SHADER_STAGE_FRAGMENT_BIT, entry, spec});
+    shaders.push_back(PipelineShader{shader, VK_SHADER_STAGE_FRAGMENT_BIT, entry, spec});
     return *this;
 }
 

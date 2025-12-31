@@ -13,21 +13,9 @@ class GraphicsPipelineState : public CoreState<GraphicsPipelineState> {
     friend struct std::hash<GraphicsPipelineState>;
 
 public:
-    struct ShaderSpecialization {
-        const void* data = nullptr;
-        size_t data_size = 0;
-        Vector<VkSpecializationMapEntry> entries{};
-    };
-    struct Shader {
-        VkShaderModule shader = VK_NULL_HANDLE;
-        VkShaderStageFlagBits stage = VK_SHADER_STAGE_VERTEX_BIT;
-        String entry = "main";
-        ShaderSpecialization spec{};
-    };
-
 private:
     VkPipelineCreateFlags flags = 0;
-    Vector<Shader> shaders{};
+    Vector<PipelineShader> shaders{};
     struct VertexInputState {
         Vector<VkVertexInputBindingDescription> bindings{};
         Vector<VkVertexInputAttributeDescription> attributes{};
