@@ -20,10 +20,12 @@ public:
 
     Self setFlags(VkPipelineLayoutCreateFlags flags);
     Self addDescriptorSetLayout(VkDescriptorSetLayout setlayout);
-    Self addPushConstant(const VkPushConstantRange& range);
-    Self addPushConstant(VkShaderStageFlags stage, uint32_t size, uint32_t offset = 0);
-    Self addGraphicsPushConstant(uint32_t size, uint32_t offset = 0);
-    Self addComputePushConstant(uint32_t size, uint32_t offset = 0);
+    Self addPushConstantRange(const VkPushConstantRange& range);
+    Self addPushConstantRange(VkShaderStageFlags stage, uint32_t size, uint32_t offset = 0);
+    Self addGraphicsPushConstantRange(uint32_t size, uint32_t offset = 0);
+    Self addVertPushConstantRange(uint32_t size, uint32_t offset = 0);
+    Self addFragPushConstantRange(uint32_t size, uint32_t offset = 0);
+    Self addCompPushConstantRange(uint32_t size, uint32_t offset = 0);
 
     Res<PipelineLayout> into(const CoreApi& api) const;
 };

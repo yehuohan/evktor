@@ -96,7 +96,9 @@ public:
                                  uint32_t size,
                                  uint32_t offset = 0) const;
     inline Self cmdPushGraphicsConstants(VkPipelineLayout layout, const void* data, uint32_t size, uint32_t offset = 0) const;
-    inline Self cmdPushComputeConstants(VkPipelineLayout layout, const void* data, uint32_t size, uint32_t offset = 0) const;
+    inline Self cmdPushVertConstants(VkPipelineLayout layout, const void* data, uint32_t size, uint32_t offset = 0) const;
+    inline Self cmdPushFragConstants(VkPipelineLayout layout, const void* data, uint32_t size, uint32_t offset = 0) const;
+    inline Self cmdPushCompConstants(VkPipelineLayout layout, const void* data, uint32_t size, uint32_t offset = 0) const;
     inline Self cmdBindIndexBuffer(VkBuffer buffer, VkDeviceSize offset, VkIndexType index_type) const;
     inline Self cmdBindIndexBufferU32(VkBuffer buffer, VkDeviceSize offset = 0) const;
     inline Self cmdBindIndexBufferU16(VkBuffer buffer, VkDeviceSize offset = 0) const;
@@ -383,10 +385,26 @@ inline CommandBuffer::Self CommandBuffer::cmdPushGraphicsConstants(VkPipelineLay
     return *this;
 }
 
-inline CommandBuffer::Self CommandBuffer::cmdPushComputeConstants(VkPipelineLayout layout,
-                                                                  const void* data,
-                                                                  uint32_t size,
-                                                                  uint32_t offset) const {
+inline CommandBuffer::Self CommandBuffer::cmdPushVertConstants(VkPipelineLayout layout,
+                                                               const void* data,
+                                                               uint32_t size,
+                                                               uint32_t offset) const {
+    vkCmdPushConstants(handle, layout, VK_SHADER_STAGE_VERTEX_BIT, offset, size, data);
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdPushFragConstants(VkPipelineLayout layout,
+                                                               const void* data,
+                                                               uint32_t size,
+                                                               uint32_t offset) const {
+    vkCmdPushConstants(handle, layout, VK_SHADER_STAGE_FRAGMENT_BIT, offset, size, data);
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdPushCompConstants(VkPipelineLayout layout,
+                                                               const void* data,
+                                                               uint32_t size,
+                                                               uint32_t offset) const {
     vkCmdPushConstants(handle, layout, VK_SHADER_STAGE_COMPUTE_BIT, offset, size, data);
     return *this;
 }

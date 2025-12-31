@@ -24,7 +24,7 @@ void case_core_compute() {
                                .unwrap();
     auto pipeline_layout = PipelineLayoutState{}
                                .addDescriptorSetLayout(desc_set_layout)
-                               .addComputePushConstant(sizeof(Quad::PushArgs))
+                               .addCompPushConstantRange(sizeof(Quad::PushArgs))
                                .into(api)
                                .unwrap();
     auto pipeline = ComputePipelineState{}
@@ -96,7 +96,7 @@ void case_core_compute() {
                                  VK_IMAGE_LAYOUT_GENERAL);
     cmdbuf.cmdBindComputePipeline(pipeline)
         .cmdBindComputeDescriptorSets(pipeline_layout, 0, {desc_set})
-        .cmdPushComputeConstants(pipeline_layout, &quad.push_args, sizeof(Quad::PushArgs))
+        .cmdPushCompConstants(pipeline_layout, &quad.push_args, sizeof(Quad::PushArgs))
         .cmdDispatch(quad.group_count_x, quad.group_count_y, quad.group_count_z);
     cmdbuf.cmdImageMemoryBarrier(Arg{out_img},
                                  VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,

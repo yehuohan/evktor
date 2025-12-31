@@ -8,8 +8,7 @@ layout(location = 0) out vec4 out_color;
 layout(set = 0, binding = 1) uniform sampler2D tex;
 
 layout(push_constant) uniform Args {
-    int flipy;
-    int scaler;
+    layout(offset = 20) int scaler; // Specify offset to 20 bytes
 } args;
 
 layout(constant_id = 0) const int alpha = 1;

@@ -28,7 +28,8 @@ void case_core_graphics() {
                                .unwrap();
     auto pipeline_layout = PipelineLayoutState{}
                                .addDescriptorSetLayout(desc_set_layout)
-                               .addGraphicsPushConstant(sizeof(Triangle::PushArgs))
+                               .addVertPushConstantRange(sizeof(int), 0)
+                               .addFragPushConstantRange(sizeof(int), 20)
                                .into(api)
                                .unwrap();
     auto pipeline = GraphicsPipelineState{}
@@ -153,7 +154,8 @@ void case_core_graphics() {
     cmdbuf.beginRenderPass({tri.wid, tri.hei}, render_pass, framebuffer, {VkClearValue{}})
         .cmdBindGraphicsPipeline(pipeline)
         .cmdBindGraphicsDescriptorSets(pipeline_layout, 0, {desc_set})
-        .cmdPushGraphicsConstants(pipeline_layout, &tri.push_args, sizeof(Triangle::PushArgs))
+        .cmdPushVertConstants(pipeline_layout, &tri.push_args.flipy, sizeof(int), 0)
+        .cmdPushFragConstants(pipeline_layout, &tri.push_args.scaler, sizeof(int), 20)
         .cmdBindVertexBuffers(0, {vertex_buf}, {0})
         .cmdBindIndexBuffer(index_buf, 0, VK_INDEX_TYPE_UINT32)
         .cmdDrawIndexed(3, 1, 0, 0, 0)

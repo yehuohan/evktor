@@ -14,7 +14,6 @@ layout(set = 0, binding = 0) uniform UBO {
 
 layout(push_constant) uniform Args {
     int flipy;
-    int scaler;
 } args;
 
 void main() {
