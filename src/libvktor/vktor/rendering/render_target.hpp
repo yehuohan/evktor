@@ -28,6 +28,16 @@ public:
 
     explicit RenderTarget(Texture&& texture);
     RenderTarget(RenderTarget&&);
+    /**
+     * @brief Create render target from texture directly
+     *
+     * Can also from `Texture2D`:
+     * ```
+     * Texture2D tex{...};
+     * auto rt = RenderTarget::from(std::move(tex));
+     * ```
+     */
+    static Res<RenderTarget> from(Texture&& texture);
     static Res<RenderTarget> from(const core::CoreApi& api, const VkExtent2D& extent, VkFormat format);
     /**
      * @brief Create render target with the swapchain image of Arg<Swapchain>::image_index

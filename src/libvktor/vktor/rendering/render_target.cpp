@@ -18,20 +18,9 @@ RenderTarget::RenderTarget(RenderTarget&& rhs) : RenderTarget(std::move(rhs.text
     clear = rhs.clear;
 }
 
-Res<RenderTarget> RenderTarget::from(const CoreApi& api, const VkExtent2D& extent, VkFormat format) {
-    bool ds = isDepthStencilFormat(format);
-    auto res_image = ImageState(ds ? "RTDepth" : "RTColor")
-                         .setFormat(format)
-                         .setExtent(extent)
-                         .setUsage(ds ? VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)
-                         .into(api);
-    OnErr(res_image);
-    Image image = res_image.unwrap();
-    auto res_imageview = ImageViewState(ds ? "RTDepthView" : "RTColorView").setFromImage(image).into(api);
-    OnErr(res_imageview);
-    ImageView imageview = res_imageview.unwrap();
-
-    RenderTarget rt(Texture(std::move(image), std::move(imageview)));
+Res<RenderTarget> RenderTarget::from(Texture&& texture) {
+    RenderTarget rt(std::move(texture));
+    auto format = rt.texture.getImage().format;
     if (isDepthOnlyFormat(format)) {
         rt.set(AttachmentOps::depth());
         rt.set(AttachmentLayouts::depthstencil());
@@ -46,6 +35,21 @@ Res<RenderTarget> RenderTarget::from(const CoreApi& api, const VkExtent2D& exten
         rt.set(VkClearColorValue{0.0f, 0.0f, 0.0f, 1.0f});
     }
     return Ok(std::move(rt));
+}
+
+Res<RenderTarget> RenderTarget::from(const CoreApi& api, const VkExtent2D& extent, VkFormat format) {
+    bool ds = isDepthStencilFormat(format);
+    auto res_image = ImageState(ds ? "RTDepth" : "RTColor")
+                         .setFormat(format)
+                         .setExtent(extent)
+                         .setUsage(ds ? VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)
+                         .into(api);
+    OnErr(res_image);
+    Image image = res_image.unwrap();
+    auto res_imageview = ImageViewState(ds ? "RTDepthView" : "RTColorView").setFromImage(image).into(api);
+    OnErr(res_imageview);
+    ImageView imageview = res_imageview.unwrap();
+    return RenderTarget::from(Texture(std::move(image), std::move(imageview)));
 }
 
 Res<RenderTarget> RenderTarget::from(const Arg<Swapchain>& swapchain) {
