@@ -193,6 +193,27 @@ auto enumerate(Vector<T>& out, F&& f, Ts&&... ts) -> VkResult {
 /**
  * @brief Enumerate template for Vulkan
  *
+ * `t` is default 'T' and function 'F' should return VkResult
+ */
+template <typename T, typename F, typename... Ts>
+auto enumerate(Vector<T>& out, const T t, F&& f, Ts&&... ts) -> VkResult {
+    uint32_t count = 0;
+    VkResult res;
+    do {
+        res = f(ts..., &count, nullptr);
+        if (res != VK_SUCCESS) {
+            return res;
+        }
+        out.resize(count, t);
+        res = f(ts..., &count, out.data());
+        out.resize(count);
+    } while (res == VK_INCOMPLETE);
+    return res;
+}
+
+/**
+ * @brief Enumerate template for Vulkan
+ *
  * Function 'F' should return void
  */
 template <typename T, typename F, typename... Ts>
@@ -201,6 +222,22 @@ auto enumerate(F&& f, Ts&&... ts) -> Vector<T> {
     Vector<T> vec;
     f(ts..., &count, nullptr);
     vec.resize(count);
+    f(ts..., &count, vec.data());
+    vec.resize(count);
+    return std::move(vec);
+}
+
+/**
+ * @brief Enumerate template for Vulkan
+ *
+ * `t` is default 'T' and function 'F' should return void
+ */
+template <typename T, typename F, typename... Ts>
+auto enumerate(const T t, F&& f, Ts&&... ts) -> Vector<T> {
+    uint32_t count = 0;
+    Vector<T> vec;
+    f(ts..., &count, nullptr);
+    vec.resize(count, t);
     f(ts..., &count, vec.data());
     vec.resize(count);
     return std::move(vec);
