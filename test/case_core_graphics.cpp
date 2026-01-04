@@ -9,7 +9,7 @@ void case_core_graphics() {
     auto& queue = api.graphicsQueue().unwrap().get();
     auto cmdpool = CommandPoolState{}.setQueueFamilyIndex(queue.family_index).into(api).unwrap();
     auto& cmdbuf = cmdpool.allocate(CommandPool::Level::Primary).unwrap().get();
-    tstOut("Comamnd buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
+    tstOut("Command buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
     auto shader_vert = Shader::fromVert(vktdev::Assets::loadShader(tri.vert_file), tri.vert_file).into(api).unwrap();

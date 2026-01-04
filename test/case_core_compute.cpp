@@ -10,7 +10,7 @@ void case_core_compute() {
     auto& queue = api.computeQueue().unwrap().get();
     auto cmdpool = CommandPoolState{}.setQueueFamilyIndex(queue.family_index).into(api).unwrap();
     auto& cmdbuf = cmdpool.allocate(CommandPool::Level::Primary).unwrap().get();
-    tstOut("Comamnd buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
+    tstOut("Command buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
     auto shader_comp = Shader::fromComp(vktdev::Assets::loadShader(quad.comp_file), quad.comp_file).into(api).unwrap();

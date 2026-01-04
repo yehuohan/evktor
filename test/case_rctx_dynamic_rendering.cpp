@@ -11,7 +11,7 @@ void case_rctx_dynamic_rendering() {
     // Create command buffer
     auto& queue = api.graphicsQueue().unwrap().get();
     auto& cmdbuf = rctx->beginFrame().unwrap().get();
-    tstOut("Comamnd buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
+    tstOut("Command buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
     auto shader_vert = Shader::fromVert(vktdev::Assets::loadShader(tri.vert_file), tri.vert_file);

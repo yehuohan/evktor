@@ -1,0 +1,275 @@
+/**
+ * @file conv2d.comp
+ * @brief Convolution 2D
+ *
+ * Conv2D:
+ *      yout = xinp * kern + bias
+ *
+ * im2col: (以NHWC为例)
+ *      [HW,C] = [HW,C] * [HWI,O] + [O]
+ *
+ * GEMM:
+ *      D  =  A  *  B  +  C
+ *     MxN = MxK * KxN + MxN
+ *
+ * CoopMat:
+ *      TM = 64, TN = 64, TK = 16
+ *
+ * TILE: (以CoopMat支持的matrix size作为TILE)
+ *      TILE A = TM x TK
+ *      TILE B = TK x TN
+ *      TILE C = TM x TN
+ *
+ * Logical matrix: (在K方向上要进一步切分累加)
+ *                TMxK * KxTN      = TMxTN
+ *      sum_i(TMxTK[i] * TK[i]xTN) = TMxTN
+ *      ┌─────┐
+ *      │     │   ┌─┬───┬─┐    ┌───────┐
+ *      ├─────┤   │ │###│ │    │ ┌───┐ │
+ *      │#####│   │ │###│ │    │ │###│ │
+ *      │#####│ * │ │###│ │ =  │ │###│ │
+ *      │#####│   │ │###│ │    │ │###│ │
+ *      ├─────┤   │ │###│ │    │ └───┘ │
+ *      │     │   └─┴───┴─┘    └───────┘
+ *      └─────┘
+ *
+ * Work group: (work-group-size需要为sub-group-size的整数倍，以8x8x1为例)
+ *      Each work group: process one TILE
+ *      Each work group thread: process TMxTN/8x8 elements
+ */
+#version 450
+#extension GL_KHR_cooperative_matrix : enable
+#extension GL_KHR_memory_scope_semantics : enable
+#extension GL_EXT_shader_explicit_arithmetic_types : enable
+
+// #define USE_NHWC
+// #define USE_COOPMAT
+
+#ifndef SUB_GROUP_SIZE
+#define SUB_GROUP_SIZE 64
+#endif
+
+#ifndef DType
+#define DType float
+#endif
+
+#define CoopMatA coopmat<DType, gl_ScopeSubgroup, TILE_M, TILE_K, gl_MatrixUseA>
+#define CoopMatB coopmat<DType, gl_ScopeSubgroup, TILE_K, TILE_N, gl_MatrixUseB>
+#define CoopMatC coopmat<DType, gl_ScopeSubgroup, TILE_M, TILE_N, gl_MatrixUseAccumulator>
+
+#define ACTIVATION_None 0
+#define ACTIVATION_ReLU 1
+
+struct Conv2DParams {
+    uint IH;
+    uint IW;
+    uint IC;
+    uint OH;
+    uint OW;
+    uint OC;
+    uint KH;
+    uint KW;
+    uint stride_H;
+    uint stride_W;
+    uint padding_H;
+    uint padding_W;
+    uint dilation_H;
+    uint dilation_W;
+    uint activation;
+};
+
+layout(local_size_x = SUB_GROUP_SIZE, local_size_y = 1, local_size_z = 1) in;
+
+layout(binding = 0, set = 0) writeonly buffer Yout {
+    float yout[];
+};
+layout(binding = 1, set = 0) readonly buffer Xinp {
+    float xinp[];
+};
+layout(binding = 2, set = 0) readonly buffer Kern {
+    float kern[];
+};
+layout(binding = 3, set = 0) readonly buffer Bias {
+    float bias[];
+};
+layout(push_constant) readonly uniform Args {
+    Conv2DParams a;
+};
+
+layout(constant_id = 0) const uint TILE_W = 8;
+layout(constant_id = 1) const uint TILE_H = 8;
+layout(constant_id = 2) const uint TILE_M = 64; // TILE_M == TILE_W * TILE_H
+layout(constant_id = 3) const uint TILE_N = 64;
+layout(constant_id = 4) const uint TILE_K = 16;
+
+shared DType shmem_A[TILE_M * TILE_K];
+shared DType shmem_B[TILE_K * TILE_N];
+shared DType shmem_C[TILE_M * TILE_N];
+
+/**
+ * @brief Tensor row, col, channel to linear index
+ */
+uint hwc2idx(uint h, uint w, uint c, uint Hei, uint Wid, uint Cha) {
+    #ifdef USE_NHWC
+    // NHWC
+    return (h * Wid + w) * Cha + c; // h * Wid * Cha + w * Cha + c;
+    #else
+    // NCHW
+    return (c * Hei + h) * Wid + w; // c * Hei * Wid + h * Wid + w;
+    #endif
+}
+
+/**
+ * @brief Kernel index to linear index
+ */
+uint ker2idx(uint h, uint w, uint i, uint o, uint KH, uint KW, uint IC, uint OC) {
+    #ifdef USE_NHWC
+    // HWIO for NHWC
+    return ((h * KW + w) * IC + i) * OC + o; // h * KW * IC * OC + w * IC * OC + i * OC + o;
+    #else
+    // OIHW for NCHW
+    return ((o * IC + i) * KH + h) * KW + w; // o * IC * KH * KW + i * KH * KW + h * KW + w;
+    #endif
+}
+
+void main() {
+    uvec3 gid = gl_WorkGroupID;
+    uvec3 gtid = gl_LocalInvocationID;
+
+    const uint M = a.OH * a.OW;
+    const uint N = a.OC;
+    const uint K = a.KH * a.KW * a.IC;
+    const uint w0 = gid.x * TILE_W; // Start TILE col-index for yout
+    const uint h0 = gid.y * TILE_H; // Start TILE row-index for yout
+    const uint c0 = gid.z * TILE_N; // Start Tile cha-index for yout
+    const uint m0 = h0 * TILE_W + w0; // Start TILE row-index for matrix C and A
+    const uint n0 = c0; // Start Tile col-index for matrix C and B
+
+    #ifdef USE_COOPMAT
+    CoopMatA TA;
+    CoopMatB TB;
+    CoopMatC TC = CoopMatC(DType(0.0));
+    #else
+    DType TC[TILE_M * TILE_N];
+    for (uint idx = gtid.x; idx < TILE_M * TILE_N; idx += SUB_GROUP_SIZE) {
+        TC[idx] = DType(0);
+    }
+    #endif
+
+    // Accumulate along with K direction of matrix A and B
+    for (uint k0 = 0; k0 < K; k0 += TILE_K) {
+        // Load TILE A from xinp into shmem_A
+        // xinp的卷积窗口与stride, padding, dilation有关，需要通过yout坐标计算卷积窗口的坐标
+        for (uint idx = gtid.x; idx < TILE_M * TILE_K; idx += SUB_GROUP_SIZE) {
+            uint tm = idx / TILE_K; // TILE row-index for matrix A and C
+            uint tk = idx % TILE_K; // TILE col-index for matrix A
+
+            uint am = m0 + tm; // Row-index for matrix A and C
+            uint ak = k0 + tk; // Col-index for matrix A
+            if (am >= M || ak >= K) {
+                shmem_A[idx] = DType(0);
+                continue;
+            }
+
+            uint yh = h0 + tm / TILE_W; // Row-index for yout
+            uint yw = w0 + tm % TILE_W; // Col-index for yout
+
+            const uint ksize = a.KH * a.KW;
+            uint kp = ak % ksize; // Kernel window pixel-index
+            uint kh = kp / a.KW; // Kernel window row-index
+            uint kw = kp % a.KW; // Kernel window col-index
+            int xh = int(yh * a.stride_H + kh * a.dilation_H) - int(a.padding_H); // Row-index for xinp
+            int xw = int(yw * a.stride_W + kw * a.dilation_W) - int(a.padding_W); // Col-index for xinp
+            uint xc = ak / ksize; // Cha-index for xinp
+
+            if ((0 <= xh && xh < a.IH)
+                    && (0 <= xw && xw < a.IW)
+                    && (0 <= xc && xc < a.IC)
+            ) {
+                shmem_A[idx] = DType(xinp[hwc2idx(xh, xw, xc, a.IH, a.IW, a.IC)]);
+            } else {
+                shmem_A[idx] = DType(0);
+            }
+        }
+
+        // Load TILE B from kern into shmem_B
+        // kern的卷积窗口是固定的，可以直接计算
+        for (uint idx = gtid.x; idx < TILE_K * TILE_N; idx += SUB_GROUP_SIZE) {
+            uint tk = idx / TILE_N; // TILE row-index for matrix B
+            uint tn = idx % TILE_N; // TILE col-index for matrix B and C
+
+            uint bk = k0 + tk; // Row-index for matrix B
+            uint bn = n0 + tn; // Col-index for matrix B and C
+            if (bk >= K || bn >= N) {
+                shmem_B[idx] = DType(0);
+                continue;
+            }
+
+            const uint ksize = a.KH * a.KW;
+            uint kp = bk % ksize; // Kernel pixel-index
+            uint kh = kp / a.KW; // Row-index for kern
+            uint kw = kp % a.KW; // Col-index for kern
+            uint ki = bk / ksize; // Input-cha-index for kern
+            uint ko = bn; // Output-cha-index for kern
+
+            if ((0 <= kh && kh < a.KH)
+                    && (0 <= kw && kw < a.KW)
+                    && (0 <= ki && ki < a.IC)
+                    && (0 <= ko && ko < a.OC)
+            ) {
+                shmem_B[idx] = DType(kern[ker2idx(kh, kw, ki, ko, a.KH, a.KW, a.IC, a.OC)]);
+            } else {
+                shmem_B[idx] = DType(0);
+            }
+        }
+
+        memoryBarrierShared();
+        barrier();
+        #ifdef USE_COOPMAT
+        coopMatLoad(TA, shmem_A, 0, TILE_K, gl_CooperativeMatrixLayoutRowMajor);
+        coopMatLoad(TB, shmem_B, 0, TILE_N, gl_CooperativeMatrixLayoutRowMajor);
+        TC = coopMatMulAdd(TA, TB, TC);
+        #else
+        for (uint idx = gtid.x; idx < TILE_M * TILE_N; idx += SUB_GROUP_SIZE) {
+            uint tm = idx / TILE_N; // TILE row-index for matrix A and C
+            uint tn = idx % TILE_N; // TILE col-index for matrix B and C
+            float sum = 0.0;
+            for (uint tk = 0; tk < TILE_K; tk++) {
+                sum += shmem_A[tm * TILE_K + tk] * shmem_B[tk * TILE_N + tn];
+            }
+            TC[idx] += DType(sum);
+        }
+        #endif
+        memoryBarrierShared();
+        barrier();
+    }
+
+    #ifdef USE_COOPMAT
+    coopMatStore(TC, shmem_C, 0, TILE_N, gl_CooperativeMatrixLayoutRowMajor);
+    #else
+    for (uint idx = gtid.x; idx < TILE_M * TILE_N; idx += SUB_GROUP_SIZE) {
+        shmem_C[idx] = TC[idx];
+    }
+    #endif
+
+    // Output TILE C from shmem_C into yout
+    for (uint idx = gtid.x; idx < TILE_M * TILE_N; idx += SUB_GROUP_SIZE) {
+        uint tm = idx / TILE_N; // TILE row-index for matrix A and C
+        uint tn = idx % TILE_N; // TILE col-index for matrix B and C
+
+        uint yh = h0 + tm / TILE_W; // Row-index for yout
+        uint yw = w0 + tm % TILE_W; // Col-index for yout
+        uint yc = c0 + tn; // Cha-index for yout and bias
+
+        if ((0 <= yh && yh < a.OH)
+                && (0 <= yw && yw < a.OW)
+                && (0 <= yc && yc < a.OC))
+        {
+            float val = float(shmem_C[idx]) + bias[yc];
+            if (a.activation == uint(ACTIVATION_ReLU)) {
+                val = max(0.0, val);
+            }
+            yout[hwc2idx(yh, yw, yc, a.OH, a.OW, a.OC)] = val;
+        }
+    }
+}
