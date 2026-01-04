@@ -95,7 +95,15 @@ void Triangle::checkOutput(const Vector<float>& out) const {
 
 Box<CoreApi> createCoreApi(const Vector<const char*> inst_exts, const Vector<const char*> dev_exts) {
     Vktor vkt{};
-    vkt.createApi(inst_exts, dev_exts);
+    vkt.createApi(
+        [&inst_exts](InstanceState& iso) {
+            iso.addExtensions(inst_exts);
+        },
+        nullptr,
+        nullptr,
+        [&dev_exts](const PhysicalDevice& phydev, DeviceState& dso) {
+            dso.addExtensions(dev_exts);
+        });
     auto api = std::move(vkt.api);
 
     tstOut("Instance: {}, Physical Device: {}, Device: {}",

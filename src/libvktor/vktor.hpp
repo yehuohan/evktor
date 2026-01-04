@@ -30,9 +30,10 @@ public:
     /**
      * @brief Create a default CoreApi
      */
-    core::CoreApi& createApi(const Vector<const char*>& inst_exts = {},
-                             const Vector<const char*>& dev_exts = {},
-                             std::function<VkSurfaceKHR(const core::Instance& instance)> create_surface = nullptr);
+    core::CoreApi& createApi(std::function<void(core::InstanceState&)> update_inst = nullptr,
+                             std::function<VkSurfaceKHR(const core::Instance& instance)> create_surface = nullptr,
+                             std::function<void(const core::Instance&, core::PhysicalDeviceState&)> update_phy_dev = nullptr,
+                             std::function<void(const core::PhysicalDevice&, core::DeviceState&)> update_dev = nullptr);
 
 public:
     // Box<RenderGraph> newRdg();
