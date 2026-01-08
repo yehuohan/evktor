@@ -37,22 +37,82 @@ public:
 
 public:
     // Box<RenderGraph> newRdg();
-    inline Box<RenderContext> newRctx(uint32_t frame_count = 3, size_t thread_count = 1) const {
-        return newBox<RenderContext>(RenderContext::from(*api, frame_count, thread_count).unwrap());
-    }
+    inline Box<RenderContext> newRctx(uint32_t frame_count = 3, size_t thread_count = 1) const;
     inline Box<RenderContext> newRctx(core::SwapchainState&& info,
                                       RenderContext::FnSwapchainRTT fn = nullptr,
-                                      size_t thread_count = 1) const {
-        return newBox<RenderContext>(RenderContext::from(*api, std::move(info), fn, thread_count).unwrap());
-    }
+                                      size_t thread_count = 1) const;
 
-    inline Box<Texture2D> newTex(VkFormat format,
-                                 const VkExtent2D& extent,
-                                 Texture2D::Usage usage,
-                                 uint32_t mip_levels = 1,
-                                 Texture2D::Sample samples = Texture2D::S1) const {
-        return newBox<Texture2D>(Texture2D::from(*api, format, extent, usage, mip_levels, samples).unwrap());
-    }
+public:
+    inline Texture2D newTexture2D(VkFormat format,
+                                  const VkExtent2D& extent,
+                                  Texture2D::Usage usage,
+                                  uint32_t mip_levels = 1,
+                                  Texture2D::Sample samples = Texture2D::S1) const;
+    inline core::Buffer newStorageBuffer(VkDeviceSize size) const;
+    inline core::Buffer newUniformBuffer(VkDeviceSize size) const;
+    inline core::Buffer newVertexBuffer(VkDeviceSize size) const;
+    inline core::Buffer newIndexBuffer(VkDeviceSize size) const;
+    inline core::Buffer newStageBuffer(VkDeviceSize size) const;
 };
+
+inline Box<RenderContext> Vktor::newRctx(uint32_t frame_count, size_t thread_count) const {
+    return newBox<RenderContext>(RenderContext::from(*api, frame_count, thread_count).unwrap());
+}
+
+inline Box<RenderContext> Vktor::newRctx(core::SwapchainState&& info,
+                                         RenderContext::FnSwapchainRTT fn,
+                                         size_t thread_count) const {
+    return newBox<RenderContext>(RenderContext::from(*api, std::move(info), fn, thread_count).unwrap());
+}
+
+inline Texture2D Vktor::newTexture2D(VkFormat format,
+                                     const VkExtent2D& extent,
+                                     Texture2D::Usage usage,
+                                     uint32_t mip_levels,
+                                     Texture2D::Sample samples) const {
+    return Texture2D::from(*api, format, extent, usage, mip_levels, samples).unwrap();
+}
+
+inline core::Buffer Vktor::newStorageBuffer(VkDeviceSize size) const {
+    return core::BufferState{}
+        .setSize(size)
+        .setUsage(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+        .into(*api)
+        .unwrap();
+}
+
+inline core::Buffer Vktor::newUniformBuffer(VkDeviceSize size) const {
+    return core::BufferState{}
+        .setSize(size)
+        .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+        .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
+        .into(*api)
+        .unwrap();
+}
+
+inline core::Buffer Vktor::newVertexBuffer(VkDeviceSize size) const {
+    return core::BufferState{}
+        .setSize(size)
+        .setUsage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+        .into(*api)
+        .unwrap();
+}
+
+inline core::Buffer Vktor::newIndexBuffer(VkDeviceSize size) const {
+    return core::BufferState{}
+        .setSize(size)
+        .setUsage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+        .into(*api)
+        .unwrap();
+}
+
+inline core::Buffer Vktor::newStageBuffer(VkDeviceSize size) const {
+    return core::BufferState{}
+        .setSize(size)
+        .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+        .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
+        .into(*api)
+        .unwrap();
+}
 
 NAMESPACE_END(vkt)
