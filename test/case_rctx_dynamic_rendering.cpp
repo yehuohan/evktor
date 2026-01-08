@@ -22,8 +22,20 @@ void case_rctx_dynamic_rendering() {
         .addSpecConstant(0, reinterpret_cast<const uint8_t*>(&tri.spec_args.alpha), sizeof(int));
     auto shaders = Vector<CRef<Shader>>{newCRef(shader_vert), newCRef(shader_frag)};
 
+    // Create descriptors
+    auto ubo_buf = vkt.newUniformBuffer(sizeof(Triangle::UBO));
+    ubo_buf.copyFrom(&tri.ubo);
+    auto tex = vkt.newTexture2D(VK_FORMAT_R32G32B32A32_SFLOAT,
+                                {tri.wid, tri.hei},
+                                Texture2D::UsageBits::Sampled | Texture2D::UsageBits::TransferDst);
+    auto spl = SamplerState{}.setLinear().into(api).unwrap();
+    auto desc_info = DescriptorInfo{};
+    desc_info.nextBuf(ubo_buf, ubo_buf.size);
+    desc_info.nextImg(tex.getImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, spl);
+
     // Create pipeline
     auto& desc_setlayout = rctx->requestDescriptorSetLayout(0, shaders).unwrap().get();
+    auto& desc_set = rfrm.requestDescriptorSet(desc_setlayout, desc_info).unwrap().get();
     auto& pipeline_layout = rctx->requestPipelineLayout(shaders).unwrap().get();
     auto& pipeline = rctx->requestGraphicsPipeline(
                              GraphicsPipelineState()
@@ -51,44 +63,10 @@ void case_rctx_dynamic_rendering() {
                          .get();
     tstOut("Graphics pipeline: {}", fmt::ptr((VkPipeline)pipeline));
 
-    // Create descriptors
-    auto ubo_buf = BufferState{}
-                       .setSize(sizeof(Triangle::UBO))
-                       .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
-                       .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
-                       .into(api)
-                       .unwrap();
-    ubo_buf.copyFrom(&tri.ubo);
-    auto tex = Texture2D::from(api,
-                               VK_FORMAT_R32G32B32A32_SFLOAT,
-                               {tri.wid, tri.hei},
-                               Texture2D::UsageBits::Sampled | Texture2D::UsageBits::TransferDst)
-                   .unwrap();
-    auto spl = SamplerState{}.setLinear().into(api).unwrap();
-    auto desc_info = DescriptorInfo{};
-    desc_info.bufs[0] = VkDescriptorBufferInfo{ubo_buf, 0, sizeof(Triangle::UBO)};
-    desc_info.imgs[1] = VkDescriptorImageInfo{spl, tex.getImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
-    auto& desc_set = rfrm.requestDescriptorSet(desc_setlayout, desc_info).unwrap().get();
-
-    // Create stage buffer
-    auto stage = BufferState{}
-                     .setSize(tri.num * sizeof(float))
-                     .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
-                     .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
-                     .into(api)
-                     .unwrap();
-
     // Create vertex and index buffer
-    auto vertex_buf = BufferState{}
-                          .setSize(sizeof(tri.vertices))
-                          .setUsage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
-                          .into(api)
-                          .unwrap();
-    auto index_buf = BufferState{}
-                         .setSize(sizeof(tri.indices))
-                         .setUsage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
-                         .into(api)
-                         .unwrap();
+    auto stage = vkt.newStageBuffer(tri.num * sizeof(float));
+    auto vertex_buf = vkt.newVertexBuffer(sizeof(tri.vertices));
+    auto index_buf = vkt.newIndexBuffer(sizeof(tri.indices));
     stage.copyFrom(tri.vertices, sizeof(tri.vertices));
     cmdbuf.begin();
     cmdbuf.cmdCopyBuffer(stage, vertex_buf, 0, 0, sizeof(tri.vertices));

@@ -126,8 +126,20 @@ void case_rctx_cooperative_matrix() {
         .addSpecConstant(4, (const uint8_t*)&tiles.TILE_K, sizeof(uint32_t));
     auto shaders = Vector<CRef<Shader>>{newCRef(shader_comp)};
 
+    // Create descriptors
+    auto yout = vkt.newStorageBuffer(params.OH * params.OW * params.OC * sizeof(float));
+    auto xinp = vkt.newStorageBuffer(params.IH * params.IW * params.IC * sizeof(float));
+    auto kern = vkt.newStorageBuffer(params.KH * params.KW * params.IC * params.OC * sizeof(float));
+    auto bias = vkt.newStorageBuffer(params.OC * sizeof(float));
+    auto desc_info = DescriptorInfo{};
+    desc_info.nextBuf(yout, yout.size);
+    desc_info.nextBuf(xinp, xinp.size);
+    desc_info.nextBuf(kern, kern.size);
+    desc_info.nextBuf(bias, bias.size);
+
     // Create pipeline
     auto& desc_setlayout = rctx->requestDescriptorSetLayout(0, shaders).unwrap().get();
+    auto& desc_set = rfrm.requestDescriptorSet(desc_setlayout, desc_info).unwrap().get();
     auto& pipeline_layout = rctx->requestPipelineLayout(shaders).unwrap().get();
     auto& pipeline = rctx->requestComputePipeline(ComputePipelineState()
                                                       .setShader(rctx->requestShaderModule(shader_comp).unwrap().get(),
@@ -138,41 +150,8 @@ void case_rctx_cooperative_matrix() {
                          .get();
     tstOut("Compute pipeline: {}", fmt::ptr((VkPipeline)pipeline));
 
-    // Create descriptors
-    auto yout = BufferState{}
-                    .setSize(params.OH * params.OW * params.OC * sizeof(float))
-                    .setUsage(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
-                    .into(api)
-                    .unwrap();
-    auto xinp = BufferState{}
-                    .setSize(params.IH * params.IW * params.IC * sizeof(float))
-                    .setUsage(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
-                    .into(api)
-                    .unwrap();
-    auto kern = BufferState{}
-                    .setSize(params.KH * params.KW * params.IC * params.OC * sizeof(float))
-                    .setUsage(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
-                    .into(api)
-                    .unwrap();
-    auto bias = BufferState{}
-                    .setSize(params.OC * sizeof(float))
-                    .setUsage(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
-                    .into(api)
-                    .unwrap();
-    auto desc_info = DescriptorInfo{};
-    desc_info.bufs[0] = VkDescriptorBufferInfo{yout, 0, yout.size};
-    desc_info.bufs[1] = VkDescriptorBufferInfo{xinp, 0, xinp.size};
-    desc_info.bufs[2] = VkDescriptorBufferInfo{kern, 0, kern.size};
-    desc_info.bufs[3] = VkDescriptorBufferInfo{bias, 0, bias.size};
-    auto& desc_set = rfrm.requestDescriptorSet(desc_setlayout, desc_info).unwrap().get();
-
     // Create stage buffer
-    auto stage = BufferState{}
-                     .setSize(std::max<VkDeviceSize>(yout.size, xinp.size))
-                     .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
-                     .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
-                     .into(api)
-                     .unwrap();
+    auto stage = vkt.newStageBuffer(std::max<VkDeviceSize>(yout.size, xinp.size));
     Vector<float> buf(stage.size / sizeof(float));
     for (size_t k = 0; k < buf.size(); k++) {
         buf[k] = float(k % 255) / 255.0;
