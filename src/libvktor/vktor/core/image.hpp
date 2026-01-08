@@ -133,7 +133,7 @@ public:
 
     static Res<Image> from(const CoreApi& api, const ImageState& info);
     /**
-     * @brief Borrow image with already allocated handle (e.g. for swapchain images)
+     * @brief Borrow image from already created image (e.g. for swapchain images)
      */
     static Image borrow(const CoreApi& api,
                         const VkImage image,

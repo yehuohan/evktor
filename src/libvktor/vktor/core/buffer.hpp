@@ -77,6 +77,10 @@ public:
                             VkExternalMemoryHandleTypeFlagBits hdl_type = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT);
 
     static Res<Buffer> from(const CoreApi& api, const BufferState& info);
+    /**
+     * @brief Borrow buffer from already created buffer
+     */
+    static Buffer borrow(const CoreApi& api, const VkBuffer buffer, VkDeviceSize size);
 };
 
 NAMESPACE_END(core)

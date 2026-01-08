@@ -243,7 +243,7 @@ Image Image::borrow(const CoreApi& api,
                     VkImageTiling _tiling,
                     VkImageUsageFlags _usage) {
     if (VK_NULL_HANDLE == _image) {
-        vktLogW("Create Image should from a existed & valid VkImage");
+        vktLogW("Image should borrow from a existed & valid VkImage");
     }
     Image image(api);
     image.__borrowed = true;

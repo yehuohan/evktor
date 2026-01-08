@@ -136,5 +136,16 @@ Res<Buffer> Buffer::from(const CoreApi& api, const BufferState& info) {
     return Ok(std::move(buffer));
 }
 
+Buffer Buffer::borrow(const CoreApi& api, const VkBuffer _buffer, VkDeviceSize _size) {
+    if (VK_NULL_HANDLE == _buffer) {
+        vktLogW("Buffer should borrow from a existed & valid VkBuffer");
+    }
+    Buffer buffer(api);
+    buffer.__borrowed = true;
+    buffer.handle = _buffer;
+    buffer.size = _size;
+    return std::move(buffer);
+}
+
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)
