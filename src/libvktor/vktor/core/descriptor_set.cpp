@@ -4,6 +4,67 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
+DescriptorInfo& DescriptorInfo::setBuf(uint32_t binding, VkBuffer buf, VkDeviceSize range, VkDeviceSize offset) {
+    bufs[binding] = VkDescriptorBufferInfo{buf, offset, range};
+    return *this;
+}
+
+DescriptorInfo& DescriptorInfo::nextBuf(VkBuffer buf, VkDeviceSize range, VkDeviceSize offset) {
+    uint32_t binding = bufs.size() + imgs.size();
+    bufs[binding] = VkDescriptorBufferInfo{buf, offset, range};
+    return *this;
+}
+
+DescriptorInfo& DescriptorInfo::setImg(uint32_t binding, VkImageView img_view, VkImageLayout img_layout, VkSampler sampler) {
+    imgs[binding] = VkDescriptorImageInfo{sampler, img_view, img_layout};
+    return *this;
+}
+
+DescriptorInfo& DescriptorInfo::nextImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler) {
+    uint32_t binding = bufs.size() + imgs.size();
+    imgs[binding] = VkDescriptorImageInfo{sampler, img_view, img_layout};
+    return *this;
+}
+
+DescriptorArrayInfo& DescriptorArrayInfo::addBuf(uint32_t binding, VkBuffer buf, VkDeviceSize range, VkDeviceSize offset) {
+    bufs[binding].push_back(VkDescriptorBufferInfo{buf, offset, range});
+    return *this;
+}
+
+DescriptorArrayInfo& DescriptorArrayInfo::nextBuf(VkBuffer buf, VkDeviceSize range, VkDeviceSize offset) {
+    uint32_t binding = bufs.size() + imgs.size();
+    bufs[binding].push_back(VkDescriptorBufferInfo{buf, offset, range});
+    return *this;
+}
+
+DescriptorArrayInfo& DescriptorArrayInfo::pushBuf(VkBuffer buf, VkDeviceSize range, VkDeviceSize offset) {
+    uint32_t binding = bufs.size() + imgs.size();
+    binding = binding > 0 ? binding - 1 : 0;
+    bufs[binding].push_back(VkDescriptorBufferInfo{buf, offset, range});
+    return *this;
+}
+
+DescriptorArrayInfo& DescriptorArrayInfo::addImg(uint32_t binding,
+                                                 VkImageView img_view,
+                                                 VkImageLayout img_layout,
+                                                 VkSampler sampler) {
+    imgs[binding].push_back(VkDescriptorImageInfo{sampler, img_view, img_layout});
+    return *this;
+}
+
+DescriptorArrayInfo& DescriptorArrayInfo::nextImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler) {
+    uint32_t binding = bufs.size() + imgs.size();
+    imgs[binding].push_back(VkDescriptorImageInfo{sampler, img_view, img_layout});
+    return *this;
+}
+
+DescriptorArrayInfo& DescriptorArrayInfo::pushImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler) {
+    uint32_t binding = bufs.size() + imgs.size();
+    binding = binding > 0 ? binding - 1 : 0;
+    imgs[binding].push_back(VkDescriptorImageInfo{sampler, img_view, img_layout});
+    return *this;
+}
+
 DescriptorSet::DescriptorSet(DescriptorPool& pool) : CoreResource(pool.api), desc_pool(pool) {}
 
 DescriptorSet::DescriptorSet(DescriptorSet&& rhs) : CoreResource(rhs.api), desc_pool(rhs.desc_pool) {

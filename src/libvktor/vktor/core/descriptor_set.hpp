@@ -10,19 +10,39 @@ struct DescriptorPool;
 /**
  * @brief Descriptor info to update bindings of descriptor set
  *
- * The descriptor set is not an array (VkDescriptorSetLayoutBinding::descriptorCount == 1).
+ * The descriptor is not an array (VkDescriptorSetLayoutBinding::descriptorCount == 1).
  */
 struct DescriptorInfo {
     /** Map VkDescriptorSetLayoutBinding::binding to VkDescriptorBufferInfo */
     HashMap<uint32_t, VkDescriptorBufferInfo> bufs{};
     /** Map VkDescriptorSetLayoutBinding::binding to VkDescriptorImageInfo */
     HashMap<uint32_t, VkDescriptorImageInfo> imgs{};
+
+    /**
+     * @brief Set buffer descriptor to binding
+     */
+    DescriptorInfo& setBuf(uint32_t binding, VkBuffer buf, VkDeviceSize range = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+    /**
+     * @brief Set buffer descriptor to the new next binding
+     */
+    DescriptorInfo& nextBuf(VkBuffer buf, VkDeviceSize range = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+    /**
+     * @brief Set image descriptor to binding
+     */
+    DescriptorInfo& setImg(uint32_t binding,
+                           VkImageView img_view,
+                           VkImageLayout img_layout,
+                           VkSampler sampler = VK_NULL_HANDLE);
+    /**
+     * @brief Set image descriptor to the new next binding
+     */
+    DescriptorInfo& nextImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler = VK_NULL_HANDLE);
 };
 
 /**
  * @brief Descriptor info to update bindings of descriptor set
  *
- * The descriptor set may be an array (VkDescriptorSetLayoutBinding::descriptorCount > 1).
+ * The descriptor may be an array (VkDescriptorSetLayoutBinding::descriptorCount > 1).
  */
 struct DescriptorArrayInfo {
     /** Map VkDescriptorSetLayoutBinding::binding to VkDescriptorBufferInfo array
@@ -33,6 +53,34 @@ struct DescriptorArrayInfo {
      * (The array size should be VkDescriptorSetLayoutBinding::descriptorCount)
      */
     HashMap<uint32_t, Vector<VkDescriptorImageInfo>> imgs{};
+
+    /**
+     * @brief Add buffer descriptor to binding (as descriptor array)
+     */
+    DescriptorArrayInfo& addBuf(uint32_t binding, VkBuffer buf, VkDeviceSize range = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+    /**
+     * @brief Set buffer descriptor to the new next binding
+     */
+    DescriptorArrayInfo& nextBuf(VkBuffer buf, VkDeviceSize range = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+    /**
+     * @brief Set buffer descriptor to the last binding (as descriptor array)
+     */
+    DescriptorArrayInfo& pushBuf(VkBuffer buf, VkDeviceSize range = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+    /**
+     * @brief Add image descriptor to binding (as descriptor array)
+     */
+    DescriptorArrayInfo& addImg(uint32_t binding,
+                                VkImageView img_view,
+                                VkImageLayout img_layout,
+                                VkSampler sampler = VK_NULL_HANDLE);
+    /**
+     * @brief Set image descriptor to the new next binding
+     */
+    DescriptorArrayInfo& nextImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler = VK_NULL_HANDLE);
+    /**
+     * @brief Set image descriptor to the last binding (as descriptor array)
+     */
+    DescriptorArrayInfo& pushImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler = VK_NULL_HANDLE);
 };
 
 /**
