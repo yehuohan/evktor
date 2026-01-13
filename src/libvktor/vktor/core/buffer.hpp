@@ -73,8 +73,10 @@ public:
     Res<void*> map() const;
     void unmap() const;
     VkResult getFd(int& fd, VkExternalMemoryHandleTypeFlagBits hdl_type = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT);
+#ifdef VK_USE_PLATFORM_WIN32_KHR
     VkResult getWin32Handle(HANDLE& hdl,
                             VkExternalMemoryHandleTypeFlagBits hdl_type = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT);
+#endif
 
     static Res<Buffer> from(const CoreApi& api, const BufferState& info);
     /**

@@ -102,12 +102,14 @@ VkResult Buffer::getFd(int& fd, VkExternalMemoryHandleTypeFlagBits hdl_type) {
     return vkGetMemoryFdKHR(api, &fd_gi, &fd);
 }
 
+#ifdef VK_USE_PLATFORM_WIN32_KHR
 VkResult Buffer::getWin32Handle(HANDLE& hdl, VkExternalMemoryHandleTypeFlagBits hdl_type) {
     auto hdl_gi = Itor::MemoryGetWin32HandleInfoKHR();
     hdl_gi.memory = memory;
     hdl_gi.handleType = hdl_type;
     return vkGetMemoryWin32HandleKHR(api, &hdl_gi, &hdl);
 }
+#endif
 
 Res<Buffer> Buffer::from(const CoreApi& api, const BufferState& info) {
     Buffer buffer(api);
