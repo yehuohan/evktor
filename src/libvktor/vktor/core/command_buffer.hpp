@@ -113,30 +113,30 @@ public:
     inline Self cmdDispatch(uint32_t group_count_x, uint32_t group_count_y, uint32_t group_count_z) const;
 
 public:
-    inline void cmdBlitImage(const Image& src,
+    inline Self cmdBlitImage(const Image& src,
                              const Image& dst,
                              const Vector<VkImageBlit>& regions,
                              VkImageLayout src_layout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                              VkImageLayout dst_layout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                              VkFilter filter = VK_FILTER_NEAREST) const;
-    inline void cmdCopyImage(const Image& src,
+    inline Self cmdCopyImage(const Image& src,
                              const Image& dst,
                              const Vector<VkImageCopy>& regions,
                              VkImageLayout src_layout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                              VkImageLayout dst_layout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) const;
-    inline void cmdCopyBuffer(const Buffer& src, const Buffer& dst, const Vector<VkBufferCopy>& regions) const;
-    inline void cmdCopyImageToBuffer(const Image& img,
+    inline Self cmdCopyBuffer(const Buffer& src, const Buffer& dst, const Vector<VkBufferCopy>& regions) const;
+    inline Self cmdCopyImageToBuffer(const Image& img,
                                      const Buffer& buf,
                                      const Vector<VkBufferImageCopy>& regions,
                                      VkImageLayout img_layout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) const;
-    inline void cmdCopyBufferToImage(const Buffer& buf,
+    inline Self cmdCopyBufferToImage(const Buffer& buf,
                                      const Image& img,
                                      const Vector<VkBufferImageCopy>& regions,
                                      VkImageLayout img_layout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) const;
     /**
      * @brief Blit image with Arg<Image>::VkImageSubresourceLayers
      */
-    void cmdBlitImage(const Arg<Image>& src,
+    Self cmdBlitImage(const Arg<Image>& src,
                       const Arg<Image>& dst,
                       VkImageLayout src_layout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                       VkImageLayout dst_layout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -152,18 +152,18 @@ public:
      * @param mip The image mip level to copy from
      * @param extent The extent of image `mip` level
      */
-    void cmdBlitImageMip(const Arg<Image>& img, uint32_t mip, VkExtent2D extent, VkFilter filter = VK_FILTER_NEAREST) const;
+    Self cmdBlitImageMip(const Arg<Image>& img, uint32_t mip, VkExtent2D extent, VkFilter filter = VK_FILTER_NEAREST) const;
     /**
      * @brief Generate image's mipmaps for Arg<Image>::{aspect, layer, layer_count}
      *
      * Make sure `img` all mip levels are VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL.
      * After generate mipmaps, `img` transit to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL.
      */
-    void cmdGenImageMips(const Arg<Image>& img, VkFilter filter = VK_FILTER_NEAREST) const;
+    Self cmdGenImageMips(const Arg<Image>& img, VkFilter filter = VK_FILTER_NEAREST) const;
     /**
      * @brief Copy image with Arg<Image>::VkImageSubresourceLayers
      */
-    void cmdCopyImage(const Arg<Image>& src,
+    Self cmdCopyImage(const Arg<Image>& src,
                       const Arg<Image>& dst,
                       VkImageLayout src_layout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                       VkImageLayout dst_layout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) const;
@@ -172,7 +172,7 @@ public:
      *
      * If `copy_size` is 0, then use `min(src.size, dst.size)`.
      */
-    void cmdCopyBuffer(const Buffer& src,
+    Self cmdCopyBuffer(const Buffer& src,
                        const Buffer& dst,
                        VkDeviceSize src_offset = 0,
                        VkDeviceSize dst_offset = 0,
@@ -182,7 +182,7 @@ public:
      *
      * Make sure buffer memory size >= image memory size with Arg<Image>::VkImageSubresourceLayers
      */
-    void cmdCopyImageToBuffer(const Arg<Image>& img,
+    Self cmdCopyImageToBuffer(const Arg<Image>& img,
                               const Buffer& buf,
                               VkImageLayout img_layout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) const;
     /**
@@ -190,27 +190,27 @@ public:
      *
      * Make sure buffer memory size >= image memory size with Arg<Image>::VkImageSubresourceLayers
      */
-    void cmdCopyBufferToImage(const Buffer& buf,
+    Self cmdCopyBufferToImage(const Buffer& buf,
                               const Arg<Image>& img,
                               VkImageLayout img_layout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) const;
 
 public:
-    inline void cmdMemoryBarrier(VkPipelineStageFlags src_stage,
+    inline Self cmdMemoryBarrier(VkPipelineStageFlags src_stage,
                                  VkPipelineStageFlags dst_stage,
                                  const Vector<VkMemoryBarrier>& barriers,
                                  VkDependencyFlags flags = 0) const;
-    void cmdMemoryBarrier(VkPipelineStageFlags src_stage,
+    Self cmdMemoryBarrier(VkPipelineStageFlags src_stage,
                           VkPipelineStageFlags dst_stage,
                           VkAccessFlags src_access,
                           VkAccessFlags dst_access,
                           VkDependencyFlags flags = 0) const;
-    void cmdMemoryBarrier2(const Vector<VkMemoryBarrier2>& barriers, VkDependencyFlags flags = 0) const;
-    void cmdMemoryBarrier2(VkPipelineStageFlags2 src_stage,
+    Self cmdMemoryBarrier2(const Vector<VkMemoryBarrier2>& barriers, VkDependencyFlags flags = 0) const;
+    Self cmdMemoryBarrier2(VkPipelineStageFlags2 src_stage,
                            VkPipelineStageFlags2 dst_stage,
                            VkAccessFlags2 src_access,
                            VkAccessFlags2 dst_access,
                            VkDependencyFlags flags = 0) const;
-    inline void cmdBufferMemoryBarrier(VkPipelineStageFlags src_stage,
+    inline Self cmdBufferMemoryBarrier(VkPipelineStageFlags src_stage,
                                        VkPipelineStageFlags dst_stage,
                                        const Vector<VkBufferMemoryBarrier>& barriers,
                                        VkDependencyFlags flags = 0) const;
@@ -219,7 +219,7 @@ public:
      *
      * If `size` is 0, then use `buf.size`.
      */
-    void cmdBufferMemoryBarrier(const Buffer& buf,
+    Self cmdBufferMemoryBarrier(const Buffer& buf,
                                 VkPipelineStageFlags src_stage,
                                 VkPipelineStageFlags dst_stage,
                                 VkAccessFlags src_access,
@@ -227,13 +227,13 @@ public:
                                 VkDeviceSize offset = 0,
                                 VkDeviceSize size = 0,
                                 VkDependencyFlags flags = 0) const;
-    void cmdBufferMemoryBarrier2(const Vector<VkBufferMemoryBarrier2>& barriers, VkDependencyFlags flags = 0) const;
+    Self cmdBufferMemoryBarrier2(const Vector<VkBufferMemoryBarrier2>& barriers, VkDependencyFlags flags = 0) const;
     /**
      * @brief Buffer memory barrier
      *
      * If `size` is 0, then use `buf.size`.
      */
-    void cmdBufferMemoryBarrier2(const Buffer& buf,
+    Self cmdBufferMemoryBarrier2(const Buffer& buf,
                                  VkPipelineStageFlags2 src_stage,
                                  VkPipelineStageFlags2 dst_stage,
                                  VkAccessFlags2 src_access,
@@ -241,11 +241,11 @@ public:
                                  VkDeviceSize offset = 0,
                                  VkDeviceSize size = 0,
                                  VkDependencyFlags flags = 0) const;
-    inline void cmdImageMemoryBarrier(VkPipelineStageFlags src_stage,
+    inline Self cmdImageMemoryBarrier(VkPipelineStageFlags src_stage,
                                       VkPipelineStageFlags dst_stage,
                                       const Vector<VkImageMemoryBarrier>& barriers,
                                       VkDependencyFlags flags = 0) const;
-    void cmdImageMemoryBarrier(const Arg<Image>& img,
+    Self cmdImageMemoryBarrier(const Arg<Image>& img,
                                VkPipelineStageFlags src_stage,
                                VkPipelineStageFlags dst_stage,
                                VkAccessFlags src_access,
@@ -253,8 +253,8 @@ public:
                                VkImageLayout old_layout,
                                VkImageLayout new_layout,
                                VkDependencyFlags flags = 0) const;
-    void cmdImageMemoryBarrier2(const Vector<VkImageMemoryBarrier2>& barriers, VkDependencyFlags flags = 0) const;
-    void cmdImageMemoryBarrier2(const Arg<Image>& img,
+    Self cmdImageMemoryBarrier2(const Vector<VkImageMemoryBarrier2>& barriers, VkDependencyFlags flags = 0) const;
+    Self cmdImageMemoryBarrier2(const Arg<Image>& img,
                                 VkPipelineStageFlags2 src_stage,
                                 VkPipelineStageFlags2 dst_stage,
                                 VkAccessFlags2 src_access,
@@ -262,6 +262,12 @@ public:
                                 VkImageLayout old_layout,
                                 VkImageLayout new_layout,
                                 VkDependencyFlags flags = 0) const;
+
+public:
+    inline Self cmdResetQueryPool(VkQueryPool query_pool, uint32_t first, uint32_t count) const;
+    inline Self cmdWriteTimestamp(VkPipelineStageFlagBits stage, VkQueryPool query_pool, uint32_t index) const;
+    inline Self cmdWriteTimestampAtTopPipe(VkQueryPool query_pool, uint32_t index) const;
+    inline Self cmdWriteTimestampAtBottomPipe(VkQueryPool query_pool, uint32_t index) const;
 };
 
 inline VkResult CommandBuffer::end() const {
@@ -449,61 +455,93 @@ inline CommandBuffer::Self CommandBuffer::cmdDispatch(uint32_t group_count_x,
     return *this;
 }
 
-inline void CommandBuffer::cmdBlitImage(const Image& src,
-                                        const Image& dst,
-                                        const Vector<VkImageBlit>& regions,
-                                        VkImageLayout src_layout,
-                                        VkImageLayout dst_layout,
-                                        VkFilter filter) const {
+inline CommandBuffer::Self CommandBuffer::cmdBlitImage(const Image& src,
+                                                       const Image& dst,
+                                                       const Vector<VkImageBlit>& regions,
+                                                       VkImageLayout src_layout,
+                                                       VkImageLayout dst_layout,
+                                                       VkFilter filter) const {
 
     vkCmdBlitImage(handle, src, src_layout, dst, dst_layout, u32(regions.size()), regions.data(), filter);
+    return *this;
 }
 
-inline void CommandBuffer::cmdCopyImage(const Image& src,
-                                        const Image& dst,
-                                        const Vector<VkImageCopy>& regions,
-                                        VkImageLayout src_layout,
-                                        VkImageLayout dst_layout) const {
+inline CommandBuffer::Self CommandBuffer::cmdCopyImage(const Image& src,
+                                                       const Image& dst,
+                                                       const Vector<VkImageCopy>& regions,
+                                                       VkImageLayout src_layout,
+                                                       VkImageLayout dst_layout) const {
     vkCmdCopyImage(handle, src, src_layout, dst, dst_layout, u32(regions.size()), regions.data());
+    return *this;
 }
 
-inline void CommandBuffer::cmdCopyBuffer(const Buffer& src, const Buffer& dst, const Vector<VkBufferCopy>& regions) const {
+inline CommandBuffer::Self CommandBuffer::cmdCopyBuffer(const Buffer& src,
+                                                        const Buffer& dst,
+                                                        const Vector<VkBufferCopy>& regions) const {
     vkCmdCopyBuffer(handle, src, dst, u32(regions.size()), regions.data());
+    return *this;
 }
 
-inline void CommandBuffer::cmdCopyImageToBuffer(const Image& img,
-                                                const Buffer& buf,
-                                                const Vector<VkBufferImageCopy>& regions,
-                                                VkImageLayout img_layout) const {
+inline CommandBuffer::Self CommandBuffer::cmdCopyImageToBuffer(const Image& img,
+                                                               const Buffer& buf,
+                                                               const Vector<VkBufferImageCopy>& regions,
+                                                               VkImageLayout img_layout) const {
     vkCmdCopyImageToBuffer(handle, img, img_layout, buf, u32(regions.size()), regions.data());
+    return *this;
 }
 
-inline void CommandBuffer::cmdCopyBufferToImage(const Buffer& buf,
-                                                const Image& img,
-                                                const Vector<VkBufferImageCopy>& regions,
-                                                VkImageLayout img_layout) const {
+inline CommandBuffer::Self CommandBuffer::cmdCopyBufferToImage(const Buffer& buf,
+                                                               const Image& img,
+                                                               const Vector<VkBufferImageCopy>& regions,
+                                                               VkImageLayout img_layout) const {
     vkCmdCopyBufferToImage(handle, buf, img, img_layout, u32(regions.size()), regions.data());
+    return *this;
 }
 
-inline void CommandBuffer::cmdMemoryBarrier(VkPipelineStageFlags src_stage,
-                                            VkPipelineStageFlags dst_stage,
-                                            const Vector<VkMemoryBarrier>& barriers,
-                                            VkDependencyFlags flags) const {
+inline CommandBuffer::Self CommandBuffer::cmdMemoryBarrier(VkPipelineStageFlags src_stage,
+                                                           VkPipelineStageFlags dst_stage,
+                                                           const Vector<VkMemoryBarrier>& barriers,
+                                                           VkDependencyFlags flags) const {
     vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, u32(barriers.size()), barriers.data(), 0, nullptr, 0, nullptr);
+    return *this;
 }
 
-inline void CommandBuffer::cmdBufferMemoryBarrier(VkPipelineStageFlags src_stage,
-                                                  VkPipelineStageFlags dst_stage,
-                                                  const Vector<VkBufferMemoryBarrier>& barriers,
-                                                  VkDependencyFlags flags) const {
+inline CommandBuffer::Self CommandBuffer::cmdBufferMemoryBarrier(VkPipelineStageFlags src_stage,
+                                                                 VkPipelineStageFlags dst_stage,
+                                                                 const Vector<VkBufferMemoryBarrier>& barriers,
+                                                                 VkDependencyFlags flags) const {
     vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, u32(barriers.size()), barriers.data(), 0, nullptr);
+    return *this;
 }
 
-inline void CommandBuffer::cmdImageMemoryBarrier(VkPipelineStageFlags src_stage,
-                                                 VkPipelineStageFlags dst_stage,
-                                                 const Vector<VkImageMemoryBarrier>& barriers,
-                                                 VkDependencyFlags flags) const {
+inline CommandBuffer::Self CommandBuffer::cmdImageMemoryBarrier(VkPipelineStageFlags src_stage,
+                                                                VkPipelineStageFlags dst_stage,
+                                                                const Vector<VkImageMemoryBarrier>& barriers,
+                                                                VkDependencyFlags flags) const {
     vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, 0, nullptr, u32(barriers.size()), barriers.data());
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdResetQueryPool(VkQueryPool query_pool, uint32_t first, uint32_t count) const {
+    vkCmdResetQueryPool(handle, query_pool, first, count);
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdWriteTimestamp(VkPipelineStageFlagBits stage,
+                                                            VkQueryPool query_pool,
+                                                            uint32_t index) const {
+    vkCmdWriteTimestamp(handle, stage, query_pool, index);
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdWriteTimestampAtTopPipe(VkQueryPool query_pool, uint32_t index) const {
+    vkCmdWriteTimestamp(handle, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, query_pool, index);
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdWriteTimestampAtBottomPipe(VkQueryPool query_pool, uint32_t index) const {
+    vkCmdWriteTimestamp(handle, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, query_pool, index);
+    return *this;
 }
 
 NAMESPACE_END(core)

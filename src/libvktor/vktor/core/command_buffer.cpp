@@ -67,11 +67,11 @@ Self CommandBuffer::beginRenderPass(const VkOffset2D offset,
     return *this;
 }
 
-void CommandBuffer::cmdBlitImage(const Arg<Image>& src,
-                                 const Arg<Image>& dst,
-                                 VkImageLayout src_layout,
-                                 VkImageLayout dst_layout,
-                                 VkFilter filter) const {
+CommandBuffer::Self CommandBuffer::cmdBlitImage(const Arg<Image>& src,
+                                                const Arg<Image>& dst,
+                                                VkImageLayout src_layout,
+                                                VkImageLayout dst_layout,
+                                                VkFilter filter) const {
     const VkOffset3D offset_min{0, 0, 0};
     VkOffset3D offset_max{};
     offset_max.x = std::min<uint32_t>(src.a.extent.width, dst.a.extent.width);
@@ -85,9 +85,13 @@ void CommandBuffer::cmdBlitImage(const Arg<Image>& src,
     blit.dstOffsets[0] = offset_min;
     blit.dstOffsets[1] = offset_max;
     vkCmdBlitImage(handle, src, src_layout, dst, dst_layout, 1, &blit, filter);
+    return *this;
 }
 
-void CommandBuffer::cmdBlitImageMip(const Arg<Image>& img, uint32_t mip, VkExtent2D extent, VkFilter filter) const {
+CommandBuffer::Self CommandBuffer::cmdBlitImageMip(const Arg<Image>& img,
+                                                   uint32_t mip,
+                                                   VkExtent2D extent,
+                                                   VkFilter filter) const {
     const int32_t depth = img.a.extent.depth;
     int32_t mip_wid = extent.width;
     int32_t mip_hei = extent.height;
@@ -118,9 +122,10 @@ void CommandBuffer::cmdBlitImageMip(const Arg<Image>& img, uint32_t mip, VkExten
                    1,
                    &blit,
                    filter);
+    return *this;
 }
 
-void CommandBuffer::cmdGenImageMips(const Arg<Image>& img, VkFilter filter) const {
+CommandBuffer::Self CommandBuffer::cmdGenImageMips(const Arg<Image>& img, VkFilter filter) const {
     uint32_t mip_wid = img.a.extent.width;
     uint32_t mip_hei = img.a.extent.height;
     Vector<VkImageMemoryBarrier> barriers{Itor::ImageMemoryBarrier()};
@@ -161,12 +166,13 @@ void CommandBuffer::cmdGenImageMips(const Arg<Image>& img, VkFilter filter) cons
         barrier.subresourceRange.baseMipLevel = img.a.mip_levels - 1;
         cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, barriers);
     }
+    return *this;
 }
 
-void CommandBuffer::cmdCopyImage(const Arg<Image>& src,
-                                 const Arg<Image>& dst,
-                                 VkImageLayout src_layout,
-                                 VkImageLayout dst_layout) const {
+CommandBuffer::Self CommandBuffer::cmdCopyImage(const Arg<Image>& src,
+                                                const Arg<Image>& dst,
+                                                VkImageLayout src_layout,
+                                                VkImageLayout dst_layout) const {
     VkImageCopy copy{};
     copy.srcSubresource = src;
     copy.srcOffset = VkOffset3D{0, 0, 0};
@@ -176,22 +182,26 @@ void CommandBuffer::cmdCopyImage(const Arg<Image>& src,
     copy.extent.height = std::min<uint32_t>(src.a.extent.height, dst.a.extent.height);
     copy.extent.depth = std::min<uint32_t>(src.a.extent.depth, dst.a.extent.depth);
     vkCmdCopyImage(handle, src, src_layout, dst, dst_layout, 1, &copy);
+    return *this;
 }
 
-void CommandBuffer::cmdCopyBuffer(const Buffer& src,
-                                  const Buffer& dst,
-                                  VkDeviceSize src_offset,
-                                  VkDeviceSize dst_offset,
-                                  VkDeviceSize copy_size) const {
+CommandBuffer::Self CommandBuffer::cmdCopyBuffer(const Buffer& src,
+                                                 const Buffer& dst,
+                                                 VkDeviceSize src_offset,
+                                                 VkDeviceSize dst_offset,
+                                                 VkDeviceSize copy_size) const {
     VkDeviceSize size = copy_size > 0 ? copy_size : std::min<VkDeviceSize>(src.size, dst.size);
     VkBufferCopy copy{};
     copy.srcOffset = src_offset;
     copy.dstOffset = dst_offset;
     copy.size = size;
     vkCmdCopyBuffer(handle, src, dst, 1, &copy);
+    return *this;
 }
 
-void CommandBuffer::cmdCopyImageToBuffer(const Arg<Image>& img, const Buffer& buf, VkImageLayout img_layout) const {
+CommandBuffer::Self CommandBuffer::cmdCopyImageToBuffer(const Arg<Image>& img,
+                                                        const Buffer& buf,
+                                                        VkImageLayout img_layout) const {
     VkBufferImageCopy copy{};
     copy.imageSubresource = img;
     copy.imageOffset = VkOffset3D{0, 0, 0};
@@ -200,9 +210,12 @@ void CommandBuffer::cmdCopyImageToBuffer(const Arg<Image>& img, const Buffer& bu
     copy.bufferRowLength = 0;
     copy.bufferImageHeight = 0;
     vkCmdCopyImageToBuffer(handle, img, img_layout, buf, 1, &copy);
+    return *this;
 };
 
-void CommandBuffer::cmdCopyBufferToImage(const Buffer& buf, const Arg<Image>& img, VkImageLayout img_layout) const {
+CommandBuffer::Self CommandBuffer::cmdCopyBufferToImage(const Buffer& buf,
+                                                        const Arg<Image>& img,
+                                                        VkImageLayout img_layout) const {
     VkBufferImageCopy copy{};
     copy.bufferOffset = 0;
     copy.bufferRowLength = 0;
@@ -211,32 +224,35 @@ void CommandBuffer::cmdCopyBufferToImage(const Buffer& buf, const Arg<Image>& im
     copy.imageOffset = VkOffset3D{0, 0, 0};
     copy.imageExtent = img.a.extent;
     vkCmdCopyBufferToImage(handle, buf, img, img_layout, 1, &copy);
+    return *this;
 }
 
-void CommandBuffer::cmdMemoryBarrier(VkPipelineStageFlags src_stage,
-                                     VkPipelineStageFlags dst_stage,
-                                     VkAccessFlags src_access,
-                                     VkAccessFlags dst_access,
-                                     VkDependencyFlags flags) const {
+CommandBuffer::Self CommandBuffer::cmdMemoryBarrier(VkPipelineStageFlags src_stage,
+                                                    VkPipelineStageFlags dst_stage,
+                                                    VkAccessFlags src_access,
+                                                    VkAccessFlags dst_access,
+                                                    VkDependencyFlags flags) const {
     auto barrier = Itor::MemoryBarrier();
     barrier.srcAccessMask = src_access;
     barrier.dstAccessMask = dst_access;
     vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 1, &barrier, 0, nullptr, 0, nullptr);
+    return *this;
 }
 
-void CommandBuffer::cmdMemoryBarrier2(const Vector<VkMemoryBarrier2>& barriers, VkDependencyFlags flags) const {
+CommandBuffer::Self CommandBuffer::cmdMemoryBarrier2(const Vector<VkMemoryBarrier2>& barriers, VkDependencyFlags flags) const {
     auto info = Itor::DependencyInfo();
     info.dependencyFlags = flags;
     info.memoryBarrierCount = u32(barriers.size());
     info.pMemoryBarriers = barriers.data();
     vkCmdPipelineBarrier2(handle, &info);
+    return *this;
 }
 
-void CommandBuffer::cmdMemoryBarrier2(VkPipelineStageFlags2 src_stage,
-                                      VkPipelineStageFlags2 dst_stage,
-                                      VkAccessFlags2 src_access,
-                                      VkAccessFlags2 dst_access,
-                                      VkDependencyFlags flags) const {
+CommandBuffer::Self CommandBuffer::cmdMemoryBarrier2(VkPipelineStageFlags2 src_stage,
+                                                     VkPipelineStageFlags2 dst_stage,
+                                                     VkAccessFlags2 src_access,
+                                                     VkAccessFlags2 dst_access,
+                                                     VkDependencyFlags flags) const {
     auto barrier = Itor::MemoryBarrier2();
     barrier.srcStageMask = src_stage;
     barrier.dstStageMask = dst_stage;
@@ -247,16 +263,17 @@ void CommandBuffer::cmdMemoryBarrier2(VkPipelineStageFlags2 src_stage,
     info.memoryBarrierCount = 1;
     info.pMemoryBarriers = &barrier;
     vkCmdPipelineBarrier2(handle, &info);
+    return *this;
 }
 
-void CommandBuffer::cmdBufferMemoryBarrier(const Buffer& buf,
-                                           VkPipelineStageFlags src_stage,
-                                           VkPipelineStageFlags dst_stage,
-                                           VkAccessFlags src_access,
-                                           VkAccessFlags dst_access,
-                                           VkDeviceSize offset,
-                                           VkDeviceSize size,
-                                           VkDependencyFlags flags) const {
+CommandBuffer::Self CommandBuffer::cmdBufferMemoryBarrier(const Buffer& buf,
+                                                          VkPipelineStageFlags src_stage,
+                                                          VkPipelineStageFlags dst_stage,
+                                                          VkAccessFlags src_access,
+                                                          VkAccessFlags dst_access,
+                                                          VkDeviceSize offset,
+                                                          VkDeviceSize size,
+                                                          VkDependencyFlags flags) const {
     auto barrier = Itor::BufferMemoryBarrier();
     barrier.srcAccessMask = src_access;
     barrier.dstAccessMask = dst_access;
@@ -266,24 +283,27 @@ void CommandBuffer::cmdBufferMemoryBarrier(const Buffer& buf,
     barrier.offset = offset;
     barrier.size = size == 0 ? buf.size : size;
     vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, 1, &barrier, 0, nullptr);
+    return *this;
 }
 
-void CommandBuffer::cmdBufferMemoryBarrier2(const Vector<VkBufferMemoryBarrier2>& barriers, VkDependencyFlags flags) const {
+CommandBuffer::Self CommandBuffer::cmdBufferMemoryBarrier2(const Vector<VkBufferMemoryBarrier2>& barriers,
+                                                           VkDependencyFlags flags) const {
     auto info = Itor::DependencyInfo();
     info.dependencyFlags = flags;
     info.bufferMemoryBarrierCount = u32(barriers.size());
     info.pBufferMemoryBarriers = barriers.data();
     vkCmdPipelineBarrier2(handle, &info);
+    return *this;
 }
 
-void CommandBuffer::cmdBufferMemoryBarrier2(const Buffer& buf,
-                                            VkPipelineStageFlags2 src_stage,
-                                            VkPipelineStageFlags2 dst_stage,
-                                            VkAccessFlags2 src_access,
-                                            VkAccessFlags2 dst_access,
-                                            VkDeviceSize offset,
-                                            VkDeviceSize size,
-                                            VkDependencyFlags flags) const {
+CommandBuffer::Self CommandBuffer::cmdBufferMemoryBarrier2(const Buffer& buf,
+                                                           VkPipelineStageFlags2 src_stage,
+                                                           VkPipelineStageFlags2 dst_stage,
+                                                           VkAccessFlags2 src_access,
+                                                           VkAccessFlags2 dst_access,
+                                                           VkDeviceSize offset,
+                                                           VkDeviceSize size,
+                                                           VkDependencyFlags flags) const {
     auto barrier = Itor::BufferMemoryBarrier2();
     barrier.srcStageMask = src_stage;
     barrier.dstStageMask = dst_stage;
@@ -299,16 +319,17 @@ void CommandBuffer::cmdBufferMemoryBarrier2(const Buffer& buf,
     info.bufferMemoryBarrierCount = 1;
     info.pBufferMemoryBarriers = &barrier;
     vkCmdPipelineBarrier2(handle, &info);
+    return *this;
 }
 
-void CommandBuffer::cmdImageMemoryBarrier(const Arg<Image>& img,
-                                          VkPipelineStageFlags src_stage,
-                                          VkPipelineStageFlags dst_stage,
-                                          VkAccessFlags src_access,
-                                          VkAccessFlags dst_access,
-                                          VkImageLayout old_layout,
-                                          VkImageLayout new_layout,
-                                          VkDependencyFlags flags) const {
+CommandBuffer::Self CommandBuffer::cmdImageMemoryBarrier(const Arg<Image>& img,
+                                                         VkPipelineStageFlags src_stage,
+                                                         VkPipelineStageFlags dst_stage,
+                                                         VkAccessFlags src_access,
+                                                         VkAccessFlags dst_access,
+                                                         VkImageLayout old_layout,
+                                                         VkImageLayout new_layout,
+                                                         VkDependencyFlags flags) const {
     auto barrier = Itor::ImageMemoryBarrier();
     barrier.srcAccessMask = src_access;
     barrier.dstAccessMask = dst_access;
@@ -319,24 +340,27 @@ void CommandBuffer::cmdImageMemoryBarrier(const Arg<Image>& img,
     barrier.image = img;
     barrier.subresourceRange = img;
     vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, 0, nullptr, 1, &barrier);
+    return *this;
 }
 
-void CommandBuffer::cmdImageMemoryBarrier2(const Vector<VkImageMemoryBarrier2>& barriers, VkDependencyFlags flags) const {
+CommandBuffer::Self CommandBuffer::cmdImageMemoryBarrier2(const Vector<VkImageMemoryBarrier2>& barriers,
+                                                          VkDependencyFlags flags) const {
     auto info = Itor::DependencyInfo();
     info.dependencyFlags = flags;
     info.imageMemoryBarrierCount = u32(barriers.size());
     info.pImageMemoryBarriers = barriers.data();
     vkCmdPipelineBarrier2(handle, &info);
+    return *this;
 }
 
-void CommandBuffer::cmdImageMemoryBarrier2(const Arg<Image>& img,
-                                           VkPipelineStageFlags2 src_stage,
-                                           VkPipelineStageFlags2 dst_stage,
-                                           VkAccessFlags2 src_access,
-                                           VkAccessFlags2 dst_access,
-                                           VkImageLayout old_layout,
-                                           VkImageLayout new_layout,
-                                           VkDependencyFlags flags) const {
+CommandBuffer::Self CommandBuffer::cmdImageMemoryBarrier2(const Arg<Image>& img,
+                                                          VkPipelineStageFlags2 src_stage,
+                                                          VkPipelineStageFlags2 dst_stage,
+                                                          VkAccessFlags2 src_access,
+                                                          VkAccessFlags2 dst_access,
+                                                          VkImageLayout old_layout,
+                                                          VkImageLayout new_layout,
+                                                          VkDependencyFlags flags) const {
     auto barrier = Itor::ImageMemoryBarrier2();
     barrier.srcStageMask = src_stage;
     barrier.dstStageMask = dst_stage;
@@ -353,6 +377,7 @@ void CommandBuffer::cmdImageMemoryBarrier2(const Arg<Image>& img,
     info.imageMemoryBarrierCount = 1;
     info.pImageMemoryBarriers = &barrier;
     vkCmdPipelineBarrier2(handle, &info);
+    return *this;
 }
 
 NAMESPACE_END(core)
