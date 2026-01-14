@@ -1,3 +1,5 @@
+include_guard(GLOBAL)
+
 set(CompileShaderPy ${CMAKE_CURRENT_LIST_DIR}/CompileShader.py)
 
 string(ASCII 27 __Esc)
@@ -13,16 +15,17 @@ set(MsgReset "${__Esc}[m")
 #   * glslc or slangc
 #
 # add_shader_target(<TargetName>
-#   <glsl/slang files list>
 #   [INCLUDE_DIRECTORIES <include directories list>]
 #   [COMPILE_DEFINITIONS <macros list, e.g. HAS_VEC USE_MAT=1>]
 #   [COMPILE_OPTIONS <extra compiler args>]
+#   [DEPENDENCIES <target dependencies, e.g. shaders from `#include`>]
+#   <glsl/slang source files list>
 # )
 function(add_shader_target TargetName)
     # Parse required shader args
     set(options "")
     set(oneValueArgs "")
-    set(multiValueArgs INCLUDE_DIRECTORIES COMPILE_DEFINITIONS COMPILE_OPTIONS)
+    set(multiValueArgs INCLUDE_DIRECTORIES COMPILE_DEFINITIONS COMPILE_OPTIONS DEPENDENCIES)
     cmake_parse_arguments(SHADER "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
     set(SHADER_SRC ${SHADER_UNPARSED_ARGUMENTS})
 
@@ -50,7 +53,7 @@ function(add_shader_target TargetName)
                 -D ${SHADER_COMPILE_DEFINITIONS}
                 -I ${SHADER_INCLUDE_DIRECTORIES}
                 -- ${SHADER_COMPILE_OPTIONS}
-            DEPENDS ${Shader}
+            DEPENDS ${Shader} ${SHADER_DEPENDENCIES}
             COMMENT "${MsgInfo}[${TargetName}] Compiling ${Shader}${MsgReset}")
     endforeach()
 

@@ -1,3 +1,4 @@
+include_guard(GLOBAL)
 
 string(ASCII 27 __C_Esc)
 set(__C_ColorReset  "${__C_Esc}[m")
