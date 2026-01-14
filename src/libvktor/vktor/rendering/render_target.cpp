@@ -7,8 +7,20 @@ using namespace core;
 using Self = RenderTarget::Self;
 
 RenderTarget::RenderTarget(Texture&& _texture) : texture(std::move(_texture)) {
-    layouts.initial = texture.getImage().layout;
-    layouts.final = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    auto format = texture.getImage().format;
+    if (isDepthOnlyFormat(format)) {
+        set(AttachmentOps::depth());
+        set(AttachmentLayouts::depthstencil());
+        set(VkClearDepthStencilValue{1.0, 0});
+    } else if (isDepthStencilFormat(format)) {
+        set(AttachmentOps::depth(), AttachmentOps::stencil());
+        set(AttachmentLayouts::depthstencil());
+        set(VkClearDepthStencilValue{1.0, 0});
+    } else {
+        set(AttachmentOps::color());
+        set(AttachmentLayouts::color());
+        set(VkClearColorValue{0.0f, 0.0f, 0.0f, 1.0f});
+    }
 }
 
 RenderTarget::RenderTarget(RenderTarget&& rhs) : RenderTarget(std::move(rhs.texture)) {
@@ -16,25 +28,6 @@ RenderTarget::RenderTarget(RenderTarget&& rhs) : RenderTarget(std::move(rhs.text
     stencil_ops = rhs.stencil_ops;
     layouts = rhs.layouts;
     clear = rhs.clear;
-}
-
-Res<RenderTarget> RenderTarget::from(Texture&& texture) {
-    RenderTarget rt(std::move(texture));
-    auto format = rt.texture.getImage().format;
-    if (isDepthOnlyFormat(format)) {
-        rt.set(AttachmentOps::depth());
-        rt.set(AttachmentLayouts::depthstencil());
-        rt.set(VkClearDepthStencilValue{1.0, 0});
-    } else if (isDepthStencilFormat(format)) {
-        rt.set(AttachmentOps::depth(), AttachmentOps::stencil());
-        rt.set(AttachmentLayouts::depthstencil());
-        rt.set(VkClearDepthStencilValue{1.0, 0});
-    } else {
-        rt.set(AttachmentOps::color());
-        rt.set(AttachmentLayouts::color());
-        rt.set(VkClearColorValue{0.0f, 0.0f, 0.0f, 1.0f});
-    }
-    return Ok(std::move(rt));
 }
 
 Res<RenderTarget> RenderTarget::from(const CoreApi& api, const VkExtent2D& extent, VkFormat format) {
@@ -49,7 +42,7 @@ Res<RenderTarget> RenderTarget::from(const CoreApi& api, const VkExtent2D& exten
     auto res_imageview = ImageViewState(ds ? "RTDepthView" : "RTColorView").setFromImage(image).into(api);
     OnErr(res_imageview);
     ImageView imageview = res_imageview.unwrap();
-    return RenderTarget::from(Texture(std::move(image), std::move(imageview)));
+    return Ok(RenderTarget(Texture(std::move(image), std::move(imageview))));
 }
 
 Res<RenderTarget> RenderTarget::from(const Arg<Swapchain>& swapchain) {
@@ -112,46 +105,51 @@ RenderTargetTable::RenderTargetTable(RenderTargetTable&& rhs) {
     targets = std::move(rhs.targets);
 };
 
-Res<RenderTargetTable> RenderTargetTable::from(Vector<RenderTarget>&& targets) {
-    if (targets.empty()) {
-        return Er("There should be at least one RenderTarget for RenderTargetTable");
-    }
-
-    RenderTargetTable rtt;
-
-    // Compute render target extent according to the image view's base mip level
+Res<Ref<RenderTarget>> RenderTargetTable::addTarget(RenderTarget&& target) {
     static const auto getExtent = [](const RenderTarget& rt) {
         const VkExtent3D e = rt.getImage().extent;
         const uint32_t m = rt.getImageView().subresource_range.baseMipLevel;
         return VkExtent2D{e.width >> m, e.height >> m};
     };
 
-    if (targets.size() == 1) {
-        rtt.extent = getExtent(targets[0]);
+    if (targets.empty()) {
+        extent = getExtent(target);
     } else {
-        Vector<VkExtent2D> extents{};
-        for (const auto& rt : targets) {
-            extents.push_back(getExtent(rt));
-        }
-        rtt.extent = extents[0];
-        for (const auto& e : extents) {
-            if (!(rtt.extent.width == e.width && rtt.extent.height == e.height)) {
-                return Er("RenderTarget's extent should be same for RenderTargetTable");
-            }
+        auto e = getExtent(target);
+        if ((e.width != extent.width || e.height != extent.height)) {
+            return Er("Can't add a RenderTarget with different extent : {}x{}, {}x{}",
+                      e.width,
+                      e.height,
+                      extent.width,
+                      extent.height);
         }
     }
 
-    rtt.targets = std::move(targets);
-    return Ok(std::move(rtt));
+    targets.push_back(std::move(target));
+    return Ok(newRef(targets.back()));
 }
 
-Res<RenderTargetTable> RenderTargetTable::from(std::initializer_list<MovedRenderTarget> moved_targets) {
-    Vector<RenderTarget> rts;
-    for (auto item = moved_targets.begin(); item != moved_targets.end(); ++item) {
-        // The `item` is const pointer. So move RenderTarget with pointer-to-pointer.
-        rts.push_back(std::move(**item));
+Res<Ref<RenderTarget>> RenderTargetTable::addTarget(Texture&& texture) {
+    return addTarget(RenderTarget(std::move(texture)));
+}
+
+Res<Ref<RenderTarget>> RenderTargetTable::addTarget(const CoreApi& api, const VkExtent2D& extent, VkFormat format) {
+    auto rt = RenderTarget::from(api, extent, format);
+    OnErr(rt);
+    return addTarget(rt.unwrap());
+}
+
+Res<Ref<RenderTarget>> RenderTargetTable::addTarget(const Arg<Swapchain>& swapchain) {
+    auto rt = RenderTarget::from(swapchain);
+    OnErr(rt);
+    return addTarget(rt.unwrap());
+}
+
+Res<Ref<RenderTarget>> RenderTargetTable::operator[](size_t index) {
+    if (index < targets.size()) {
+        return Ok(newRef(targets[index]));
     }
-    return RenderTargetTable::from(std::move(rts));
+    return Er("Access an invalid render target: {}", index);
 }
 
 Vector<VkImageView> RenderTargetTable::getImageViews() const {

@@ -35,7 +35,7 @@ Res<CRef<RenderTargetTable>> RenderFrame::getSwapchainRTT() const {
     if (swapchain_rtt) {
         return Ok(newCRef(*swapchain_rtt));
     }
-    return Er("No valid render target table in this render frame");
+    return Er("There's not a valid render target table in this render frame");
 }
 
 Res<Void> RenderFrame::resetFrame() {

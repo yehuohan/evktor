@@ -6,16 +6,14 @@ using namespace core;
 
 const RenderContext::FnSwapchainRTT RenderContext::defaultFnSwapchainRTT =
     [](const Arg<Swapchain>& swapchain) -> Res<RenderTargetTable> {
-    Vector<RenderTarget> rts;
+    RenderTargetTable rtt{};
     // RT-0: Color
-    auto res_color = RenderTarget::from(swapchain);
+    auto res_color = rtt.addTarget(swapchain);
     OnErr(res_color);
-    rts.push_back(res_color.unwrap());
     // RT-1: depth
-    auto res_depth = RenderTarget::from(swapchain.a.api, swapchain.a.image_extent, VK_FORMAT_D32_SFLOAT);
+    auto res_depth = rtt.addTarget(swapchain.a.api, swapchain.a.image_extent, VK_FORMAT_D32_SFLOAT);
     OnErr(res_depth);
-    rts.push_back(res_depth.unwrap());
-    return RenderTargetTable::from(std::move(rts));
+    return Ok(std::move(rtt));
 };
 
 Res<RenderContext> RenderContext::from(const CoreApi& api, uint32_t frame_count, size_t thread_count) {

@@ -26,10 +26,8 @@ protected:
 public:
     using Self = RenderTarget&;
 
-    explicit RenderTarget(Texture&& texture);
-    RenderTarget(RenderTarget&&);
     /**
-     * @brief Create render target from texture directly
+     * @brief Construct render target from texture directly
      *
      * Can also from `Texture2D`:
      * ```
@@ -37,7 +35,8 @@ public:
      * auto rt = RenderTarget::from(std::move(tex));
      * ```
      */
-    static Res<RenderTarget> from(Texture&& texture);
+    explicit RenderTarget(Texture&& texture);
+    RenderTarget(RenderTarget&&);
     static Res<RenderTarget> from(const core::CoreApi& api, const VkExtent2D& extent, VkFormat format);
     /**
      * @brief Create render target with the swapchain image of Arg<Swapchain>::image_index
@@ -68,34 +67,27 @@ public:
 };
 
 /**
- * @brief Alias RenderTarget* as moved RenderTarget for std::initializer_list
- *
- * std::initializer_list doesn't support std::move(RenderTarget) currently.
- * So move the RenderTarget within std::initializer_list via pointer.
- */
-typedef RenderTarget* MovedRenderTarget;
-
-/**
  * @brief All render targets of one render pass and framebuffer
  */
 class RenderTargetTable : private NonCopyable {
 private:
-    VkExtent2D extent{};
     Vector<RenderTarget> targets{};
-
-private:
-    explicit RenderTargetTable() {}
+    VkExtent2D extent{};
 
 public:
+    explicit RenderTargetTable() {}
     RenderTargetTable(RenderTargetTable&&);
-    static Res<RenderTargetTable> from(Vector<RenderTarget>&& targets);
-    static Res<RenderTargetTable> from(std::initializer_list<MovedRenderTarget> moved_targets);
+    Res<Ref<RenderTarget>> addTarget(RenderTarget&& target);
+    Res<Ref<RenderTarget>> addTarget(Texture&& texture);
+    Res<Ref<RenderTarget>> addTarget(const core::CoreApi& api, const VkExtent2D& extent, VkFormat format);
+    Res<Ref<RenderTarget>> addTarget(const core::Arg<core::Swapchain>& swapchain);
+    Res<Ref<RenderTarget>> operator[](size_t index);
 
-    inline VkExtent2D getExtent() const {
-        return extent;
-    }
     inline const Vector<RenderTarget>& getTargets() const {
         return targets;
+    }
+    inline VkExtent2D getExtent() const {
+        return extent;
     }
     Vector<VkImageView> getImageViews() const;
     Vector<VkClearValue> getClearValues() const;

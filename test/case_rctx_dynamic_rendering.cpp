@@ -81,17 +81,18 @@ void case_rctx_dynamic_rendering() {
     queue.waitIdle();
 
     // Create render targets
-    auto rt_color = RenderTarget::from(Texture2D::from(api,
-                                                       VK_FORMAT_R32G32B32A32_SFLOAT,
-                                                       VkExtent2D{tri.wid, tri.hei},
-                                                       Texture::UsageBits::Color | Texture::UsageBits::Transfer)
-                                           .unwrap())
-                        .unwrap();
-    rt_color.set(VkClearColorValue{});
-    auto rt_depth = RenderTarget::from(api, VkExtent2D{tri.wid, tri.hei}, VK_FORMAT_D32_SFLOAT).unwrap();
-    auto rtt = RenderTargetTable::from({&rt_color, &rt_depth}).unwrap();
-    auto& out_color = rtt.getTargets()[0].getImage();
-    auto& out_depth = rtt.getTargets()[1].getImage();
+    RenderTargetTable rtt{};
+    rtt.addTarget(Texture2D::from(api,
+                                  VK_FORMAT_R32G32B32A32_SFLOAT,
+                                  VkExtent2D{tri.wid, tri.hei},
+                                  Texture::UsageBits::Color | Texture::UsageBits::Transfer)
+                      .unwrap())
+        .unwrap()
+        .get()
+        .set(VkClearColorValue{});
+    rtt.addTarget(api, VkExtent2D{tri.wid, tri.hei}, VK_FORMAT_D32_SFLOAT).unwrap();
+    auto& out_color = rtt[0].unwrap().get().getImage();
+    auto& out_depth = rtt[1].unwrap().get().getImage();
 
     // Record command
     stage.copyFrom(tri.tex.data());
