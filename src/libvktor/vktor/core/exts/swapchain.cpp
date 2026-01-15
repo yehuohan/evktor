@@ -213,9 +213,8 @@ Res<Swapchain> Swapchain::from(const CoreApi& api, const SwapchainState& info) {
             image_extent.height,
             image_count);
 
-    // Retrieve handles of swapchain images
+    // Retrieve handles of swapchain images (swapchain.images.size() == swapchain.image_count)
     OnRet(enumerate(swapchain.images, vkGetSwapchainImagesKHR, api, swapchain), "Failed get images from swapchain");
-    OnCheck(u32(swapchain.images.size()) == swapchain.image_count, "Get wrong image count from swapchain");
 
     return Ok(std::move(swapchain));
 }

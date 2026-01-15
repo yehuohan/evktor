@@ -109,7 +109,13 @@ public:
     /**
      * @brief Get the activated render frame
      */
-    Ref<RenderFrame> getFrame();
+    inline Ref<RenderFrame> getFrame() {
+        OnCheck(frame_index < frames.size(),
+                "The activated frame index {} is out of frames count {}",
+                frame_index,
+                frames.size());
+        return newRef(frames[frame_index]);
+    }
     /**
      * @brief Get the activated render frame index
      *

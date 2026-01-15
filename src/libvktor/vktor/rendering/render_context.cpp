@@ -96,9 +96,11 @@ bool RenderContext::updateSwapchain(bool force) {
 }
 
 Res<Ref<core::CommandBuffer>> RenderContext::beginFrame() {
-    auto& prev_frame = frames[frame_index];
+    if (frame_actived) {
+        return Er("Requires invoke endFrame to inactivate the frame before beginFrame");
+    }
 
-    OnCheck(!frame_actived, "Please call endFrame to inactivate the frame");
+    auto& prev_frame = frames[frame_index];
     if (hasSwapchain()) {
         // Use previous frame's semaphore in current frame need ownership
         auto res_sem = prev_frame.acquireSemaphore();
@@ -121,7 +123,9 @@ Res<Ref<core::CommandBuffer>> RenderContext::beginFrame() {
         // Advance to next frame
         frame_index = (frame_index + 1) % frames.size();
     }
-    OnCheck(frame_index < frames.size(), "The activated frame index {} is out of frames count {}", frame_index, frames.size());
+    if (frame_index >= frames.size()) {
+        return Er("The activated frame index {} is out of frames count {}", frame_index, frames.size());
+    }
 
     // Reset the frame to begin
     auto& frame = frames[frame_index];
@@ -135,9 +139,11 @@ Res<Ref<core::CommandBuffer>> RenderContext::beginFrame() {
 }
 
 Res<Void> RenderContext::endFrame(VkSemaphore wait_semaphore) {
-    auto& frame = frames[frame_index];
+    if (!frame_actived) {
+        return Er("Requires invoke beginFrame to activate the frame before endFrame");
+    }
 
-    OnCheck(frame_actived, "Please call beginFrame to activate the frame");
+    auto& frame = frames[frame_index];
     if (hasSwapchain()) {
         auto res_queue = api.presentQueue();
         OnErr(res_queue);
@@ -189,11 +195,6 @@ Res<CRef<core::Semaphore>> RenderContext::submit(const core::CommandBuffer& cmdb
     queue.submit({submit_info}, fence);
 
     return Ok(newCRef(signal_semaphore));
-}
-
-Ref<RenderFrame> RenderContext::getFrame() {
-    OnCheck(frame_index < frames.size(), "The activated frame index {} is out of frames count {}", frame_index, frames.size());
-    return newRef(frames[frame_index]);
 }
 
 NAMESPACE_END(vkt)

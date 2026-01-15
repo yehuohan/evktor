@@ -63,7 +63,7 @@ struct DescriptorArrayInfo {
      */
     DescriptorArrayInfo& nextBuf(VkBuffer buf, VkDeviceSize range = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
     /**
-     * @brief Set buffer descriptor to the last binding (as descriptor array)
+     * @brief Push buffer descriptor to the last binding (as descriptor array)
      */
     DescriptorArrayInfo& pushBuf(VkBuffer buf, VkDeviceSize range = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
     /**
@@ -78,7 +78,7 @@ struct DescriptorArrayInfo {
      */
     DescriptorArrayInfo& nextImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler = VK_NULL_HANDLE);
     /**
-     * @brief Set image descriptor to the last binding (as descriptor array)
+     * @brief Push image descriptor to the last binding (as descriptor array)
      */
     DescriptorArrayInfo& pushImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler = VK_NULL_HANDLE);
 };
