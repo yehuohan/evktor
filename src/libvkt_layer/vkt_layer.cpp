@@ -2,7 +2,7 @@
 
 NAMESPACE_BEGIN(vktlyr)
 
-const PFN_vkVoidFunction VktorLayerImpl::tryHook(VkInstance instance, const char* fname) const {
+PFN_vkVoidFunction VktorLayerImpl::tryHook([[maybe_unused]] VkInstance instance, const char* fname) const {
     auto res = hooks.find(fname);
     if (res != hooks.end()) {
         return res->second;
@@ -10,7 +10,7 @@ const PFN_vkVoidFunction VktorLayerImpl::tryHook(VkInstance instance, const char
     return VK_NULL_HANDLE;
 }
 
-const PFN_vkVoidFunction VktorLayerImpl::tryHook(VkDevice device, const char* fname) const {
+PFN_vkVoidFunction VktorLayerImpl::tryHook([[maybe_unused]] VkDevice device, const char* fname) const {
     auto res = hooks.find(fname);
     if (res != hooks.end()) {
         return res->second;

@@ -114,5 +114,5 @@ auto vec2str(const Vector<T>& vec) -> String {
     }
     str += " ]";
 
-    return std::move(str);
+    return str;
 }

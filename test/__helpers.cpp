@@ -16,7 +16,7 @@ Quad::Quad() {
     push_args.scaler = 9;
     spec_args.alpha = 2.0;
     img.resize(num);
-    for (int k = 0; k < num; k++) {
+    for (uint32_t k = 0; k < num; k++) {
         img[k] = k + 1;
     }
 }
@@ -101,7 +101,7 @@ Box<CoreApi> createCoreApi(const Vector<const char*> inst_exts, const Vector<con
         },
         nullptr,
         nullptr,
-        [&dev_exts](const PhysicalDevice& phydev, DeviceState& dso) {
+        [&dev_exts]([[maybe_unused]] const PhysicalDevice& phydev, DeviceState& dso) {
             dso.addExtensions(dev_exts);
         });
     auto api = std::move(vkt.api);
@@ -111,5 +111,5 @@ Box<CoreApi> createCoreApi(const Vector<const char*> inst_exts, const Vector<con
            fmt::ptr((VkPhysicalDevice)*api),
            fmt::ptr((VkDevice)*api));
 
-    return std::move(api);
+    return api;
 }

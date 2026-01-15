@@ -89,7 +89,7 @@ class OnStringGenerator(BaseGenerator):
             out.extend(subguarder.add_guard(None))
             out.append(f"    default: break;\n")
             out.append(f"    {RBracket}\n")
-            out.append(f"    return std::move(str);\n")
+            out.append(f"    return str;\n")
             out.append(f"{RBracket}\n")
         out.extend(guarder.add_guard(None))
 
@@ -97,7 +97,7 @@ class OnStringGenerator(BaseGenerator):
         out.append("\n// Flags\n")
         for f in self.vk.bitmasks.values():
             out.extend(guarder.add_guard(f.protect, True))
-            out.append(f"String On_Str_{f.flagName}({f.flagName} f) {LBracket}\n")
+            out.append(f"String On_Str_{f.flagName}([[maybe_unused]] {f.flagName} f) {LBracket}\n")
             out.append(f'    String str = "|";\n')
             subguarder = PlatformGuardHelper()
             for v in f.flags:
@@ -106,7 +106,7 @@ class OnStringGenerator(BaseGenerator):
                 out.append(f'        str += "{trim(f.flagName, v.name)}|";\n')
                 out.append(f"    {RBracket}\n")
             out.extend(subguarder.add_guard(None))
-            out.append(f"    return std::move(str);\n")
+            out.append(f"    return str;\n")
             out.append(f"{RBracket}\n")
         out.extend(guarder.add_guard(None))
 

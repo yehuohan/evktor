@@ -6,9 +6,9 @@ NAMESPACE_BEGIN(core)
 using Self = DebugState::Self;
 
 VKAPI_ATTR VkBool32 VKAPI_CALL debugUtilsMessengerCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-                                                           VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+                                                           [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageTypes,
                                                            const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-                                                           void* pUserData) {
+                                                           [[maybe_unused]] void* pUserData) {
     String msg("");
     if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
         msg = "V";

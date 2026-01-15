@@ -24,7 +24,7 @@ CommandBuffer::~CommandBuffer() {
 
 VkResult CommandBuffer::begin(VkCommandBufferUsageFlags flags) const {
     auto cmdbuf_bi = Itor::CommandBufferBeginInfo();
-    cmdbuf_bi.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    cmdbuf_bi.flags = flags;
     return vkBeginCommandBuffer(handle, &cmdbuf_bi);
 }
 

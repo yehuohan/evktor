@@ -75,7 +75,8 @@ Self RenderTarget::set(const AttachmentOps& _ops) {
     return *this;
 }
 
-Self RenderTarget::set(const AttachmentOps& ops, const AttachmentOps& _stencil_ops) {
+Self RenderTarget::set(const AttachmentOps& _ops, const AttachmentOps& _stencil_ops) {
+    ops = _ops;
     stencil_ops = _stencil_ops;
     return *this;
 }
@@ -157,7 +158,7 @@ Vector<VkImageView> RenderTargetTable::getImageViews() const {
     for (const auto& rt : targets) {
         views.push_back(rt.getImageView());
     }
-    return std::move(views);
+    return views;
 }
 
 Vector<VkClearValue> RenderTargetTable::getClearValues() const {
@@ -165,7 +166,7 @@ Vector<VkClearValue> RenderTargetTable::getClearValues() const {
     for (const auto& rt : targets) {
         clears.push_back(rt.clear);
     }
-    return std::move(clears);
+    return clears;
 }
 
 Vector<VkRenderingAttachmentInfo> RenderTargetTable::getAttachmentInfos() const {
@@ -184,7 +185,7 @@ Vector<VkRenderingAttachmentInfo> RenderTargetTable::getAttachmentInfos() const 
         infos.push_back(targets[k].getAttachmentInfo());
     }
 
-    return std::move(infos);
+    return infos;
 }
 
 NAMESPACE_END(vkt)

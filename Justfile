@@ -39,7 +39,7 @@ x-evktor: x-src
 
 x-sigma: x-src
     @echo [Run] evktor/test/tst_main core
-    VK_LAYER_PATH={{dir_xinstall}}/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_xinstall}}/bin/tst_main core
+    VK_LAYER_PATH={{dir_xinstall}}/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_xinstall}}/bin/tst_main core_graphics
 
 x-test case="": x-src
     @echo [Run] evktor/test
@@ -56,9 +56,9 @@ omega: src
 sigma: src
     @echo [Run] evktor/test/tst_main core
     # Replace layers with VK_LAYER_PATH
-    VK_LAYER_PATH={{dir_install}}/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_main core
+    VK_LAYER_PATH={{dir_install}}/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_main core_graphics
     # Append layers from VK_ADD_LAYER_PATH (why VK_ADD_LAYER_PATH not work?)
-    # VK_ADD_LAYER_PATH={{dir_install}}/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_main core
+    # VK_ADD_LAYER_PATH={{dir_install}}/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_main core_graphics
 
 test case="": src
     @echo [Run] evktor/test

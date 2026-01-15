@@ -197,8 +197,7 @@ Res<Image> Image::from(const CoreApi& api, const ImageState& info) {
             vktLogW("Image with optimal tiling may not work for host access");
         }
     } else if (info.image_ci.tiling == VK_IMAGE_TILING_LINEAR) {
-        if ((info.image_ci.usage & VK_IMAGE_USAGE_STORAGE_BIT) ||
-            (info.image_ci.usage && VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) {
+        if ((info.image_ci.usage & VK_IMAGE_USAGE_STORAGE_BIT) || (info.image_ci.usage & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)) {
             vktLogW("Image with linear tiling may not work for storage or color attachment usage");
         }
     }
@@ -256,7 +255,7 @@ Image Image::borrow(const CoreApi& api,
     image.samples = _samples;
     image.tiling = _tiling;
     image.usage = _usage;
-    return std::move(image);
+    return image;
 }
 
 bool isDepthOnlyFormat(VkFormat format) {

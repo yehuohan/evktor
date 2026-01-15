@@ -77,7 +77,7 @@ public:
     Res<CRef<IDebug>> add(DebugState& info);
     Res<CRef<Surface>> add(VkSurfaceKHR surface, bool with_ownership);
 
-    operator const VkSurfaceKHR() const {
+    operator VkSurfaceKHR() const {
         return surface ? surface->handle : VK_NULL_HANDLE;
     }
 

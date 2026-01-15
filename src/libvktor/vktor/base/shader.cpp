@@ -33,7 +33,7 @@ Shader Shader::from(const VkShaderStageFlagBits stage, String&& source, const St
     shader.src = std::move(source);
     shader.src_id = hash(shader.src);
     shader.src_path = fullpath;
-    return std::move(shader);
+    return shader;
 }
 
 Res<ShaderModule> Shader::into(const CoreApi& api) const {
@@ -80,7 +80,7 @@ String Shader::getPreamble() const {
     for (const auto& item : src_defs) {
         preamble += vktFmt("#define {} {}\n", item.first, item.second);
     }
-    return std::move(preamble);
+    return preamble;
 }
 
 Self Shader::setEntry(const String& _entry) {

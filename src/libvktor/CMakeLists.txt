@@ -24,5 +24,6 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE GPUOpen::VulkanMemoryAllocator
     PRIVATE fmt::fmt)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-# define VK_NO_PROTOTYPES to use volk
-target_compile_definitions(${PROJECT_NAME} PUBLIC VK_NO_PROTOTYPES)
+target_compile_definitions(${PROJECT_NAME} PUBLIC VK_NO_PROTOTYPES) # define VK_NO_PROTOTYPES to use volk
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)

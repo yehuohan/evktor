@@ -116,11 +116,11 @@ public:
     /**
      * @brief Hook required custom layer functions
      */
-    virtual const PFN_vkVoidFunction tryHook(VkInstance instance, const char* fname) const;
+    virtual PFN_vkVoidFunction tryHook(VkInstance instance, const char* fname) const;
     /**
      * @brief Hook required custom layer functions
      */
-    virtual const PFN_vkVoidFunction tryHook(VkDevice device, const char* fname) const;
+    virtual PFN_vkVoidFunction tryHook(VkDevice device, const char* fname) const;
     /**
      * @brief Hook vkCreateInstance to provide custom VkInstanceCreateInfo
      */

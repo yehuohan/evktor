@@ -6,10 +6,10 @@ using namespace core;
 
 RenderFrame::RenderFrame(const CoreApi& api, size_t thread_count)
     : api(api)
+    , thread_count(thread_count)
     , fence_pool(api)
     , semaphore_pool(api)
-    , event_pool(api)
-    , thread_count(thread_count) {
+    , event_pool(api) {
     cmd_pools.resize(thread_count);
     desc_poolers.resize(thread_count);
     desc_sets.resize(thread_count);
@@ -17,10 +17,10 @@ RenderFrame::RenderFrame(const CoreApi& api, size_t thread_count)
 
 RenderFrame::RenderFrame(RenderFrame&& rhs)
     : api(rhs.api)
+    , thread_count(rhs.thread_count)
     , fence_pool(std::move(rhs.fence_pool))
     , semaphore_pool(std::move(rhs.semaphore_pool))
-    , event_pool(std::move(rhs.event_pool))
-    , thread_count(rhs.thread_count) {
+    , event_pool(std::move(rhs.event_pool)) {
     swapchain_rtt = std::move(rhs.swapchain_rtt);
     cmd_pools = std::move(rhs.cmd_pools);
     desc_poolers = std::move(rhs.desc_poolers);
@@ -39,7 +39,6 @@ Res<CRef<RenderTargetTable>> RenderFrame::getSwapchainRTT() const {
 }
 
 Res<Void> RenderFrame::resetFrame() {
-    bool okay = true;
     for (auto& cmdpools : cmd_pools) {
         for (auto& iter : cmdpools) {
             iter.second.resetPool();

@@ -110,7 +110,7 @@ struct hash<VkPipelineMultisampleStateCreateInfo> {
         hashCombine(res, multisample.sampleShadingEnable);
         hashCombine(res, multisample.minSampleShading);
         if (multisample.pSampleMask) {
-            for (size_t k = 0; k < multisample.rasterizationSamples / 32; k++) {
+            for (size_t k = 0; k < static_cast<size_t>(multisample.rasterizationSamples) / 32; k++) {
                 hashCombine(res, multisample.pSampleMask[k]);
             }
         }

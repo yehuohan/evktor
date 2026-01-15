@@ -126,7 +126,7 @@ Self GraphicsPipelineState::setRasterizationDepthBias(VkBool32 enable, float con
     rasterization.depthBiasEnable = enable;
     rasterization.depthBiasConstantFactor = constant;
     rasterization.depthBiasClamp = clamp;
-    rasterization.depthBiasSlopeFactor = clamp;
+    rasterization.depthBiasSlopeFactor = slope;
     return *this;
 }
 

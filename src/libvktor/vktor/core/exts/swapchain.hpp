@@ -71,11 +71,11 @@ public:
 template <>
 class Arg<Swapchain> : private NonCopyable {
 public:
-    /** The swapchain image index going to access */
-    uint32_t image_index = 0;
+    const Swapchain& a;
 
 public:
-    const Swapchain& a;
+    /** The swapchain image index going to access */
+    uint32_t image_index = 0;
 
 public:
     explicit Arg(const Swapchain& a) : a(a) {}

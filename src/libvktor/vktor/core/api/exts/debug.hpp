@@ -15,12 +15,15 @@ public:
     explicit IDebug() {}
     virtual ~IDebug() {}
 
-    virtual VkResult setDebugName(VkDevice device, VkObjectType type, uint64_t hdl, const char* name) const {
+    virtual VkResult setDebugName([[maybe_unused]] VkDevice device,
+                                  [[maybe_unused]] VkObjectType type,
+                                  [[maybe_unused]] uint64_t hdl,
+                                  [[maybe_unused]] const char* name) const {
         return VK_SUCCESS;
     }
-    virtual void cmdBeginLabel(VkCommandBuffer cmdbuf, const char* name) const {}
-    virtual void cmdEndLabel(VkCommandBuffer cmdbuf) const {}
-    virtual void cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const {}
+    virtual void cmdBeginLabel([[maybe_unused]] VkCommandBuffer cmdbuf, [[maybe_unused]] const char* name) const {}
+    virtual void cmdEndLabel([[maybe_unused]] VkCommandBuffer cmdbuf) const {}
+    virtual void cmdInsertLabel([[maybe_unused]] VkCommandBuffer cmdbuf, [[maybe_unused]] const char* name) const {}
 };
 
 /**

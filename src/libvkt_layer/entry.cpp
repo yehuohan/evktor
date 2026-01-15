@@ -177,7 +177,7 @@ VKAPI_ATTR VkResult VKAPI_CALL EnumerateInstanceExtensionProperties(const char* 
     return VK_ERROR_LAYER_NOT_PRESENT;
 }
 
-VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceLayerProperties(VkPhysicalDevice physicalDevice,
+VKAPI_ATTR VkResult VKAPI_CALL EnumerateDeviceLayerProperties([[maybe_unused]] VkPhysicalDevice physicalDevice,
                                                               uint32_t* pPropertyCount,
                                                               VkLayerProperties* pProperties) {
     return __impl.copyLayerProperties(1, &__impl.getLayerProps(), pPropertyCount, pProperties);

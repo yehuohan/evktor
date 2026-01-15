@@ -29,7 +29,7 @@ NAMESPACE_BEGIN(core)
  * This is mainly for the const Vulkan handle
  */
 #define OnConstType(Type, Var)     \
-    operator const Type() const {  \
+    operator Type() const {        \
         return Var;                \
     }                              \
     operator const Type*() const { \

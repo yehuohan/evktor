@@ -146,7 +146,7 @@ Buffer Buffer::borrow(const CoreApi& api, const VkBuffer _buffer, VkDeviceSize _
     buffer.__borrowed = true;
     buffer.handle = _buffer;
     buffer.size = _size;
-    return std::move(buffer);
+    return buffer;
 }
 
 NAMESPACE_END(core)

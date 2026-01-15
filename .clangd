@@ -1,5 +1,9 @@
 # .clangd
 
+CompileFlags:
+  Remove:
+    - "-Werror"
+
 Completion:
   HeaderInsertion: Never
 

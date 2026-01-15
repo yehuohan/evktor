@@ -60,7 +60,7 @@ String On_Str_VkResult(VkResult e) {
     case VK_ERROR_NOT_ENOUGH_SPACE_KHR: str = "VK_ERROR_NOT_ENOUGH_SPACE_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkStructureType(VkStructureType e) {
@@ -2110,7 +2110,7 @@ String On_Str_VkStructureType(VkStructureType e) {
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPipelineCacheHeaderVersion(VkPipelineCacheHeaderVersion e) {
@@ -2119,7 +2119,7 @@ String On_Str_VkPipelineCacheHeaderVersion(VkPipelineCacheHeaderVersion e) {
     case VK_PIPELINE_CACHE_HEADER_VERSION_ONE: str = "ONE"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkImageLayout(VkImageLayout e) {
@@ -2161,7 +2161,7 @@ String On_Str_VkImageLayout(VkImageLayout e) {
     case VK_IMAGE_LAYOUT_ZERO_INITIALIZED_EXT: str = "ZERO_INITIALIZED_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkObjectType(VkObjectType e) {
@@ -2229,7 +2229,7 @@ String On_Str_VkObjectType(VkObjectType e) {
     case VK_OBJECT_TYPE_INDIRECT_EXECUTION_SET_EXT: str = "INDIRECT_EXECUTION_SET_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkVendorId(VkVendorId e) {
@@ -2245,7 +2245,7 @@ String On_Str_VkVendorId(VkVendorId e) {
     case VK_VENDOR_ID_MOBILEYE: str = "MOBILEYE"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkSystemAllocationScope(VkSystemAllocationScope e) {
@@ -2258,7 +2258,7 @@ String On_Str_VkSystemAllocationScope(VkSystemAllocationScope e) {
     case VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE: str = "INSTANCE"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkInternalAllocationType(VkInternalAllocationType e) {
@@ -2267,7 +2267,7 @@ String On_Str_VkInternalAllocationType(VkInternalAllocationType e) {
     case VK_INTERNAL_ALLOCATION_TYPE_EXECUTABLE: str = "EXECUTABLE"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkFormat(VkFormat e) {
@@ -2540,7 +2540,7 @@ String On_Str_VkFormat(VkFormat e) {
     case VK_FORMAT_G14X2_B14X2R14X2_2PLANE_422_UNORM_3PACK16_ARM: str = "G14X2_B14X2R14X2_2PLANE_422_UNORM_3PACK16_ARM"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkImageTiling(VkImageTiling e) {
@@ -2551,7 +2551,7 @@ String On_Str_VkImageTiling(VkImageTiling e) {
     case VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT: str = "DRM_FORMAT_MODIFIER_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkImageType(VkImageType e) {
@@ -2562,7 +2562,7 @@ String On_Str_VkImageType(VkImageType e) {
     case VK_IMAGE_TYPE_3D: str = "3D"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPhysicalDeviceType(VkPhysicalDeviceType e) {
@@ -2575,7 +2575,7 @@ String On_Str_VkPhysicalDeviceType(VkPhysicalDeviceType e) {
     case VK_PHYSICAL_DEVICE_TYPE_CPU: str = "CPU"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkQueryType(VkQueryType e) {
@@ -2604,7 +2604,7 @@ String On_Str_VkQueryType(VkQueryType e) {
     case VK_QUERY_TYPE_MICROMAP_COMPACTED_SIZE_EXT: str = "MICROMAP_COMPACTED_SIZE_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkSharingMode(VkSharingMode e) {
@@ -2614,7 +2614,7 @@ String On_Str_VkSharingMode(VkSharingMode e) {
     case VK_SHARING_MODE_CONCURRENT: str = "CONCURRENT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkComponentSwizzle(VkComponentSwizzle e) {
@@ -2629,7 +2629,7 @@ String On_Str_VkComponentSwizzle(VkComponentSwizzle e) {
     case VK_COMPONENT_SWIZZLE_A: str = "A"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkImageViewType(VkImageViewType e) {
@@ -2644,7 +2644,7 @@ String On_Str_VkImageViewType(VkImageViewType e) {
     case VK_IMAGE_VIEW_TYPE_CUBE_ARRAY: str = "CUBE_ARRAY"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkBlendFactor(VkBlendFactor e) {
@@ -2671,7 +2671,7 @@ String On_Str_VkBlendFactor(VkBlendFactor e) {
     case VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA: str = "ONE_MINUS_SRC1_ALPHA"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkBlendOp(VkBlendOp e) {
@@ -2730,7 +2730,7 @@ String On_Str_VkBlendOp(VkBlendOp e) {
     case VK_BLEND_OP_BLUE_EXT: str = "BLUE_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkCompareOp(VkCompareOp e) {
@@ -2746,7 +2746,7 @@ String On_Str_VkCompareOp(VkCompareOp e) {
     case VK_COMPARE_OP_ALWAYS: str = "ALWAYS"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDynamicState(VkDynamicState e) {
@@ -2827,7 +2827,7 @@ String On_Str_VkDynamicState(VkDynamicState e) {
     case VK_DYNAMIC_STATE_DEPTH_CLAMP_RANGE_EXT: str = "DEPTH_CLAMP_RANGE_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkFrontFace(VkFrontFace e) {
@@ -2837,7 +2837,7 @@ String On_Str_VkFrontFace(VkFrontFace e) {
     case VK_FRONT_FACE_CLOCKWISE: str = "CLOCKWISE"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkVertexInputRate(VkVertexInputRate e) {
@@ -2847,7 +2847,7 @@ String On_Str_VkVertexInputRate(VkVertexInputRate e) {
     case VK_VERTEX_INPUT_RATE_INSTANCE: str = "INSTANCE"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPrimitiveTopology(VkPrimitiveTopology e) {
@@ -2866,7 +2866,7 @@ String On_Str_VkPrimitiveTopology(VkPrimitiveTopology e) {
     case VK_PRIMITIVE_TOPOLOGY_PATCH_LIST: str = "PATCH_LIST"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPolygonMode(VkPolygonMode e) {
@@ -2878,7 +2878,7 @@ String On_Str_VkPolygonMode(VkPolygonMode e) {
     case VK_POLYGON_MODE_FILL_RECTANGLE_NV: str = "FILL_RECTANGLE_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkStencilOp(VkStencilOp e) {
@@ -2894,7 +2894,7 @@ String On_Str_VkStencilOp(VkStencilOp e) {
     case VK_STENCIL_OP_DECREMENT_AND_WRAP: str = "DECREMENT_AND_WRAP"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkLogicOp(VkLogicOp e) {
@@ -2918,7 +2918,7 @@ String On_Str_VkLogicOp(VkLogicOp e) {
     case VK_LOGIC_OP_SET: str = "SET"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkBorderColor(VkBorderColor e) {
@@ -2934,7 +2934,7 @@ String On_Str_VkBorderColor(VkBorderColor e) {
     case VK_BORDER_COLOR_INT_CUSTOM_EXT: str = "INT_CUSTOM_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkFilter(VkFilter e) {
@@ -2945,7 +2945,7 @@ String On_Str_VkFilter(VkFilter e) {
     case VK_FILTER_CUBIC_EXT: str = "CUBIC_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkSamplerAddressMode(VkSamplerAddressMode e) {
@@ -2958,7 +2958,7 @@ String On_Str_VkSamplerAddressMode(VkSamplerAddressMode e) {
     case VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE: str = "MIRROR_CLAMP_TO_EDGE"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkSamplerMipmapMode(VkSamplerMipmapMode e) {
@@ -2968,7 +2968,7 @@ String On_Str_VkSamplerMipmapMode(VkSamplerMipmapMode e) {
     case VK_SAMPLER_MIPMAP_MODE_LINEAR: str = "LINEAR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDescriptorType(VkDescriptorType e) {
@@ -2995,7 +2995,7 @@ String On_Str_VkDescriptorType(VkDescriptorType e) {
     case VK_DESCRIPTOR_TYPE_PARTITIONED_ACCELERATION_STRUCTURE_NV: str = "PARTITIONED_ACCELERATION_STRUCTURE_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkAttachmentLoadOp(VkAttachmentLoadOp e) {
@@ -3007,7 +3007,7 @@ String On_Str_VkAttachmentLoadOp(VkAttachmentLoadOp e) {
     case VK_ATTACHMENT_LOAD_OP_NONE: str = "NONE"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkAttachmentStoreOp(VkAttachmentStoreOp e) {
@@ -3018,7 +3018,7 @@ String On_Str_VkAttachmentStoreOp(VkAttachmentStoreOp e) {
     case VK_ATTACHMENT_STORE_OP_NONE: str = "NONE"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPipelineBindPoint(VkPipelineBindPoint e) {
@@ -3034,7 +3034,7 @@ String On_Str_VkPipelineBindPoint(VkPipelineBindPoint e) {
     case VK_PIPELINE_BIND_POINT_DATA_GRAPH_ARM: str = "DATA_GRAPH_ARM"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkCommandBufferLevel(VkCommandBufferLevel e) {
@@ -3044,7 +3044,7 @@ String On_Str_VkCommandBufferLevel(VkCommandBufferLevel e) {
     case VK_COMMAND_BUFFER_LEVEL_SECONDARY: str = "SECONDARY"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkIndexType(VkIndexType e) {
@@ -3056,7 +3056,7 @@ String On_Str_VkIndexType(VkIndexType e) {
     case VK_INDEX_TYPE_NONE_KHR: str = "NONE_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkSubpassContents(VkSubpassContents e) {
@@ -3067,7 +3067,7 @@ String On_Str_VkSubpassContents(VkSubpassContents e) {
     case VK_SUBPASS_CONTENTS_INLINE_AND_SECONDARY_COMMAND_BUFFERS_KHR: str = "INLINE_AND_SECONDARY_COMMAND_BUFFERS_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPointClippingBehavior(VkPointClippingBehavior e) {
@@ -3077,7 +3077,7 @@ String On_Str_VkPointClippingBehavior(VkPointClippingBehavior e) {
     case VK_POINT_CLIPPING_BEHAVIOR_USER_CLIP_PLANES_ONLY: str = "USER_CLIP_PLANES_ONLY"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkTessellationDomainOrigin(VkTessellationDomainOrigin e) {
@@ -3087,7 +3087,7 @@ String On_Str_VkTessellationDomainOrigin(VkTessellationDomainOrigin e) {
     case VK_TESSELLATION_DOMAIN_ORIGIN_LOWER_LEFT: str = "LOWER_LEFT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkSamplerYcbcrModelConversion(VkSamplerYcbcrModelConversion e) {
@@ -3100,7 +3100,7 @@ String On_Str_VkSamplerYcbcrModelConversion(VkSamplerYcbcrModelConversion e) {
     case VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_2020: str = "YCBCR_2020"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkSamplerYcbcrRange(VkSamplerYcbcrRange e) {
@@ -3110,7 +3110,7 @@ String On_Str_VkSamplerYcbcrRange(VkSamplerYcbcrRange e) {
     case VK_SAMPLER_YCBCR_RANGE_ITU_NARROW: str = "ITU_NARROW"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkChromaLocation(VkChromaLocation e) {
@@ -3120,7 +3120,7 @@ String On_Str_VkChromaLocation(VkChromaLocation e) {
     case VK_CHROMA_LOCATION_MIDPOINT: str = "MIDPOINT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDescriptorUpdateTemplateType(VkDescriptorUpdateTemplateType e) {
@@ -3130,7 +3130,7 @@ String On_Str_VkDescriptorUpdateTemplateType(VkDescriptorUpdateTemplateType e) {
     case VK_DESCRIPTOR_UPDATE_TEMPLATE_TYPE_PUSH_DESCRIPTORS: str = "PUSH_DESCRIPTORS"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDriverId(VkDriverId e) {
@@ -3165,7 +3165,7 @@ String On_Str_VkDriverId(VkDriverId e) {
     case VK_DRIVER_ID_VULKAN_SC_EMULATION_ON_VULKAN: str = "VULKAN_SC_EMULATION_ON_VULKAN"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkShaderFloatControlsIndependence(VkShaderFloatControlsIndependence e) {
@@ -3176,7 +3176,7 @@ String On_Str_VkShaderFloatControlsIndependence(VkShaderFloatControlsIndependenc
     case VK_SHADER_FLOAT_CONTROLS_INDEPENDENCE_NONE: str = "NONE"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkSamplerReductionMode(VkSamplerReductionMode e) {
@@ -3188,7 +3188,7 @@ String On_Str_VkSamplerReductionMode(VkSamplerReductionMode e) {
     case VK_SAMPLER_REDUCTION_MODE_WEIGHTED_AVERAGE_RANGECLAMP_QCOM: str = "WEIGHTED_AVERAGE_RANGECLAMP_QCOM"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkSemaphoreType(VkSemaphoreType e) {
@@ -3198,7 +3198,7 @@ String On_Str_VkSemaphoreType(VkSemaphoreType e) {
     case VK_SEMAPHORE_TYPE_TIMELINE: str = "TIMELINE"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPipelineRobustnessBufferBehavior(VkPipelineRobustnessBufferBehavior e) {
@@ -3210,7 +3210,7 @@ String On_Str_VkPipelineRobustnessBufferBehavior(VkPipelineRobustnessBufferBehav
     case VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_ROBUST_BUFFER_ACCESS_2: str = "ROBUST_BUFFER_ACCESS_2"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPipelineRobustnessImageBehavior(VkPipelineRobustnessImageBehavior e) {
@@ -3222,7 +3222,7 @@ String On_Str_VkPipelineRobustnessImageBehavior(VkPipelineRobustnessImageBehavio
     case VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_ROBUST_IMAGE_ACCESS_2: str = "ROBUST_IMAGE_ACCESS_2"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkQueueGlobalPriority(VkQueueGlobalPriority e) {
@@ -3234,7 +3234,7 @@ String On_Str_VkQueueGlobalPriority(VkQueueGlobalPriority e) {
     case VK_QUEUE_GLOBAL_PRIORITY_REALTIME: str = "REALTIME"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkLineRasterizationMode(VkLineRasterizationMode e) {
@@ -3246,7 +3246,7 @@ String On_Str_VkLineRasterizationMode(VkLineRasterizationMode e) {
     case VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH: str = "RECTANGULAR_SMOOTH"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPresentModeKHR(VkPresentModeKHR e) {
@@ -3261,7 +3261,7 @@ String On_Str_VkPresentModeKHR(VkPresentModeKHR e) {
     case VK_PRESENT_MODE_FIFO_LATEST_READY_KHR: str = "VK_PRESENT_MODE_FIFO_LATEST_READY_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkColorSpaceKHR(VkColorSpaceKHR e) {
@@ -3285,7 +3285,7 @@ String On_Str_VkColorSpaceKHR(VkColorSpaceKHR e) {
     case VK_COLOR_SPACE_DISPLAY_NATIVE_AMD: str = "VK_COLOR_SPACE_DISPLAY_NATIVE_AMD"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkQueryResultStatusKHR(VkQueryResultStatusKHR e) {
@@ -3299,7 +3299,7 @@ String On_Str_VkQueryResultStatusKHR(VkQueryResultStatusKHR e) {
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPerformanceCounterUnitKHR(VkPerformanceCounterUnitKHR e) {
@@ -3318,7 +3318,7 @@ String On_Str_VkPerformanceCounterUnitKHR(VkPerformanceCounterUnitKHR e) {
     case VK_PERFORMANCE_COUNTER_UNIT_CYCLES_KHR: str = "VK_PERFORMANCE_COUNTER_UNIT_CYCLES_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPerformanceCounterScopeKHR(VkPerformanceCounterScopeKHR e) {
@@ -3329,7 +3329,7 @@ String On_Str_VkPerformanceCounterScopeKHR(VkPerformanceCounterScopeKHR e) {
     case VK_PERFORMANCE_COUNTER_SCOPE_COMMAND_KHR: str = "VK_PERFORMANCE_COUNTER_SCOPE_COMMAND_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPerformanceCounterStorageKHR(VkPerformanceCounterStorageKHR e) {
@@ -3343,7 +3343,7 @@ String On_Str_VkPerformanceCounterStorageKHR(VkPerformanceCounterStorageKHR e) {
     case VK_PERFORMANCE_COUNTER_STORAGE_FLOAT64_KHR: str = "VK_PERFORMANCE_COUNTER_STORAGE_FLOAT64_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkFragmentShadingRateCombinerOpKHR(VkFragmentShadingRateCombinerOpKHR e) {
@@ -3356,7 +3356,7 @@ String On_Str_VkFragmentShadingRateCombinerOpKHR(VkFragmentShadingRateCombinerOp
     case VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MUL_KHR: str = "VK_FRAGMENT_SHADING_RATE_COMBINER_OP_MUL_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPipelineExecutableStatisticFormatKHR(VkPipelineExecutableStatisticFormatKHR e) {
@@ -3370,7 +3370,7 @@ String On_Str_VkPipelineExecutableStatisticFormatKHR(VkPipelineExecutableStatist
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkVideoEncodeTuningModeKHR(VkVideoEncodeTuningModeKHR e) {
@@ -3383,7 +3383,7 @@ String On_Str_VkVideoEncodeTuningModeKHR(VkVideoEncodeTuningModeKHR e) {
     case VK_VIDEO_ENCODE_TUNING_MODE_LOSSLESS_KHR: str = "VK_VIDEO_ENCODE_TUNING_MODE_LOSSLESS_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkComponentTypeKHR(VkComponentTypeKHR e) {
@@ -3407,7 +3407,7 @@ String On_Str_VkComponentTypeKHR(VkComponentTypeKHR e) {
     case VK_COMPONENT_TYPE_FLOAT8_E5M2_EXT: str = "VK_COMPONENT_TYPE_FLOAT8_E5M2_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkScopeKHR(VkScopeKHR e) {
@@ -3419,7 +3419,7 @@ String On_Str_VkScopeKHR(VkScopeKHR e) {
     case VK_SCOPE_QUEUE_FAMILY_KHR: str = "VK_SCOPE_QUEUE_FAMILY_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkVideoEncodeAV1PredictionModeKHR(VkVideoEncodeAV1PredictionModeKHR e) {
@@ -3437,7 +3437,7 @@ String On_Str_VkVideoEncodeAV1PredictionModeKHR(VkVideoEncodeAV1PredictionModeKH
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkVideoEncodeAV1RateControlGroupKHR(VkVideoEncodeAV1RateControlGroupKHR e) {
@@ -3452,7 +3452,7 @@ String On_Str_VkVideoEncodeAV1RateControlGroupKHR(VkVideoEncodeAV1RateControlGro
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkTimeDomainKHR(VkTimeDomainKHR e) {
@@ -3464,7 +3464,7 @@ String On_Str_VkTimeDomainKHR(VkTimeDomainKHR e) {
     case VK_TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_KHR: str = "VK_TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPhysicalDeviceLayeredApiKHR(VkPhysicalDeviceLayeredApiKHR e) {
@@ -3477,7 +3477,7 @@ String On_Str_VkPhysicalDeviceLayeredApiKHR(VkPhysicalDeviceLayeredApiKHR e) {
     case VK_PHYSICAL_DEVICE_LAYERED_API_OPENGLES_KHR: str = "VK_PHYSICAL_DEVICE_LAYERED_API_OPENGLES_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDefaultVertexAttributeValueKHR(VkDefaultVertexAttributeValueKHR e) {
@@ -3491,7 +3491,7 @@ String On_Str_VkDefaultVertexAttributeValueKHR(VkDefaultVertexAttributeValueKHR 
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDebugReportObjectTypeEXT(VkDebugReportObjectTypeEXT e) {
@@ -3556,7 +3556,7 @@ String On_Str_VkDebugReportObjectTypeEXT(VkDebugReportObjectTypeEXT e) {
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkRasterizationOrderAMD(VkRasterizationOrderAMD e) {
@@ -3566,7 +3566,7 @@ String On_Str_VkRasterizationOrderAMD(VkRasterizationOrderAMD e) {
     case VK_RASTERIZATION_ORDER_RELAXED_AMD: str = "VK_RASTERIZATION_ORDER_RELAXED_AMD"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkShaderInfoTypeAMD(VkShaderInfoTypeAMD e) {
@@ -3577,7 +3577,7 @@ String On_Str_VkShaderInfoTypeAMD(VkShaderInfoTypeAMD e) {
     case VK_SHADER_INFO_TYPE_DISASSEMBLY_AMD: str = "VK_SHADER_INFO_TYPE_DISASSEMBLY_AMD"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkValidationCheckEXT(VkValidationCheckEXT e) {
@@ -3587,7 +3587,7 @@ String On_Str_VkValidationCheckEXT(VkValidationCheckEXT e) {
     case VK_VALIDATION_CHECK_SHADERS_EXT: str = "VK_VALIDATION_CHECK_SHADERS_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDisplayPowerStateEXT(VkDisplayPowerStateEXT e) {
@@ -3598,7 +3598,7 @@ String On_Str_VkDisplayPowerStateEXT(VkDisplayPowerStateEXT e) {
     case VK_DISPLAY_POWER_STATE_ON_EXT: str = "VK_DISPLAY_POWER_STATE_ON_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDeviceEventTypeEXT(VkDeviceEventTypeEXT e) {
@@ -3607,7 +3607,7 @@ String On_Str_VkDeviceEventTypeEXT(VkDeviceEventTypeEXT e) {
     case VK_DEVICE_EVENT_TYPE_DISPLAY_HOTPLUG_EXT: str = "VK_DEVICE_EVENT_TYPE_DISPLAY_HOTPLUG_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDisplayEventTypeEXT(VkDisplayEventTypeEXT e) {
@@ -3616,7 +3616,7 @@ String On_Str_VkDisplayEventTypeEXT(VkDisplayEventTypeEXT e) {
     case VK_DISPLAY_EVENT_TYPE_FIRST_PIXEL_OUT_EXT: str = "VK_DISPLAY_EVENT_TYPE_FIRST_PIXEL_OUT_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkViewportCoordinateSwizzleNV(VkViewportCoordinateSwizzleNV e) {
@@ -3632,7 +3632,7 @@ String On_Str_VkViewportCoordinateSwizzleNV(VkViewportCoordinateSwizzleNV e) {
     case VK_VIEWPORT_COORDINATE_SWIZZLE_NEGATIVE_W_NV: str = "VK_VIEWPORT_COORDINATE_SWIZZLE_NEGATIVE_W_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDiscardRectangleModeEXT(VkDiscardRectangleModeEXT e) {
@@ -3642,7 +3642,7 @@ String On_Str_VkDiscardRectangleModeEXT(VkDiscardRectangleModeEXT e) {
     case VK_DISCARD_RECTANGLE_MODE_EXCLUSIVE_EXT: str = "VK_DISCARD_RECTANGLE_MODE_EXCLUSIVE_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkConservativeRasterizationModeEXT(VkConservativeRasterizationModeEXT e) {
@@ -3657,7 +3657,7 @@ String On_Str_VkConservativeRasterizationModeEXT(VkConservativeRasterizationMode
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkBlendOverlapEXT(VkBlendOverlapEXT e) {
@@ -3668,7 +3668,7 @@ String On_Str_VkBlendOverlapEXT(VkBlendOverlapEXT e) {
     case VK_BLEND_OVERLAP_CONJOINT_EXT: str = "VK_BLEND_OVERLAP_CONJOINT_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkCoverageModulationModeNV(VkCoverageModulationModeNV e) {
@@ -3680,7 +3680,7 @@ String On_Str_VkCoverageModulationModeNV(VkCoverageModulationModeNV e) {
     case VK_COVERAGE_MODULATION_MODE_RGBA_NV: str = "VK_COVERAGE_MODULATION_MODE_RGBA_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkValidationCacheHeaderVersionEXT(VkValidationCacheHeaderVersionEXT e) {
@@ -3689,7 +3689,7 @@ String On_Str_VkValidationCacheHeaderVersionEXT(VkValidationCacheHeaderVersionEX
     case VK_VALIDATION_CACHE_HEADER_VERSION_ONE_EXT: str = "VK_VALIDATION_CACHE_HEADER_VERSION_ONE_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkShadingRatePaletteEntryNV(VkShadingRatePaletteEntryNV e) {
@@ -3731,7 +3731,7 @@ String On_Str_VkShadingRatePaletteEntryNV(VkShadingRatePaletteEntryNV e) {
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkCoarseSampleOrderTypeNV(VkCoarseSampleOrderTypeNV e) {
@@ -3743,7 +3743,7 @@ String On_Str_VkCoarseSampleOrderTypeNV(VkCoarseSampleOrderTypeNV e) {
     case VK_COARSE_SAMPLE_ORDER_TYPE_SAMPLE_MAJOR_NV: str = "VK_COARSE_SAMPLE_ORDER_TYPE_SAMPLE_MAJOR_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkRayTracingShaderGroupTypeKHR(VkRayTracingShaderGroupTypeKHR e) {
@@ -3758,7 +3758,7 @@ String On_Str_VkRayTracingShaderGroupTypeKHR(VkRayTracingShaderGroupTypeKHR e) {
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkGeometryTypeKHR(VkGeometryTypeKHR e) {
@@ -3771,7 +3771,7 @@ String On_Str_VkGeometryTypeKHR(VkGeometryTypeKHR e) {
     case VK_GEOMETRY_TYPE_LINEAR_SWEPT_SPHERES_NV: str = "VK_GEOMETRY_TYPE_LINEAR_SWEPT_SPHERES_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkAccelerationStructureTypeKHR(VkAccelerationStructureTypeKHR e) {
@@ -3782,7 +3782,7 @@ String On_Str_VkAccelerationStructureTypeKHR(VkAccelerationStructureTypeKHR e) {
     case VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR: str = "VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkCopyAccelerationStructureModeKHR(VkCopyAccelerationStructureModeKHR e) {
@@ -3796,7 +3796,7 @@ String On_Str_VkCopyAccelerationStructureModeKHR(VkCopyAccelerationStructureMode
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkAccelerationStructureMemoryRequirementsTypeNV(VkAccelerationStructureMemoryRequirementsTypeNV e) {
@@ -3813,7 +3813,7 @@ String On_Str_VkAccelerationStructureMemoryRequirementsTypeNV(VkAccelerationStru
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkMemoryOverallocationBehaviorAMD(VkMemoryOverallocationBehaviorAMD e) {
@@ -3824,7 +3824,7 @@ String On_Str_VkMemoryOverallocationBehaviorAMD(VkMemoryOverallocationBehaviorAM
     case VK_MEMORY_OVERALLOCATION_BEHAVIOR_DISALLOWED_AMD: str = "VK_MEMORY_OVERALLOCATION_BEHAVIOR_DISALLOWED_AMD"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPerformanceConfigurationTypeINTEL(VkPerformanceConfigurationTypeINTEL e) {
@@ -3835,7 +3835,7 @@ String On_Str_VkPerformanceConfigurationTypeINTEL(VkPerformanceConfigurationType
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkQueryPoolSamplingModeINTEL(VkQueryPoolSamplingModeINTEL e) {
@@ -3844,7 +3844,7 @@ String On_Str_VkQueryPoolSamplingModeINTEL(VkQueryPoolSamplingModeINTEL e) {
     case VK_QUERY_POOL_SAMPLING_MODE_MANUAL_INTEL: str = "VK_QUERY_POOL_SAMPLING_MODE_MANUAL_INTEL"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPerformanceOverrideTypeINTEL(VkPerformanceOverrideTypeINTEL e) {
@@ -3856,7 +3856,7 @@ String On_Str_VkPerformanceOverrideTypeINTEL(VkPerformanceOverrideTypeINTEL e) {
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPerformanceParameterTypeINTEL(VkPerformanceParameterTypeINTEL e) {
@@ -3870,7 +3870,7 @@ String On_Str_VkPerformanceParameterTypeINTEL(VkPerformanceParameterTypeINTEL e)
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPerformanceValueTypeINTEL(VkPerformanceValueTypeINTEL e) {
@@ -3883,7 +3883,7 @@ String On_Str_VkPerformanceValueTypeINTEL(VkPerformanceValueTypeINTEL e) {
     case VK_PERFORMANCE_VALUE_TYPE_STRING_INTEL: str = "VK_PERFORMANCE_VALUE_TYPE_STRING_INTEL"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkValidationFeatureEnableEXT(VkValidationFeatureEnableEXT e) {
@@ -3900,7 +3900,7 @@ String On_Str_VkValidationFeatureEnableEXT(VkValidationFeatureEnableEXT e) {
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkValidationFeatureDisableEXT(VkValidationFeatureDisableEXT e) {
@@ -3918,7 +3918,7 @@ String On_Str_VkValidationFeatureDisableEXT(VkValidationFeatureDisableEXT e) {
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkCoverageReductionModeNV(VkCoverageReductionModeNV e) {
@@ -3928,7 +3928,7 @@ String On_Str_VkCoverageReductionModeNV(VkCoverageReductionModeNV e) {
     case VK_COVERAGE_REDUCTION_MODE_TRUNCATE_NV: str = "VK_COVERAGE_REDUCTION_MODE_TRUNCATE_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkProvokingVertexModeEXT(VkProvokingVertexModeEXT e) {
@@ -3938,7 +3938,7 @@ String On_Str_VkProvokingVertexModeEXT(VkProvokingVertexModeEXT e) {
     case VK_PROVOKING_VERTEX_MODE_LAST_VERTEX_EXT: str = "VK_PROVOKING_VERTEX_MODE_LAST_VERTEX_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 #ifdef VK_USE_PLATFORM_WIN32_KHR
@@ -3953,7 +3953,7 @@ String On_Str_VkFullScreenExclusiveEXT(VkFullScreenExclusiveEXT e) {
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 #endif // VK_USE_PLATFORM_WIN32_KHR
 
@@ -3973,7 +3973,7 @@ String On_Str_VkIndirectCommandsTokenTypeNV(VkIndirectCommandsTokenTypeNV e) {
     case VK_INDIRECT_COMMANDS_TOKEN_TYPE_DISPATCH_NV: str = "VK_INDIRECT_COMMANDS_TOKEN_TYPE_DISPATCH_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDepthBiasRepresentationEXT(VkDepthBiasRepresentationEXT e) {
@@ -3988,7 +3988,7 @@ String On_Str_VkDepthBiasRepresentationEXT(VkDepthBiasRepresentationEXT e) {
     case VK_DEPTH_BIAS_REPRESENTATION_FLOAT_EXT: str = "VK_DEPTH_BIAS_REPRESENTATION_FLOAT_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDeviceMemoryReportEventTypeEXT(VkDeviceMemoryReportEventTypeEXT e) {
@@ -4003,7 +4003,7 @@ String On_Str_VkDeviceMemoryReportEventTypeEXT(VkDeviceMemoryReportEventTypeEXT 
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkFragmentShadingRateTypeNV(VkFragmentShadingRateTypeNV e) {
@@ -4013,7 +4013,7 @@ String On_Str_VkFragmentShadingRateTypeNV(VkFragmentShadingRateTypeNV e) {
     case VK_FRAGMENT_SHADING_RATE_TYPE_ENUMS_NV: str = "VK_FRAGMENT_SHADING_RATE_TYPE_ENUMS_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkFragmentShadingRateNV(VkFragmentShadingRateNV e) {
@@ -4053,7 +4053,7 @@ String On_Str_VkFragmentShadingRateNV(VkFragmentShadingRateNV e) {
     case VK_FRAGMENT_SHADING_RATE_NO_INVOCATIONS_NV: str = "VK_FRAGMENT_SHADING_RATE_NO_INVOCATIONS_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkAccelerationStructureMotionInstanceTypeNV(VkAccelerationStructureMotionInstanceTypeNV e) {
@@ -4070,7 +4070,7 @@ String On_Str_VkAccelerationStructureMotionInstanceTypeNV(VkAccelerationStructur
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDeviceFaultAddressTypeEXT(VkDeviceFaultAddressTypeEXT e) {
@@ -4091,7 +4091,7 @@ String On_Str_VkDeviceFaultAddressTypeEXT(VkDeviceFaultAddressTypeEXT e) {
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDeviceFaultVendorBinaryHeaderVersionEXT(VkDeviceFaultVendorBinaryHeaderVersionEXT e) {
@@ -4102,7 +4102,7 @@ String On_Str_VkDeviceFaultVendorBinaryHeaderVersionEXT(VkDeviceFaultVendorBinar
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDeviceAddressBindingTypeEXT(VkDeviceAddressBindingTypeEXT e) {
@@ -4112,7 +4112,7 @@ String On_Str_VkDeviceAddressBindingTypeEXT(VkDeviceAddressBindingTypeEXT e) {
     case VK_DEVICE_ADDRESS_BINDING_TYPE_UNBIND_EXT: str = "VK_DEVICE_ADDRESS_BINDING_TYPE_UNBIND_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkMicromapTypeEXT(VkMicromapTypeEXT e) {
@@ -4124,7 +4124,7 @@ String On_Str_VkMicromapTypeEXT(VkMicromapTypeEXT e) {
 #endif // VK_ENABLE_BETA_EXTENSIONS
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkBuildMicromapModeEXT(VkBuildMicromapModeEXT e) {
@@ -4133,7 +4133,7 @@ String On_Str_VkBuildMicromapModeEXT(VkBuildMicromapModeEXT e) {
     case VK_BUILD_MICROMAP_MODE_BUILD_EXT: str = "VK_BUILD_MICROMAP_MODE_BUILD_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkCopyMicromapModeEXT(VkCopyMicromapModeEXT e) {
@@ -4145,7 +4145,7 @@ String On_Str_VkCopyMicromapModeEXT(VkCopyMicromapModeEXT e) {
     case VK_COPY_MICROMAP_MODE_COMPACT_EXT: str = "VK_COPY_MICROMAP_MODE_COMPACT_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkOpacityMicromapFormatEXT(VkOpacityMicromapFormatEXT e) {
@@ -4155,7 +4155,7 @@ String On_Str_VkOpacityMicromapFormatEXT(VkOpacityMicromapFormatEXT e) {
     case VK_OPACITY_MICROMAP_FORMAT_4_STATE_EXT: str = "VK_OPACITY_MICROMAP_FORMAT_4_STATE_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkOpacityMicromapSpecialIndexEXT(VkOpacityMicromapSpecialIndexEXT e) {
@@ -4176,7 +4176,7 @@ String On_Str_VkOpacityMicromapSpecialIndexEXT(VkOpacityMicromapSpecialIndexEXT 
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkAccelerationStructureCompatibilityKHR(VkAccelerationStructureCompatibilityKHR e) {
@@ -4190,7 +4190,7 @@ String On_Str_VkAccelerationStructureCompatibilityKHR(VkAccelerationStructureCom
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkAccelerationStructureBuildTypeKHR(VkAccelerationStructureBuildTypeKHR e) {
@@ -4203,7 +4203,7 @@ String On_Str_VkAccelerationStructureBuildTypeKHR(VkAccelerationStructureBuildTy
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 #ifdef VK_ENABLE_BETA_EXTENSIONS
@@ -4221,7 +4221,7 @@ String On_Str_VkDisplacementMicromapFormatNV(VkDisplacementMicromapFormatNV e) {
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 
@@ -4232,7 +4232,7 @@ String On_Str_VkRayTracingLssIndexingModeNV(VkRayTracingLssIndexingModeNV e) {
     case VK_RAY_TRACING_LSS_INDEXING_MODE_SUCCESSIVE_NV: str = "VK_RAY_TRACING_LSS_INDEXING_MODE_SUCCESSIVE_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkRayTracingLssPrimitiveEndCapsModeNV(VkRayTracingLssPrimitiveEndCapsModeNV e) {
@@ -4244,7 +4244,7 @@ String On_Str_VkRayTracingLssPrimitiveEndCapsModeNV(VkRayTracingLssPrimitiveEndC
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkSubpassMergeStatusEXT(VkSubpassMergeStatusEXT e) {
@@ -4286,7 +4286,7 @@ String On_Str_VkSubpassMergeStatusEXT(VkSubpassMergeStatusEXT e) {
     case VK_SUBPASS_MERGE_STATUS_NOT_MERGED_UNSPECIFIED_EXT: str = "VK_SUBPASS_MERGE_STATUS_NOT_MERGED_UNSPECIFIED_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDirectDriverLoadingModeLUNARG(VkDirectDriverLoadingModeLUNARG e) {
@@ -4296,7 +4296,7 @@ String On_Str_VkDirectDriverLoadingModeLUNARG(VkDirectDriverLoadingModeLUNARG e)
     case VK_DIRECT_DRIVER_LOADING_MODE_INCLUSIVE_LUNARG: str = "VK_DIRECT_DRIVER_LOADING_MODE_INCLUSIVE_LUNARG"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkTensorTilingARM(VkTensorTilingARM e) {
@@ -4306,7 +4306,7 @@ String On_Str_VkTensorTilingARM(VkTensorTilingARM e) {
     case VK_TENSOR_TILING_LINEAR_ARM: str = "VK_TENSOR_TILING_LINEAR_ARM"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkOpticalFlowPerformanceLevelNV(VkOpticalFlowPerformanceLevelNV e) {
@@ -4318,7 +4318,7 @@ String On_Str_VkOpticalFlowPerformanceLevelNV(VkOpticalFlowPerformanceLevelNV e)
     case VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_FAST_NV: str = "VK_OPTICAL_FLOW_PERFORMANCE_LEVEL_FAST_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkOpticalFlowSessionBindingPointNV(VkOpticalFlowSessionBindingPointNV e) {
@@ -4343,7 +4343,7 @@ String On_Str_VkOpticalFlowSessionBindingPointNV(VkOpticalFlowSessionBindingPoin
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkAntiLagModeAMD(VkAntiLagModeAMD e) {
@@ -4354,7 +4354,7 @@ String On_Str_VkAntiLagModeAMD(VkAntiLagModeAMD e) {
     case VK_ANTI_LAG_MODE_OFF_AMD: str = "VK_ANTI_LAG_MODE_OFF_AMD"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkAntiLagStageAMD(VkAntiLagStageAMD e) {
@@ -4364,7 +4364,7 @@ String On_Str_VkAntiLagStageAMD(VkAntiLagStageAMD e) {
     case VK_ANTI_LAG_STAGE_PRESENT_AMD: str = "VK_ANTI_LAG_STAGE_PRESENT_AMD"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkShaderCodeTypeEXT(VkShaderCodeTypeEXT e) {
@@ -4374,7 +4374,7 @@ String On_Str_VkShaderCodeTypeEXT(VkShaderCodeTypeEXT e) {
     case VK_SHADER_CODE_TYPE_SPIRV_EXT: str = "VK_SHADER_CODE_TYPE_SPIRV_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDepthClampModeEXT(VkDepthClampModeEXT e) {
@@ -4384,7 +4384,7 @@ String On_Str_VkDepthClampModeEXT(VkDepthClampModeEXT e) {
     case VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT: str = "VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkRayTracingInvocationReorderModeNV(VkRayTracingInvocationReorderModeNV e) {
@@ -4394,7 +4394,7 @@ String On_Str_VkRayTracingInvocationReorderModeNV(VkRayTracingInvocationReorderM
     case VK_RAY_TRACING_INVOCATION_REORDER_MODE_REORDER_NV: str = "VK_RAY_TRACING_INVOCATION_REORDER_MODE_REORDER_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkCooperativeVectorMatrixLayoutNV(VkCooperativeVectorMatrixLayoutNV e) {
@@ -4412,7 +4412,7 @@ String On_Str_VkCooperativeVectorMatrixLayoutNV(VkCooperativeVectorMatrixLayoutN
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkLayerSettingTypeEXT(VkLayerSettingTypeEXT e) {
@@ -4428,7 +4428,7 @@ String On_Str_VkLayerSettingTypeEXT(VkLayerSettingTypeEXT e) {
     case VK_LAYER_SETTING_TYPE_STRING_EXT: str = "VK_LAYER_SETTING_TYPE_STRING_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkLatencyMarkerNV(VkLatencyMarkerNV e) {
@@ -4450,7 +4450,7 @@ String On_Str_VkLatencyMarkerNV(VkLatencyMarkerNV e) {
     case VK_LATENCY_MARKER_OUT_OF_BAND_PRESENT_END_NV: str = "VK_LATENCY_MARKER_OUT_OF_BAND_PRESENT_END_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkOutOfBandQueueTypeNV(VkOutOfBandQueueTypeNV e) {
@@ -4460,7 +4460,7 @@ String On_Str_VkOutOfBandQueueTypeNV(VkOutOfBandQueueTypeNV e) {
     case VK_OUT_OF_BAND_QUEUE_TYPE_PRESENT_NV: str = "VK_OUT_OF_BAND_QUEUE_TYPE_PRESENT_NV"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDataGraphPipelineSessionBindPointARM(VkDataGraphPipelineSessionBindPointARM e) {
@@ -4471,7 +4471,7 @@ String On_Str_VkDataGraphPipelineSessionBindPointARM(VkDataGraphPipelineSessionB
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDataGraphPipelineSessionBindPointTypeARM(VkDataGraphPipelineSessionBindPointTypeARM e) {
@@ -4482,7 +4482,7 @@ String On_Str_VkDataGraphPipelineSessionBindPointTypeARM(VkDataGraphPipelineSess
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDataGraphPipelinePropertyARM(VkDataGraphPipelinePropertyARM e) {
@@ -4492,7 +4492,7 @@ String On_Str_VkDataGraphPipelinePropertyARM(VkDataGraphPipelinePropertyARM e) {
     case VK_DATA_GRAPH_PIPELINE_PROPERTY_IDENTIFIER_ARM: str = "VK_DATA_GRAPH_PIPELINE_PROPERTY_IDENTIFIER_ARM"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPhysicalDeviceDataGraphProcessingEngineTypeARM(VkPhysicalDeviceDataGraphProcessingEngineTypeARM e) {
@@ -4503,7 +4503,7 @@ String On_Str_VkPhysicalDeviceDataGraphProcessingEngineTypeARM(VkPhysicalDeviceD
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPhysicalDeviceDataGraphOperationTypeARM(VkPhysicalDeviceDataGraphOperationTypeARM e) {
@@ -4514,7 +4514,7 @@ String On_Str_VkPhysicalDeviceDataGraphOperationTypeARM(VkPhysicalDeviceDataGrap
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkBlockMatchWindowCompareModeQCOM(VkBlockMatchWindowCompareModeQCOM e) {
@@ -4524,7 +4524,7 @@ String On_Str_VkBlockMatchWindowCompareModeQCOM(VkBlockMatchWindowCompareModeQCO
     case VK_BLOCK_MATCH_WINDOW_COMPARE_MODE_MAX_QCOM: str = "VK_BLOCK_MATCH_WINDOW_COMPARE_MODE_MAX_QCOM"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkCubicFilterWeightsQCOM(VkCubicFilterWeightsQCOM e) {
@@ -4536,7 +4536,7 @@ String On_Str_VkCubicFilterWeightsQCOM(VkCubicFilterWeightsQCOM e) {
     case VK_CUBIC_FILTER_WEIGHTS_MITCHELL_NETRAVALI_QCOM: str = "VK_CUBIC_FILTER_WEIGHTS_MITCHELL_NETRAVALI_QCOM"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkLayeredDriverUnderlyingApiMSFT(VkLayeredDriverUnderlyingApiMSFT e) {
@@ -4546,7 +4546,7 @@ String On_Str_VkLayeredDriverUnderlyingApiMSFT(VkLayeredDriverUnderlyingApiMSFT 
     case VK_LAYERED_DRIVER_UNDERLYING_API_D3D12_MSFT: str = "VK_LAYERED_DRIVER_UNDERLYING_API_D3D12_MSFT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkDisplaySurfaceStereoTypeNV(VkDisplaySurfaceStereoTypeNV e) {
@@ -4560,7 +4560,7 @@ String On_Str_VkDisplaySurfaceStereoTypeNV(VkDisplaySurfaceStereoTypeNV e) {
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkClusterAccelerationStructureTypeNV(VkClusterAccelerationStructureTypeNV e) {
@@ -4577,7 +4577,7 @@ String On_Str_VkClusterAccelerationStructureTypeNV(VkClusterAccelerationStructur
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkClusterAccelerationStructureOpTypeNV(VkClusterAccelerationStructureOpTypeNV e) {
@@ -4603,7 +4603,7 @@ String On_Str_VkClusterAccelerationStructureOpTypeNV(VkClusterAccelerationStruct
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkClusterAccelerationStructureOpModeNV(VkClusterAccelerationStructureOpModeNV e) {
@@ -4620,7 +4620,7 @@ String On_Str_VkClusterAccelerationStructureOpModeNV(VkClusterAccelerationStruct
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkPartitionedAccelerationStructureOpTypeNV(VkPartitionedAccelerationStructureOpTypeNV e) {
@@ -4637,7 +4637,7 @@ String On_Str_VkPartitionedAccelerationStructureOpTypeNV(VkPartitionedAccelerati
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkIndirectExecutionSetInfoTypeEXT(VkIndirectExecutionSetInfoTypeEXT e) {
@@ -4649,7 +4649,7 @@ String On_Str_VkIndirectExecutionSetInfoTypeEXT(VkIndirectExecutionSetInfoTypeEX
         break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkIndirectCommandsTokenTypeEXT(VkIndirectCommandsTokenTypeEXT e) {
@@ -4682,7 +4682,7 @@ String On_Str_VkIndirectCommandsTokenTypeEXT(VkIndirectCommandsTokenTypeEXT e) {
     case VK_INDIRECT_COMMANDS_TOKEN_TYPE_TRACE_RAYS2_EXT: str = "VK_INDIRECT_COMMANDS_TOKEN_TYPE_TRACE_RAYS2_EXT"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkBuildAccelerationStructureModeKHR(VkBuildAccelerationStructureModeKHR e) {
@@ -4692,7 +4692,7 @@ String On_Str_VkBuildAccelerationStructureModeKHR(VkBuildAccelerationStructureMo
     case VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR: str = "VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 String On_Str_VkShaderGroupShaderKHR(VkShaderGroupShaderKHR e) {
@@ -4704,12 +4704,12 @@ String On_Str_VkShaderGroupShaderKHR(VkShaderGroupShaderKHR e) {
     case VK_SHADER_GROUP_SHADER_INTERSECTION_KHR: str = "VK_SHADER_GROUP_SHADER_INTERSECTION_KHR"; break;
     default: break;
     }
-    return std::move(str);
+    return str;
 }
 
 // Flags
 
-String On_Str_VkAccessFlags(VkAccessFlags f) {
+String On_Str_VkAccessFlags([[maybe_unused]] VkAccessFlags f) {
     String str = "|";
     if (f & VK_ACCESS_INDIRECT_COMMAND_READ_BIT) {
         str += "INDIRECT_COMMAND_READ|";
@@ -4798,10 +4798,10 @@ String On_Str_VkAccessFlags(VkAccessFlags f) {
     if (f & VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_EXT) {
         str += "COMMAND_PREPROCESS_WRITE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkImageAspectFlags(VkImageAspectFlags f) {
+String On_Str_VkImageAspectFlags([[maybe_unused]] VkImageAspectFlags f) {
     String str = "|";
     if (f & VK_IMAGE_ASPECT_COLOR_BIT) {
         str += "COLOR|";
@@ -4839,10 +4839,10 @@ String On_Str_VkImageAspectFlags(VkImageAspectFlags f) {
     if (f & VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT) {
         str += "MEMORY_PLANE_3|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkFormatFeatureFlags(VkFormatFeatureFlags f) {
+String On_Str_VkFormatFeatureFlags([[maybe_unused]] VkFormatFeatureFlags f) {
     String str = "|";
     if (f & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT) {
         str += "SAMPLED_IMAGE|";
@@ -4937,10 +4937,10 @@ String On_Str_VkFormatFeatureFlags(VkFormatFeatureFlags f) {
     if (f & VK_FORMAT_FEATURE_VIDEO_ENCODE_DPB_BIT_KHR) {
         str += "VIDEO_ENCODE_DPB|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkImageCreateFlags(VkImageCreateFlags f) {
+String On_Str_VkImageCreateFlags([[maybe_unused]] VkImageCreateFlags f) {
     String str = "|";
     if (f & VK_IMAGE_CREATE_SPARSE_BINDING_BIT) {
         str += "SPARSE_BINDING|";
@@ -5002,10 +5002,10 @@ String On_Str_VkImageCreateFlags(VkImageCreateFlags f) {
     if (f & VK_IMAGE_CREATE_FRAGMENT_DENSITY_MAP_OFFSET_BIT_EXT) {
         str += "FRAGMENT_DENSITY_MAP_OFFSET|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkSampleCountFlags(VkSampleCountFlags f) {
+String On_Str_VkSampleCountFlags([[maybe_unused]] VkSampleCountFlags f) {
     String str = "|";
     if (f & VK_SAMPLE_COUNT_1_BIT) {
         str += "1|";
@@ -5028,10 +5028,10 @@ String On_Str_VkSampleCountFlags(VkSampleCountFlags f) {
     if (f & VK_SAMPLE_COUNT_64_BIT) {
         str += "64|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkImageUsageFlags(VkImageUsageFlags f) {
+String On_Str_VkImageUsageFlags([[maybe_unused]] VkImageUsageFlags f) {
     String str = "|";
     if (f & VK_IMAGE_USAGE_TRANSFER_SRC_BIT) {
         str += "TRANSFER_SRC|";
@@ -5108,18 +5108,18 @@ String On_Str_VkImageUsageFlags(VkImageUsageFlags f) {
     if (f & VK_IMAGE_USAGE_VIDEO_ENCODE_EMPHASIS_MAP_BIT_KHR) {
         str += "VIDEO_ENCODE_EMPHASIS_MAP|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkInstanceCreateFlags(VkInstanceCreateFlags f) {
+String On_Str_VkInstanceCreateFlags([[maybe_unused]] VkInstanceCreateFlags f) {
     String str = "|";
     if (f & VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR) {
         str += "ENUMERATE_PORTABILITY|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkMemoryHeapFlags(VkMemoryHeapFlags f) {
+String On_Str_VkMemoryHeapFlags([[maybe_unused]] VkMemoryHeapFlags f) {
     String str = "|";
     if (f & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) {
         str += "DEVICE_LOCAL|";
@@ -5130,10 +5130,10 @@ String On_Str_VkMemoryHeapFlags(VkMemoryHeapFlags f) {
     if (f & VK_MEMORY_HEAP_TILE_MEMORY_BIT_QCOM) {
         str += "TILE_MEMORY|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkMemoryPropertyFlags(VkMemoryPropertyFlags f) {
+String On_Str_VkMemoryPropertyFlags([[maybe_unused]] VkMemoryPropertyFlags f) {
     String str = "|";
     if (f & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) {
         str += "DEVICE_LOCAL|";
@@ -5162,10 +5162,10 @@ String On_Str_VkMemoryPropertyFlags(VkMemoryPropertyFlags f) {
     if (f & VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV) {
         str += "RDMA_CAPABLE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkQueueFlags(VkQueueFlags f) {
+String On_Str_VkQueueFlags([[maybe_unused]] VkQueueFlags f) {
     String str = "|";
     if (f & VK_QUEUE_GRAPHICS_BIT) {
         str += "GRAPHICS|";
@@ -5194,18 +5194,18 @@ String On_Str_VkQueueFlags(VkQueueFlags f) {
     if (f & VK_QUEUE_DATA_GRAPH_BIT_ARM) {
         str += "DATA_GRAPH_BIT_ARM|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkDeviceQueueCreateFlags(VkDeviceQueueCreateFlags f) {
+String On_Str_VkDeviceQueueCreateFlags([[maybe_unused]] VkDeviceQueueCreateFlags f) {
     String str = "|";
     if (f & VK_DEVICE_QUEUE_CREATE_PROTECTED_BIT) {
         str += "PROTECTED|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPipelineStageFlags(VkPipelineStageFlags f) {
+String On_Str_VkPipelineStageFlags([[maybe_unused]] VkPipelineStageFlags f) {
     String str = "|";
     if (f & VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT) {
         str += "TOP_OF_PIPE|";
@@ -5288,26 +5288,26 @@ String On_Str_VkPipelineStageFlags(VkPipelineStageFlags f) {
     if (f & VK_PIPELINE_STAGE_COMMAND_PREPROCESS_BIT_EXT) {
         str += "COMMAND_PREPROCESS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkMemoryMapFlags(VkMemoryMapFlags f) {
+String On_Str_VkMemoryMapFlags([[maybe_unused]] VkMemoryMapFlags f) {
     String str = "|";
     if (f & VK_MEMORY_MAP_PLACED_BIT_EXT) {
         str += "PLACED|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkSparseMemoryBindFlags(VkSparseMemoryBindFlags f) {
+String On_Str_VkSparseMemoryBindFlags([[maybe_unused]] VkSparseMemoryBindFlags f) {
     String str = "|";
     if (f & VK_SPARSE_MEMORY_BIND_METADATA_BIT) {
         str += "METADATA|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkSparseImageFormatFlags(VkSparseImageFormatFlags f) {
+String On_Str_VkSparseImageFormatFlags([[maybe_unused]] VkSparseImageFormatFlags f) {
     String str = "|";
     if (f & VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT) {
         str += "SINGLE_MIPTAIL|";
@@ -5318,26 +5318,26 @@ String On_Str_VkSparseImageFormatFlags(VkSparseImageFormatFlags f) {
     if (f & VK_SPARSE_IMAGE_FORMAT_NONSTANDARD_BLOCK_SIZE_BIT) {
         str += "NONSTANDARD_BLOCK_SIZE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkFenceCreateFlags(VkFenceCreateFlags f) {
+String On_Str_VkFenceCreateFlags([[maybe_unused]] VkFenceCreateFlags f) {
     String str = "|";
     if (f & VK_FENCE_CREATE_SIGNALED_BIT) {
         str += "SIGNALED|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkEventCreateFlags(VkEventCreateFlags f) {
+String On_Str_VkEventCreateFlags([[maybe_unused]] VkEventCreateFlags f) {
     String str = "|";
     if (f & VK_EVENT_CREATE_DEVICE_ONLY_BIT) {
         str += "DEVICE_ONLY|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkQueryPipelineStatisticFlags(VkQueryPipelineStatisticFlags f) {
+String On_Str_VkQueryPipelineStatisticFlags([[maybe_unused]] VkQueryPipelineStatisticFlags f) {
     String str = "|";
     if (f & VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_VERTICES_BIT) {
         str += "INPUT_ASSEMBLY_VERTICES|";
@@ -5381,18 +5381,18 @@ String On_Str_VkQueryPipelineStatisticFlags(VkQueryPipelineStatisticFlags f) {
     if (f & VK_QUERY_PIPELINE_STATISTIC_CLUSTER_CULLING_SHADER_INVOCATIONS_BIT_HUAWEI) {
         str += "CLUSTER_CULLING_SHADER_INVOCATIONS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkQueryPoolCreateFlags(VkQueryPoolCreateFlags f) {
+String On_Str_VkQueryPoolCreateFlags([[maybe_unused]] VkQueryPoolCreateFlags f) {
     String str = "|";
     if (f & VK_QUERY_POOL_CREATE_RESET_BIT_KHR) {
         str += "RESET|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkQueryResultFlags(VkQueryResultFlags f) {
+String On_Str_VkQueryResultFlags([[maybe_unused]] VkQueryResultFlags f) {
     String str = "|";
     if (f & VK_QUERY_RESULT_64_BIT) {
         str += "64|";
@@ -5409,10 +5409,10 @@ String On_Str_VkQueryResultFlags(VkQueryResultFlags f) {
     if (f & VK_QUERY_RESULT_WITH_STATUS_BIT_KHR) {
         str += "WITH_STATUS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkBufferCreateFlags(VkBufferCreateFlags f) {
+String On_Str_VkBufferCreateFlags([[maybe_unused]] VkBufferCreateFlags f) {
     String str = "|";
     if (f & VK_BUFFER_CREATE_SPARSE_BINDING_BIT) {
         str += "SPARSE_BINDING|";
@@ -5435,10 +5435,10 @@ String On_Str_VkBufferCreateFlags(VkBufferCreateFlags f) {
     if (f & VK_BUFFER_CREATE_VIDEO_PROFILE_INDEPENDENT_BIT_KHR) {
         str += "VIDEO_PROFILE_INDEPENDENT|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkBufferUsageFlags(VkBufferUsageFlags f) {
+String On_Str_VkBufferUsageFlags([[maybe_unused]] VkBufferUsageFlags f) {
     String str = "|";
     if (f & VK_BUFFER_USAGE_TRANSFER_SRC_BIT) {
         str += "TRANSFER_SRC|";
@@ -5523,10 +5523,10 @@ String On_Str_VkBufferUsageFlags(VkBufferUsageFlags f) {
     if (f & VK_BUFFER_USAGE_TILE_MEMORY_BIT_QCOM) {
         str += "TILE_MEMORY|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkImageViewCreateFlags(VkImageViewCreateFlags f) {
+String On_Str_VkImageViewCreateFlags([[maybe_unused]] VkImageViewCreateFlags f) {
     String str = "|";
     if (f & VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT) {
         str += "FRAGMENT_DENSITY_MAP_DYNAMIC|";
@@ -5537,10 +5537,10 @@ String On_Str_VkImageViewCreateFlags(VkImageViewCreateFlags f) {
     if (f & VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DEFERRED_BIT_EXT) {
         str += "FRAGMENT_DENSITY_MAP_DEFERRED|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPipelineCacheCreateFlags(VkPipelineCacheCreateFlags f) {
+String On_Str_VkPipelineCacheCreateFlags([[maybe_unused]] VkPipelineCacheCreateFlags f) {
     String str = "|";
     if (f & VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT) {
         str += "EXTERNALLY_SYNCHRONIZED|";
@@ -5548,10 +5548,10 @@ String On_Str_VkPipelineCacheCreateFlags(VkPipelineCacheCreateFlags f) {
     if (f & VK_PIPELINE_CACHE_CREATE_INTERNALLY_SYNCHRONIZED_MERGE_BIT_KHR) {
         str += "INTERNALLY_SYNCHRONIZED_MERGE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkColorComponentFlags(VkColorComponentFlags f) {
+String On_Str_VkColorComponentFlags([[maybe_unused]] VkColorComponentFlags f) {
     String str = "|";
     if (f & VK_COLOR_COMPONENT_R_BIT) {
         str += "R|";
@@ -5565,10 +5565,10 @@ String On_Str_VkColorComponentFlags(VkColorComponentFlags f) {
     if (f & VK_COLOR_COMPONENT_A_BIT) {
         str += "A|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPipelineCreateFlags(VkPipelineCreateFlags f) {
+String On_Str_VkPipelineCreateFlags([[maybe_unused]] VkPipelineCreateFlags f) {
     String str = "|";
     if (f & VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT) {
         str += "DISABLE_OPTIMIZATION|";
@@ -5665,10 +5665,10 @@ String On_Str_VkPipelineCreateFlags(VkPipelineCreateFlags f) {
         str += "RAY_TRACING_DISPLACEMENT_MICROMAP|";
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPipelineShaderStageCreateFlags(VkPipelineShaderStageCreateFlags f) {
+String On_Str_VkPipelineShaderStageCreateFlags([[maybe_unused]] VkPipelineShaderStageCreateFlags f) {
     String str = "|";
     if (f & VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT) {
         str += "ALLOW_VARYING_SUBGROUP_SIZE|";
@@ -5676,10 +5676,10 @@ String On_Str_VkPipelineShaderStageCreateFlags(VkPipelineShaderStageCreateFlags 
     if (f & VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT) {
         str += "REQUIRE_FULL_SUBGROUPS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkShaderStageFlags(VkShaderStageFlags f) {
+String On_Str_VkShaderStageFlags([[maybe_unused]] VkShaderStageFlags f) {
     String str = "|";
     if (f & VK_SHADER_STAGE_VERTEX_BIT) {
         str += "VERTEX|";
@@ -5735,10 +5735,10 @@ String On_Str_VkShaderStageFlags(VkShaderStageFlags f) {
     if (f & VK_SHADER_STAGE_CLUSTER_CULLING_BIT_HUAWEI) {
         str += "CLUSTER_CULLING|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkCullModeFlags(VkCullModeFlags f) {
+String On_Str_VkCullModeFlags([[maybe_unused]] VkCullModeFlags f) {
     String str = "|";
     if (f & VK_CULL_MODE_NONE) {
         str += "NONE|";
@@ -5752,10 +5752,10 @@ String On_Str_VkCullModeFlags(VkCullModeFlags f) {
     if (f & VK_CULL_MODE_FRONT_AND_BACK) {
         str += "FRONT_AND_BACK|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPipelineDepthStencilStateCreateFlags(VkPipelineDepthStencilStateCreateFlags f) {
+String On_Str_VkPipelineDepthStencilStateCreateFlags([[maybe_unused]] VkPipelineDepthStencilStateCreateFlags f) {
     String str = "|";
     if (f & VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT) {
         str += "RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS|";
@@ -5763,26 +5763,26 @@ String On_Str_VkPipelineDepthStencilStateCreateFlags(VkPipelineDepthStencilState
     if (f & VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT) {
         str += "RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPipelineColorBlendStateCreateFlags(VkPipelineColorBlendStateCreateFlags f) {
+String On_Str_VkPipelineColorBlendStateCreateFlags([[maybe_unused]] VkPipelineColorBlendStateCreateFlags f) {
     String str = "|";
     if (f & VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_EXT) {
         str += "RASTERIZATION_ORDER_ATTACHMENT_ACCESS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPipelineLayoutCreateFlags(VkPipelineLayoutCreateFlags f) {
+String On_Str_VkPipelineLayoutCreateFlags([[maybe_unused]] VkPipelineLayoutCreateFlags f) {
     String str = "|";
     if (f & VK_PIPELINE_LAYOUT_CREATE_INDEPENDENT_SETS_BIT_EXT) {
         str += "INDEPENDENT_SETS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkSamplerCreateFlags(VkSamplerCreateFlags f) {
+String On_Str_VkSamplerCreateFlags([[maybe_unused]] VkSamplerCreateFlags f) {
     String str = "|";
     if (f & VK_SAMPLER_CREATE_SUBSAMPLED_BIT_EXT) {
         str += "SUBSAMPLED|";
@@ -5799,10 +5799,10 @@ String On_Str_VkSamplerCreateFlags(VkSamplerCreateFlags f) {
     if (f & VK_SAMPLER_CREATE_IMAGE_PROCESSING_BIT_QCOM) {
         str += "IMAGE_PROCESSING|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkDescriptorPoolCreateFlags(VkDescriptorPoolCreateFlags f) {
+String On_Str_VkDescriptorPoolCreateFlags([[maybe_unused]] VkDescriptorPoolCreateFlags f) {
     String str = "|";
     if (f & VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT) {
         str += "FREE_DESCRIPTOR_SET|";
@@ -5819,10 +5819,10 @@ String On_Str_VkDescriptorPoolCreateFlags(VkDescriptorPoolCreateFlags f) {
     if (f & VK_DESCRIPTOR_POOL_CREATE_ALLOW_OVERALLOCATION_POOLS_BIT_NV) {
         str += "ALLOW_OVERALLOCATION_POOLS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkDescriptorSetLayoutCreateFlags(VkDescriptorSetLayoutCreateFlags f) {
+String On_Str_VkDescriptorSetLayoutCreateFlags([[maybe_unused]] VkDescriptorSetLayoutCreateFlags f) {
     String str = "|";
     if (f & VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT) {
         str += "UPDATE_AFTER_BIND_POOL|";
@@ -5845,18 +5845,18 @@ String On_Str_VkDescriptorSetLayoutCreateFlags(VkDescriptorSetLayoutCreateFlags 
     if (f & VK_DESCRIPTOR_SET_LAYOUT_CREATE_PER_STAGE_BIT_NV) {
         str += "PER_STAGE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkAttachmentDescriptionFlags(VkAttachmentDescriptionFlags f) {
+String On_Str_VkAttachmentDescriptionFlags([[maybe_unused]] VkAttachmentDescriptionFlags f) {
     String str = "|";
     if (f & VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT) {
         str += "MAY_ALIAS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkDependencyFlags(VkDependencyFlags f) {
+String On_Str_VkDependencyFlags([[maybe_unused]] VkDependencyFlags f) {
     String str = "|";
     if (f & VK_DEPENDENCY_BY_REGION_BIT) {
         str += "BY_REGION|";
@@ -5876,18 +5876,18 @@ String On_Str_VkDependencyFlags(VkDependencyFlags f) {
     if (f & VK_DEPENDENCY_ASYMMETRIC_EVENT_BIT_KHR) {
         str += "ASYMMETRIC_EVENT|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkFramebufferCreateFlags(VkFramebufferCreateFlags f) {
+String On_Str_VkFramebufferCreateFlags([[maybe_unused]] VkFramebufferCreateFlags f) {
     String str = "|";
     if (f & VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT) {
         str += "IMAGELESS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkRenderPassCreateFlags(VkRenderPassCreateFlags f) {
+String On_Str_VkRenderPassCreateFlags([[maybe_unused]] VkRenderPassCreateFlags f) {
     String str = "|";
     if (f & VK_RENDER_PASS_CREATE_TRANSFORM_BIT_QCOM) {
         str += "TRANSFORM|";
@@ -5895,10 +5895,10 @@ String On_Str_VkRenderPassCreateFlags(VkRenderPassCreateFlags f) {
     if (f & VK_RENDER_PASS_CREATE_PER_LAYER_FRAGMENT_DENSITY_BIT_VALVE) {
         str += "PER_LAYER_FRAGMENT_DENSITY_BIT_VALVE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkSubpassDescriptionFlags(VkSubpassDescriptionFlags f) {
+String On_Str_VkSubpassDescriptionFlags([[maybe_unused]] VkSubpassDescriptionFlags f) {
     String str = "|";
     if (f & VK_SUBPASS_DESCRIPTION_PER_VIEW_ATTRIBUTES_BIT_NVX) {
         str += "PER_VIEW_ATTRIBUTES_BIT_NVX|";
@@ -5927,10 +5927,10 @@ String On_Str_VkSubpassDescriptionFlags(VkSubpassDescriptionFlags f) {
     if (f & VK_SUBPASS_DESCRIPTION_ENABLE_LEGACY_DITHERING_BIT_EXT) {
         str += "ENABLE_LEGACY_DITHERING|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkCommandPoolCreateFlags(VkCommandPoolCreateFlags f) {
+String On_Str_VkCommandPoolCreateFlags([[maybe_unused]] VkCommandPoolCreateFlags f) {
     String str = "|";
     if (f & VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) {
         str += "TRANSIENT|";
@@ -5941,18 +5941,18 @@ String On_Str_VkCommandPoolCreateFlags(VkCommandPoolCreateFlags f) {
     if (f & VK_COMMAND_POOL_CREATE_PROTECTED_BIT) {
         str += "PROTECTED|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkCommandPoolResetFlags(VkCommandPoolResetFlags f) {
+String On_Str_VkCommandPoolResetFlags([[maybe_unused]] VkCommandPoolResetFlags f) {
     String str = "|";
     if (f & VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT) {
         str += "RELEASE_RESOURCES|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkCommandBufferUsageFlags(VkCommandBufferUsageFlags f) {
+String On_Str_VkCommandBufferUsageFlags([[maybe_unused]] VkCommandBufferUsageFlags f) {
     String str = "|";
     if (f & VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT) {
         str += "ONE_TIME_SUBMIT|";
@@ -5963,26 +5963,26 @@ String On_Str_VkCommandBufferUsageFlags(VkCommandBufferUsageFlags f) {
     if (f & VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT) {
         str += "SIMULTANEOUS_USE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkQueryControlFlags(VkQueryControlFlags f) {
+String On_Str_VkQueryControlFlags([[maybe_unused]] VkQueryControlFlags f) {
     String str = "|";
     if (f & VK_QUERY_CONTROL_PRECISE_BIT) {
         str += "PRECISE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkCommandBufferResetFlags(VkCommandBufferResetFlags f) {
+String On_Str_VkCommandBufferResetFlags([[maybe_unused]] VkCommandBufferResetFlags f) {
     String str = "|";
     if (f & VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT) {
         str += "RELEASE_RESOURCES|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkStencilFaceFlags(VkStencilFaceFlags f) {
+String On_Str_VkStencilFaceFlags([[maybe_unused]] VkStencilFaceFlags f) {
     String str = "|";
     if (f & VK_STENCIL_FACE_FRONT_BIT) {
         str += "FRONT|";
@@ -5993,10 +5993,10 @@ String On_Str_VkStencilFaceFlags(VkStencilFaceFlags f) {
     if (f & VK_STENCIL_FACE_FRONT_AND_BACK) {
         str += "FRONT_AND_BACK|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkSubgroupFeatureFlags(VkSubgroupFeatureFlags f) {
+String On_Str_VkSubgroupFeatureFlags([[maybe_unused]] VkSubgroupFeatureFlags f) {
     String str = "|";
     if (f & VK_SUBGROUP_FEATURE_BASIC_BIT) {
         str += "BASIC|";
@@ -6031,10 +6031,10 @@ String On_Str_VkSubgroupFeatureFlags(VkSubgroupFeatureFlags f) {
     if (f & VK_SUBGROUP_FEATURE_PARTITIONED_BIT_NV) {
         str += "PARTITIONED|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPeerMemoryFeatureFlags(VkPeerMemoryFeatureFlags f) {
+String On_Str_VkPeerMemoryFeatureFlags([[maybe_unused]] VkPeerMemoryFeatureFlags f) {
     String str = "|";
     if (f & VK_PEER_MEMORY_FEATURE_COPY_SRC_BIT) {
         str += "COPY_SRC|";
@@ -6048,10 +6048,10 @@ String On_Str_VkPeerMemoryFeatureFlags(VkPeerMemoryFeatureFlags f) {
     if (f & VK_PEER_MEMORY_FEATURE_GENERIC_DST_BIT) {
         str += "GENERIC_DST|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkMemoryAllocateFlags(VkMemoryAllocateFlags f) {
+String On_Str_VkMemoryAllocateFlags([[maybe_unused]] VkMemoryAllocateFlags f) {
     String str = "|";
     if (f & VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT) {
         str += "DEVICE_MASK|";
@@ -6065,10 +6065,10 @@ String On_Str_VkMemoryAllocateFlags(VkMemoryAllocateFlags f) {
     if (f & VK_MEMORY_ALLOCATE_ZERO_INITIALIZE_BIT_EXT) {
         str += "ZERO_INITIALIZE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkExternalMemoryHandleTypeFlags(VkExternalMemoryHandleTypeFlags f) {
+String On_Str_VkExternalMemoryHandleTypeFlags([[maybe_unused]] VkExternalMemoryHandleTypeFlags f) {
     String str = "|";
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT) {
         str += "OPAQUE_FD|";
@@ -6121,10 +6121,10 @@ String On_Str_VkExternalMemoryHandleTypeFlags(VkExternalMemoryHandleTypeFlags f)
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLHEAP_BIT_EXT) {
         str += "MTLHEAP|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkExternalMemoryFeatureFlags(VkExternalMemoryFeatureFlags f) {
+String On_Str_VkExternalMemoryFeatureFlags([[maybe_unused]] VkExternalMemoryFeatureFlags f) {
     String str = "|";
     if (f & VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT) {
         str += "DEDICATED_ONLY|";
@@ -6135,10 +6135,10 @@ String On_Str_VkExternalMemoryFeatureFlags(VkExternalMemoryFeatureFlags f) {
     if (f & VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT) {
         str += "IMPORTABLE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkExternalFenceHandleTypeFlags(VkExternalFenceHandleTypeFlags f) {
+String On_Str_VkExternalFenceHandleTypeFlags([[maybe_unused]] VkExternalFenceHandleTypeFlags f) {
     String str = "|";
     if (f & VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_FD_BIT) {
         str += "OPAQUE_FD|";
@@ -6152,10 +6152,10 @@ String On_Str_VkExternalFenceHandleTypeFlags(VkExternalFenceHandleTypeFlags f) {
     if (f & VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT) {
         str += "SYNC_FD|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkExternalFenceFeatureFlags(VkExternalFenceFeatureFlags f) {
+String On_Str_VkExternalFenceFeatureFlags([[maybe_unused]] VkExternalFenceFeatureFlags f) {
     String str = "|";
     if (f & VK_EXTERNAL_FENCE_FEATURE_EXPORTABLE_BIT) {
         str += "EXPORTABLE|";
@@ -6163,26 +6163,26 @@ String On_Str_VkExternalFenceFeatureFlags(VkExternalFenceFeatureFlags f) {
     if (f & VK_EXTERNAL_FENCE_FEATURE_IMPORTABLE_BIT) {
         str += "IMPORTABLE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkFenceImportFlags(VkFenceImportFlags f) {
+String On_Str_VkFenceImportFlags([[maybe_unused]] VkFenceImportFlags f) {
     String str = "|";
     if (f & VK_FENCE_IMPORT_TEMPORARY_BIT) {
         str += "TEMPORARY|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkSemaphoreImportFlags(VkSemaphoreImportFlags f) {
+String On_Str_VkSemaphoreImportFlags([[maybe_unused]] VkSemaphoreImportFlags f) {
     String str = "|";
     if (f & VK_SEMAPHORE_IMPORT_TEMPORARY_BIT) {
         str += "TEMPORARY|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkExternalSemaphoreHandleTypeFlags(VkExternalSemaphoreHandleTypeFlags f) {
+String On_Str_VkExternalSemaphoreHandleTypeFlags([[maybe_unused]] VkExternalSemaphoreHandleTypeFlags f) {
     String str = "|";
     if (f & VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT) {
         str += "OPAQUE_FD|";
@@ -6202,10 +6202,10 @@ String On_Str_VkExternalSemaphoreHandleTypeFlags(VkExternalSemaphoreHandleTypeFl
     if (f & VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA) {
         str += "ZIRCON_EVENT|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkExternalSemaphoreFeatureFlags(VkExternalSemaphoreFeatureFlags f) {
+String On_Str_VkExternalSemaphoreFeatureFlags([[maybe_unused]] VkExternalSemaphoreFeatureFlags f) {
     String str = "|";
     if (f & VK_EXTERNAL_SEMAPHORE_FEATURE_EXPORTABLE_BIT) {
         str += "EXPORTABLE|";
@@ -6213,10 +6213,10 @@ String On_Str_VkExternalSemaphoreFeatureFlags(VkExternalSemaphoreFeatureFlags f)
     if (f & VK_EXTERNAL_SEMAPHORE_FEATURE_IMPORTABLE_BIT) {
         str += "IMPORTABLE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkResolveModeFlags(VkResolveModeFlags f) {
+String On_Str_VkResolveModeFlags([[maybe_unused]] VkResolveModeFlags f) {
     String str = "|";
     if (f & VK_RESOLVE_MODE_NONE) {
         str += "NONE|";
@@ -6236,10 +6236,10 @@ String On_Str_VkResolveModeFlags(VkResolveModeFlags f) {
     if (f & VK_RESOLVE_MODE_EXTERNAL_FORMAT_DOWNSAMPLE_BIT_ANDROID) {
         str += "EXTERNAL_FORMAT_DOWNSAMPLE_BIT_ANDROID|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkDescriptorBindingFlags(VkDescriptorBindingFlags f) {
+String On_Str_VkDescriptorBindingFlags([[maybe_unused]] VkDescriptorBindingFlags f) {
     String str = "|";
     if (f & VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT) {
         str += "UPDATE_AFTER_BIND|";
@@ -6253,18 +6253,18 @@ String On_Str_VkDescriptorBindingFlags(VkDescriptorBindingFlags f) {
     if (f & VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT) {
         str += "VARIABLE_DESCRIPTOR_COUNT|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkSemaphoreWaitFlags(VkSemaphoreWaitFlags f) {
+String On_Str_VkSemaphoreWaitFlags([[maybe_unused]] VkSemaphoreWaitFlags f) {
     String str = "|";
     if (f & VK_SEMAPHORE_WAIT_ANY_BIT) {
         str += "ANY|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPipelineCreationFeedbackFlags(VkPipelineCreationFeedbackFlags f) {
+String On_Str_VkPipelineCreationFeedbackFlags([[maybe_unused]] VkPipelineCreationFeedbackFlags f) {
     String str = "|";
     if (f & VK_PIPELINE_CREATION_FEEDBACK_VALID_BIT) {
         str += "VALID|";
@@ -6275,10 +6275,10 @@ String On_Str_VkPipelineCreationFeedbackFlags(VkPipelineCreationFeedbackFlags f)
     if (f & VK_PIPELINE_CREATION_FEEDBACK_BASE_PIPELINE_ACCELERATION_BIT) {
         str += "BASE_PIPELINE_ACCELERATION|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkToolPurposeFlags(VkToolPurposeFlags f) {
+String On_Str_VkToolPurposeFlags([[maybe_unused]] VkToolPurposeFlags f) {
     String str = "|";
     if (f & VK_TOOL_PURPOSE_VALIDATION_BIT) {
         str += "VALIDATION|";
@@ -6301,10 +6301,10 @@ String On_Str_VkToolPurposeFlags(VkToolPurposeFlags f) {
     if (f & VK_TOOL_PURPOSE_DEBUG_MARKERS_BIT_EXT) {
         str += "DEBUG_MARKERS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPipelineStageFlags2(VkPipelineStageFlags2 f) {
+String On_Str_VkPipelineStageFlags2([[maybe_unused]] VkPipelineStageFlags2 f) {
     String str = "|";
     if (f & VK_PIPELINE_STAGE_2_NONE) {
         str += "2_NONE|";
@@ -6438,10 +6438,10 @@ String On_Str_VkPipelineStageFlags2(VkPipelineStageFlags2 f) {
     if (f & VK_PIPELINE_STAGE_2_DATA_GRAPH_BIT_ARM) {
         str += "2_DATA_GRAPH_BIT_ARM|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkAccessFlags2(VkAccessFlags2 f) {
+String On_Str_VkAccessFlags2([[maybe_unused]] VkAccessFlags2 f) {
     String str = "|";
     if (f & VK_ACCESS_2_NONE) {
         str += "2_NONE|";
@@ -6584,18 +6584,18 @@ String On_Str_VkAccessFlags2(VkAccessFlags2 f) {
     if (f & VK_ACCESS_2_DATA_GRAPH_WRITE_BIT_ARM) {
         str += "2_DATA_GRAPH_WRITE_BIT_ARM|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkSubmitFlags(VkSubmitFlags f) {
+String On_Str_VkSubmitFlags([[maybe_unused]] VkSubmitFlags f) {
     String str = "|";
     if (f & VK_SUBMIT_PROTECTED_BIT) {
         str += "PROTECTED|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkRenderingFlags(VkRenderingFlags f) {
+String On_Str_VkRenderingFlags([[maybe_unused]] VkRenderingFlags f) {
     String str = "|";
     if (f & VK_RENDERING_CONTENTS_SECONDARY_COMMAND_BUFFERS_BIT) {
         str += "CONTENTS_SECONDARY_COMMAND_BUFFERS|";
@@ -6615,10 +6615,10 @@ String On_Str_VkRenderingFlags(VkRenderingFlags f) {
     if (f & VK_RENDERING_PER_LAYER_FRAGMENT_DENSITY_BIT_VALVE) {
         str += "PER_LAYER_FRAGMENT_DENSITY_BIT_VALVE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkFormatFeatureFlags2(VkFormatFeatureFlags2 f) {
+String On_Str_VkFormatFeatureFlags2([[maybe_unused]] VkFormatFeatureFlags2 f) {
     String str = "|";
     if (f & VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT) {
         str += "2_SAMPLED_IMAGE|";
@@ -6767,18 +6767,18 @@ String On_Str_VkFormatFeatureFlags2(VkFormatFeatureFlags2 f) {
     if (f & VK_FORMAT_FEATURE_2_VIDEO_ENCODE_EMPHASIS_MAP_BIT_KHR) {
         str += "2_VIDEO_ENCODE_EMPHASIS_MAP|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkMemoryUnmapFlags(VkMemoryUnmapFlags f) {
+String On_Str_VkMemoryUnmapFlags([[maybe_unused]] VkMemoryUnmapFlags f) {
     String str = "|";
     if (f & VK_MEMORY_UNMAP_RESERVE_BIT_EXT) {
         str += "RESERVE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPipelineCreateFlags2(VkPipelineCreateFlags2 f) {
+String On_Str_VkPipelineCreateFlags2([[maybe_unused]] VkPipelineCreateFlags2 f) {
     String str = "|";
     if (f & VK_PIPELINE_CREATE_2_DISABLE_OPTIMIZATION_BIT) {
         str += "2_DISABLE_OPTIMIZATION|";
@@ -6896,10 +6896,10 @@ String On_Str_VkPipelineCreateFlags2(VkPipelineCreateFlags2 f) {
     if (f & VK_PIPELINE_CREATE_2_PER_LAYER_FRAGMENT_DENSITY_BIT_VALVE) {
         str += "2_PER_LAYER_FRAGMENT_DENSITY_BIT_VALVE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkBufferUsageFlags2(VkBufferUsageFlags2 f) {
+String On_Str_VkBufferUsageFlags2([[maybe_unused]] VkBufferUsageFlags2 f) {
     String str = "|";
     if (f & VK_BUFFER_USAGE_2_TRANSFER_SRC_BIT) {
         str += "2_TRANSFER_SRC|";
@@ -6990,18 +6990,18 @@ String On_Str_VkBufferUsageFlags2(VkBufferUsageFlags2 f) {
     if (f & VK_BUFFER_USAGE_2_PREPROCESS_BUFFER_BIT_EXT) {
         str += "2_PREPROCESS_BUFFER|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkHostImageCopyFlags(VkHostImageCopyFlags f) {
+String On_Str_VkHostImageCopyFlags([[maybe_unused]] VkHostImageCopyFlags f) {
     String str = "|";
     if (f & VK_HOST_IMAGE_COPY_MEMCPY_BIT) {
         str += "MEMCPY|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkSurfaceTransformFlagsKHR(VkSurfaceTransformFlagsKHR f) {
+String On_Str_VkSurfaceTransformFlagsKHR([[maybe_unused]] VkSurfaceTransformFlagsKHR f) {
     String str = "|";
     if (f & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR) {
         str += "IDENTITY|";
@@ -7030,10 +7030,10 @@ String On_Str_VkSurfaceTransformFlagsKHR(VkSurfaceTransformFlagsKHR f) {
     if (f & VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR) {
         str += "INHERIT|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkCompositeAlphaFlagsKHR(VkCompositeAlphaFlagsKHR f) {
+String On_Str_VkCompositeAlphaFlagsKHR([[maybe_unused]] VkCompositeAlphaFlagsKHR f) {
     String str = "|";
     if (f & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR) {
         str += "OPAQUE|";
@@ -7047,10 +7047,10 @@ String On_Str_VkCompositeAlphaFlagsKHR(VkCompositeAlphaFlagsKHR f) {
     if (f & VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR) {
         str += "INHERIT|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkSwapchainCreateFlagsKHR(VkSwapchainCreateFlagsKHR f) {
+String On_Str_VkSwapchainCreateFlagsKHR([[maybe_unused]] VkSwapchainCreateFlagsKHR f) {
     String str = "|";
     if (f & VK_SWAPCHAIN_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR) {
         str += "SPLIT_INSTANCE_BIND_REGIONS|";
@@ -7070,10 +7070,10 @@ String On_Str_VkSwapchainCreateFlagsKHR(VkSwapchainCreateFlagsKHR f) {
     if (f & VK_SWAPCHAIN_CREATE_DEFERRED_MEMORY_ALLOCATION_BIT_KHR) {
         str += "DEFERRED_MEMORY_ALLOCATION|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkDeviceGroupPresentModeFlagsKHR(VkDeviceGroupPresentModeFlagsKHR f) {
+String On_Str_VkDeviceGroupPresentModeFlagsKHR([[maybe_unused]] VkDeviceGroupPresentModeFlagsKHR f) {
     String str = "|";
     if (f & VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR) {
         str += "LOCAL|";
@@ -7087,10 +7087,10 @@ String On_Str_VkDeviceGroupPresentModeFlagsKHR(VkDeviceGroupPresentModeFlagsKHR 
     if (f & VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR) {
         str += "LOCAL_MULTI_DEVICE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkDisplayPlaneAlphaFlagsKHR(VkDisplayPlaneAlphaFlagsKHR f) {
+String On_Str_VkDisplayPlaneAlphaFlagsKHR([[maybe_unused]] VkDisplayPlaneAlphaFlagsKHR f) {
     String str = "|";
     if (f & VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR) {
         str += "OPAQUE|";
@@ -7104,10 +7104,10 @@ String On_Str_VkDisplayPlaneAlphaFlagsKHR(VkDisplayPlaneAlphaFlagsKHR f) {
     if (f & VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR) {
         str += "PER_PIXEL_PREMULTIPLIED|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoCodecOperationFlagsKHR(VkVideoCodecOperationFlagsKHR f) {
+String On_Str_VkVideoCodecOperationFlagsKHR([[maybe_unused]] VkVideoCodecOperationFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_CODEC_OPERATION_NONE_KHR) {
         str += "NONE_KHR|";
@@ -7133,10 +7133,10 @@ String On_Str_VkVideoCodecOperationFlagsKHR(VkVideoCodecOperationFlagsKHR f) {
     if (f & VK_VIDEO_CODEC_OPERATION_DECODE_VP9_BIT_KHR) {
         str += "DECODE_VP9|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoChromaSubsamplingFlagsKHR(VkVideoChromaSubsamplingFlagsKHR f) {
+String On_Str_VkVideoChromaSubsamplingFlagsKHR([[maybe_unused]] VkVideoChromaSubsamplingFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_CHROMA_SUBSAMPLING_INVALID_KHR) {
         str += "INVALID_KHR|";
@@ -7153,10 +7153,10 @@ String On_Str_VkVideoChromaSubsamplingFlagsKHR(VkVideoChromaSubsamplingFlagsKHR 
     if (f & VK_VIDEO_CHROMA_SUBSAMPLING_444_BIT_KHR) {
         str += "444|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoComponentBitDepthFlagsKHR(VkVideoComponentBitDepthFlagsKHR f) {
+String On_Str_VkVideoComponentBitDepthFlagsKHR([[maybe_unused]] VkVideoComponentBitDepthFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_COMPONENT_BIT_DEPTH_INVALID_KHR) {
         str += "INVALID_KHR|";
@@ -7170,10 +7170,10 @@ String On_Str_VkVideoComponentBitDepthFlagsKHR(VkVideoComponentBitDepthFlagsKHR 
     if (f & VK_VIDEO_COMPONENT_BIT_DEPTH_12_BIT_KHR) {
         str += "12|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoCapabilityFlagsKHR(VkVideoCapabilityFlagsKHR f) {
+String On_Str_VkVideoCapabilityFlagsKHR([[maybe_unused]] VkVideoCapabilityFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_CAPABILITY_PROTECTED_CONTENT_BIT_KHR) {
         str += "PROTECTED_CONTENT|";
@@ -7181,10 +7181,10 @@ String On_Str_VkVideoCapabilityFlagsKHR(VkVideoCapabilityFlagsKHR f) {
     if (f & VK_VIDEO_CAPABILITY_SEPARATE_REFERENCE_IMAGES_BIT_KHR) {
         str += "SEPARATE_REFERENCE_IMAGES|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoSessionCreateFlagsKHR(VkVideoSessionCreateFlagsKHR f) {
+String On_Str_VkVideoSessionCreateFlagsKHR([[maybe_unused]] VkVideoSessionCreateFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_SESSION_CREATE_PROTECTED_CONTENT_BIT_KHR) {
         str += "PROTECTED_CONTENT|";
@@ -7204,18 +7204,18 @@ String On_Str_VkVideoSessionCreateFlagsKHR(VkVideoSessionCreateFlagsKHR f) {
     if (f & VK_VIDEO_SESSION_CREATE_INLINE_SESSION_PARAMETERS_BIT_KHR) {
         str += "INLINE_SESSION_PARAMETERS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoSessionParametersCreateFlagsKHR(VkVideoSessionParametersCreateFlagsKHR f) {
+String On_Str_VkVideoSessionParametersCreateFlagsKHR([[maybe_unused]] VkVideoSessionParametersCreateFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_SESSION_PARAMETERS_CREATE_QUANTIZATION_MAP_COMPATIBLE_BIT_KHR) {
         str += "QUANTIZATION_MAP_COMPATIBLE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoCodingControlFlagsKHR(VkVideoCodingControlFlagsKHR f) {
+String On_Str_VkVideoCodingControlFlagsKHR([[maybe_unused]] VkVideoCodingControlFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_CODING_CONTROL_RESET_BIT_KHR) {
         str += "RESET|";
@@ -7226,10 +7226,10 @@ String On_Str_VkVideoCodingControlFlagsKHR(VkVideoCodingControlFlagsKHR f) {
     if (f & VK_VIDEO_CODING_CONTROL_ENCODE_QUALITY_LEVEL_BIT_KHR) {
         str += "ENCODE_QUALITY_LEVEL|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoDecodeCapabilityFlagsKHR(VkVideoDecodeCapabilityFlagsKHR f) {
+String On_Str_VkVideoDecodeCapabilityFlagsKHR([[maybe_unused]] VkVideoDecodeCapabilityFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_COINCIDE_BIT_KHR) {
         str += "DPB_AND_OUTPUT_COINCIDE|";
@@ -7237,10 +7237,10 @@ String On_Str_VkVideoDecodeCapabilityFlagsKHR(VkVideoDecodeCapabilityFlagsKHR f)
     if (f & VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_DISTINCT_BIT_KHR) {
         str += "DPB_AND_OUTPUT_DISTINCT|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoDecodeUsageFlagsKHR(VkVideoDecodeUsageFlagsKHR f) {
+String On_Str_VkVideoDecodeUsageFlagsKHR([[maybe_unused]] VkVideoDecodeUsageFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_DECODE_USAGE_DEFAULT_KHR) {
         str += "DEFAULT_KHR|";
@@ -7254,10 +7254,10 @@ String On_Str_VkVideoDecodeUsageFlagsKHR(VkVideoDecodeUsageFlagsKHR f) {
     if (f & VK_VIDEO_DECODE_USAGE_STREAMING_BIT_KHR) {
         str += "STREAMING|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeH264CapabilityFlagsKHR(VkVideoEncodeH264CapabilityFlagsKHR f) {
+String On_Str_VkVideoEncodeH264CapabilityFlagsKHR([[maybe_unused]] VkVideoEncodeH264CapabilityFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_H264_CAPABILITY_HRD_COMPLIANCE_BIT_KHR) {
         str += "HRD_COMPLIANCE|";
@@ -7292,10 +7292,10 @@ String On_Str_VkVideoEncodeH264CapabilityFlagsKHR(VkVideoEncodeH264CapabilityFla
     if (f & VK_VIDEO_ENCODE_H264_CAPABILITY_MB_QP_DIFF_WRAPAROUND_BIT_KHR) {
         str += "MB_QP_DIFF_WRAPAROUND|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeH264StdFlagsKHR(VkVideoEncodeH264StdFlagsKHR f) {
+String On_Str_VkVideoEncodeH264StdFlagsKHR([[maybe_unused]] VkVideoEncodeH264StdFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_H264_STD_SEPARATE_COLOR_PLANE_FLAG_SET_BIT_KHR) {
         str += "SEPARATE_COLOR_PLANE_FLAG_SET|";
@@ -7357,10 +7357,10 @@ String On_Str_VkVideoEncodeH264StdFlagsKHR(VkVideoEncodeH264StdFlagsKHR f) {
     if (f & VK_VIDEO_ENCODE_H264_STD_DIFFERENT_SLICE_QP_DELTA_BIT_KHR) {
         str += "DIFFERENT_SLICE_QP_DELTA|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeH264RateControlFlagsKHR(VkVideoEncodeH264RateControlFlagsKHR f) {
+String On_Str_VkVideoEncodeH264RateControlFlagsKHR([[maybe_unused]] VkVideoEncodeH264RateControlFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_H264_RATE_CONTROL_ATTEMPT_HRD_COMPLIANCE_BIT_KHR) {
         str += "ATTEMPT_HRD_COMPLIANCE|";
@@ -7377,10 +7377,10 @@ String On_Str_VkVideoEncodeH264RateControlFlagsKHR(VkVideoEncodeH264RateControlF
     if (f & VK_VIDEO_ENCODE_H264_RATE_CONTROL_TEMPORAL_LAYER_PATTERN_DYADIC_BIT_KHR) {
         str += "TEMPORAL_LAYER_PATTERN_DYADIC|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeH265CapabilityFlagsKHR(VkVideoEncodeH265CapabilityFlagsKHR f) {
+String On_Str_VkVideoEncodeH265CapabilityFlagsKHR([[maybe_unused]] VkVideoEncodeH265CapabilityFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_H265_CAPABILITY_HRD_COMPLIANCE_BIT_KHR) {
         str += "HRD_COMPLIANCE|";
@@ -7418,10 +7418,10 @@ String On_Str_VkVideoEncodeH265CapabilityFlagsKHR(VkVideoEncodeH265CapabilityFla
     if (f & VK_VIDEO_ENCODE_H265_CAPABILITY_CU_QP_DIFF_WRAPAROUND_BIT_KHR) {
         str += "CU_QP_DIFF_WRAPAROUND|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeH265StdFlagsKHR(VkVideoEncodeH265StdFlagsKHR f) {
+String On_Str_VkVideoEncodeH265StdFlagsKHR([[maybe_unused]] VkVideoEncodeH265StdFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_H265_STD_SEPARATE_COLOR_PLANE_FLAG_SET_BIT_KHR) {
         str += "SEPARATE_COLOR_PLANE_FLAG_SET|";
@@ -7486,10 +7486,10 @@ String On_Str_VkVideoEncodeH265StdFlagsKHR(VkVideoEncodeH265StdFlagsKHR f) {
     if (f & VK_VIDEO_ENCODE_H265_STD_DIFFERENT_SLICE_QP_DELTA_BIT_KHR) {
         str += "DIFFERENT_SLICE_QP_DELTA|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeH265CtbSizeFlagsKHR(VkVideoEncodeH265CtbSizeFlagsKHR f) {
+String On_Str_VkVideoEncodeH265CtbSizeFlagsKHR([[maybe_unused]] VkVideoEncodeH265CtbSizeFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_H265_CTB_SIZE_16_BIT_KHR) {
         str += "16|";
@@ -7500,10 +7500,10 @@ String On_Str_VkVideoEncodeH265CtbSizeFlagsKHR(VkVideoEncodeH265CtbSizeFlagsKHR 
     if (f & VK_VIDEO_ENCODE_H265_CTB_SIZE_64_BIT_KHR) {
         str += "64|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeH265TransformBlockSizeFlagsKHR(VkVideoEncodeH265TransformBlockSizeFlagsKHR f) {
+String On_Str_VkVideoEncodeH265TransformBlockSizeFlagsKHR([[maybe_unused]] VkVideoEncodeH265TransformBlockSizeFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_4_BIT_KHR) {
         str += "4|";
@@ -7517,10 +7517,10 @@ String On_Str_VkVideoEncodeH265TransformBlockSizeFlagsKHR(VkVideoEncodeH265Trans
     if (f & VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_32_BIT_KHR) {
         str += "32|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeH265RateControlFlagsKHR(VkVideoEncodeH265RateControlFlagsKHR f) {
+String On_Str_VkVideoEncodeH265RateControlFlagsKHR([[maybe_unused]] VkVideoEncodeH265RateControlFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_H265_RATE_CONTROL_ATTEMPT_HRD_COMPLIANCE_BIT_KHR) {
         str += "ATTEMPT_HRD_COMPLIANCE|";
@@ -7537,10 +7537,10 @@ String On_Str_VkVideoEncodeH265RateControlFlagsKHR(VkVideoEncodeH265RateControlF
     if (f & VK_VIDEO_ENCODE_H265_RATE_CONTROL_TEMPORAL_SUB_LAYER_PATTERN_DYADIC_BIT_KHR) {
         str += "TEMPORAL_SUB_LAYER_PATTERN_DYADIC|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoDecodeH264PictureLayoutFlagsKHR(VkVideoDecodeH264PictureLayoutFlagsKHR f) {
+String On_Str_VkVideoDecodeH264PictureLayoutFlagsKHR([[maybe_unused]] VkVideoDecodeH264PictureLayoutFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_PROGRESSIVE_KHR) {
         str += "PROGRESSIVE_KHR|";
@@ -7551,10 +7551,10 @@ String On_Str_VkVideoDecodeH264PictureLayoutFlagsKHR(VkVideoDecodeH264PictureLay
     if (f & VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_INTERLACED_SEPARATE_PLANES_BIT_KHR) {
         str += "INTERLACED_SEPARATE_PLANES|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPerformanceCounterDescriptionFlagsKHR(VkPerformanceCounterDescriptionFlagsKHR f) {
+String On_Str_VkPerformanceCounterDescriptionFlagsKHR([[maybe_unused]] VkPerformanceCounterDescriptionFlagsKHR f) {
     String str = "|";
     if (f & VK_PERFORMANCE_COUNTER_DESCRIPTION_PERFORMANCE_IMPACTING_BIT_KHR) {
         str += "PERFORMANCE_IMPACTING|";
@@ -7562,15 +7562,15 @@ String On_Str_VkPerformanceCounterDescriptionFlagsKHR(VkPerformanceCounterDescri
     if (f & VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_BIT_KHR) {
         str += "CONCURRENTLY_IMPACTED|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkAcquireProfilingLockFlagsKHR(VkAcquireProfilingLockFlagsKHR f) {
+String On_Str_VkAcquireProfilingLockFlagsKHR([[maybe_unused]] VkAcquireProfilingLockFlagsKHR f) {
     String str = "|";
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeFlagsKHR(VkVideoEncodeFlagsKHR f) {
+String On_Str_VkVideoEncodeFlagsKHR([[maybe_unused]] VkVideoEncodeFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_INTRA_REFRESH_BIT_KHR) {
         str += "INTRA_REFRESH|";
@@ -7581,10 +7581,10 @@ String On_Str_VkVideoEncodeFlagsKHR(VkVideoEncodeFlagsKHR f) {
     if (f & VK_VIDEO_ENCODE_WITH_EMPHASIS_MAP_BIT_KHR) {
         str += "WITH_EMPHASIS_MAP|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeCapabilityFlagsKHR(VkVideoEncodeCapabilityFlagsKHR f) {
+String On_Str_VkVideoEncodeCapabilityFlagsKHR([[maybe_unused]] VkVideoEncodeCapabilityFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_CAPABILITY_PRECEDING_EXTERNALLY_ENCODED_BYTES_BIT_KHR) {
         str += "PRECEDING_EXTERNALLY_ENCODED_BYTES|";
@@ -7598,10 +7598,10 @@ String On_Str_VkVideoEncodeCapabilityFlagsKHR(VkVideoEncodeCapabilityFlagsKHR f)
     if (f & VK_VIDEO_ENCODE_CAPABILITY_EMPHASIS_MAP_BIT_KHR) {
         str += "EMPHASIS_MAP|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeRateControlModeFlagsKHR(VkVideoEncodeRateControlModeFlagsKHR f) {
+String On_Str_VkVideoEncodeRateControlModeFlagsKHR([[maybe_unused]] VkVideoEncodeRateControlModeFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DEFAULT_KHR) {
         str += "DEFAULT_KHR|";
@@ -7615,10 +7615,10 @@ String On_Str_VkVideoEncodeRateControlModeFlagsKHR(VkVideoEncodeRateControlModeF
     if (f & VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR) {
         str += "VBR|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeFeedbackFlagsKHR(VkVideoEncodeFeedbackFlagsKHR f) {
+String On_Str_VkVideoEncodeFeedbackFlagsKHR([[maybe_unused]] VkVideoEncodeFeedbackFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BUFFER_OFFSET_BIT_KHR) {
         str += "BITSTREAM_BUFFER_OFFSET|";
@@ -7629,10 +7629,10 @@ String On_Str_VkVideoEncodeFeedbackFlagsKHR(VkVideoEncodeFeedbackFlagsKHR f) {
     if (f & VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_HAS_OVERRIDES_BIT_KHR) {
         str += "BITSTREAM_HAS_OVERRIDES|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeUsageFlagsKHR(VkVideoEncodeUsageFlagsKHR f) {
+String On_Str_VkVideoEncodeUsageFlagsKHR([[maybe_unused]] VkVideoEncodeUsageFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_USAGE_DEFAULT_KHR) {
         str += "DEFAULT_KHR|";
@@ -7649,10 +7649,10 @@ String On_Str_VkVideoEncodeUsageFlagsKHR(VkVideoEncodeUsageFlagsKHR f) {
     if (f & VK_VIDEO_ENCODE_USAGE_CONFERENCING_BIT_KHR) {
         str += "CONFERENCING|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeContentFlagsKHR(VkVideoEncodeContentFlagsKHR f) {
+String On_Str_VkVideoEncodeContentFlagsKHR([[maybe_unused]] VkVideoEncodeContentFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_CONTENT_DEFAULT_KHR) {
         str += "DEFAULT_KHR|";
@@ -7666,10 +7666,10 @@ String On_Str_VkVideoEncodeContentFlagsKHR(VkVideoEncodeContentFlagsKHR f) {
     if (f & VK_VIDEO_ENCODE_CONTENT_RENDERED_BIT_KHR) {
         str += "RENDERED|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPresentScalingFlagsKHR(VkPresentScalingFlagsKHR f) {
+String On_Str_VkPresentScalingFlagsKHR([[maybe_unused]] VkPresentScalingFlagsKHR f) {
     String str = "|";
     if (f & VK_PRESENT_SCALING_ONE_TO_ONE_BIT_KHR) {
         str += "ONE_TO_ONE|";
@@ -7680,10 +7680,10 @@ String On_Str_VkPresentScalingFlagsKHR(VkPresentScalingFlagsKHR f) {
     if (f & VK_PRESENT_SCALING_STRETCH_BIT_KHR) {
         str += "STRETCH|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPresentGravityFlagsKHR(VkPresentGravityFlagsKHR f) {
+String On_Str_VkPresentGravityFlagsKHR([[maybe_unused]] VkPresentGravityFlagsKHR f) {
     String str = "|";
     if (f & VK_PRESENT_GRAVITY_MIN_BIT_KHR) {
         str += "MIN|";
@@ -7694,10 +7694,10 @@ String On_Str_VkPresentGravityFlagsKHR(VkPresentGravityFlagsKHR f) {
     if (f & VK_PRESENT_GRAVITY_CENTERED_BIT_KHR) {
         str += "CENTERED|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeAV1CapabilityFlagsKHR(VkVideoEncodeAV1CapabilityFlagsKHR f) {
+String On_Str_VkVideoEncodeAV1CapabilityFlagsKHR([[maybe_unused]] VkVideoEncodeAV1CapabilityFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_AV1_CAPABILITY_PER_RATE_CONTROL_GROUP_MIN_MAX_Q_INDEX_BIT_KHR) {
         str += "VK_VIDEO_ENCODE_AV1_CAPABILITY_PER_RATE_CONTROL_GROUP_MIN_MAX_Q_INDEX|";
@@ -7717,10 +7717,10 @@ String On_Str_VkVideoEncodeAV1CapabilityFlagsKHR(VkVideoEncodeAV1CapabilityFlags
     if (f & VK_VIDEO_ENCODE_AV1_CAPABILITY_COMPOUND_PREDICTION_INTRA_REFRESH_BIT_KHR) {
         str += "VK_VIDEO_ENCODE_AV1_CAPABILITY_COMPOUND_PREDICTION_INTRA_REFRESH|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeAV1StdFlagsKHR(VkVideoEncodeAV1StdFlagsKHR f) {
+String On_Str_VkVideoEncodeAV1StdFlagsKHR([[maybe_unused]] VkVideoEncodeAV1StdFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_AV1_STD_UNIFORM_TILE_SPACING_FLAG_SET_BIT_KHR) {
         str += "VK_VIDEO_ENCODE_AV1_STD_UNIFORM_TILE_SPACING_FLAG_SET|";
@@ -7734,10 +7734,10 @@ String On_Str_VkVideoEncodeAV1StdFlagsKHR(VkVideoEncodeAV1StdFlagsKHR f) {
     if (f & VK_VIDEO_ENCODE_AV1_STD_DELTA_Q_BIT_KHR) {
         str += "VK_VIDEO_ENCODE_AV1_STD_DELTA_Q|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeAV1SuperblockSizeFlagsKHR(VkVideoEncodeAV1SuperblockSizeFlagsKHR f) {
+String On_Str_VkVideoEncodeAV1SuperblockSizeFlagsKHR([[maybe_unused]] VkVideoEncodeAV1SuperblockSizeFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_AV1_SUPERBLOCK_SIZE_64_BIT_KHR) {
         str += "VK_VIDEO_ENCODE_AV1_SUPERBLOCK_SIZE_64|";
@@ -7745,10 +7745,10 @@ String On_Str_VkVideoEncodeAV1SuperblockSizeFlagsKHR(VkVideoEncodeAV1SuperblockS
     if (f & VK_VIDEO_ENCODE_AV1_SUPERBLOCK_SIZE_128_BIT_KHR) {
         str += "VK_VIDEO_ENCODE_AV1_SUPERBLOCK_SIZE_128|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeAV1RateControlFlagsKHR(VkVideoEncodeAV1RateControlFlagsKHR f) {
+String On_Str_VkVideoEncodeAV1RateControlFlagsKHR([[maybe_unused]] VkVideoEncodeAV1RateControlFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_AV1_RATE_CONTROL_REGULAR_GOP_BIT_KHR) {
         str += "VK_VIDEO_ENCODE_AV1_RATE_CONTROL_REGULAR_GOP|";
@@ -7762,10 +7762,10 @@ String On_Str_VkVideoEncodeAV1RateControlFlagsKHR(VkVideoEncodeAV1RateControlFla
     if (f & VK_VIDEO_ENCODE_AV1_RATE_CONTROL_REFERENCE_PATTERN_DYADIC_BIT_KHR) {
         str += "VK_VIDEO_ENCODE_AV1_RATE_CONTROL_REFERENCE_PATTERN_DYADIC|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkVideoEncodeIntraRefreshModeFlagsKHR(VkVideoEncodeIntraRefreshModeFlagsKHR f) {
+String On_Str_VkVideoEncodeIntraRefreshModeFlagsKHR([[maybe_unused]] VkVideoEncodeIntraRefreshModeFlagsKHR f) {
     String str = "|";
     if (f & VK_VIDEO_ENCODE_INTRA_REFRESH_MODE_NONE_KHR) {
         str += "NONE_KHR|";
@@ -7782,18 +7782,18 @@ String On_Str_VkVideoEncodeIntraRefreshModeFlagsKHR(VkVideoEncodeIntraRefreshMod
     if (f & VK_VIDEO_ENCODE_INTRA_REFRESH_MODE_BLOCK_COLUMN_BASED_BIT_KHR) {
         str += "BLOCK_COLUMN_BASED|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkAccessFlags3KHR(VkAccessFlags3KHR f) {
+String On_Str_VkAccessFlags3KHR([[maybe_unused]] VkAccessFlags3KHR f) {
     String str = "|";
     if (f & VK_ACCESS_3_NONE_KHR) {
         str += "VK_ACCESS_3_NONE_KHR|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkDebugReportFlagsEXT(VkDebugReportFlagsEXT f) {
+String On_Str_VkDebugReportFlagsEXT([[maybe_unused]] VkDebugReportFlagsEXT f) {
     String str = "|";
     if (f & VK_DEBUG_REPORT_INFORMATION_BIT_EXT) {
         str += "INFORMATION|";
@@ -7810,10 +7810,10 @@ String On_Str_VkDebugReportFlagsEXT(VkDebugReportFlagsEXT f) {
     if (f & VK_DEBUG_REPORT_DEBUG_BIT_EXT) {
         str += "DEBUG|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkExternalMemoryHandleTypeFlagsNV(VkExternalMemoryHandleTypeFlagsNV f) {
+String On_Str_VkExternalMemoryHandleTypeFlagsNV([[maybe_unused]] VkExternalMemoryHandleTypeFlagsNV f) {
     String str = "|";
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT_NV) {
         str += "OPAQUE_WIN32|";
@@ -7827,10 +7827,10 @@ String On_Str_VkExternalMemoryHandleTypeFlagsNV(VkExternalMemoryHandleTypeFlagsN
     if (f & VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_IMAGE_KMT_BIT_NV) {
         str += "D3D11_IMAGE_KMT|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkExternalMemoryFeatureFlagsNV(VkExternalMemoryFeatureFlagsNV f) {
+String On_Str_VkExternalMemoryFeatureFlagsNV([[maybe_unused]] VkExternalMemoryFeatureFlagsNV f) {
     String str = "|";
     if (f & VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT_NV) {
         str += "DEDICATED_ONLY|";
@@ -7841,26 +7841,26 @@ String On_Str_VkExternalMemoryFeatureFlagsNV(VkExternalMemoryFeatureFlagsNV f) {
     if (f & VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT_NV) {
         str += "IMPORTABLE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkConditionalRenderingFlagsEXT(VkConditionalRenderingFlagsEXT f) {
+String On_Str_VkConditionalRenderingFlagsEXT([[maybe_unused]] VkConditionalRenderingFlagsEXT f) {
     String str = "|";
     if (f & VK_CONDITIONAL_RENDERING_INVERTED_BIT_EXT) {
         str += "INVERTED|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkSurfaceCounterFlagsEXT(VkSurfaceCounterFlagsEXT f) {
+String On_Str_VkSurfaceCounterFlagsEXT([[maybe_unused]] VkSurfaceCounterFlagsEXT f) {
     String str = "|";
     if (f & VK_SURFACE_COUNTER_VBLANK_BIT_EXT) {
         str += "VBLANK|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkDebugUtilsMessageSeverityFlagsEXT(VkDebugUtilsMessageSeverityFlagsEXT f) {
+String On_Str_VkDebugUtilsMessageSeverityFlagsEXT([[maybe_unused]] VkDebugUtilsMessageSeverityFlagsEXT f) {
     String str = "|";
     if (f & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
         str += "VERBOSE|";
@@ -7874,10 +7874,10 @@ String On_Str_VkDebugUtilsMessageSeverityFlagsEXT(VkDebugUtilsMessageSeverityFla
     if (f & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
         str += "ERROR|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkDebugUtilsMessageTypeFlagsEXT(VkDebugUtilsMessageTypeFlagsEXT f) {
+String On_Str_VkDebugUtilsMessageTypeFlagsEXT([[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT f) {
     String str = "|";
     if (f & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT) {
         str += "GENERAL|";
@@ -7891,10 +7891,10 @@ String On_Str_VkDebugUtilsMessageTypeFlagsEXT(VkDebugUtilsMessageTypeFlagsEXT f)
     if (f & VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT) {
         str += "DEVICE_ADDRESS_BINDING|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkGeometryFlagsKHR(VkGeometryFlagsKHR f) {
+String On_Str_VkGeometryFlagsKHR([[maybe_unused]] VkGeometryFlagsKHR f) {
     String str = "|";
     if (f & VK_GEOMETRY_OPAQUE_BIT_KHR) {
         str += "OPAQUE|";
@@ -7902,10 +7902,10 @@ String On_Str_VkGeometryFlagsKHR(VkGeometryFlagsKHR f) {
     if (f & VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR) {
         str += "NO_DUPLICATE_ANY_HIT_INVOCATION|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkGeometryInstanceFlagsKHR(VkGeometryInstanceFlagsKHR f) {
+String On_Str_VkGeometryInstanceFlagsKHR([[maybe_unused]] VkGeometryInstanceFlagsKHR f) {
     String str = "|";
     if (f & VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR) {
         str += "TRIANGLE_FACING_CULL_DISABLE|";
@@ -7925,10 +7925,10 @@ String On_Str_VkGeometryInstanceFlagsKHR(VkGeometryInstanceFlagsKHR f) {
     if (f & VK_GEOMETRY_INSTANCE_DISABLE_OPACITY_MICROMAPS_BIT_EXT) {
         str += "DISABLE_OPACITY_MICROMAPS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkBuildAccelerationStructureFlagsKHR(VkBuildAccelerationStructureFlagsKHR f) {
+String On_Str_VkBuildAccelerationStructureFlagsKHR([[maybe_unused]] VkBuildAccelerationStructureFlagsKHR f) {
     String str = "|";
     if (f & VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR) {
         str += "ALLOW_UPDATE|";
@@ -7965,28 +7965,28 @@ String On_Str_VkBuildAccelerationStructureFlagsKHR(VkBuildAccelerationStructureF
     if (f & VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DATA_ACCESS_BIT_KHR) {
         str += "ALLOW_DATA_ACCESS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPipelineCompilerControlFlagsAMD(VkPipelineCompilerControlFlagsAMD f) {
+String On_Str_VkPipelineCompilerControlFlagsAMD([[maybe_unused]] VkPipelineCompilerControlFlagsAMD f) {
     String str = "|";
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkShaderCorePropertiesFlagsAMD(VkShaderCorePropertiesFlagsAMD f) {
+String On_Str_VkShaderCorePropertiesFlagsAMD([[maybe_unused]] VkShaderCorePropertiesFlagsAMD f) {
     String str = "|";
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkIndirectStateFlagsNV(VkIndirectStateFlagsNV f) {
+String On_Str_VkIndirectStateFlagsNV([[maybe_unused]] VkIndirectStateFlagsNV f) {
     String str = "|";
     if (f & VK_INDIRECT_STATE_FLAG_FRONTFACE_BIT_NV) {
         str += "FLAG_FRONTFACE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkIndirectCommandsLayoutUsageFlagsNV(VkIndirectCommandsLayoutUsageFlagsNV f) {
+String On_Str_VkIndirectCommandsLayoutUsageFlagsNV([[maybe_unused]] VkIndirectCommandsLayoutUsageFlagsNV f) {
     String str = "|";
     if (f & VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_NV) {
         str += "EXPLICIT_PREPROCESS|";
@@ -7997,10 +7997,10 @@ String On_Str_VkIndirectCommandsLayoutUsageFlagsNV(VkIndirectCommandsLayoutUsage
     if (f & VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_NV) {
         str += "UNORDERED_SEQUENCES|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkDeviceDiagnosticsConfigFlagsNV(VkDeviceDiagnosticsConfigFlagsNV f) {
+String On_Str_VkDeviceDiagnosticsConfigFlagsNV([[maybe_unused]] VkDeviceDiagnosticsConfigFlagsNV f) {
     String str = "|";
     if (f & VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_SHADER_DEBUG_INFO_BIT_NV) {
         str += "ENABLE_SHADER_DEBUG_INFO|";
@@ -8014,10 +8014,10 @@ String On_Str_VkDeviceDiagnosticsConfigFlagsNV(VkDeviceDiagnosticsConfigFlagsNV 
     if (f & VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_SHADER_ERROR_REPORTING_BIT_NV) {
         str += "ENABLE_SHADER_ERROR_REPORTING|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkTileShadingRenderPassFlagsQCOM(VkTileShadingRenderPassFlagsQCOM f) {
+String On_Str_VkTileShadingRenderPassFlagsQCOM([[maybe_unused]] VkTileShadingRenderPassFlagsQCOM f) {
     String str = "|";
     if (f & VK_TILE_SHADING_RENDER_PASS_ENABLE_BIT_QCOM) {
         str += "VK_TILE_SHADING_RENDER_PASS_ENABLE|";
@@ -8025,11 +8025,11 @@ String On_Str_VkTileShadingRenderPassFlagsQCOM(VkTileShadingRenderPassFlagsQCOM 
     if (f & VK_TILE_SHADING_RENDER_PASS_PER_TILE_EXECUTION_BIT_QCOM) {
         str += "VK_TILE_SHADING_RENDER_PASS_PER_TILE_EXECUTION|";
     }
-    return std::move(str);
+    return str;
 }
 
 #ifdef VK_USE_PLATFORM_METAL_EXT
-String On_Str_VkExportMetalObjectTypeFlagsEXT(VkExportMetalObjectTypeFlagsEXT f) {
+String On_Str_VkExportMetalObjectTypeFlagsEXT([[maybe_unused]] VkExportMetalObjectTypeFlagsEXT f) {
     String str = "|";
     if (f & VK_EXPORT_METAL_OBJECT_TYPE_METAL_DEVICE_BIT_EXT) {
         str += "METAL_DEVICE|";
@@ -8049,11 +8049,11 @@ String On_Str_VkExportMetalObjectTypeFlagsEXT(VkExportMetalObjectTypeFlagsEXT f)
     if (f & VK_EXPORT_METAL_OBJECT_TYPE_METAL_SHARED_EVENT_BIT_EXT) {
         str += "METAL_SHARED_EVENT|";
     }
-    return std::move(str);
+    return str;
 }
 #endif // VK_USE_PLATFORM_METAL_EXT
 
-String On_Str_VkGraphicsPipelineLibraryFlagsEXT(VkGraphicsPipelineLibraryFlagsEXT f) {
+String On_Str_VkGraphicsPipelineLibraryFlagsEXT([[maybe_unused]] VkGraphicsPipelineLibraryFlagsEXT f) {
     String str = "|";
     if (f & VK_GRAPHICS_PIPELINE_LIBRARY_VERTEX_INPUT_INTERFACE_BIT_EXT) {
         str += "VERTEX_INPUT_INTERFACE|";
@@ -8067,10 +8067,10 @@ String On_Str_VkGraphicsPipelineLibraryFlagsEXT(VkGraphicsPipelineLibraryFlagsEX
     if (f & VK_GRAPHICS_PIPELINE_LIBRARY_FRAGMENT_OUTPUT_INTERFACE_BIT_EXT) {
         str += "FRAGMENT_OUTPUT_INTERFACE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkImageCompressionFlagsEXT(VkImageCompressionFlagsEXT f) {
+String On_Str_VkImageCompressionFlagsEXT([[maybe_unused]] VkImageCompressionFlagsEXT f) {
     String str = "|";
     if (f & VK_IMAGE_COMPRESSION_DEFAULT_EXT) {
         str += "DEFAULT_EXT|";
@@ -8084,10 +8084,10 @@ String On_Str_VkImageCompressionFlagsEXT(VkImageCompressionFlagsEXT f) {
     if (f & VK_IMAGE_COMPRESSION_DISABLED_EXT) {
         str += "DISABLED_EXT|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkImageCompressionFixedRateFlagsEXT(VkImageCompressionFixedRateFlagsEXT f) {
+String On_Str_VkImageCompressionFixedRateFlagsEXT([[maybe_unused]] VkImageCompressionFixedRateFlagsEXT f) {
     String str = "|";
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_NONE_EXT) {
         str += "NONE_EXT|";
@@ -8164,19 +8164,19 @@ String On_Str_VkImageCompressionFixedRateFlagsEXT(VkImageCompressionFixedRateFla
     if (f & VK_IMAGE_COMPRESSION_FIXED_RATE_24BPC_BIT_EXT) {
         str += "24BPC|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkDeviceAddressBindingFlagsEXT(VkDeviceAddressBindingFlagsEXT f) {
+String On_Str_VkDeviceAddressBindingFlagsEXT([[maybe_unused]] VkDeviceAddressBindingFlagsEXT f) {
     String str = "|";
     if (f & VK_DEVICE_ADDRESS_BINDING_INTERNAL_OBJECT_BIT_EXT) {
         str += "INTERNAL_OBJECT|";
     }
-    return std::move(str);
+    return str;
 }
 
 #ifdef VK_USE_PLATFORM_FUCHSIA
-String On_Str_VkImageConstraintsInfoFlagsFUCHSIA(VkImageConstraintsInfoFlagsFUCHSIA f) {
+String On_Str_VkImageConstraintsInfoFlagsFUCHSIA([[maybe_unused]] VkImageConstraintsInfoFlagsFUCHSIA f) {
     String str = "|";
     if (f & VK_IMAGE_CONSTRAINTS_INFO_CPU_READ_RARELY_FUCHSIA) {
         str += "CPU_READ_RARELY_FUCHSIA|";
@@ -8193,19 +8193,19 @@ String On_Str_VkImageConstraintsInfoFlagsFUCHSIA(VkImageConstraintsInfoFlagsFUCH
     if (f & VK_IMAGE_CONSTRAINTS_INFO_PROTECTED_OPTIONAL_FUCHSIA) {
         str += "PROTECTED_OPTIONAL_FUCHSIA|";
     }
-    return std::move(str);
+    return str;
 }
 #endif // VK_USE_PLATFORM_FUCHSIA
 
-String On_Str_VkFrameBoundaryFlagsEXT(VkFrameBoundaryFlagsEXT f) {
+String On_Str_VkFrameBoundaryFlagsEXT([[maybe_unused]] VkFrameBoundaryFlagsEXT f) {
     String str = "|";
     if (f & VK_FRAME_BOUNDARY_FRAME_END_BIT_EXT) {
         str += "FRAME_END|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkBuildMicromapFlagsEXT(VkBuildMicromapFlagsEXT f) {
+String On_Str_VkBuildMicromapFlagsEXT([[maybe_unused]] VkBuildMicromapFlagsEXT f) {
     String str = "|";
     if (f & VK_BUILD_MICROMAP_PREFER_FAST_TRACE_BIT_EXT) {
         str += "PREFER_FAST_TRACE|";
@@ -8216,34 +8216,34 @@ String On_Str_VkBuildMicromapFlagsEXT(VkBuildMicromapFlagsEXT f) {
     if (f & VK_BUILD_MICROMAP_ALLOW_COMPACTION_BIT_EXT) {
         str += "ALLOW_COMPACTION|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkMicromapCreateFlagsEXT(VkMicromapCreateFlagsEXT f) {
+String On_Str_VkMicromapCreateFlagsEXT([[maybe_unused]] VkMicromapCreateFlagsEXT f) {
     String str = "|";
     if (f & VK_MICROMAP_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_EXT) {
         str += "DEVICE_ADDRESS_CAPTURE_REPLAY|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPhysicalDeviceSchedulingControlsFlagsARM(VkPhysicalDeviceSchedulingControlsFlagsARM f) {
+String On_Str_VkPhysicalDeviceSchedulingControlsFlagsARM([[maybe_unused]] VkPhysicalDeviceSchedulingControlsFlagsARM f) {
     String str = "|";
     if (f & VK_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_SHADER_CORE_COUNT_ARM) {
         str += "VK_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_SHADER_CORE_COUNT_ARM|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkMemoryDecompressionMethodFlagsNV(VkMemoryDecompressionMethodFlagsNV f) {
+String On_Str_VkMemoryDecompressionMethodFlagsNV([[maybe_unused]] VkMemoryDecompressionMethodFlagsNV f) {
     String str = "|";
     if (f & VK_MEMORY_DECOMPRESSION_METHOD_GDEFLATE_1_0_BIT_NV) {
         str += "GDEFLATE_1_0|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkTensorCreateFlagsARM(VkTensorCreateFlagsARM f) {
+String On_Str_VkTensorCreateFlagsARM([[maybe_unused]] VkTensorCreateFlagsARM f) {
     String str = "|";
     if (f & VK_TENSOR_CREATE_MUTABLE_FORMAT_BIT_ARM) {
         str += "VK_TENSOR_CREATE_MUTABLE_FORMAT_BIT_ARM|";
@@ -8254,18 +8254,18 @@ String On_Str_VkTensorCreateFlagsARM(VkTensorCreateFlagsARM f) {
     if (f & VK_TENSOR_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM) {
         str += "VK_TENSOR_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkTensorViewCreateFlagsARM(VkTensorViewCreateFlagsARM f) {
+String On_Str_VkTensorViewCreateFlagsARM([[maybe_unused]] VkTensorViewCreateFlagsARM f) {
     String str = "|";
     if (f & VK_TENSOR_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM) {
         str += "VK_TENSOR_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_ARM|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkTensorUsageFlagsARM(VkTensorUsageFlagsARM f) {
+String On_Str_VkTensorUsageFlagsARM([[maybe_unused]] VkTensorUsageFlagsARM f) {
     String str = "|";
     if (f & VK_TENSOR_USAGE_SHADER_BIT_ARM) {
         str += "VK_TENSOR_USAGE_SHADER_BIT_ARM|";
@@ -8282,10 +8282,10 @@ String On_Str_VkTensorUsageFlagsARM(VkTensorUsageFlagsARM f) {
     if (f & VK_TENSOR_USAGE_DATA_GRAPH_BIT_ARM) {
         str += "VK_TENSOR_USAGE_DATA_GRAPH_BIT_ARM|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkOpticalFlowGridSizeFlagsNV(VkOpticalFlowGridSizeFlagsNV f) {
+String On_Str_VkOpticalFlowGridSizeFlagsNV([[maybe_unused]] VkOpticalFlowGridSizeFlagsNV f) {
     String str = "|";
     if (f & VK_OPTICAL_FLOW_GRID_SIZE_UNKNOWN_NV) {
         str += "UNKNOWN_NV|";
@@ -8302,10 +8302,10 @@ String On_Str_VkOpticalFlowGridSizeFlagsNV(VkOpticalFlowGridSizeFlagsNV f) {
     if (f & VK_OPTICAL_FLOW_GRID_SIZE_8X8_BIT_NV) {
         str += "8X8|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkOpticalFlowUsageFlagsNV(VkOpticalFlowUsageFlagsNV f) {
+String On_Str_VkOpticalFlowUsageFlagsNV([[maybe_unused]] VkOpticalFlowUsageFlagsNV f) {
     String str = "|";
     if (f & VK_OPTICAL_FLOW_USAGE_UNKNOWN_NV) {
         str += "UNKNOWN_NV|";
@@ -8325,10 +8325,10 @@ String On_Str_VkOpticalFlowUsageFlagsNV(VkOpticalFlowUsageFlagsNV f) {
     if (f & VK_OPTICAL_FLOW_USAGE_GLOBAL_FLOW_BIT_NV) {
         str += "GLOBAL_FLOW|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkOpticalFlowSessionCreateFlagsNV(VkOpticalFlowSessionCreateFlagsNV f) {
+String On_Str_VkOpticalFlowSessionCreateFlagsNV([[maybe_unused]] VkOpticalFlowSessionCreateFlagsNV f) {
     String str = "|";
     if (f & VK_OPTICAL_FLOW_SESSION_CREATE_ENABLE_HINT_BIT_NV) {
         str += "ENABLE_HINT|";
@@ -8345,18 +8345,18 @@ String On_Str_VkOpticalFlowSessionCreateFlagsNV(VkOpticalFlowSessionCreateFlagsN
     if (f & VK_OPTICAL_FLOW_SESSION_CREATE_BOTH_DIRECTIONS_BIT_NV) {
         str += "BOTH_DIRECTIONS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkOpticalFlowExecuteFlagsNV(VkOpticalFlowExecuteFlagsNV f) {
+String On_Str_VkOpticalFlowExecuteFlagsNV([[maybe_unused]] VkOpticalFlowExecuteFlagsNV f) {
     String str = "|";
     if (f & VK_OPTICAL_FLOW_EXECUTE_DISABLE_TEMPORAL_HINTS_BIT_NV) {
         str += "DISABLE_TEMPORAL_HINTS|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkShaderCreateFlagsEXT(VkShaderCreateFlagsEXT f) {
+String On_Str_VkShaderCreateFlagsEXT([[maybe_unused]] VkShaderCreateFlagsEXT f) {
     String str = "|";
     if (f & VK_SHADER_CREATE_LINK_STAGE_BIT_EXT) {
         str += "LINK_STAGE|";
@@ -8382,23 +8382,24 @@ String On_Str_VkShaderCreateFlagsEXT(VkShaderCreateFlagsEXT f) {
     if (f & VK_SHADER_CREATE_INDIRECT_BINDABLE_BIT_EXT) {
         str += "INDIRECT_BINDABLE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkDataGraphPipelineSessionCreateFlagsARM(VkDataGraphPipelineSessionCreateFlagsARM f) {
+String On_Str_VkDataGraphPipelineSessionCreateFlagsARM([[maybe_unused]] VkDataGraphPipelineSessionCreateFlagsARM f) {
     String str = "|";
     if (f & VK_DATA_GRAPH_PIPELINE_SESSION_CREATE_PROTECTED_BIT_ARM) {
         str += "VK_DATA_GRAPH_PIPELINE_SESSION_CREATE_PROTECTED_BIT_ARM|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkDataGraphPipelineDispatchFlagsARM(VkDataGraphPipelineDispatchFlagsARM f) {
+String On_Str_VkDataGraphPipelineDispatchFlagsARM([[maybe_unused]] VkDataGraphPipelineDispatchFlagsARM f) {
     String str = "|";
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkClusterAccelerationStructureAddressResolutionFlagsNV(VkClusterAccelerationStructureAddressResolutionFlagsNV f) {
+String On_Str_VkClusterAccelerationStructureAddressResolutionFlagsNV(
+    [[maybe_unused]] VkClusterAccelerationStructureAddressResolutionFlagsNV f) {
     String str = "|";
     if (f & VK_CLUSTER_ACCELERATION_STRUCTURE_ADDRESS_RESOLUTION_NONE_NV) {
         str += "NONE_NV|";
@@ -8421,18 +8422,18 @@ String On_Str_VkClusterAccelerationStructureAddressResolutionFlagsNV(VkClusterAc
     if (f & VK_CLUSTER_ACCELERATION_STRUCTURE_ADDRESS_RESOLUTION_INDIRECTED_SRC_INFOS_COUNT_BIT_NV) {
         str += "INDIRECTED_SRC_INFOS_COUNT|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkClusterAccelerationStructureClusterFlagsNV(VkClusterAccelerationStructureClusterFlagsNV f) {
+String On_Str_VkClusterAccelerationStructureClusterFlagsNV([[maybe_unused]] VkClusterAccelerationStructureClusterFlagsNV f) {
     String str = "|";
     if (f & VK_CLUSTER_ACCELERATION_STRUCTURE_CLUSTER_ALLOW_DISABLE_OPACITY_MICROMAPS_NV) {
         str += "ALLOW_DISABLE_OPACITY_MICROMAPS_NV|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkClusterAccelerationStructureGeometryFlagsNV(VkClusterAccelerationStructureGeometryFlagsNV f) {
+String On_Str_VkClusterAccelerationStructureGeometryFlagsNV([[maybe_unused]] VkClusterAccelerationStructureGeometryFlagsNV f) {
     String str = "|";
     if (f & VK_CLUSTER_ACCELERATION_STRUCTURE_GEOMETRY_CULL_DISABLE_BIT_NV) {
         str += "CULL_DISABLE|";
@@ -8443,10 +8444,11 @@ String On_Str_VkClusterAccelerationStructureGeometryFlagsNV(VkClusterAcceleratio
     if (f & VK_CLUSTER_ACCELERATION_STRUCTURE_GEOMETRY_OPAQUE_BIT_NV) {
         str += "OPAQUE|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkClusterAccelerationStructureIndexFormatFlagsNV(VkClusterAccelerationStructureIndexFormatFlagsNV f) {
+String On_Str_VkClusterAccelerationStructureIndexFormatFlagsNV(
+    [[maybe_unused]] VkClusterAccelerationStructureIndexFormatFlagsNV f) {
     String str = "|";
     if (f & VK_CLUSTER_ACCELERATION_STRUCTURE_INDEX_FORMAT_8BIT_NV) {
         str += "8BIT_NV|";
@@ -8457,10 +8459,11 @@ String On_Str_VkClusterAccelerationStructureIndexFormatFlagsNV(VkClusterAccelera
     if (f & VK_CLUSTER_ACCELERATION_STRUCTURE_INDEX_FORMAT_32BIT_NV) {
         str += "32BIT_NV|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkPartitionedAccelerationStructureInstanceFlagsNV(VkPartitionedAccelerationStructureInstanceFlagsNV f) {
+String On_Str_VkPartitionedAccelerationStructureInstanceFlagsNV(
+    [[maybe_unused]] VkPartitionedAccelerationStructureInstanceFlagsNV f) {
     String str = "|";
     if (f & VK_PARTITIONED_ACCELERATION_STRUCTURE_INSTANCE_FLAG_TRIANGLE_FACING_CULL_DISABLE_BIT_NV) {
         str += "FLAG_TRIANGLE_FACING_CULL_DISABLE|";
@@ -8477,10 +8480,10 @@ String On_Str_VkPartitionedAccelerationStructureInstanceFlagsNV(VkPartitionedAcc
     if (f & VK_PARTITIONED_ACCELERATION_STRUCTURE_INSTANCE_FLAG_ENABLE_EXPLICIT_BOUNDING_BOX_NV) {
         str += "FLAG_ENABLE_EXPLICIT_BOUNDING_BOX_NV|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkIndirectCommandsInputModeFlagsEXT(VkIndirectCommandsInputModeFlagsEXT f) {
+String On_Str_VkIndirectCommandsInputModeFlagsEXT([[maybe_unused]] VkIndirectCommandsInputModeFlagsEXT f) {
     String str = "|";
     if (f & VK_INDIRECT_COMMANDS_INPUT_MODE_VULKAN_INDEX_BUFFER_EXT) {
         str += "VULKAN_INDEX_BUFFER_EXT|";
@@ -8488,10 +8491,10 @@ String On_Str_VkIndirectCommandsInputModeFlagsEXT(VkIndirectCommandsInputModeFla
     if (f & VK_INDIRECT_COMMANDS_INPUT_MODE_DXGI_INDEX_BUFFER_EXT) {
         str += "DXGI_INDEX_BUFFER_EXT|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkIndirectCommandsLayoutUsageFlagsEXT(VkIndirectCommandsLayoutUsageFlagsEXT f) {
+String On_Str_VkIndirectCommandsLayoutUsageFlagsEXT([[maybe_unused]] VkIndirectCommandsLayoutUsageFlagsEXT f) {
     String str = "|";
     if (f & VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_EXT) {
         str += "EXPLICIT_PREPROCESS|";
@@ -8499,10 +8502,10 @@ String On_Str_VkIndirectCommandsLayoutUsageFlagsEXT(VkIndirectCommandsLayoutUsag
     if (f & VK_INDIRECT_COMMANDS_LAYOUT_USAGE_UNORDERED_SEQUENCES_BIT_EXT) {
         str += "UNORDERED_SEQUENCES|";
     }
-    return std::move(str);
+    return str;
 }
 
-String On_Str_VkAccelerationStructureCreateFlagsKHR(VkAccelerationStructureCreateFlagsKHR f) {
+String On_Str_VkAccelerationStructureCreateFlagsKHR([[maybe_unused]] VkAccelerationStructureCreateFlagsKHR f) {
     String str = "|";
     if (f & VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR) {
         str += "DEVICE_ADDRESS_CAPTURE_REPLAY|";
@@ -8513,6 +8516,6 @@ String On_Str_VkAccelerationStructureCreateFlagsKHR(VkAccelerationStructureCreat
     if (f & VK_ACCELERATION_STRUCTURE_CREATE_MOTION_BIT_NV) {
         str += "MOTION|";
     }
-    return std::move(str);
+    return str;
 }
 } // namespace vkt

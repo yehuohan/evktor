@@ -76,7 +76,7 @@ HashMap<uint32_t, QueueFamilyProps> PhysicalDeviceDetails::convert() const {
     for (uint32_t idx : transfer_indices) {
         res[idx].transfer = true;
     }
-    return std::move(res);
+    return res;
 }
 
 Self PhysicalDeviceState::preferDiscreteGPU() {

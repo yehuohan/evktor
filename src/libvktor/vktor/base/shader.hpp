@@ -85,13 +85,13 @@ public:
 
     static Shader from(const VkShaderStageFlagBits stage, String&& source, const String& fullpath = "");
     static Shader fromVert(String&& source, const String& fullpath = "") {
-        return std::move(from(VK_SHADER_STAGE_VERTEX_BIT, std::move(source), fullpath));
+        return from(VK_SHADER_STAGE_VERTEX_BIT, std::move(source), fullpath);
     }
     static Shader fromFrag(String&& source, const String& fullpath = "") {
-        return std::move(from(VK_SHADER_STAGE_FRAGMENT_BIT, std::move(source), fullpath));
+        return from(VK_SHADER_STAGE_FRAGMENT_BIT, std::move(source), fullpath);
     }
     static Shader fromComp(String&& source, const String& fullpath = "") {
-        return std::move(from(VK_SHADER_STAGE_COMPUTE_BIT, std::move(source), fullpath));
+        return from(VK_SHADER_STAGE_COMPUTE_BIT, std::move(source), fullpath);
     }
 
     Res<core::ShaderModule> into(const core::CoreApi& api) const;
