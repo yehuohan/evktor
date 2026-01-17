@@ -73,9 +73,8 @@ Res<Ref<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, si
     CommandPool* cmdpool = nullptr;
     {
         auto& cmdpools = cmd_pools[thread_index];
-        auto item = cmdpools.find(queue.family_index);
-        if (item != cmdpools.end()) {
-            cmdpool = &item->second;
+        if (auto it = cmdpools.find(queue.family_index); it != cmdpools.end()) {
+            cmdpool = &it->second;
         } else {
             auto res = CommandPoolState()
                            .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
@@ -120,9 +119,8 @@ Res<Ref<DescriptorPool>> RenderFrame::requestDescriptorPool(const DescriptorSetL
     {
         auto& descpoolers = desc_poolers[thread_index];
         size_t key = hash(desc_setlayout);
-        auto item = descpoolers.find(key);
-        if (item != descpoolers.end()) {
-            descpooler = &item->second;
+        if (auto it = descpoolers.find(key); it != descpoolers.end()) {
+            descpooler = &it->second;
         } else {
             auto iter = descpoolers.insert({key, DescriptorPooler(desc_setlayout)}).first;
             descpooler = &iter->second;
@@ -147,9 +145,8 @@ Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLay
     {
         auto& descsets = desc_sets[thread_index];
         size_t key = hash(desc_setlayout, desc_pool, desc_info);
-        auto item = descsets.find(key);
-        if (item != descsets.end()) {
-            descset = &item->second;
+        if (auto it = descsets.find(key); it != descsets.end()) {
+            descset = &it->second;
         } else {
             auto res = desc_pool.allocate();
             OnErr(res);

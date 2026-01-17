@@ -62,16 +62,13 @@ public:
         std::lock_guard<std::mutex> guard(mtx);
 
         T* ptr;
-        {
-            auto item = this->find(key);
-            if (this->found(item)) {
-                ptr = &item->second;
-            } else {
-                auto res = fn();
-                OnErr(res);
-                auto iter = this->add(key, res.unwrap());
-                ptr = &iter->second;
-            }
+        if (auto it = this->find(key); this->found(it)) {
+            ptr = &it->second;
+        } else {
+            auto res = fn();
+            OnErr(res);
+            auto iter = this->add(key, res.unwrap());
+            ptr = &iter->second;
         }
 
         return Ok(newCRef(*ptr));

@@ -35,9 +35,8 @@ Res<CRef<DescriptorSetLayout>> RenderResource::requestDescriptorSetLayout(const 
             case VK_SHADER_STAGE_COMPUTE_BIT:
                 {
                     const auto& desc_sets = s.getDescriptorSets();
-                    auto item = desc_sets.find(set);
-                    if (item != desc_sets.end()) {
-                        for (const auto& d : item->second) {
+                    if (auto it = desc_sets.find(set); it != desc_sets.end()) {
+                        for (const auto& d : it->second) {
                             dso.addBinding(d.binding, static_cast<VkDescriptorType>(d.type), d.count, s.getStage());
                         }
                     }
