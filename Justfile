@@ -49,10 +49,6 @@ evktor: src
     @echo [Run] evktor...
     {{dir_install}}/evktor {{dir_root}}/../assets {{dir_root}}/shaders
 
-omega: src
-    @echo [Run] evktor/omega...
-    {{dir_install}}/omega {{dir_root}}/../assets {{dir_root}}/shaders
-
 sigma: src
     @echo [Run] evktor/test/tst_main core
     # Replace layers with VK_LAYER_PATH
@@ -65,7 +61,7 @@ test case="": src
     {{dir_install}}/tst_main {{case}}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Build src
+# Build src_vk
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 x-src: x-gen
     @echo [src] Build evktor...
@@ -117,7 +113,7 @@ clean:
     -rm -rf {{dir_install}}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Build deps
+# Build deps for src_vk
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 deps:
     # Modify vcpkg.json to install/remove
@@ -134,12 +130,6 @@ deps-repos:
     -git clone --depth=1 -b vulkan-sdk-1.4.321 https://github.com/zeux/volk.git {{DEPS_DIR}}/repos/volk
     -git clone --depth=1 -b vulkan-sdk-1.4.321 https://github.com/KhronosGroup/Vulkan-Headers.git {{DEPS_DIR}}/repos/Vulkan-Headers
     -git clone --depth=1 -b vulkan-sdk-1.4.321 https://github.com/KhronosGroup/Vulkan-ValidationLayers.git {{DEPS_DIR}}/repos/Vulkan-ValidationLayers
-    pip install glad2
-    python -m glad \
-        --api='gl:core=4.5' \
-        --extensions='' \
-        --reproducible \
-        --out-path {{DEPS_DIR}}/repos/glad
 
 deps-gen:
     @echo Prepare generated

@@ -12,7 +12,7 @@ Learn graphics with OpenGL and Vulkan.
 - VulkanSDK
 
 
-## Links
+## Refs
 
 - [Vulkan Tutorial](https://vulkan-tutorial.com/)
 - [Vulkan-Samples](https://github.com/KhronosGroup/Vulkan-Samples)

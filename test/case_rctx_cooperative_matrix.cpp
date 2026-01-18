@@ -150,17 +150,17 @@ void case_rctx_cooperative_matrix() {
                          .get();
     tstOut("Compute pipeline: {}", fmt::ptr((VkPipeline)pipeline));
 
-    // Create stage buffer
-    auto stage = vkt.newStageBuffer(std::max<VkDeviceSize>(yout.size, xinp.size));
-    Vector<float> buf(stage.size / sizeof(float));
+    // Create staging buffer
+    auto staging = vkt.newStagingBuffer(std::max<VkDeviceSize>(yout.size, xinp.size));
+    Vector<float> buf(staging.size / sizeof(float));
     for (size_t k = 0; k < buf.size(); k++) {
         buf[k] = float(k % 255) / 255.0;
     }
-    stage.copyFrom(buf.data());
+    staging.copyFrom(buf.data());
     cmdbuf.begin();
-    cmdbuf.cmdCopyBuffer(stage, xinp);
-    cmdbuf.cmdCopyBuffer(stage, kern);
-    cmdbuf.cmdCopyBuffer(stage, bias);
+    cmdbuf.cmdCopyBuffer(staging, xinp);
+    cmdbuf.cmdCopyBuffer(staging, kern);
+    cmdbuf.cmdCopyBuffer(staging, bias);
     cmdbuf.end();
     queue.submit(cmdbuf);
     queue.waitIdle();
@@ -174,14 +174,14 @@ void case_rctx_cooperative_matrix() {
         .cmdBindComputeDescriptorSets(pipeline_layout, 0, {desc_set})
         .cmdPushCompConstants(pipeline_layout, &params, sizeof(Conv2DParams))
         .cmdDispatch(gcx, gcy, gcz);
-    cmdbuf.cmdCopyBuffer(yout, stage);
+    cmdbuf.cmdCopyBuffer(yout, staging);
     cmdbuf.end();
     queue.submit(cmdbuf);
     queue.waitIdle();
 
-    // Check stage buffer
+    // Check staging buffer
     Vector<float> out(yout.size / sizeof(float));
-    stage.copyInto(out.data(), yout.size);
+    staging.copyInto(out.data(), yout.size);
     Vector<float> disp{};
     for (size_t k = 0; k < out.size(); k += out.size() / 11) {
         disp.push_back(out[k]);

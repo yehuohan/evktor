@@ -52,7 +52,7 @@ public:
     inline core::Buffer newUniformBuffer(VkDeviceSize size) const;
     inline core::Buffer newVertexBuffer(VkDeviceSize size) const;
     inline core::Buffer newIndexBuffer(VkDeviceSize size) const;
-    inline core::Buffer newStageBuffer(VkDeviceSize size) const;
+    inline core::Buffer newStagingBuffer(VkDeviceSize size) const;
 };
 
 inline Box<RenderContext> Vktor::newRctx(uint32_t frame_count, size_t thread_count) const {
@@ -106,7 +106,7 @@ inline core::Buffer Vktor::newIndexBuffer(VkDeviceSize size) const {
         .unwrap();
 }
 
-inline core::Buffer Vktor::newStageBuffer(VkDeviceSize size) const {
+inline core::Buffer Vktor::newStagingBuffer(VkDeviceSize size) const {
     return core::BufferState{}
         .setSize(size)
         .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)

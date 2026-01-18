@@ -1,0 +1,70 @@
+# vim@code{ efm_fts = { 'cmake', 'cpp', 'glsl' } }:
+set shell := ['bash', '-uc']
+set dotenv-load
+set ignore-comments
+
+dir_this := replace(justfile_directory(), '\', '/')
+dir_root := parent_directory(dir_this)
+
+build_type := env('BUILD_TYPE', 'Debug') # 'Release'
+build_gen := env('BUILD_GEN', 'Ninja')
+dir_build := dir_this / '_VOut' / build_type
+dir_install := dir_this / 'install' / build_type
+
+export VCPKG_FORCE_SYSTEM_BINARIES := '1' # Use custom installed pwsh, jinja, cmake
+export VCPKG_ROOT := replace(env('DOT_APPS'), '\', '/') / 'vcpkg'
+export VCPKG_TRIPLET := if os() == "windows" { 'x64-mingw-mix' } else { 'x64-linux-mix' }
+VCPKG_XSCRIPT := '"clear;x-script,bash ' + dir_root + '/scripts/vcpkg_xscript.sh {url} {dst};x-block-origin"'
+DEPS_DIR := dir_this / 'deps'
+
+
+all: omega
+
+omega: src
+    @echo [Run] omega...
+    {{dir_install}}/omega {{dir_root}}/../assets {{dir_root}}/shaders
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Build src_gl
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src: gen
+    @echo [src] Build omega...
+    cmake --build {{dir_build}} -j4
+    cmake --install {{dir_build}}
+
+gen:
+    @echo [src] Generate omega...
+    cmake -G {{build_gen}} -Wno-dev \
+        -DCMAKE_BUILD_TYPE={{build_type}} \
+        -DCMAKE_INSTALL_PREFIX={{dir_install}} \
+        -DPROJECT_BUILD_DIR={{dir_build}} \
+        -DCMAKE_TOOLCHAIN_FILE={{VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake \
+        -DVCPKG_TARGET_TRIPLET={{VCPKG_TRIPLET}} \
+        -DVCPKG_OVERLAY_TRIPLETS={{dir_root}}/cmake \
+        -DVCPKG_INSTALLED_DIR={{DEPS_DIR}} \
+        -DVCPKG_MANIFEST_INSTALL=OFF \
+        -S . -B {{dir_build}}
+
+tags: gen
+    cmake --build {{dir_build}} --target tags
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Build deps for src_gl
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+deps:
+    # Modify vcpkg.json to install/remove
+    @echo Prepare deps...
+    vcpkg install --recurse --no-binarycaching \
+        --triplet={{VCPKG_TRIPLET}} \
+        --overlay-triplets={{dir_root}}/cmake \
+        --x-install-root={{DEPS_DIR}} \
+        --x-asset-sources={{VCPKG_XSCRIPT}}
+
+deps-repos:
+    @echo Prepare deps-repos...
+    pip install glad2
+    python -m glad \
+        --api='gl:core=4.5' \
+        --extensions='' \
+        --reproducible \
+        --out-path {{DEPS_DIR}}/repos/glad

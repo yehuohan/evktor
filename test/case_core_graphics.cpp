@@ -94,13 +94,13 @@ void case_core_graphics() {
     desc_info.imgs[1] = VkDescriptorImageInfo{spl, tex_imgview, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
     desc_set.update(desc_info);
 
-    // Create stage buffer
-    auto stage = BufferState{}
-                     .setSize(tri.num * sizeof(float))
-                     .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
-                     .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
-                     .into(api)
-                     .unwrap();
+    // Create staging buffer
+    auto staging = BufferState{}
+                       .setSize(tri.num * sizeof(float))
+                       .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+                       .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
+                       .into(api)
+                       .unwrap();
 
     // Create vertex and index buffer
     auto vertex_buf = BufferState{}
@@ -113,21 +113,21 @@ void case_core_graphics() {
                          .setUsage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
                          .into(api)
                          .unwrap();
-    stage.copyFrom(tri.vertices, sizeof(tri.vertices));
+    staging.copyFrom(tri.vertices, sizeof(tri.vertices));
     cmdbuf.begin();
-    cmdbuf.cmdCopyBuffer(stage, vertex_buf, 0, 0, sizeof(tri.vertices));
+    cmdbuf.cmdCopyBuffer(staging, vertex_buf, 0, 0, sizeof(tri.vertices));
     cmdbuf.end();
     queue.submit(cmdbuf);
     queue.waitIdle();
-    stage.copyFrom(tri.indices, sizeof(tri.indices));
+    staging.copyFrom(tri.indices, sizeof(tri.indices));
     cmdbuf.begin();
-    cmdbuf.cmdCopyBuffer(stage, index_buf, 0, 0, sizeof(tri.indices));
+    cmdbuf.cmdCopyBuffer(staging, index_buf, 0, 0, sizeof(tri.indices));
     cmdbuf.end();
     queue.submit(cmdbuf);
     queue.waitIdle();
 
     // Record command
-    stage.copyFrom(tri.tex.data());
+    staging.copyFrom(tri.tex.data());
     cmdbuf.begin();
     cmdbuf.cmdImageMemoryBarrier(Arg{tex_img},
                                  VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
@@ -136,7 +136,7 @@ void case_core_graphics() {
                                  VK_ACCESS_TRANSFER_WRITE_BIT,
                                  VK_IMAGE_LAYOUT_UNDEFINED,
                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    cmdbuf.cmdCopyBufferToImage(stage, Arg{tex_img});
+    cmdbuf.cmdCopyBufferToImage(staging, Arg{tex_img});
     cmdbuf.cmdImageMemoryBarrier(Arg{tex_img},
                                  VK_PIPELINE_STAGE_TRANSFER_BIT,
                                  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
@@ -167,13 +167,13 @@ void case_core_graphics() {
                                  VK_ACCESS_TRANSFER_READ_BIT,
                                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-    cmdbuf.cmdCopyImageToBuffer(Arg{out_img}, stage);
+    cmdbuf.cmdCopyImageToBuffer(Arg{out_img}, staging);
     cmdbuf.end();
     queue.submit(cmdbuf);
     queue.waitIdle();
 
-    // Check stage buffer
+    // Check staging buffer
     Vector<float> out(tri.num);
-    stage.copyInto(out.data());
+    staging.copyInto(out.data());
     tri.checkOutput(out);
 }

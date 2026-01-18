@@ -31,14 +31,6 @@ target_compile_definitions(GPUOpen::VulkanMemoryAllocator
     INTERFACE VMA_STATIC_VULKAN_FUNCTIONS=0
     INTERFACE VMA_DYNAMIC_VULKAN_FUNCTIONS=0)
 
-# Target: glad
-project(glad)
-add_library(glad INTERFACE)
-set_target_properties(glad PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES   "${REPOS_DIR}/glad/include"
-    INTERFACE_SOURCES               "${REPOS_DIR}/glad/src/gl.c"
-    INTERFACE_COMPILE_DEFINITIONS   "GLAD_CTX_VER_MAJOR=4;GLAD_CTX_VER_MINOR=5")
-
 # Target: glfw
 find_package(glfw3 CONFIG REQUIRED)
 
@@ -53,13 +45,6 @@ find_package(imgui CONFIG REQUIRED)
 
 # Target: tinygltf
 find_path(TINYGLTF_INCLUDE_DIRS "tiny_gltf.h")
-
-# Target: Freetype::Freetype
-find_package(Freetype REQUIRED)
-
-# Target: assimp::assimp
-find_package(assimp CONFIG REQUIRED)
-install(IMPORTED_RUNTIME_ARTIFACTS assimp::assimp RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 # Target: fmt::fmt, fmt::fmt-header-only
 find_package(fmt CONFIG REQUIRED)

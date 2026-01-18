@@ -61,14 +61,14 @@ void case_core_compute() {
     desc_info.imgs[1] = VkDescriptorImageInfo{VK_NULL_HANDLE, out_imgview, VK_IMAGE_LAYOUT_GENERAL};
     desc_set.update(desc_info);
 
-    // Create stage buffer
-    auto stage = BufferState{}
-                     .setSize(quad.num * sizeof(float))
-                     .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
-                     .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
-                     .into(api)
-                     .unwrap();
-    stage.copyFrom(quad.img.data());
+    // Create staging buffer
+    auto staging = BufferState{}
+                       .setSize(quad.num * sizeof(float))
+                       .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+                       .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
+                       .into(api)
+                       .unwrap();
+    staging.copyFrom(quad.img.data());
 
     // Record command
     cmdbuf.begin();
@@ -79,7 +79,7 @@ void case_core_compute() {
                                  VK_ACCESS_TRANSFER_WRITE_BIT,
                                  VK_IMAGE_LAYOUT_UNDEFINED,
                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    cmdbuf.cmdCopyBufferToImage(stage, Arg{inp_img});
+    cmdbuf.cmdCopyBufferToImage(staging, Arg{inp_img});
     cmdbuf.cmdImageMemoryBarrier(Arg{inp_img},
                                  VK_PIPELINE_STAGE_TRANSFER_BIT,
                                  VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
@@ -105,13 +105,13 @@ void case_core_compute() {
                                  VK_ACCESS_TRANSFER_READ_BIT,
                                  VK_IMAGE_LAYOUT_GENERAL,
                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-    cmdbuf.cmdCopyImageToBuffer(Arg{out_img}, stage);
+    cmdbuf.cmdCopyImageToBuffer(Arg{out_img}, staging);
     cmdbuf.end();
     queue.submit(cmdbuf);
     queue.waitIdle();
 
-    // Check stage buffer
+    // Check staging buffer
     Vector<float> out(quad.num);
-    stage.copyInto(out.data());
+    staging.copyInto(out.data());
     quad.checkOutput(out);
 }

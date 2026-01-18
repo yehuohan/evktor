@@ -64,18 +64,18 @@ void case_rctx_dynamic_rendering() {
     tstOut("Graphics pipeline: {}", fmt::ptr((VkPipeline)pipeline));
 
     // Create vertex and index buffer
-    auto stage = vkt.newStageBuffer(tri.num * sizeof(float));
+    auto staging = vkt.newStagingBuffer(tri.num * sizeof(float));
     auto vertex_buf = vkt.newVertexBuffer(sizeof(tri.vertices));
     auto index_buf = vkt.newIndexBuffer(sizeof(tri.indices));
-    stage.copyFrom(tri.vertices, sizeof(tri.vertices));
+    staging.copyFrom(tri.vertices, sizeof(tri.vertices));
     cmdbuf.begin();
-    cmdbuf.cmdCopyBuffer(stage, vertex_buf, 0, 0, sizeof(tri.vertices));
+    cmdbuf.cmdCopyBuffer(staging, vertex_buf, 0, 0, sizeof(tri.vertices));
     cmdbuf.end();
     queue.submit(cmdbuf);
     queue.waitIdle();
-    stage.copyFrom(tri.indices, sizeof(tri.indices));
+    staging.copyFrom(tri.indices, sizeof(tri.indices));
     cmdbuf.begin();
-    cmdbuf.cmdCopyBuffer(stage, index_buf, 0, 0, sizeof(tri.indices));
+    cmdbuf.cmdCopyBuffer(staging, index_buf, 0, 0, sizeof(tri.indices));
     cmdbuf.end();
     queue.submit(cmdbuf);
     queue.waitIdle();
@@ -95,7 +95,7 @@ void case_rctx_dynamic_rendering() {
     auto& out_depth = rtt[1].unwrap().get().getImage();
 
     // Record command
-    stage.copyFrom(tri.tex.data());
+    staging.copyFrom(tri.tex.data());
     cmdbuf.begin();
     cmdbuf.cmdImageMemoryBarrier(Arg{tex.getImage()},
                                  VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
@@ -104,7 +104,7 @@ void case_rctx_dynamic_rendering() {
                                  VK_ACCESS_TRANSFER_WRITE_BIT,
                                  VK_IMAGE_LAYOUT_UNDEFINED,
                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    cmdbuf.cmdCopyBufferToImage(stage, Arg{tex.getImage()});
+    cmdbuf.cmdCopyBufferToImage(staging, Arg{tex.getImage()});
     cmdbuf.cmdImageMemoryBarrier(Arg{tex.getImage()},
                                  VK_PIPELINE_STAGE_TRANSFER_BIT,
                                  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
@@ -142,13 +142,13 @@ void case_rctx_dynamic_rendering() {
                                  VK_ACCESS_TRANSFER_READ_BIT,
                                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
                                  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-    cmdbuf.cmdCopyImageToBuffer(Arg{out_color}, stage);
+    cmdbuf.cmdCopyImageToBuffer(Arg{out_color}, staging);
     cmdbuf.end();
     queue.submit(cmdbuf);
     queue.waitIdle();
 
-    // Check stage buffer
+    // Check staging buffer
     Vector<float> out(tri.num);
-    stage.copyInto(out.data());
+    staging.copyInto(out.data());
     tri.checkOutput(out);
 }

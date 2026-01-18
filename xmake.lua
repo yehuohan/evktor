@@ -22,7 +22,7 @@ add_requires("imgui 1.90", { configs = { glfw = true, vulkan = true } })
 add_requires("tinygltf 2.8.22")
 add_requires("fmt 10.1.1")
 
-local src_dir = "$(scriptdir)/src/"
+local src_dir = "$(scriptdir)/src_vk/"
 
 --- Target: libvkt_devel
 target("vkt_devel", function()
