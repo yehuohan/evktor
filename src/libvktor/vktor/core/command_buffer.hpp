@@ -102,9 +102,14 @@ public:
     inline Self cmdBindIndexBuffer(VkBuffer buffer, VkDeviceSize offset, VkIndexType index_type) const;
     inline Self cmdBindIndexBufferU32(VkBuffer buffer, VkDeviceSize offset = 0) const;
     inline Self cmdBindIndexBufferU16(VkBuffer buffer, VkDeviceSize offset = 0) const;
-    inline Self cmdBindVertexBuffers(uint32_t first_binding,
-                                     const Vector<VkBuffer>& buffers,
-                                     const Vector<VkDeviceSize>& offsets) const;
+    inline Self cmdBindVertexBuffers(const Vector<VkBuffer>& buffers, uint32_t first_binding = 0) const;
+    inline Self cmdBindVertexBuffers(const Vector<VkBuffer>& buffers,
+                                     const Vector<VkDeviceSize>& offsets,
+                                     uint32_t first_binding = 0) const;
+    inline Self cmdDraw(uint32_t vertex_count,
+                        uint32_t instance_count = 1,
+                        uint32_t first_vertex = 0,
+                        uint32_t first_instance = 0) const;
     inline Self cmdDrawIndexed(uint32_t index_count,
                                uint32_t instance_count = 1,
                                uint32_t first_index = 0,
@@ -432,10 +437,24 @@ inline CommandBuffer::Self CommandBuffer::cmdBindIndexBufferU16(VkBuffer buffer,
     return *this;
 }
 
-inline CommandBuffer::Self CommandBuffer::cmdBindVertexBuffers(uint32_t first_binding,
-                                                               const Vector<VkBuffer>& buffers,
-                                                               const Vector<VkDeviceSize>& offsets) const {
+inline CommandBuffer::Self CommandBuffer::cmdBindVertexBuffers(const Vector<VkBuffer>& buffers, uint32_t first_binding) const {
+    Vector<VkDeviceSize> offsets(buffers.size(), 0);
     vkCmdBindVertexBuffers(handle, first_binding, u32(buffers.size()), buffers.data(), offsets.data());
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdBindVertexBuffers(const Vector<VkBuffer>& buffers,
+                                                               const Vector<VkDeviceSize>& offsets,
+                                                               uint32_t first_binding) const {
+    vkCmdBindVertexBuffers(handle, first_binding, u32(buffers.size()), buffers.data(), offsets.data());
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdDraw(uint32_t vertex_count,
+                                                  uint32_t instance_count,
+                                                  uint32_t first_vertex,
+                                                  uint32_t first_instance) const {
+    vkCmdDraw(handle, vertex_count, instance_count, first_vertex, first_instance);
     return *this;
 }
 
