@@ -73,3 +73,21 @@ snippet core-cpp
 
     NAMESPACE_END(core)
     NAMESPACE_END(vkt)
+
+snippet scn-comp
+    #pragma once
+    #include "../component.hpp"
+
+    NAMESPACE_BEGIN(vktscn)
+
+    class ${1:name} : public Component {
+    public:
+        ${1}(const String& name = "") : Component(name) {}
+        virtual ~${1}() = default;
+
+        virtual std::type_index getType() const override {
+            return typeid(${1});
+        }
+    };
+
+    NAMESPACE_END(vktscn)
