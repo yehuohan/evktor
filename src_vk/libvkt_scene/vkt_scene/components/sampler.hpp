@@ -5,17 +5,14 @@
 NAMESPACE_BEGIN(vktscn)
 
 class Sampler : public Component {
-public:
+private:
     vkt::core::Sampler sampler;
 
 public:
-    Sampler(const String& name, vkt::core::Sampler&& sampler) : Component{name}, sampler{std::move(sampler)} {}
-    Sampler(Sampler&& other) = default;
+    Sampler(vkt::core::Sampler&& sampler, const String& name = "") : Component(name), sampler(std::move(sampler)) {}
     virtual ~Sampler() = default;
 
-    operator VkSampler() const {
-        return (VkSampler)sampler;
-    }
+    OnConstType(VkSampler, sampler.handle);
 
     virtual std::type_index getType() const override {
         return typeid(Sampler);

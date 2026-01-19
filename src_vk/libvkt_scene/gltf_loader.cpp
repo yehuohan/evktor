@@ -7,18 +7,23 @@
 using namespace vkt;
 using namespace vktscn;
 
-size_t GLTFLoader::accessorStride(uint32_t index) const {
+std::tuple<size_t, size_t, size_t> GLTFLoader::accessorBufferOffsetStride(uint32_t index) const {
     assert(index < gmodel.accessors.size());
     auto& accessor = gmodel.accessors[index];
 
     assert(accessor.bufferView < gmodel.bufferViews.size());
     auto& buffer_view = gmodel.bufferViews[accessor.bufferView];
 
+    int buffer = buffer_view.buffer;
+    assert(0 <= buffer && buffer < gmodel.buffers.size());
+
+    size_t offset = accessor.byteOffset + buffer_view.byteOffset;
+
     int stride = accessor.ByteStride(buffer_view);
     assert(stride >= 0);
 
-    return static_cast<size_t>(stride);
-};
+    return std::make_tuple(static_cast<size_t>(buffer), offset, static_cast<size_t>(stride));
+}
 
 Vector<uint8_t> GLTFLoader::accessorData(uint32_t index) const {
     assert(index < gmodel.accessors.size());
@@ -171,16 +176,6 @@ VkFormat GLTFLoader::accessorFormat(uint32_t index) const {
     return format;
 };
 
-Box<Sampler> GLTFLoader::parseSampler(size_t gsampler_index) const {
-    const auto& gsampler = gmodel.samplers[gsampler_index];
-    auto core_sampler = core::SamplerState(vktFmt("{}", gsampler.name))
-                            .setFilter(toMagFilter(gsampler.magFilter), toMinFilter(gsampler.minFilter))
-                            .setAddressMode(toWrapMode(gsampler.wrapS), toWrapMode(gsampler.wrapT))
-                            .into(api)
-                            .unwrap();
-    return newBox<Sampler>(gsampler.name, std::move(core_sampler));
-}
-
 Box<Node> GLTFLoader::parseNode(size_t gnode_index) const {
     const auto& gnode = gmodel.nodes[gnode_index];
 
@@ -214,24 +209,58 @@ Box<Node> GLTFLoader::parseNode(size_t gnode_index) const {
 }
 
 void GLTFLoader::loadSceneSamplers(vktscn::Scene& scene) const {
-    Vector<Box<Sampler>> samplers(gmodel.samplers.size());
-    for (size_t ks = 0; ks < gmodel.samplers.size(); ks++) {
-        samplers[ks] = parseSampler(ks);
+    for (size_t k = 0; k < gmodel.samplers.size(); k++) {
+        const auto& gsampler = gmodel.samplers[k];
+
+        auto sampler = core::SamplerState(vktFmt("{}", gsampler.name))
+                           .setFilter(toMagFilter(gsampler.magFilter), toMinFilter(gsampler.minFilter))
+                           .setAddressMode(toWrapMode(gsampler.wrapS), toWrapMode(gsampler.wrapT))
+                           .into(api)
+                           .unwrap();
+        scene.addComponent(newBox<Sampler>(std::move(sampler), gsampler.name));
     }
-    scene.setComponents(std::move(samplers));
 }
 
-void GLTFLoader::loadSceneMeshes(Scene& scene) const {
+void GLTFLoader::loadSceneBuffers(vktscn::Scene& scene) const {
     // Prepare command buffer
     auto _queue = api.transferQueue().unwrap();
     auto& queue = _queue.get();
-    auto cmdpool = core::CommandPoolState("GLTFLoader.loadSceneMeshes.CommandPool")
+    auto cmdpool = core::CommandPoolState("GLTFLoader.loadSceneBuffers.CommandPool")
                        .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
                        .setQueueFamilyIndex(queue.family_index)
                        .into(api)
                        .unwrap();
-    auto _cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "GLTFLoader.loadSceneMeshes.CommandBuffer").unwrap();
+    auto _cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "GLTFLoader.loadSceneBuffers.CommandBuffer").unwrap();
     auto& cmdbuf = _cmdbuf.get();
+
+    // Load buffers
+    for (size_t k = 0; k < gmodel.buffers.size(); k++) {
+        auto& gbuffer = gmodel.buffers[k];
+
+        auto buffer = core::BufferState(vktFmt("{}", k, gbuffer.name))
+                          .setSize(gbuffer.data.size())
+                          .setUsage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT |
+                                    VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+                          .into(api)
+                          .unwrap();
+        auto staging = core::BufferState()
+                           .setSize(gbuffer.data.size())
+                           .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
+                           .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
+                           .into(api)
+                           .unwrap();
+        staging.copyFrom(gbuffer.data.data());
+        cmdbuf.begin();
+        cmdbuf.cmdCopyBuffer(staging, buffer);
+        cmdbuf.end();
+        queue.submit(cmdbuf);
+        queue.waitIdle();
+        scene.addComponent(newBox<Buffer>(std::move(buffer), gbuffer.name));
+    }
+}
+
+void GLTFLoader::loadSceneMeshes(Scene& scene) const {
+    auto buffers = scene.getComponents<Buffer>();
 
     // Load meshes
     for (const auto& gmesh : gmodel.meshes) {
@@ -250,31 +279,13 @@ void GLTFLoader::loadSceneMeshes(Scene& scene) const {
                     submesh->vertex_count = u32(accessorCount(attr_idx));
                 }
 
-                // Vertex buffer
-                auto vertex_data = accessorData(attr_idx);
-                auto vertex_buffer = core::BufferState(vktFmt("{}.vertex[{}]", submesh_name, _attr_name))
-                                         .setSize(vertex_data.size())
-                                         .setUsage(VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
-                                         .into(api)
-                                         .unwrap();
-                auto staging = core::BufferState()
-                                   .setSize(vertex_data.size())
-                                   .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
-                                   .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
-                                   .into(api)
-                                   .unwrap();
-                staging.copyFrom(vertex_data.data());
-                cmdbuf.begin();
-                cmdbuf.cmdCopyBuffer(staging, vertex_buffer);
-                cmdbuf.end();
-                queue.submit(cmdbuf);
-                queue.waitIdle();
-                submesh->setVertexBuffer(attr_name, std::move(vertex_buffer));
+                auto [buffer, offset, stride] = accessorBufferOffsetStride(attr_idx);
+                submesh->setVertexBuffer(attr_name, *buffers[buffer], offset);
 
                 // Vertex attribute
                 VertexAttribute vertex_attr{};
                 vertex_attr.format = accessorFormat(attr_idx);
-                vertex_attr.stride = u32(accessorStride(attr_idx));
+                vertex_attr.stride = u32(stride);
                 submesh->setAttribute(attr_name, vertex_attr);
             }
 
@@ -282,38 +293,16 @@ void GLTFLoader::loadSceneMeshes(Scene& scene) const {
             if (gprimitive.indices >= 0) {
                 submesh->index_count = u32(accessorCount(gprimitive.indices));
 
-                auto index_data = accessorData(gprimitive.indices);
+                auto [buffer, offset, _] = accessorBufferOffsetStride(gprimitive.indices);
+                submesh->setIndexBuffer(*buffers[buffer], offset);
+
                 auto format = accessorFormat(gprimitive.indices);
                 switch (format) {
-                case VK_FORMAT_R8_UINT:
-                    // Convert uint8 data into uint16 data to use uint16 index type
-                    index_data = convertUnderlyingDataStride(index_data, 1, 2);
-                    submesh->index_type = VK_INDEX_TYPE_UINT16;
-                    break;
+                case VK_FORMAT_R8_UINT: submesh->index_type = VK_INDEX_TYPE_UINT8; break;
                 case VK_FORMAT_R16_UINT: submesh->index_type = VK_INDEX_TYPE_UINT16; break;
                 case VK_FORMAT_R32_UINT: submesh->index_type = VK_INDEX_TYPE_UINT32; break;
                 default: vktLogE("{}.index has unsupported format type: {}", submesh_name, VkStr(VkFormat, format)); break;
                 }
-
-                auto index_buffer = newBox<core::Buffer>(
-                    core::BufferState(vktFmt("{}.index", submesh_name))
-                        .setSize(index_data.size())
-                        .setUsage(VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
-                        .into(api)
-                        .unwrap());
-                auto staging = core::BufferState()
-                                   .setSize(index_data.size())
-                                   .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
-                                   .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
-                                   .into(api)
-                                   .unwrap();
-                staging.copyFrom(index_data.data());
-                cmdbuf.begin();
-                cmdbuf.cmdCopyBuffer(staging, *index_buffer);
-                cmdbuf.end();
-                queue.submit(cmdbuf);
-                queue.waitIdle();
-                submesh->setIndexBuffer(std::move(index_buffer));
             } else {
                 if (submesh->vertex_count == 0) {
                     vktLogE("{} doesn't has neither vertex position nor index buffer", submesh_name);
@@ -361,6 +350,7 @@ Box<Scene> GLTFLoader::loadScene(int32_t scene_index) const {
     Box<Scene> scene = newBox<Scene>();
 
     loadSceneSamplers(*scene);
+    loadSceneBuffers(*scene);
     loadSceneMeshes(*scene);
     loadSceneNodes(*scene);
 

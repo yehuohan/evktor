@@ -1,7 +1,7 @@
 #pragma once
 #include "../component.hpp"
 #include "../node.hpp"
-#include <vktor/core/buffer.hpp>
+#include "buffer.hpp"
 
 NAMESPACE_BEGIN(vktscn)
 
@@ -13,15 +13,14 @@ struct VertexAttribute {
 
 class SubMesh : public Component {
 private:
-    Box<vkt::core::Buffer> index_buffer = nullptr;
-    HashMap<String, vkt::core::Buffer> vertex_buffers{};
+    SubBuffer index_buffer{};
+    HashMap<String, SubBuffer> vertex_buffers{};
     HashMap<String, VertexAttribute> vertex_attrs{};
 
 public:
     VkIndexType index_type = VkIndexType::VK_INDEX_TYPE_UINT16;
-    VkDeviceSize index_offset = 0;  // For vkCmdBindIndexBuffer
-    std::uint32_t index_count = 0;  // For vkCmdDrawIndexed
-    std::uint32_t vertex_count = 0; // For vkCmdDraw
+    uint32_t index_count = 0;  // For vkCmdDrawIndexed
+    uint32_t vertex_count = 0; // For vkCmdDraw
 
 public:
     SubMesh(const String& name = "") : Component(name) {}
@@ -32,16 +31,16 @@ public:
     }
 
 public:
-    inline void setIndexBuffer(Box<vkt::core::Buffer>&& buffer) {
-        index_buffer = std::move(buffer);
+    inline void setIndexBuffer(const Buffer& buffer, VkDeviceSize offset) {
+        index_buffer = SubBuffer(buffer, offset);
     }
-    inline const vkt::core::Buffer* getIndexBuffer() const {
-        return index_buffer ? index_buffer.get() : nullptr;
+    inline const SubBuffer* getIndexBuffer() const {
+        return index_buffer.buffer ? &index_buffer : nullptr;
     }
-    inline void setVertexBuffer(const String& attr_name, vkt::core::Buffer&& buffer) {
-        vertex_buffers.insert({attr_name, std::move(buffer)});
+    inline void setVertexBuffer(const String& attr_name, const Buffer& buffer, VkDeviceSize offset) {
+        vertex_buffers.insert({attr_name, SubBuffer(buffer, offset)});
     }
-    const vkt::core::Buffer* getVertexBuffer(const String& attr_name) const;
+    const SubBuffer* getVertexBuffer(const String& attr_name) const;
     inline void setAttribute(const String& attr_name, const VertexAttribute& attribute) {
         vertex_attrs[attr_name] = attribute;
     }

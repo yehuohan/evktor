@@ -16,16 +16,17 @@ private:
         assert(index < gmodel.accessors.size());
         return gmodel.accessors[index].count;
     }
-    size_t accessorStride(uint32_t index) const;
+    /** @brief Get <buffer, stride, offset> from accessor */
+    std::tuple<size_t, size_t, size_t> accessorBufferOffsetStride(uint32_t index) const;
     Vector<uint8_t> accessorData(uint32_t index) const;
     VkFormat accessorFormat(uint32_t index) const;
 
 protected:
-    Box<vktscn::Sampler> parseSampler(size_t gsampler_index) const;
     Box<vktscn::Node> parseNode(size_t gnode_index) const;
 
 protected:
     void loadSceneSamplers(vktscn::Scene& scene) const;
+    void loadSceneBuffers(vktscn::Scene& scene) const;
     void loadSceneMeshes(vktscn::Scene& scene) const;
     void loadSceneNodes(vktscn::Scene& scene) const;
     Box<vktscn::Scene> loadScene(int32_t scene_index) const;
