@@ -10,7 +10,7 @@ NAMESPACE_BEGIN(vktscn)
 class Scene : public NonCopyable {
 private:
     String name;
-    Node* root = nullptr;
+    size_t root_node = 0;
     Vector<Box<Node>> nodes{};
     HashMap<std::type_index, Vector<Box<Component>>> components{};
 
@@ -22,11 +22,16 @@ public:
     inline void addNode(Box<Node>&& _node) {
         nodes.emplace_back(std::move(_node));
     }
-    inline void setRootNode(Node& _node) {
-        root = &_node;
+    inline void setNodes(Vector<Box<Node>>&& _nodes, size_t _root_node) {
+        nodes = std::move(_nodes);
+        root_node = _root_node;
+    }
+    inline void setRootNode(size_t _root_node) {
+        root_node = _root_node;
     }
     inline Node& getRootNode() {
-        return *root;
+        assert(root_node < nodes.size());
+        return *nodes[root_node];
     }
 
 public:

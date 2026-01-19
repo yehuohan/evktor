@@ -354,6 +354,7 @@ void GLTFLoader::loadSceneNodes(vktscn::Scene& scene) const {
         }
         nodes.push_back(std::move(node));
     }
+    scene.setNodes(std::move(nodes), 0);
 }
 
 Box<Scene> GLTFLoader::loadScene(int32_t scene_index) const {
