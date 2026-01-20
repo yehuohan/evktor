@@ -38,6 +38,15 @@ public:
 
 public:
     explicit Texture(core::Image&& image, core::ImageView&& imageview);
+    /**
+     * @brief Texture move constructor
+     *
+     * Can also from `Texture2D`:
+     * ```
+     * Texture2D tex{...};
+     * Texture tex = Texture(std::move(tex));
+     * ```
+     */
     Texture(Texture&&);
     OnConstType(VkImage, image.handle);
     OnConstType(VkImageView, imageview.handle);

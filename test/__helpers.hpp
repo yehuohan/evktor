@@ -2,7 +2,7 @@
 #include <assets.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <vktor.hpp>
+#include <vktor/vktor.hpp>
 
 #define tstOut(f, ...) vkt::print(vktFmt("[tst] " f "\n", ##__VA_ARGS__))
 

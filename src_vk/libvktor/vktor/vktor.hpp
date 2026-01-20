@@ -48,10 +48,10 @@ public:
                                   Texture2D::Usage usage,
                                   uint32_t mip_levels = 1,
                                   Texture2D::Sample samples = Texture2D::S1) const;
-    inline core::Buffer newStorageBuffer(VkDeviceSize size) const;
-    inline core::Buffer newUniformBuffer(VkDeviceSize size) const;
-    inline core::Buffer newVertexBuffer(VkDeviceSize size) const;
     inline core::Buffer newIndexBuffer(VkDeviceSize size) const;
+    inline core::Buffer newVertexBuffer(VkDeviceSize size) const;
+    inline core::Buffer newUniformBuffer(VkDeviceSize size) const;
+    inline core::Buffer newStorageBuffer(VkDeviceSize size) const;
     inline core::Buffer newStagingBuffer(VkDeviceSize size) const;
 };
 
@@ -73,10 +73,18 @@ inline Texture2D Vktor::newTexture2D(VkFormat format,
     return Texture2D::from(*api, format, extent, usage, mip_levels, samples).unwrap();
 }
 
-inline core::Buffer Vktor::newStorageBuffer(VkDeviceSize size) const {
+inline core::Buffer Vktor::newIndexBuffer(VkDeviceSize size) const {
     return core::BufferState{}
         .setSize(size)
-        .setUsage(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+        .setUsage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+        .into(*api)
+        .unwrap();
+}
+
+inline core::Buffer Vktor::newVertexBuffer(VkDeviceSize size) const {
+    return core::BufferState{}
+        .setSize(size)
+        .setUsage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
         .into(*api)
         .unwrap();
 }
@@ -90,18 +98,10 @@ inline core::Buffer Vktor::newUniformBuffer(VkDeviceSize size) const {
         .unwrap();
 }
 
-inline core::Buffer Vktor::newVertexBuffer(VkDeviceSize size) const {
+inline core::Buffer Vktor::newStorageBuffer(VkDeviceSize size) const {
     return core::BufferState{}
         .setSize(size)
-        .setUsage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
-        .into(*api)
-        .unwrap();
-}
-
-inline core::Buffer Vktor::newIndexBuffer(VkDeviceSize size) const {
-    return core::BufferState{}
-        .setSize(size)
-        .setUsage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+        .setUsage(VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT)
         .into(*api)
         .unwrap();
 }

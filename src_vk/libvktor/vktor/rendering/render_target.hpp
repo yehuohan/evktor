@@ -28,12 +28,6 @@ public:
 
     /**
      * @brief Construct render target from texture directly
-     *
-     * Can also from `Texture2D`:
-     * ```
-     * Texture2D tex{...};
-     * auto rt = RenderTarget::from(std::move(tex));
-     * ```
      */
     explicit RenderTarget(Texture&& texture);
     RenderTarget(RenderTarget&&);
