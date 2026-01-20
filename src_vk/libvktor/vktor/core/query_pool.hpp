@@ -24,6 +24,7 @@ public:
 };
 
 struct QueryPool : public CoreResource<VkQueryPool, VK_OBJECT_TYPE_QUERY_POOL> {
+protected:
     uint32_t query_count = 0;
 
 protected:

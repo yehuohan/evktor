@@ -41,6 +41,10 @@ public:
  * VmaPool can't work with VK_EXT_debug_utils. So set OBJECT_TYPE to VK_OBJECT_TYPE_MAX_ENUM.
  */
 struct DeviceMemoryPool : public CoreResource<VmaPool, VK_OBJECT_TYPE_MAX_ENUM> {
+    friend struct Buffer;
+    friend struct Image;
+
+protected:
     /** @brief Export memory handle requires device extensions: VK_KHR_external_memory, VK_KHR_external_memory_fd.
      *
      * Must wrap `export_memory_ai` in a pointer, because it is required by VMA later.

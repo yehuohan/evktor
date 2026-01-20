@@ -6,7 +6,6 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-class CoreApi;
 struct Device;
 
 class DeviceState : public CoreState<DeviceState> {
@@ -44,10 +43,11 @@ public:
 };
 
 struct Device : public CoreHandle<VkDevice> {
-    friend CoreApi;
+    friend class CoreApi;
 
     CRef<PhysicalDevice> physical_device;
 
+protected:
     VmaAllocator mem_allocator = VK_NULL_HANDLE;
 
 protected:

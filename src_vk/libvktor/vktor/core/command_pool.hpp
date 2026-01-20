@@ -24,15 +24,16 @@ public:
 };
 
 struct CommandPool : public CoreResource<VkCommandPool, VK_OBJECT_TYPE_COMMAND_POOL> {
-    Vector<CommandBuffer> primaries{};
-    Vector<CommandBuffer> secondaries{};
-    uint32_t active_primary_count = 0;
-    uint32_t active_secondary_count = 0;
-
     enum class Level {
         Primary = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
         Secondary = VK_COMMAND_BUFFER_LEVEL_SECONDARY,
     };
+
+protected:
+    Vector<CommandBuffer> primaries{};
+    Vector<CommandBuffer> secondaries{};
+    uint32_t active_primary_count = 0;
+    uint32_t active_secondary_count = 0;
 
 protected:
     explicit CommandPool(const CoreApi& api) : CoreResource(api) {}

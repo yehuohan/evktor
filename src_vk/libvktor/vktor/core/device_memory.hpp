@@ -23,6 +23,7 @@ public:
 };
 
 struct DeviceMemory : public CoreResource<VkDeviceMemory, VK_OBJECT_TYPE_DEVICE_MEMORY> {
+protected:
     VkDeviceSize size = 0;
 
 protected:
@@ -32,6 +33,9 @@ public:
     DeviceMemory(DeviceMemory&&);
     ~DeviceMemory();
 
+    inline VkDeviceSize getSize() const {
+        return size;
+    }
     inline VkResult bind(VkBuffer buffer, VkDeviceSize offset = 0) const {
         return vkBindBufferMemory(api, buffer, handle, offset);
     }

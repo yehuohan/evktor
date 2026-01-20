@@ -108,9 +108,9 @@ struct hash<vkt::RenderTarget> {
     size_t operator()(const vkt::RenderTarget& render_target) const {
         size_t res = 0;
         auto& image = render_target.getImage();
-        hashCombine(res, image.format);
-        hashCombine(res, image.samples);
-        hashCombine(res, image.usage);
+        hashCombine(res, image.getFormat());
+        hashCombine(res, image.getSamples());
+        hashCombine(res, image.getUsage());
         hashCombine(res, render_target.ops.load);
         hashCombine(res, render_target.ops.store);
         hashCombine(res, render_target.stencil_ops.load);

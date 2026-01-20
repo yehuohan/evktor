@@ -132,10 +132,10 @@ void case_rctx_cooperative_matrix() {
     auto kern = vkt.newStorageBuffer(params.KH * params.KW * params.IC * params.OC * sizeof(float));
     auto bias = vkt.newStorageBuffer(params.OC * sizeof(float));
     auto desc_info = DescriptorInfo{};
-    desc_info.nextBuf(yout, yout.size);
-    desc_info.nextBuf(xinp, xinp.size);
-    desc_info.nextBuf(kern, kern.size);
-    desc_info.nextBuf(bias, bias.size);
+    desc_info.nextBuf(yout, yout.getSize());
+    desc_info.nextBuf(xinp, xinp.getSize());
+    desc_info.nextBuf(kern, kern.getSize());
+    desc_info.nextBuf(bias, bias.getSize());
 
     // Create pipeline
     auto& desc_setlayout = rctx->requestDescriptorSetLayout(0, shaders).unwrap().get();
@@ -151,8 +151,8 @@ void case_rctx_cooperative_matrix() {
     tstOut("Compute pipeline: {}", fmt::ptr((VkPipeline)pipeline));
 
     // Create staging buffer
-    auto staging = vkt.newStagingBuffer(std::max<VkDeviceSize>(yout.size, xinp.size));
-    Vector<float> buf(staging.size / sizeof(float));
+    auto staging = vkt.newStagingBuffer(std::max<VkDeviceSize>(yout.getSize(), xinp.getSize()));
+    Vector<float> buf(staging.getSize() / sizeof(float));
     for (size_t k = 0; k < buf.size(); k++) {
         buf[k] = float(k % 255) / 255.0;
     }
@@ -180,8 +180,8 @@ void case_rctx_cooperative_matrix() {
     queue.waitIdle();
 
     // Check staging buffer
-    Vector<float> out(yout.size / sizeof(float));
-    staging.copyInto(out.data(), yout.size);
+    Vector<float> out(yout.getSize() / sizeof(float));
+    staging.copyInto(out.data(), yout.getSize());
     Vector<float> disp{};
     for (size_t k = 0; k < out.size(); k += out.size() / 11) {
         disp.push_back(out[k]);

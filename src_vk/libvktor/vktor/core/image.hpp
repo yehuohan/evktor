@@ -75,6 +75,12 @@ public:
  *  - Image2DArray: depth must be 1
  */
 struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE> {
+    friend struct Arg<Image>;
+    friend struct ImageView;
+    friend class ImageViewState;
+    friend struct CommandBuffer;
+
+protected:
     VkImageType type = VK_IMAGE_TYPE_2D;
     VkFormat format = VK_FORMAT_UNDEFINED;
     VkExtent3D extent{};
@@ -96,6 +102,18 @@ public:
     ~Image();
     OnConstType(VkDeviceMemory, memory);
 
+    inline const VkExtent3D& getExtent() const {
+        return extent;
+    }
+    inline VkFormat getFormat() const {
+        return format;
+    }
+    inline VkSampleCountFlagBits getSamples() const {
+        return samples;
+    }
+    inline VkImageUsageFlags getUsage() const {
+        return usage;
+    }
     /**
      * @brief Get image subresource layout
      *
@@ -167,16 +185,14 @@ bool isDepthStencilFormat(VkFormat format);
 VkImageAspectFlags getAspectMask(VkFormat format);
 
 template <>
-class Arg<Image> : private NonCopyable {
-public:
+struct Arg<Image> : private NonCopyable {
+    const Image& a;
+
     VkImageAspectFlags aspect = VK_IMAGE_ASPECT_COLOR_BIT;
     uint32_t mip = 0; /**< Base mip level or the mip level index */
     uint32_t mip_count = 1;
     uint32_t layer = 0; /**< Base layer or the layer index */
     uint32_t layer_count = 1;
-
-public:
-    const Image& a;
 
 public:
     explicit Arg(const Image& a) : a(a) {

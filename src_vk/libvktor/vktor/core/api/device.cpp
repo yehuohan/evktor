@@ -49,7 +49,7 @@ Device::~Device() {
         vmaDestroyAllocator(mem_allocator);
     }
     if (!__borrowed && handle) {
-        vkDestroyDevice(handle, physical_device.get().instance.get().allocator);
+        vkDestroyDevice(handle, physical_device.get().instance.get());
     }
     handle = VK_NULL_HANDLE;
     mem_allocator = VK_NULL_HANDLE;
@@ -61,7 +61,7 @@ Device& Device::operator=(Device&& rhs) {
             vmaDestroyAllocator(mem_allocator);
         }
         if (!__borrowed && handle) {
-            vkDestroyDevice(handle, physical_device.get().instance.get().allocator);
+            vkDestroyDevice(handle, physical_device.get().instance.get());
         }
 
         handle = rhs.handle;

@@ -40,6 +40,9 @@ public:
 };
 
 struct Buffer : public CoreResource<VkBuffer, VK_OBJECT_TYPE_BUFFER> {
+    friend struct CommandBuffer;
+
+protected:
     VkDeviceSize size = 0;
     VkDeviceMemory memory = VK_NULL_HANDLE;
     VmaAllocation allocation = VK_NULL_HANDLE;
@@ -52,6 +55,9 @@ public:
     ~Buffer();
     OnConstType(VkDeviceMemory, memory);
 
+    inline VkDeviceSize getSize() const {
+        return size;
+    }
     /**
      * @brief Copy data from cpu memory `src` into gpu buffer memory
      *

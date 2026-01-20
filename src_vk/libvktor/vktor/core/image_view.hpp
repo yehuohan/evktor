@@ -29,6 +29,7 @@ public:
 };
 
 struct ImageView : public CoreResource<VkImageView, VK_OBJECT_TYPE_IMAGE_VIEW> {
+protected:
     VkImage image = VK_NULL_HANDLE; /**< Store the image that this image view created for */
     VkImageSubresourceRange subresource_range{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
 
@@ -38,6 +39,9 @@ protected:
 public:
     ImageView(ImageView&&);
     ~ImageView();
+    const VkImageSubresourceRange& getSubresourceRange() const {
+        return subresource_range;
+    }
 
     static Res<ImageView> from(const CoreApi& api, const ImageViewState& info);
 };

@@ -7,7 +7,7 @@ using namespace core;
 using Self = RenderTarget::Self;
 
 RenderTarget::RenderTarget(Texture&& _texture) : texture(std::move(_texture)) {
-    auto format = texture.getImage().format;
+    auto format = texture.getImage().getFormat();
     if (isDepthOnlyFormat(format)) {
         set(AttachmentOps::depth());
         set(AttachmentLayouts::depthstencil());
@@ -108,8 +108,8 @@ RenderTargetTable::RenderTargetTable(RenderTargetTable&& rhs) {
 
 Res<Ref<RenderTarget>> RenderTargetTable::addTarget(RenderTarget&& target) {
     static const auto getExtent = [](const RenderTarget& rt) {
-        const VkExtent3D e = rt.getImage().extent;
-        const uint32_t m = rt.getImageView().subresource_range.baseMipLevel;
+        const VkExtent3D e = rt.getImage().getExtent();
+        const uint32_t m = rt.getImageView().getSubresourceRange().baseMipLevel;
         return VkExtent2D{e.width >> m, e.height >> m};
     };
 
@@ -174,7 +174,7 @@ Vector<VkRenderingAttachmentInfo> RenderTargetTable::getAttachmentInfos() const 
     Vector<uint32_t> depthstencil_indices{};
     for (uint32_t k = 0; k < targets.size(); k++) {
         const auto& rt = targets[k];
-        const auto format = rt.getImage().format;
+        const auto format = rt.getImage().getFormat();
         if (isDepthOnlyFormat(format) || isStencilOnlyFormat(format) || isDepthStencilFormat(format)) {
             depthstencil_indices.push_back(k);
         } else {

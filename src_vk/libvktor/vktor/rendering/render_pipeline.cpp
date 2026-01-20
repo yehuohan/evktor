@@ -13,7 +13,7 @@ Res<RenderPass> RenderPipeline::newRenderPass(const RenderTargetTable& render_ta
 
     for (const auto& rt : render_target_table.getTargets()) {
         auto& image = rt.getImage();
-        rso.addAttachment(image.format, image.samples, rt.ops, rt.stencil_ops, rt.layouts);
+        rso.addAttachment(image.getFormat(), image.getSamples(), rt.ops, rt.stencil_ops, rt.layouts);
     }
     for (const auto& subpass : subpasses) {
         rso.addSubpass(subpass.getState());

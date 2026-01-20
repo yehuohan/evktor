@@ -29,6 +29,7 @@ struct DescriptorPool : public CoreResource<VkDescriptorPool, VK_OBJECT_TYPE_DES
     const DescriptorSetLayout& desc_setlayout;
     const uint32_t maxsets;
 
+protected:
     /** Counter for allocated descriptor set from this pool */
     uint32_t count = 0;
 

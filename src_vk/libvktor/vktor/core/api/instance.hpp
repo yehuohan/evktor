@@ -5,7 +5,6 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-class CoreApi;
 struct Instance;
 
 struct InstanceState : public CoreState<InstanceState> {
@@ -52,8 +51,10 @@ public:
 };
 
 struct Instance : public CoreHandle<VkInstance> {
-    friend CoreApi;
+    friend class CoreApi;
+    friend struct Device;
 
+protected:
     const VkAllocationCallbacks* allocator = nullptr;
     uint32_t api_version = VKT_CORE_VK_API_VERSION;
 

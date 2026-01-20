@@ -7,7 +7,6 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-class CoreApi;
 struct PhysicalDevice;
 
 /**
@@ -63,10 +62,12 @@ public:
 };
 
 struct PhysicalDevice : public CoreHandle<VkPhysicalDevice> {
-    friend CoreApi;
+    friend class CoreApi;
+    friend struct Device;
 
     CRef<Instance> instance;
 
+protected:
     /** Map queue family index to it's properties
      *  - For `PhysicalDevice`: it's available queues to create for `Device`
      *  - For `Device`: it's available queues to get from the `Device` (the `Device` may update `QueueFamilyProps.count`)
@@ -74,8 +75,6 @@ struct PhysicalDevice : public CoreHandle<VkPhysicalDevice> {
     mutable HashMap<uint32_t, QueueFamilyProps> queue_family_props{};
 
 protected:
-    friend struct PhysicalDeviceState;
-
     explicit PhysicalDevice(CRef<Instance> instance) : instance(instance) {}
 
 public:
