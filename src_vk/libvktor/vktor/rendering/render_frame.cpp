@@ -64,7 +64,7 @@ void RenderFrame::resetDescriptorSets(size_t thread_index) {
     }
 }
 
-Res<Ref<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, size_t thread_index) {
+Res<CRef<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, size_t thread_index) {
     if (thread_index >= cmd_pools.size()) {
         return Er("Thread index is out of command pool array");
     }

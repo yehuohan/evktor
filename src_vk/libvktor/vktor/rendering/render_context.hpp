@@ -87,7 +87,7 @@ public:
      *
      * @return The main command buffer from the activated render frame with graphics queue
      */
-    Res<Ref<core::CommandBuffer>> beginFrame();
+    Res<CRef<core::CommandBuffer>> beginFrame();
     /**
      * @brief End the activated render frame
      *

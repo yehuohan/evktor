@@ -41,7 +41,7 @@ CommandPool::~CommandPool() {
     handle = VK_NULL_HANDLE;
 }
 
-Res<Ref<CommandBuffer>> CommandPool::allocate(Level level, const String& name) {
+Res<CRef<CommandBuffer>> CommandPool::allocate(Level level, const String& name) {
     CommandBuffer* ptr = nullptr;
     switch (level) {
     case Level::Primary:
@@ -87,7 +87,7 @@ Res<Ref<CommandBuffer>> CommandPool::allocate(Level level, const String& name) {
                   VkStr(VkCommandBufferLevel, (VkCommandBufferLevel)level));
     }
 
-    return Ok(newRef(*ptr));
+    return Ok(newCRef(*ptr));
 }
 
 void CommandPool::resetPool() {

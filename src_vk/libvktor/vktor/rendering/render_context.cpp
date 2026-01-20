@@ -95,7 +95,7 @@ bool RenderContext::updateSwapchain(bool force) {
     return false;
 }
 
-Res<Ref<core::CommandBuffer>> RenderContext::beginFrame() {
+Res<CRef<core::CommandBuffer>> RenderContext::beginFrame() {
     if (frame_actived) {
         return Er("Requires invoke endFrame to inactivate the frame before beginFrame");
     }

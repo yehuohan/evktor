@@ -46,7 +46,7 @@ public:
      * Store allocated CommandBuffer within this CommandPool, so return the referrence of the CommandBuffer.
      * And free CommandBuffer by removing CommandBuffer from `primaries` or `secondaries`.
      */
-    Res<Ref<CommandBuffer>> allocate(Level level, const String& name = "CommandBuffer");
+    Res<CRef<CommandBuffer>> allocate(Level level, const String& name = "CommandBuffer");
     void resetPool();
 
     static Res<CommandPool> from(const CoreApi& api, const CommandPoolState& info);

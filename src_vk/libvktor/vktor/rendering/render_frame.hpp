@@ -49,7 +49,7 @@ public:
      *
      * Reset command buffer via vkResetCommandBuffer or vkBeginCommandBuffer
      */
-    Res<Ref<core::CommandBuffer>> requestCommandBuffer(const core::Queue& queue, size_t thread_index = 0);
+    Res<CRef<core::CommandBuffer>> requestCommandBuffer(const core::Queue& queue, size_t thread_index = 0);
     /**
      * @brief Request one descriptor set from an available descriptor pool that is got from pooler
      */

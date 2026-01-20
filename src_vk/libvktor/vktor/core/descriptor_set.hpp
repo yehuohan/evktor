@@ -97,8 +97,8 @@ struct DescriptorSet : public CoreResource<VkDescriptorSet, VK_OBJECT_TYPE_DESCR
     /**
      * @brief Update descriptor set
      */
-    void update(const DescriptorInfo& desc_info);
-    void update(const DescriptorArrayInfo& desc_arrinfo);
+    void update(const DescriptorInfo& desc_info) const;
+    void update(const DescriptorArrayInfo& desc_arrinfo) const;
 };
 
 NAMESPACE_END(core)
