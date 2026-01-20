@@ -1,12 +1,20 @@
 #pragma once
 #include "component.hpp"
+#include "components/image.hpp"
 #include "components/mesh.hpp"
 #include "components/sampler.hpp"
+#include "components/texture.hpp"
 #include "node.hpp"
 #include <algorithm>
 
 NAMESPACE_BEGIN(vktscn)
 
+/**
+ * @brief Vktor scene
+ *
+ * - All nodes and components are stored in `Scene` with ownership
+ * - Reference to nodes and components should use raw pointer
+ */
 class Scene : public NonCopyable {
 private:
     String name;

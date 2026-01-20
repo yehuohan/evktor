@@ -7,6 +7,11 @@
 using namespace vkt;
 using namespace vktscn;
 
+size_t GLTFLoader::accessorCount(uint32_t index) const {
+    assert(index < gmodel.accessors.size());
+    return gmodel.accessors[index].count;
+}
+
 std::tuple<size_t, size_t, size_t> GLTFLoader::accessorBufferOffsetStride(uint32_t index) const {
     assert(index < gmodel.accessors.size());
     auto& accessor = gmodel.accessors[index];
@@ -169,12 +174,63 @@ VkFormat GLTFLoader::accessorFormat(uint32_t index) const {
     default:
         {
             format = VK_FORMAT_UNDEFINED;
-            vktLogW("Invalid gltf accessor component type: {}, {}", accessor.componentType, accessor.type);
+            vktLogE("Invalid gltf accessor component type: {}, {}", accessor.componentType, accessor.type);
             break;
         }
     }
     return format;
 };
+
+VkFormat GLTFLoader::imageFormat(uint32_t index) const {
+    assert(index < gmodel.images.size());
+    auto& image = gmodel.images[index];
+    int component = image.component;
+    int pixel_type = image.pixel_type;
+
+    if (1 == component) {
+        switch (pixel_type) {
+        case TINYGLTF_COMPONENT_TYPE_BYTE: return VK_FORMAT_R8_SNORM;
+        case TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE: return VK_FORMAT_R8_UNORM;
+        case TINYGLTF_COMPONENT_TYPE_SHORT: return VK_FORMAT_R16_SNORM;
+        case TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT: return VK_FORMAT_R16_UNORM;
+        case TINYGLTF_COMPONENT_TYPE_INT:
+        case TINYGLTF_COMPONENT_TYPE_FLOAT:
+        case TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT: return VK_FORMAT_R32_SFLOAT;
+        };
+    } else if (2 == component) {
+        switch (pixel_type) {
+        case TINYGLTF_COMPONENT_TYPE_BYTE: return VK_FORMAT_R8G8_SNORM;
+        case TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE: return VK_FORMAT_R8G8_UNORM;
+        case TINYGLTF_COMPONENT_TYPE_SHORT: return VK_FORMAT_R16G16_SNORM;
+        case TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT: return VK_FORMAT_R16G16_UNORM;
+        case TINYGLTF_COMPONENT_TYPE_INT:
+        case TINYGLTF_COMPONENT_TYPE_FLOAT:
+        case TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT: return VK_FORMAT_R32G32_SFLOAT;
+        };
+    } else if (3 == component) {
+        switch (pixel_type) {
+        case TINYGLTF_COMPONENT_TYPE_BYTE: return VK_FORMAT_R8G8B8_SNORM;
+        case TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE: return VK_FORMAT_R8G8B8_UNORM;
+        case TINYGLTF_COMPONENT_TYPE_SHORT: return VK_FORMAT_R16G16B16_SNORM;
+        case TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT: return VK_FORMAT_R16G16B16_UNORM;
+        case TINYGLTF_COMPONENT_TYPE_INT:
+        case TINYGLTF_COMPONENT_TYPE_FLOAT:
+        case TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT: return VK_FORMAT_R32G32B32_SFLOAT;
+        };
+    } else if (4 == component) {
+        switch (pixel_type) {
+        case TINYGLTF_COMPONENT_TYPE_BYTE: return VK_FORMAT_R8G8B8A8_SNORM;
+        case TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE: return VK_FORMAT_R8G8B8A8_UNORM;
+        case TINYGLTF_COMPONENT_TYPE_SHORT: return VK_FORMAT_R16G16B16A16_SNORM;
+        case TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT: return VK_FORMAT_R16G16B16A16_UNORM;
+        case TINYGLTF_COMPONENT_TYPE_INT:
+        case TINYGLTF_COMPONENT_TYPE_FLOAT:
+        case TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT: return VK_FORMAT_R32G32B32A32_SFLOAT;
+        };
+    }
+    vktLogE("Invalid gltf image: component = {}, pixel type = {}", component, pixel_type);
+    return VK_FORMAT_UNDEFINED;
+}
 
 Box<Node> GLTFLoader::parseNode(size_t gnode_index) const {
     const auto& gnode = gmodel.nodes[gnode_index];
@@ -217,6 +273,7 @@ void GLTFLoader::loadSceneSamplers(vktscn::Scene& scene) const {
                            .setAddressMode(toWrapMode(gsampler.wrapS), toWrapMode(gsampler.wrapT))
                            .into(api)
                            .unwrap();
+
         scene.addComponent(newBox<Sampler>(std::move(sampler), gsampler.name));
     }
 }
@@ -235,7 +292,7 @@ void GLTFLoader::loadSceneBuffers(vktscn::Scene& scene) const {
 
     // Load buffers
     for (size_t k = 0; k < gmodel.buffers.size(); k++) {
-        auto& gbuffer = gmodel.buffers[k];
+        const auto& gbuffer = gmodel.buffers[k];
 
         auto buffer = core::BufferState(vktFmt("{}", k, gbuffer.name))
                           .setSize(gbuffer.data.size())
@@ -255,7 +312,83 @@ void GLTFLoader::loadSceneBuffers(vktscn::Scene& scene) const {
         cmdbuf.end();
         queue.submit(cmdbuf);
         queue.waitIdle();
+
         scene.addComponent(newBox<Buffer>(std::move(buffer), gbuffer.name));
+    }
+}
+
+void GLTFLoader::loadSceneImages(vktscn::Scene& scene) const {
+    // Prepare command buffer
+    auto _queue = api.graphicsQueue().unwrap();
+    auto& queue = _queue.get();
+    auto cmdpool = core::CommandPoolState("GLTFLoader.loadSceneImages.CommandPool")
+                       .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
+                       .setQueueFamilyIndex(queue.family_index)
+                       .into(api)
+                       .unwrap();
+    auto _cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "GLTFLoader.loadSceneImages.CommandBuffer").unwrap();
+    auto& cmdbuf = _cmdbuf.get();
+
+    for (size_t k = 0; k < gmodel.images.size(); k++) {
+        const auto& gimage = gmodel.images[k];
+
+        uint32_t mip_levels = u32(std::floor(std::log2(std::max<int>(gimage.width, gimage.height)))) + 1;
+        auto& image_data = gimage.image;
+        if (image_data.empty()) {
+            vktLogE("Invalid gltf image {} data, maybe it's an image from web", gimage.name);
+        }
+        auto image = core::ImageState(vktFmt("{}", gimage.name))
+                         .setFormat(imageFormat(k))
+                         .setExtent(VkExtent2D{u32(gimage.width), u32(gimage.height)})
+                         .setUsage(VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
+                                   VK_IMAGE_USAGE_TRANSFER_DST_BIT)
+                         .setMipLevels(mip_levels)
+                         .setSamples(VK_SAMPLE_COUNT_1_BIT)
+                         .into(api)
+                         .unwrap();
+        auto imageview = core::ImageViewState(vktFmt("{}.view", gimage.name)).setFromImage(image).into(api).unwrap();
+        auto staging = core::BufferState()
+                           .setSize(image_data.size())
+                           .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
+                           .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
+                           .into(api)
+                           .unwrap();
+        staging.copyFrom(image_data.data());
+        core::Arg arg(image);
+        cmdbuf.begin();
+        cmdbuf.cmdImageMemoryBarrier(arg,
+                                     VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                                     VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                     VK_ACCESS_NONE,
+                                     VK_ACCESS_TRANSFER_WRITE_BIT,
+                                     VK_IMAGE_LAYOUT_UNDEFINED,
+                                     VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        cmdbuf.cmdCopyBufferToImage(staging, arg);
+        cmdbuf.cmdGenImageMips(arg, VK_FILTER_LINEAR);
+        cmdbuf.end();
+        queue.submit(cmdbuf);
+        queue.waitIdle();
+
+        scene.addComponent(newBox<Image>(std::move(image), std::move(imageview), gimage.name));
+    }
+}
+
+void GLTFLoader::loadSceneTextures(vktscn::Scene& scene) const {
+    auto images = scene.getComponents<Image>();
+    auto samplers = scene.getComponents<Sampler>();
+
+    for (size_t k = 0; k < gmodel.textures.size(); k++) {
+        const auto& gtexture = gmodel.textures[k];
+
+        auto texture = newBox<Texture>(gtexture.name);
+        if (0 <= gtexture.source && gtexture.source < images.size()) {
+            texture->setImage(*images[gtexture.source]);
+        }
+        if (0 <= gtexture.sampler && gtexture.sampler < samplers.size()) {
+            texture->setSampler(*samplers[gtexture.sampler]);
+        }
+
+        scene.addComponent(std::move(texture));
     }
 }
 
@@ -267,7 +400,8 @@ void GLTFLoader::loadSceneMeshes(Scene& scene) const {
         auto mesh = newBox<Mesh>(gmesh.name);
 
         for (size_t kp = 0; kp < gmesh.primitives.size(); kp++) {
-            auto gprimitive = gmesh.primitives[kp];
+            const auto& gprimitive = gmesh.primitives[kp];
+
             auto submesh_name = vktFmt("{}.primitive[{}]", gmesh.name, kp);
             auto submesh = newBox<SubMesh>(submesh_name);
 
@@ -351,8 +485,10 @@ Box<Scene> GLTFLoader::loadScene(int32_t scene_index) const {
 
     loadSceneSamplers(*scene);
     loadSceneBuffers(*scene);
-    loadSceneMeshes(*scene);
-    loadSceneNodes(*scene);
+    loadSceneImages(*scene);
+    loadSceneTextures(*scene); // Require images and samplers
+    loadSceneMeshes(*scene);   // Require buffers
+    loadSceneNodes(*scene);    // Require meshes
 
     return scene;
 }

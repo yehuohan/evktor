@@ -9,7 +9,6 @@ class Component : public NonCopyable {
 public:
     Component() = default;
     Component(const String& name) : name(name) {}
-    Component(Component&& rhs) : name(std::move(rhs.name)) {}
     virtual ~Component() = default;
 
     const std::string& getName() const {
