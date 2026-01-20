@@ -392,8 +392,25 @@ void GLTFLoader::loadSceneTextures(vktscn::Scene& scene) const {
     }
 }
 
+void GLTFLoader::loadSceneMaterials(vktscn::Scene& scene) const {
+    auto textures = scene.getComponents<Texture>();
+
+    for (size_t k = 0; k < gmodel.materials.size(); k++) {
+        const auto& gmaterial = gmodel.materials[k];
+
+        auto material = newBox<Material>(gmaterial.name);
+        int idx = gmaterial.pbrMetallicRoughness.baseColorTexture.index;
+        if (0 <= idx && idx < textures.size()) {
+            material->setTexture("base_color_texture", *textures[idx]);
+        }
+
+        scene.addComponent(std::move(material));
+    }
+}
+
 void GLTFLoader::loadSceneMeshes(Scene& scene) const {
     auto buffers = scene.getComponents<Buffer>();
+    auto materials = scene.getComponents<Material>();
 
     // Load meshes
     for (const auto& gmesh : gmodel.meshes) {
@@ -443,12 +460,10 @@ void GLTFLoader::loadSceneMeshes(Scene& scene) const {
                 }
             }
 
-            // TODO: Setup material
-            // if (gprimitive.material >= 0) {
-            //     submesh->setMaterial(*materials[gprimitive.material]);
-            // } else {
-            //     submesh->setMaterial(*default_material);
-            // }
+            // Setup material
+            if (0 <= gprimitive.material && gprimitive.material < materials.size()) {
+                submesh->setMaterial(*materials[gprimitive.material]);
+            }
 
             mesh->addSubmesh(*submesh);
             scene.addComponent(std::move(submesh));
@@ -486,9 +501,10 @@ Box<Scene> GLTFLoader::loadScene(int32_t scene_index) const {
     loadSceneSamplers(*scene);
     loadSceneBuffers(*scene);
     loadSceneImages(*scene);
-    loadSceneTextures(*scene); // Require images and samplers
-    loadSceneMeshes(*scene);   // Require buffers
-    loadSceneNodes(*scene);    // Require meshes
+    loadSceneTextures(*scene);  // Require images, samplers
+    loadSceneMaterials(*scene); // Require textures
+    loadSceneMeshes(*scene);    // Require buffers, materials
+    loadSceneNodes(*scene);     // Require meshes
 
     return scene;
 }

@@ -11,6 +11,8 @@ layout(set = 0, binding = 0) uniform GlobalUBO {
     mat4 view_proj;
 } global_ubo;
 
+layout(set = 0, binding = 1) uniform sampler2D base_color_texture;
+
 void main() {
-    out_color = vec4(inp_normal, 1.0);
+    out_color = texture(base_color_texture, inp_texcoord);
 }

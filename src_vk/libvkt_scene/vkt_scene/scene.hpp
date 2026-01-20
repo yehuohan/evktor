@@ -1,6 +1,7 @@
 #pragma once
 #include "component.hpp"
 #include "components/image.hpp"
+#include "components/material.hpp"
 #include "components/mesh.hpp"
 #include "components/sampler.hpp"
 #include "components/texture.hpp"

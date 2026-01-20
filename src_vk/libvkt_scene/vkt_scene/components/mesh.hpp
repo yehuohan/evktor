@@ -2,6 +2,7 @@
 #include "../component.hpp"
 #include "../node.hpp"
 #include "buffer.hpp"
+#include "material.hpp"
 
 NAMESPACE_BEGIN(vktscn)
 
@@ -16,6 +17,7 @@ private:
     SubBuffer index_buffer{};
     HashMap<String, SubBuffer> vertex_buffers{};
     HashMap<String, VertexAttribute> vertex_attrs{};
+    const Material* material = nullptr;
 
 public:
     VkIndexType index_type = VkIndexType::VK_INDEX_TYPE_UINT16;
@@ -45,6 +47,12 @@ public:
         vertex_attrs[attr_name] = attribute;
     }
     const VertexAttribute* getAttribute(const String& attr_name) const;
+    void setMaterial(const Material& _material) {
+        material = &_material;
+    }
+    const Material* getMaterial() const {
+        return material;
+    }
 };
 
 class Mesh : public Component {
