@@ -89,9 +89,9 @@ Res<CRef<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, s
     return cmdpool->allocate(CommandPool::Level::Primary);
 }
 
-Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
-                                                          const DescriptorInfo& desc_info,
-                                                          size_t thread_index) {
+Res<CRef<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
+                                                           const DescriptorInfo& desc_info,
+                                                           size_t thread_index) {
     auto res = requestDescriptorPool(desc_setlayout, thread_index);
     OnErr(res);
     auto& desc_pool = res.unwrap().get();
@@ -99,9 +99,9 @@ Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLay
     return requestDescriptorSet(desc_setlayout, desc_pool, desc_info, thread_index);
 }
 
-Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
-                                                          const DescriptorArrayInfo& desc_info,
-                                                          size_t thread_index) {
+Res<CRef<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
+                                                           const DescriptorArrayInfo& desc_info,
+                                                           size_t thread_index) {
     auto res = requestDescriptorPool(desc_setlayout, thread_index);
     OnErr(res);
     auto& desc_pool = res.unwrap().get();
@@ -132,10 +132,10 @@ Res<Ref<DescriptorPool>> RenderFrame::requestDescriptorPool(const DescriptorSetL
 }
 
 template <typename T>
-Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
-                                                          DescriptorPool& desc_pool,
-                                                          const T& desc_info,
-                                                          size_t thread_index) {
+Res<CRef<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
+                                                           DescriptorPool& desc_pool,
+                                                           const T& desc_info,
+                                                           size_t thread_index) {
     if (thread_index >= desc_sets.size()) {
         return Er("Thread index is out of descriptor set array");
     }
@@ -157,7 +157,7 @@ Res<Ref<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLay
         }
     }
 
-    return Ok(newRef(*descset));
+    return Ok(newCRef(*descset));
 }
 
 NAMESPACE_END(vkt)

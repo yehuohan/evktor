@@ -81,7 +81,7 @@ DescriptorSet::~DescriptorSet() {
     handle = VK_NULL_HANDLE;
 }
 
-void DescriptorSet::update(const DescriptorInfo& desc_info) {
+void DescriptorSet::update(const DescriptorInfo& desc_info) const {
     Vector<VkWriteDescriptorSet> desc_writes{};
     for (const auto& item : desc_info.bufs) {
         const auto& bind = desc_pool.desc_setlayout.bindings.at(item.first);
@@ -108,7 +108,7 @@ void DescriptorSet::update(const DescriptorInfo& desc_info) {
     vkUpdateDescriptorSets(api, desc_writes.size(), desc_writes.data(), 0, nullptr);
 }
 
-void DescriptorSet::update(const DescriptorArrayInfo& desc_arrinfo) {
+void DescriptorSet::update(const DescriptorArrayInfo& desc_arrinfo) const {
     Vector<VkWriteDescriptorSet> desc_writes{};
     for (const auto& item : desc_arrinfo.bufs) {
         const auto& bind = desc_pool.desc_setlayout.bindings.at(item.first);

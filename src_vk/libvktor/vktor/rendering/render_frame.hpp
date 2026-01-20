@@ -53,15 +53,15 @@ public:
     /**
      * @brief Request one descriptor set from an available descriptor pool that is got from pooler
      */
-    Res<Ref<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
-                                                       const core::DescriptorInfo& desc_info,
-                                                       size_t thread_index = 0);
+    Res<CRef<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
+                                                        const core::DescriptorInfo& desc_info,
+                                                        size_t thread_index = 0);
     /**
      * @brief Request one descriptor set from an available descriptor pool that is got from pooler
      */
-    Res<Ref<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
-                                                       const core::DescriptorArrayInfo& desc_info,
-                                                       size_t thread_index = 0);
+    Res<CRef<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
+                                                        const core::DescriptorArrayInfo& desc_info,
+                                                        size_t thread_index = 0);
 
     inline Res<CRef<core::Fence>> requestFence() {
         return fence_pool.request();
@@ -95,10 +95,10 @@ private:
     Res<Ref<core::DescriptorPool>> requestDescriptorPool(const core::DescriptorSetLayout& desc_setlayout, size_t thread_index);
     /** T should be DescriptorInfo or DescriptorArrayInfo */
     template <typename T>
-    Res<Ref<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
-                                                       core::DescriptorPool& desc_pool,
-                                                       const T& desc_info,
-                                                       size_t thread_index);
+    Res<CRef<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
+                                                        core::DescriptorPool& desc_pool,
+                                                        const T& desc_info,
+                                                        size_t thread_index);
 };
 
 NAMESPACE_END(vkt)
