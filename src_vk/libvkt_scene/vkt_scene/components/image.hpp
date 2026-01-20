@@ -17,8 +17,8 @@ public:
         , imageview(std::move(imageview)) {}
     virtual ~Image() = default;
 
-    OnConstType(VkImage, image.handle);
-    OnConstType(VkImageView, imageview.handle);
+    OnConstType(VkImage, image.getHandle());
+    OnConstType(VkImageView, imageview.getHandle());
 
     virtual std::type_index getType() const override {
         return typeid(Image);

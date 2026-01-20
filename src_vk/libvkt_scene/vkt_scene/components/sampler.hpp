@@ -12,7 +12,7 @@ public:
     Sampler(vkt::core::Sampler&& sampler, const String& name = "") : Component(name), sampler(std::move(sampler)) {}
     virtual ~Sampler() = default;
 
-    OnConstType(VkSampler, sampler.handle);
+    OnConstType(VkSampler, sampler.getHandle());
 
     virtual std::type_index getType() const override {
         return typeid(Sampler);

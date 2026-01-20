@@ -9,24 +9,24 @@ void testCoreApi() {
 
     {
         Vector<VkInstance> vec_instance{(VkInstance)api,
-                                        ((const Instance&)api).handle,
-                                        ((const PhysicalDevice&)api).instance.get().handle,
-                                        ((const Device&)api).physical_device.get().instance.get().handle,
-                                        instance.handle,
-                                        debug.instance.get().handle,
-                                        phy_dev.instance.get().handle,
-                                        device.physical_device.get().instance.get().handle};
+                                        ((const Instance&)api).getHandle(),
+                                        ((const PhysicalDevice&)api).instance.get().getHandle(),
+                                        ((const Device&)api).physical_device.get().instance.get().getHandle(),
+                                        instance.getHandle(),
+                                        debug.instance.get().getHandle(),
+                                        phy_dev.instance.get().getHandle(),
+                                        device.physical_device.get().instance.get().getHandle()};
         Vector<VkPhysicalDevice> vec_phy_dev{
             (VkPhysicalDevice)api,
-            ((const PhysicalDevice&)api).handle,
-            ((const Device&)api).physical_device.get().handle,
-            phy_dev.handle,
-            device.physical_device.get().handle,
+            ((const PhysicalDevice&)api).getHandle(),
+            ((const Device&)api).physical_device.get().getHandle(),
+            phy_dev.getHandle(),
+            device.physical_device.get().getHandle(),
         };
         Vector<VkDevice> vec_dev{
             (VkDevice)api,
-            ((const Device&)api).handle,
-            device.handle,
+            ((const Device&)api).getHandle(),
+            device.getHandle(),
         };
         for (size_t k = 1; k < vec_instance.size(); k++) {
             assert(vec_instance[0] == vec_instance[k]);
@@ -41,7 +41,7 @@ void testCoreApi() {
         tstOut("\tInstance: {}", fmt::ptr(vec_instance[0]));
         tstOut("\tPhysical Device: {}", fmt::ptr(vec_phy_dev[0]));
         tstOut("\tDevice: {}", fmt::ptr(vec_dev[0]));
-        tstOut("\tDebug: {}", fmt::ptr(debug.handle));
+        tstOut("\tDebug: {}", fmt::ptr(debug.getHandle()));
     };
 
     CoreApi api;

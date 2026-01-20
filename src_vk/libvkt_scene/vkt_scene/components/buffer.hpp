@@ -12,7 +12,7 @@ public:
     Buffer(vkt::core::Buffer&& buffer, const String& name = "") : Component(name), buffer(std::move(buffer)) {}
     virtual ~Buffer() = default;
 
-    OnConstType(VkBuffer, buffer.handle);
+    OnConstType(VkBuffer, buffer.getHandle());
 
     virtual std::type_index getType() const override {
         return typeid(Buffer);

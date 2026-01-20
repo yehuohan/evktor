@@ -78,7 +78,7 @@ public:
     Res<CRef<Surface>> add(VkSurfaceKHR surface, bool with_ownership);
 
     operator VkSurfaceKHR() const {
-        return surface ? surface->handle : VK_NULL_HANDLE;
+        return surface ? surface->getHandle() : VK_NULL_HANDLE;
     }
 
     inline VkResult setDebugName(VkObjectType type, uint64_t handle, const char* name) const {

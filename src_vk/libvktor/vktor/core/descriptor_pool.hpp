@@ -41,7 +41,7 @@ protected:
 public:
     DescriptorPool(DescriptorPool&&);
     ~DescriptorPool();
-    OnConstType(VkDescriptorSetLayout, desc_setlayout.handle);
+    OnConstType(VkDescriptorSetLayout, desc_setlayout.getHandle());
     /**
      * @brief Allocate once descriptor set
      *

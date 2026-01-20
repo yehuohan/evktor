@@ -51,13 +51,13 @@ Res<DescriptorSet> DescriptorPool::allocate(const void* next, const String& name
 }
 
 bool DescriptorPool::free(const DescriptorSet& descset) {
-    if (descset.handle) {
-        auto res = vkFreeDescriptorSets(api, *this, 1, &descset.handle);
+    if (descset.getHandle()) {
+        auto res = vkFreeDescriptorSets(api, *this, 1, &descset.getHandle());
         if (res == VK_SUCCESS) {
             count--;
             return true;
         } else {
-            vktLogE("Failed to free descriptor set: {}", fmt::ptr(descset.handle));
+            vktLogE("Failed to free descriptor set: {}", fmt::ptr(descset.getHandle()));
         }
     } else {
         vktLogW("Try to free a null descriptor set");

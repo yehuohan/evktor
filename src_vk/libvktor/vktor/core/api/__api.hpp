@@ -44,6 +44,9 @@ NAMESPACE_BEGIN(core)
 template <typename T>
 struct CoreHandle : private NonCopyable {
 protected:
+    /** Vulkan handle */
+    T handle = VK_NULL_HANDLE;
+
     /** Vulkan handle is borrowed or not
      *
      * A borrowed CoreHandle doesn't have ownership and must not destory the handle.
@@ -51,11 +54,12 @@ protected:
     bool __borrowed = false;
 
 public:
-    /** Vulkan handle */
-    T handle = VK_NULL_HANDLE;
-
     virtual ~CoreHandle() {}
     OnType(T, this->handle);
+
+    inline const T& getHandle() const {
+        return handle;
+    }
 };
 
 /**

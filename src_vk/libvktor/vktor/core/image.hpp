@@ -186,7 +186,7 @@ public:
         layer = 0;
         layer_count = a.array_layers;
     }
-    OnConstType(VkImage, a.handle);
+    OnConstType(VkImage, a.getHandle());
     operator VkImageSubresourceRange() const {
         return VkImageSubresourceRange{aspect, mip, mip_count, layer, layer_count};
     }

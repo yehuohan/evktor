@@ -123,7 +123,7 @@ Res<CRef<Device>> CoreApi::init(DeviceState& info) {
             vkGetDeviceQueue(device, family_index, index, queue);
 
             const String name = "Queue" + std::to_string(family_index) + "." + std::to_string(index);
-            OnRet(setDebugName(VK_OBJECT_TYPE_QUEUE, reinterpret_cast<uint64_t>(queue.handle), name.c_str()),
+            OnRet(setDebugName(VK_OBJECT_TYPE_QUEUE, reinterpret_cast<uint64_t>(queue.getHandle()), name.c_str()),
                   "Failed to set debug name: {}",
                   name);
 
