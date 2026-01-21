@@ -53,6 +53,16 @@ public:
     inline core::Buffer newUniformBuffer(VkDeviceSize size) const;
     inline core::Buffer newStorageBuffer(VkDeviceSize size) const;
     inline core::Buffer newStagingBuffer(VkDeviceSize size) const;
+
+public:
+    /**
+     * @brief Push image data and generate image mipmaps
+     */
+    void pushData(const core::Image& image, const Vector<uint8_t>& data, bool mipmaps = true) const;
+    /**
+     * @brief Push buffer data
+     */
+    void pushData(const core::Buffer& buffer, const Vector<uint8_t>& data) const;
 };
 
 inline Box<RenderContext> Vktor::newRctx(uint32_t frame_count, size_t thread_count) const {
