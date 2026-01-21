@@ -1,12 +1,14 @@
 
+*.slang.spv
+
 .cache
 _VOut
 compile_commands.json
-tags
 CMakeLists.txt.user
 imgui.ini
 log.txt
 __pycache__
+tags
 
 .env
 
