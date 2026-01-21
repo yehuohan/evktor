@@ -1,5 +1,4 @@
 #include "assets.hpp"
-#include <fstream>
 #include <stb_image.h>
 
 namespace vktdev {

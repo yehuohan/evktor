@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <fmt/core.h>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -44,7 +45,30 @@ public:
      * @return The return contains [pixels, width, height]
      */
     static std::tuple<std::vector<uint8_t>, uint32_t, uint32_t> loadTexRGBA8(const std::string& filename);
+
     static std::string loadShader(const std::string& filename);
+    static inline std::vector<uint32_t> loadSpirv(const std::string& filename) {
+        return Assets::loadBinary<uint32_t>(Assets::shader(filename));
+    }
+
+    /**
+     * @brief Load binary
+     */
+    template <typename T>
+    static std::vector<T> loadBinary(const std::string& filename) {
+        std::ifstream fin(filename, std::ios::ate | std::ios::binary);
+        if (!fin.is_open()) {
+            throw std::runtime_error(fmt::format("Failed to load binary: {}", filename));
+        }
+        size_t bin_size = fin.tellg();
+        if (bin_size % sizeof(T)) {
+            throw std::runtime_error(fmt::format("Binary size is not a multiplier of T: {}, {}", bin_size, sizeof(T)));
+        }
+        fin.seekg(0, std::ios::beg);
+        std::vector<T> spv(bin_size / sizeof(T));
+        fin.read(reinterpret_cast<char*>(spv.data()), bin_size);
+        return spv;
+    }
 };
 
 } // namespace vktdev
