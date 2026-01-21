@@ -19,6 +19,12 @@ public:
 
     OnConstType(VkImage, image.getHandle());
     OnConstType(VkImageView, imageview.getHandle());
+    const vkt::core::Image& getImage() const {
+        return image;
+    }
+    const vkt::core::ImageView& getImageView() const {
+        return imageview;
+    }
 
     virtual std::type_index getType() const override {
         return typeid(Image);

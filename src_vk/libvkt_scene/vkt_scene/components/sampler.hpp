@@ -13,6 +13,9 @@ public:
     virtual ~Sampler() = default;
 
     OnConstType(VkSampler, sampler.getHandle());
+    const vkt::core::Sampler& getSampler() const {
+        return sampler;
+    }
 
     virtual std::type_index getType() const override {
         return typeid(Sampler);

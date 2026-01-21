@@ -16,11 +16,11 @@ std::tuple<size_t, size_t, size_t> GLTFLoader::accessorBufferOffsetStride(uint32
     assert(index < gmodel.accessors.size());
     auto& accessor = gmodel.accessors[index];
 
-    assert(accessor.bufferView < gmodel.bufferViews.size());
+    assert(0 <= accessor.bufferView && static_cast<size_t>(accessor.bufferView) < gmodel.bufferViews.size());
     auto& buffer_view = gmodel.bufferViews[accessor.bufferView];
 
     int buffer = buffer_view.buffer;
-    assert(0 <= buffer && buffer < gmodel.buffers.size());
+    assert(0 <= buffer && static_cast<size_t>(buffer) < gmodel.buffers.size());
 
     size_t offset = accessor.byteOffset + buffer_view.byteOffset;
 
@@ -34,10 +34,10 @@ Vector<uint8_t> GLTFLoader::accessorData(uint32_t index) const {
     assert(index < gmodel.accessors.size());
     auto& accessor = gmodel.accessors[index];
 
-    assert(accessor.bufferView < gmodel.bufferViews.size());
+    assert(0 <= accessor.bufferView && static_cast<size_t>(accessor.bufferView) < gmodel.bufferViews.size());
     auto& buffer_view = gmodel.bufferViews[accessor.bufferView];
 
-    assert(buffer_view.buffer < gmodel.buffers.size());
+    assert(0 <= buffer_view.buffer && static_cast<size_t>(buffer_view.buffer) < gmodel.buffers.size());
     auto& buffer = gmodel.buffers[buffer_view.buffer];
 
     int stride = accessor.ByteStride(buffer_view);
@@ -381,12 +381,10 @@ void GLTFLoader::loadSceneTextures(vktscn::Scene& scene) const {
         const auto& gtexture = gmodel.textures[k];
 
         auto texture = newBox<Texture>(gtexture.name);
-        if (0 <= gtexture.source && gtexture.source < images.size()) {
-            texture->setImage(*images[gtexture.source]);
-        }
-        if (0 <= gtexture.sampler && gtexture.sampler < samplers.size()) {
-            texture->setSampler(*samplers[gtexture.sampler]);
-        }
+        assert(0 <= gtexture.source && static_cast<size_t>(gtexture.source) < images.size());
+        texture->setImage(*images[gtexture.source]);
+        assert(0 <= gtexture.sampler && static_cast<size_t>(gtexture.sampler) < samplers.size());
+        texture->setSampler(*samplers[gtexture.sampler]);
 
         scene.addComponent(std::move(texture));
     }
@@ -400,7 +398,7 @@ void GLTFLoader::loadSceneMaterials(vktscn::Scene& scene) const {
 
         auto material = newBox<Material>(gmaterial.name);
         int idx = gmaterial.pbrMetallicRoughness.baseColorTexture.index;
-        if (0 <= idx && idx < textures.size()) {
+        if (0 <= idx && static_cast<size_t>(idx) < textures.size()) {
             material->setTexture("base_color_texture", *textures[idx]);
         }
 
@@ -461,8 +459,10 @@ void GLTFLoader::loadSceneMeshes(Scene& scene) const {
             }
 
             // Setup material
-            if (0 <= gprimitive.material && gprimitive.material < materials.size()) {
+            if (0 <= gprimitive.material && static_cast<size_t>(gprimitive.material) < materials.size()) {
                 submesh->setMaterial(*materials[gprimitive.material]);
+            } else {
+                // TODO: add default material
             }
 
             mesh->addSubmesh(*submesh);
@@ -485,7 +485,7 @@ void GLTFLoader::loadSceneNodes(vktscn::Scene& scene) const {
 
         // Node with mesh
         if (gnode.mesh >= 0) {
-            assert(gnode.mesh < meshes.size());
+            assert(static_cast<size_t>(gnode.mesh) < meshes.size());
             auto& mesh = meshes[gnode.mesh];
             node->setComponent(*mesh);
             mesh->addNode(*node); // 一个Mesh可能存在于多个节点
@@ -496,6 +496,9 @@ void GLTFLoader::loadSceneNodes(vktscn::Scene& scene) const {
 }
 
 Box<Scene> GLTFLoader::loadScene(int32_t scene_index) const {
+    if (scene_index >= 0) {
+        assert(static_cast<size_t>(scene_index) < gmodel.scenes.size());
+    }
     Box<Scene> scene = newBox<Scene>();
 
     loadSceneSamplers(*scene);

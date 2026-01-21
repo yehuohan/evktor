@@ -13,6 +13,9 @@ public:
     virtual ~Buffer() = default;
 
     OnConstType(VkBuffer, buffer.getHandle());
+    const vkt::core::Buffer& getBuffer() const {
+        return buffer;
+    }
 
     virtual std::type_index getType() const override {
         return typeid(Buffer);
