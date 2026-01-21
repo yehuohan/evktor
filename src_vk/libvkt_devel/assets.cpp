@@ -26,11 +26,11 @@ static std::tuple<std::vector<uint8_t>, uint32_t, uint32_t> loadTexC8(const std:
 }
 
 std::tuple<std::vector<uint8_t>, uint32_t, uint32_t> Assets::loadTexRGB8(const std::string& filename) {
-    return std::move(loadTexC8(filename, STBI_rgb));
+    return loadTexC8(filename, STBI_rgb);
 }
 
 std::tuple<std::vector<uint8_t>, uint32_t, uint32_t> Assets::loadTexRGBA8(const std::string& filename) {
-    return std::move(loadTexC8(filename, STBI_rgb_alpha));
+    return loadTexC8(filename, STBI_rgb_alpha);
 }
 
 std::string Assets::loadShader(const std::string& filename) {

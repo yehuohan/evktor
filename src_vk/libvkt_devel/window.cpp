@@ -46,7 +46,7 @@ Vector<const char*> Window::requiredInstanceExtensions() const {
     uint32_t glfw_exts_cnt = 0;
     glfw_exts = glfwGetRequiredInstanceExtensions(&glfw_exts_cnt);
     Vector<const char*> exts(glfw_exts, glfw_exts + glfw_exts_cnt);
-    return std::move(exts);
+    return exts;
 }
 
 VkSurfaceKHR Window::createSurface(const vkt::core::Instance& instance) const {

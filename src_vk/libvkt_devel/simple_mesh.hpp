@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <share/helpers.hpp>
 #include <share/share.hpp>
-#include <vulkan/vulkan.h>
+#include <vktor/core/buffer.hpp>
 
 NAMESPACE_BEGIN(vktdev)
 
@@ -46,26 +46,45 @@ public:
     SimpleMesh(SimpleMesh&& rhs) : vertices(std::move(rhs.vertices)), indices(std::move(rhs.indices)) {}
 
     /** Indices size in bytes */
-    size_t indices_size() const {
+    inline size_t indexCount() const {
         return indices.size() * sizeof(Index);
     }
-
+    inline vkt::core::Buffer indexBuffer(const vkt::core::CoreApi& api) const {
+        auto buf = vkt::core::BufferState{}
+                       .setSize(indexCount())
+                       .setUsage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
+                       .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
+                       .into(api)
+                       .unwrap();
+        buf.copyFrom(indices.data());
+        return buf;
+    }
     /** Vertices size in bytes */
-    size_t vertices_size() const {
+    inline size_t vertexCount() const {
         return vertices.size() * sizeof(Vertex);
     }
+    inline vkt::core::Buffer vertexBuffer(const vkt::core::CoreApi& api) const {
+        auto buf = vkt::core::BufferState{}
+                       .setSize(vertexCount())
+                       .setUsage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
+                       .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
+                       .into(api)
+                       .unwrap();
+        buf.copyFrom(vertices.data());
+        return buf;
+    }
 
-    Vector<VkVertexInputBindingDescription> vertexBindings(uint32_t binding = 0) const {
+    constexpr Vector<VkVertexInputBindingDescription> vertexBindings(uint32_t binding = 0) const {
         Vector<VkVertexInputBindingDescription> bindings{};
         bindings.push_back(VkVertexInputBindingDescription{
             binding,
             sizeof(SimpleMesh::Vertex),
             VK_VERTEX_INPUT_RATE_VERTEX,
         });
-        return std::move(bindings);
+        return bindings;
     }
 
-    Vector<VkVertexInputAttributeDescription> vertexAttributes(uint32_t binding = 0) const {
+    constexpr Vector<VkVertexInputAttributeDescription> vertexAttributes(uint32_t binding = 0) const {
         Vector<VkVertexInputAttributeDescription> attrs{};
         attrs.push_back(VkVertexInputAttributeDescription{
             0,
