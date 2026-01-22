@@ -377,16 +377,34 @@ void GLTFLoader::loadSceneTextures(vktscn::Scene& scene) const {
     auto images = scene.getComponents<Image>();
     auto samplers = scene.getComponents<Sampler>();
 
+    auto default_sampler = newBox<Sampler>(
+        core::SamplerState(vktFmt("{}", "default.sampler"))
+            .setLinear()
+            .setAddressMode(VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_REPEAT)
+            .into(api)
+            .unwrap(),
+        "default.sampler");
+    bool require_default_sampler = false;
+
     for (size_t k = 0; k < gmodel.textures.size(); k++) {
         const auto& gtexture = gmodel.textures[k];
 
         auto texture = newBox<Texture>(gtexture.name);
         assert(0 <= gtexture.source && static_cast<size_t>(gtexture.source) < images.size());
         texture->setImage(*images[gtexture.source]);
-        assert(0 <= gtexture.sampler && static_cast<size_t>(gtexture.sampler) < samplers.size());
-        texture->setSampler(*samplers[gtexture.sampler]);
+        if (0 <= gtexture.sampler) {
+            assert(static_cast<size_t>(gtexture.sampler) < samplers.size());
+            texture->setSampler(*samplers[gtexture.sampler]);
+        } else {
+            texture->setSampler(*default_sampler);
+            require_default_sampler = true;
+        }
 
         scene.addComponent(std::move(texture));
+    }
+
+    if (require_default_sampler) {
+        scene.addComponent(std::move(default_sampler));
     }
 }
 
@@ -396,10 +414,49 @@ void GLTFLoader::loadSceneMaterials(vktscn::Scene& scene) const {
     for (size_t k = 0; k < gmodel.materials.size(); k++) {
         const auto& gmaterial = gmodel.materials[k];
 
-        auto material = newBox<Material>(gmaterial.name);
-        int idx = gmaterial.pbrMetallicRoughness.baseColorTexture.index;
-        if (0 <= idx && static_cast<size_t>(idx) < textures.size()) {
-            material->setTexture("base_color_texture", *textures[idx]);
+        auto material = std::make_unique<PBRMaterial>(gmaterial.name);
+
+        // Basic
+        material->emissive_factor = glm::vec3(gmaterial.emissiveFactor[0],
+                                              gmaterial.emissiveFactor[1],
+                                              gmaterial.emissiveFactor[2]);
+        if (gmaterial.alphaMode == "BLEND") {
+            material->alpha_mode = AlphaMode::Blend;
+        } else if (gmaterial.alphaMode == "OPAQUE") {
+            material->alpha_mode = AlphaMode::Opaque;
+        } else if (gmaterial.alphaMode == "MASK") {
+            material->alpha_mode = AlphaMode::Mask;
+        }
+        material->alpha_cutoff = gmaterial.alphaCutoff;
+        material->double_sided = gmaterial.doubleSided;
+        if (0 <= gmaterial.emissiveTexture.index && static_cast<size_t>(gmaterial.emissiveTexture.index)) {
+            material->setTexture("emissive_texture", *textures[gmaterial.emissiveTexture.index]);
+        }
+
+        // Additional
+        material->normal_scale = gmaterial.normalTexture.scale;
+        material->occlusion_strength = gmaterial.occlusionTexture.strength;
+        if (0 <= gmaterial.normalTexture.index && static_cast<size_t>(gmaterial.normalTexture.index)) {
+            material->setTexture("normal_texture", *textures[gmaterial.normalTexture.index]);
+        }
+        if (0 <= gmaterial.occlusionTexture.index && static_cast<size_t>(gmaterial.occlusionTexture.index)) {
+            material->setTexture("occlusion_texture", *textures[gmaterial.occlusionTexture.index]);
+        }
+
+        // Metallic-Roughness
+        const auto& mr = gmaterial.pbrMetallicRoughness;
+        material->base_color_factor = glm::vec4(mr.baseColorFactor[0],
+                                                mr.baseColorFactor[1],
+                                                mr.baseColorFactor[2],
+                                                mr.baseColorFactor[3]);
+        material->metallic_factor = mr.metallicFactor;
+        material->roughness_factor = mr.roughnessFactor;
+        if (0 <= mr.baseColorTexture.index && static_cast<size_t>(mr.baseColorTexture.index) < textures.size()) {
+            material->setTexture("base_color_texture", *textures[mr.baseColorTexture.index]);
+        }
+        if (0 <= mr.metallicRoughnessTexture.index &&
+            static_cast<size_t>(mr.metallicRoughnessTexture.index) < textures.size()) {
+            material->setTexture("metallic_roughness_texture", *textures[mr.metallicRoughnessTexture.index]);
         }
 
         scene.addComponent(std::move(material));
@@ -408,7 +465,10 @@ void GLTFLoader::loadSceneMaterials(vktscn::Scene& scene) const {
 
 void GLTFLoader::loadSceneMeshes(Scene& scene) const {
     auto buffers = scene.getComponents<Buffer>();
-    auto materials = scene.getComponents<Material>();
+    auto pbr_materials = scene.getComponents<PBRMaterial>();
+
+    auto default_pbr_material = newBox<PBRMaterial>("default.pbr_material");
+    bool require_default_pbr_material = false;
 
     // Load meshes
     for (const auto& gmesh : gmodel.meshes) {
@@ -459,10 +519,11 @@ void GLTFLoader::loadSceneMeshes(Scene& scene) const {
             }
 
             // Setup material
-            if (0 <= gprimitive.material && static_cast<size_t>(gprimitive.material) < materials.size()) {
-                submesh->setMaterial(*materials[gprimitive.material]);
+            if (0 <= gprimitive.material && static_cast<size_t>(gprimitive.material) < pbr_materials.size()) {
+                submesh->setMaterial(*pbr_materials[gprimitive.material]);
             } else {
-                // TODO: add default material
+                submesh->setMaterial(*default_pbr_material);
+                require_default_pbr_material = true;
             }
 
             mesh->addSubmesh(*submesh);
@@ -471,6 +532,10 @@ void GLTFLoader::loadSceneMeshes(Scene& scene) const {
 
         scene.addComponent(std::move(mesh));
     }
+
+    if (require_default_pbr_material) {
+        scene.addComponent(std::move(default_pbr_material));
+    }
 }
 
 void GLTFLoader::loadSceneNodes(vktscn::Scene& scene) const {
@@ -478,10 +543,10 @@ void GLTFLoader::loadSceneNodes(vktscn::Scene& scene) const {
 
     // Load nodes
     Vector<Box<Node>> nodes{};
-    for (size_t kn = 0; kn < gmodel.nodes.size(); kn++) {
-        const auto& gnode = gmodel.nodes[kn];
+    for (size_t k = 0; k < gmodel.nodes.size(); k++) {
+        const auto& gnode = gmodel.nodes[k];
 
-        auto node = parseNode(kn);
+        auto node = parseNode(k);
 
         // Node with mesh
         if (gnode.mesh >= 0) {

@@ -53,6 +53,9 @@ public:
     const Material* getMaterial() const {
         return material;
     }
+    const PBRMaterial* getPBRMaterial() const {
+        return dynamic_cast<const PBRMaterial*>(material);
+    }
 };
 
 class Mesh : public Component {
