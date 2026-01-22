@@ -95,6 +95,7 @@ Res<DescriptorPool> DescriptorPool::from(const DescriptorSetLayout& setlayout, c
     OnRet(vkCreateDescriptorPool(setlayout.api, &descpool_ci, setlayout.api, descriptor_pool),
           "Failed to create descriptor pool");
     OnName(descriptor_pool, info.__name);
+    descriptor_pool.flags = info.flags;
 
     return Ok(std::move(descriptor_pool));
 }

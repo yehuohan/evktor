@@ -74,9 +74,8 @@ DescriptorSet::DescriptorSet(DescriptorSet&& rhs) : CoreResource(rhs.api), desc_
 }
 
 DescriptorSet::~DescriptorSet() {
-    // Still need check null handle to skip destructor resulted from move constructor
     if (!__borrowed && handle) {
-        desc_pool.free(*this);
+        // Descriptor set will be freed along with vkDestroyDescriptorPool
     }
     handle = VK_NULL_HANDLE;
 }
