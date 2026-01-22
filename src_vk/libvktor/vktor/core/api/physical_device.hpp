@@ -82,17 +82,40 @@ public:
     ~PhysicalDevice();
     PhysicalDevice& operator=(PhysicalDevice&&);
 
+    inline VkFormatProperties getPhysicalDeviceFormatProperties(VkFormat format) const;
+    inline VkFormatProperties2 getPhysicalDeviceFormatProperties2(VkFormat format) const;
     inline VkPhysicalDeviceFeatures getPhysicalDeviceFeatures() const;
+    inline VkPhysicalDeviceFeatures2 getPhysicalDeviceFeatures2() const;
     inline VkPhysicalDeviceProperties getPhysicalDeviceProperties() const;
+    inline VkPhysicalDeviceProperties2 getPhysicalDeviceProperties2() const;
     inline VkPhysicalDeviceMemoryProperties getPhysicalDeviceMemoryProperties() const;
+    inline VkPhysicalDeviceMemoryProperties2 getPhysicalDeviceMemoryProperties2() const;
 
     static Res<PhysicalDevice> from(CRef<Instance> instance, PhysicalDeviceState& info);
     static Res<PhysicalDevice> borrow(CRef<Instance> instance, VkPhysicalDevice handle, VkSurfaceKHR surface = VK_NULL_HANDLE);
 };
 
+inline VkFormatProperties PhysicalDevice::getPhysicalDeviceFormatProperties(VkFormat format) const {
+    VkFormatProperties props;
+    vkGetPhysicalDeviceFormatProperties(handle, format, &props);
+    return props;
+}
+
+inline VkFormatProperties2 PhysicalDevice::getPhysicalDeviceFormatProperties2(VkFormat format) const {
+    VkFormatProperties2 props;
+    vkGetPhysicalDeviceFormatProperties2(handle, format, &props);
+    return props;
+}
+
 inline VkPhysicalDeviceFeatures PhysicalDevice::getPhysicalDeviceFeatures() const {
     VkPhysicalDeviceFeatures feats{};
     vkGetPhysicalDeviceFeatures(handle, &feats);
+    return feats;
+}
+
+inline VkPhysicalDeviceFeatures2 PhysicalDevice::getPhysicalDeviceFeatures2() const {
+    VkPhysicalDeviceFeatures2 feats{};
+    vkGetPhysicalDeviceFeatures2(handle, &feats);
     return feats;
 }
 
@@ -102,9 +125,21 @@ inline VkPhysicalDeviceProperties PhysicalDevice::getPhysicalDeviceProperties() 
     return props;
 }
 
+inline VkPhysicalDeviceProperties2 PhysicalDevice::getPhysicalDeviceProperties2() const {
+    VkPhysicalDeviceProperties2 props{};
+    vkGetPhysicalDeviceProperties2(handle, &props);
+    return props;
+}
+
 inline VkPhysicalDeviceMemoryProperties PhysicalDevice::getPhysicalDeviceMemoryProperties() const {
     VkPhysicalDeviceMemoryProperties props{};
     vkGetPhysicalDeviceMemoryProperties(handle, &props);
+    return props;
+}
+
+inline VkPhysicalDeviceMemoryProperties2 PhysicalDevice::getPhysicalDeviceMemoryProperties2() const {
+    VkPhysicalDeviceMemoryProperties2 props{};
+    vkGetPhysicalDeviceMemoryProperties2(handle, &props);
     return props;
 }
 
