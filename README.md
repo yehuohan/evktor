@@ -1,12 +1,12 @@
 
-Learn graphics with OpenGL and Vulkan.
+Learning graphics with OpenGL and Vulkan.
 
-## Requirements
+## Requires
 
 - [assets](https://github.com/yehuohan/graphics-assets)
-- Just
-- Vcpkg
+- [just](https://github.com/casey/just)
 - CMake
+- Vcpkg
 - Ninja
 - Python
 - VulkanSDK
@@ -14,6 +14,6 @@ Learn graphics with OpenGL and Vulkan.
 
 ## Refs
 
-- [Vulkan Tutorial](https://vulkan-tutorial.com/)
+- [Vulkan-Tutorial](https://vulkan-tutorial.com/)
 - [Vulkan-Samples](https://github.com/KhronosGroup/Vulkan-Samples)
 - [vk-bootstrap](https://github.com/charles-lunarg/vk-bootstrap)
