@@ -237,7 +237,7 @@ Box<Node> GLTFLoader::parseNode(size_t gnode_index) const {
     const auto& gnode = gmodel.nodes[gnode_index];
 
     auto node = newBox<Node>(gnode_index, gnode.name);
-    auto& transform = node->getComponent<Transform>();
+    auto& transform = node->getTransform();
     if (!gnode.translation.empty()) {
         glm::vec3 translation;
         std::transform(gnode.translation.begin(),
@@ -260,7 +260,7 @@ Box<Node> GLTFLoader::parseNode(size_t gnode_index) const {
     if (!gnode.matrix.empty()) {
         glm::mat4 matrix;
         std::transform(gnode.matrix.begin(), gnode.matrix.end(), glm::value_ptr(matrix), TypeCast<double, float>{});
-        transform.setMatrix(matrix);
+        transform.setLocalMatrix(matrix);
     }
     return node;
 }

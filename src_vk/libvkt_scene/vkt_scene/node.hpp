@@ -1,17 +1,17 @@
 #pragma once
 #include "component.hpp"
-#include "components/transform.hpp"
+#include "transform.hpp"
 
 NAMESPACE_BEGIN(vktscn)
 
 class Node {
 private:
-    Node* parent{nullptr};
+    Node* parent = nullptr;
     Vector<Node*> children{};
+    Transform transform;
 
     size_t id;
     String name;
-    Transform transform;
     HashMap<std::type_index, Component*> components{};
 
 public:
@@ -29,6 +29,12 @@ public:
     inline const Vector<Node*>& getChildren() const {
         return children;
     }
+    inline Transform& getTransform() {
+        return transform;
+    }
+    inline const Transform& getTransform() const {
+        return transform;
+    }
 
 public:
     inline size_t getId() const {
@@ -37,24 +43,22 @@ public:
     inline const std::string& getName() const {
         return name;
     }
-    inline Transform& getTransform() {
-        return transform;
+    /**
+     * @brief Set or insert a component to this node
+     */
+    inline void setComponent(Component& component) {
+        components[component.getType()] = &component;
     }
-    inline bool hasComponent(const std::type_index index) const {
-        return components.count(index) > 0;
-    }
+    /**
+     * @brief Get component of this node
+     *
+     * Must check the return != nullptr
+     */
+    Component* getComponent(const std::type_index& index);
     template <class T>
-    inline bool hasComponent() const {
-        return hasComponent(typeid(T));
+    inline T* getComponent() {
+        return dynamic_cast<T*>(getComponent(typeid(T)));
     }
-    inline Component& getComponent(const std::type_index index) {
-        return *components.at(index);
-    }
-    template <class T>
-    inline T& getComponent() {
-        return dynamic_cast<T&>(getComponent(typeid(T)));
-    }
-    void setComponent(Component& component);
 };
 
 NAMESPACE_END(vktscn)
