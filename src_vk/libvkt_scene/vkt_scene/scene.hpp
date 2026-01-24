@@ -16,7 +16,7 @@ NAMESPACE_BEGIN(vktscn)
  * - All nodes and components are stored in `Scene` with ownership
  * - Reference to nodes and components should use raw pointer
  */
-class Scene : public NonCopyable {
+class Scene : private NonCopyable {
 private:
     String name;
     size_t root_node = 0;

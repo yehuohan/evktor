@@ -1,6 +1,7 @@
 #include "gltf_helper.hpp"
 #include <algorithm>
 #include <glm/gtc/type_ptr.hpp>
+#include <queue>
 #include <vktor/core/command_buffer.hpp>
 #include <vktor/core/command_pool.hpp>
 
@@ -264,7 +265,7 @@ Box<Node> GLTFLoader::parseNode(size_t gnode_index) const {
     return node;
 }
 
-void GLTFLoader::loadSceneSamplers(vktscn::Scene& scene) const {
+void GLTFLoader::loadSamplers(Scene& scene) const {
     for (size_t k = 0; k < gmodel.samplers.size(); k++) {
         const auto& gsampler = gmodel.samplers[k];
 
@@ -278,7 +279,7 @@ void GLTFLoader::loadSceneSamplers(vktscn::Scene& scene) const {
     }
 }
 
-void GLTFLoader::loadSceneBuffers(vktscn::Scene& scene) const {
+void GLTFLoader::loadBuffers(Scene& scene) const {
     // Prepare command buffer
     auto _queue = api.transferQueue().unwrap();
     auto& queue = _queue.get();
@@ -317,7 +318,7 @@ void GLTFLoader::loadSceneBuffers(vktscn::Scene& scene) const {
     }
 }
 
-void GLTFLoader::loadSceneImages(vktscn::Scene& scene) const {
+void GLTFLoader::loadImages(Scene& scene) const {
     // Prepare command buffer
     auto _queue = api.graphicsQueue().unwrap();
     auto& queue = _queue.get();
@@ -373,7 +374,7 @@ void GLTFLoader::loadSceneImages(vktscn::Scene& scene) const {
     }
 }
 
-void GLTFLoader::loadSceneTextures(vktscn::Scene& scene) const {
+void GLTFLoader::loadTextures(Scene& scene) const {
     auto images = scene.getComponents<Image>();
     auto samplers = scene.getComponents<Sampler>();
 
@@ -408,7 +409,7 @@ void GLTFLoader::loadSceneTextures(vktscn::Scene& scene) const {
     }
 }
 
-void GLTFLoader::loadSceneMaterials(vktscn::Scene& scene) const {
+void GLTFLoader::loadMaterials(Scene& scene) const {
     auto textures = scene.getComponents<Texture>();
 
     for (size_t k = 0; k < gmodel.materials.size(); k++) {
@@ -463,7 +464,7 @@ void GLTFLoader::loadSceneMaterials(vktscn::Scene& scene) const {
     }
 }
 
-void GLTFLoader::loadSceneMeshes(Scene& scene) const {
+void GLTFLoader::loadMeshes(Scene& scene) const {
     auto buffers = scene.getComponents<Buffer>();
     auto pbr_materials = scene.getComponents<PBRMaterial>();
 
@@ -538,7 +539,12 @@ void GLTFLoader::loadSceneMeshes(Scene& scene) const {
     }
 }
 
-void GLTFLoader::loadSceneNodes(vktscn::Scene& scene) const {
+void GLTFLoader::loadSceneNodes(Scene& scene, int32_t scene_index) const {
+    if (scene_index < 0) {
+        scene_index = gmodel.defaultScene;
+    }
+    assert(static_cast<size_t>(scene_index) < gmodel.scenes.size());
+
     auto meshes = scene.getComponents<Mesh>();
 
     // Load nodes
@@ -548,7 +554,7 @@ void GLTFLoader::loadSceneNodes(vktscn::Scene& scene) const {
 
         auto node = parseNode(k);
 
-        // Node with mesh
+        // Setup node's mesh
         if (gnode.mesh >= 0) {
             assert(static_cast<size_t>(gnode.mesh) < meshes.size());
             auto& mesh = meshes[gnode.mesh];
@@ -557,22 +563,43 @@ void GLTFLoader::loadSceneNodes(vktscn::Scene& scene) const {
         }
         nodes.push_back(std::move(node));
     }
-    scene.setNodes(std::move(nodes), 0);
+
+    // Construct scene's nodes
+    const tinygltf::Scene* gscene = &gmodel.scenes[scene_index];
+    auto root_node = newBox<Node>(0, gscene->name);
+
+    std::queue<std::pair<Node*, int>> traverse_nodes{};
+    for (auto node_index : gscene->nodes) {
+        traverse_nodes.push(std::make_pair(root_node.get(), node_index));
+    }
+    while (!traverse_nodes.empty()) {
+        auto [traverse_root_node, current_node_index] = traverse_nodes.front();
+        traverse_nodes.pop();
+
+        assert(static_cast<size_t>(current_node_index) < nodes.size());
+        auto& current_node = nodes[current_node_index];
+        current_node->setParent(*traverse_root_node);
+        traverse_root_node->addChild(*current_node);
+
+        for (auto child_node_index : gmodel.nodes[current_node_index].children) {
+            traverse_nodes.push(std::make_pair(current_node.get(), child_node_index));
+        }
+    }
+
+    nodes.push_back(std::move(root_node));
+    scene.setNodes(std::move(nodes), nodes.size() - 1);
 }
 
 Box<Scene> GLTFLoader::loadScene(int32_t scene_index) const {
-    if (scene_index >= 0) {
-        assert(static_cast<size_t>(scene_index) < gmodel.scenes.size());
-    }
     Box<Scene> scene = newBox<Scene>();
 
-    loadSceneSamplers(*scene);
-    loadSceneBuffers(*scene);
-    loadSceneImages(*scene);
-    loadSceneTextures(*scene);  // Require images, samplers
-    loadSceneMaterials(*scene); // Require textures
-    loadSceneMeshes(*scene);    // Require buffers, materials
-    loadSceneNodes(*scene);     // Require meshes
+    loadSamplers(*scene);
+    loadBuffers(*scene);
+    loadImages(*scene);
+    loadTextures(*scene);                // Require images, samplers
+    loadMaterials(*scene);               // Require textures
+    loadMeshes(*scene);                  // Require buffers, materials
+    loadSceneNodes(*scene, scene_index); // Require meshes
 
     return scene;
 }

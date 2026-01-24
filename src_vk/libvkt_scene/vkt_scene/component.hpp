@@ -5,7 +5,7 @@
 
 NAMESPACE_BEGIN(vktscn)
 
-class Component : public NonCopyable {
+class Component : private NonCopyable {
 public:
     Component() = default;
     Component(const String& name) : name(name) {}
