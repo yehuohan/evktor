@@ -1,12 +1,12 @@
 // vim@code: slangc pbr.slang -target spirv -o pbr.slang.spv
 
-struct GlobalUBO {
+struct PBRUniform {
     float4x4 model;
     float4x4 view_proj;
 };
 
 [[vk::binding(0, 0)]]
-ConstantBuffer<GlobalUBO> global_ubo;
+ConstantBuffer<PBRUniform> pbr_ubo;
 
 [[vk::binding(1, 0)]]
 Sampler2D base_color_texture;
@@ -18,11 +18,11 @@ float4 vertMain(
     // Vertex outputs
     out float3 out_position, out float2 out_texcoord, out float3 out_normal)
     : SV_Position {
-    float4 model = mul(global_ubo.model, float4(position, 1.0));
+    float4 model = mul(pbr_ubo.model, float4(position, 1.0));
     out_position = model.xyz;
     out_texcoord = texcoord_0;
-    out_normal = mul(float3x3(global_ubo.model), normal);
-    return mul(global_ubo.view_proj, model);
+    out_normal = mul(float3x3(pbr_ubo.model), normal);
+    return mul(pbr_ubo.view_proj, model);
 }
 
 [shader("fragment")]
