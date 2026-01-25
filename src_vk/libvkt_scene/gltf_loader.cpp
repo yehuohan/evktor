@@ -4,6 +4,7 @@
 #include <queue>
 #include <vktor/core/command_buffer.hpp>
 #include <vktor/core/command_pool.hpp>
+#include <vktor/core/fence.hpp>
 
 using namespace vkt;
 using namespace vktscn;
@@ -283,15 +284,28 @@ void GLTFLoader::loadBuffers(Scene& scene) const {
     // Prepare command buffer
     auto _queue = api.transferQueue().unwrap();
     auto& queue = _queue.get();
-    auto cmdpool = core::CommandPoolState("GLTFLoader.loadSceneBuffers.CommandPool")
+    auto cmdpool = core::CommandPoolState("GLTFLoader.loadBuffers.CommandPool")
                        .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
                        .setQueueFamilyIndex(queue.family_index)
                        .into(api)
                        .unwrap();
-    auto _cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "GLTFLoader.loadSceneBuffers.CommandBuffer").unwrap();
+    auto _cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "GLTFLoader.loadBuffers.CommandBuffer").unwrap();
     auto& cmdbuf = _cmdbuf.get();
+    auto fence = core::FenceState("GLTFLoader.loadBuffers.Fence").into(api).unwrap();
 
     // Load buffers
+    auto max_size = std::max_element(gmodel.buffers.begin(),
+                                     gmodel.buffers.end(),
+                                     [](const tinygltf::Buffer& a, const tinygltf::Buffer& b) {
+                                         return a.data.size() < b.data.size();
+                                     })
+                        ->data.size();
+    auto staging = core::BufferState()
+                       .setSize(max_size)
+                       .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
+                       .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
+                       .into(api)
+                       .unwrap();
     for (size_t k = 0; k < gmodel.buffers.size(); k++) {
         const auto& gbuffer = gmodel.buffers[k];
 
@@ -301,18 +315,13 @@ void GLTFLoader::loadBuffers(Scene& scene) const {
                                     VK_BUFFER_USAGE_TRANSFER_DST_BIT)
                           .into(api)
                           .unwrap();
-        auto staging = core::BufferState()
-                           .setSize(gbuffer.data.size())
-                           .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
-                           .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
-                           .into(api)
-                           .unwrap();
-        staging.copyFrom(gbuffer.data.data());
+        staging.copyFrom(gbuffer.data.data(), buffer.getSize());
         cmdbuf.begin();
         cmdbuf.cmdCopyBuffer(staging, buffer);
         cmdbuf.end();
-        queue.submit(cmdbuf);
-        queue.waitIdle();
+        queue.submit(cmdbuf, fence);
+        fence.wait();
+        fence.reset();
 
         scene.addComponent(newBox<Buffer>(std::move(buffer), gbuffer.name));
     }
@@ -322,13 +331,28 @@ void GLTFLoader::loadImages(Scene& scene) const {
     // Prepare command buffer
     auto _queue = api.graphicsQueue().unwrap();
     auto& queue = _queue.get();
-    auto cmdpool = core::CommandPoolState("GLTFLoader.loadSceneImages.CommandPool")
+    auto cmdpool = core::CommandPoolState("GLTFLoader.loadImages.CommandPool")
                        .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
                        .setQueueFamilyIndex(queue.family_index)
                        .into(api)
                        .unwrap();
-    auto _cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "GLTFLoader.loadSceneImages.CommandBuffer").unwrap();
+    auto _cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "GLTFLoader.loadImages.CommandBuffer").unwrap();
     auto& cmdbuf = _cmdbuf.get();
+    auto fence = core::FenceState("GLTFLoader.loadImages.Fence").into(api).unwrap();
+
+    // Load images
+    auto max_size = std::max_element(gmodel.images.begin(),
+                                     gmodel.images.end(),
+                                     [](const tinygltf::Image& a, const tinygltf::Image& b) {
+                                         return a.image.size() < b.image.size();
+                                     })
+                        ->image.size();
+    auto staging = core::BufferState()
+                       .setSize(max_size)
+                       .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
+                       .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
+                       .into(api)
+                       .unwrap();
 
     for (size_t k = 0; k < gmodel.images.size(); k++) {
         const auto& gimage = gmodel.images[k];
@@ -348,13 +372,7 @@ void GLTFLoader::loadImages(Scene& scene) const {
                          .into(api)
                          .unwrap();
         auto imageview = core::ImageViewState(vktFmt("{}.view", gimage.name)).setFromImage(image).into(api).unwrap();
-        auto staging = core::BufferState()
-                           .setSize(image_data.size())
-                           .setUsage(VK_BUFFER_USAGE_TRANSFER_SRC_BIT)
-                           .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
-                           .into(api)
-                           .unwrap();
-        staging.copyFrom(image_data.data());
+        staging.copyFrom(image_data.data(), image_data.size());
         core::Arg arg(image);
         cmdbuf.begin();
         cmdbuf.cmdImageMemoryBarrier(arg,
@@ -367,8 +385,9 @@ void GLTFLoader::loadImages(Scene& scene) const {
         cmdbuf.cmdCopyBufferToImage(staging, arg);
         cmdbuf.cmdGenImageMips(arg, VK_FILTER_LINEAR);
         cmdbuf.end();
-        queue.submit(cmdbuf);
-        queue.waitIdle();
+        queue.submit(cmdbuf, fence);
+        fence.wait();
+        fence.reset();
 
         scene.addComponent(newBox<Image>(std::move(image), std::move(imageview), gimage.name));
     }
