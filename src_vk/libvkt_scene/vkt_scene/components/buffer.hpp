@@ -27,8 +27,7 @@ struct SubBuffer {
     SubBuffer(const Buffer& buffer, VkDeviceSize offset) : buffer(&buffer), offset(offset) {}
 
     operator VkBuffer() const {
-        assert(buffer);
-        return (VkBuffer)*buffer;
+        return buffer ? buffer->getBuffer().getHandle() : VK_NULL_HANDLE;
     }
 
     const Buffer* buffer = nullptr;
