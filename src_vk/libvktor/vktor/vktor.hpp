@@ -14,6 +14,7 @@
  */
 #pragma once
 #include "vktor/rendering/render_context.hpp"
+#include "vktor/rendering/render_pipeline.hpp"
 
 NAMESPACE_BEGIN(vkt)
 

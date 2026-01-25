@@ -74,6 +74,7 @@ public:
                                 const Vector<VkClearValue>& clear_values,
                                 VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE) const;
     inline Self endRenderPass() const;
+    inline Self cmdNextSubpass(VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE) const;
     inline Self cmdBindPipeline(VkPipelineBindPoint bind_point, VkPipeline pipeline) const;
     inline Self cmdBindGraphicsPipeline(VkPipeline pipeline) const;
     inline Self cmdBindComputePipeline(VkPipeline pipeline) const;
@@ -315,6 +316,11 @@ inline CommandBuffer::Self CommandBuffer::beginRenderPass(const VkExtent2D exten
 
 inline CommandBuffer::Self CommandBuffer::endRenderPass() const {
     vkCmdEndRenderPass(handle);
+    return *this;
+}
+
+inline CommandBuffer::Self CommandBuffer::cmdNextSubpass(VkSubpassContents contents) const {
+    vkCmdNextSubpass(handle, contents);
     return *this;
 }
 

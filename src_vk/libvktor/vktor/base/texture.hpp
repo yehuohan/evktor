@@ -41,7 +41,7 @@ public:
     /**
      * @brief Texture move constructor
      *
-     * Can also from `Texture2D`:
+     * Can also from `Texture2D` with object slicing as Texture2D doesn't have extra members:
      * ```
      * Texture2D tex{...};
      * Texture tex = Texture(std::move(tex));

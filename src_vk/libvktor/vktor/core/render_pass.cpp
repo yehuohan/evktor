@@ -24,6 +24,14 @@ Self RenderPassState::addAttachment(VkFormat format,
     return *this;
 }
 
+Self RenderPassState::addSubpass(const Vector<uint32_t>& colors, uint32_t depthstencil) {
+    RenderSubpassState subpass{};
+    subpass.colors = colors;
+    subpass.depthstencil = depthstencil;
+    subpasses.push_back(std::move(subpass));
+    return *this;
+}
+
 Self RenderPassState::addSubpass(const Vector<uint32_t>& inputs, const Vector<uint32_t>& colors, uint32_t depthstencil) {
     RenderSubpassState subpass{};
     subpass.inputs = inputs;

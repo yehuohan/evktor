@@ -18,7 +18,7 @@ void case_core_graphics() {
     // Create pipeline
     auto render_pass = RenderPassState{}
                            .addColorAttachment(VK_FORMAT_R32G32B32A32_SFLOAT, VK_SAMPLE_COUNT_1_BIT)
-                           .addSubpass({}, {0})
+                           .addSubpass({0})
                            .into(api)
                            .unwrap();
     auto desc_set_layout = DescriptorSetLayoutState{}

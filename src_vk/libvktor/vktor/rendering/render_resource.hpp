@@ -1,8 +1,9 @@
 #pragma once
-#include "render_pipeline.hpp"
 #include "render_target.hpp"
 #include "share/resource_cache.hpp"
 #include "vktor/base/shader.hpp"
+#include "vktor/base/texture.hpp"
+#include "vktor/core/buffer.hpp"
 #include "vktor/core/descriptor_pool.hpp"
 #include "vktor/core/descriptor_set.hpp"
 #include "vktor/core/descriptor_setlayout.hpp"
@@ -11,7 +12,6 @@
 #include "vktor/core/pipeline_graphics.hpp"
 #include "vktor/core/pipeline_layout.hpp"
 #include "vktor/core/render_pass.hpp"
-#include <functional>
 
 NAMESPACE_BEGIN(vkt)
 
@@ -36,10 +36,9 @@ public:
     Res<CRef<core::PipelineLayout>> requestPipelineLayout(const Vector<CRef<Shader>>& shaders);
     Res<CRef<core::GraphicsPipeline>> requestGraphicsPipeline(const core::GraphicsPipelineState& pso);
     Res<CRef<core::ComputePipeline>> requestComputePipeline(const core::ComputePipelineState& pso);
-    Res<CRef<core::RenderPass>> requestRenderPass(const RenderTargetTable& render_target_table,
-                                                  const RenderPipeline& render_pipeline);
-    Res<CRef<core::Framebuffer>> requestFramebuffer(const RenderTargetTable& render_target_table,
-                                                    const core::RenderPass& render_pass);
+    Res<CRef<core::RenderPass>> requestRenderPass(const RenderTargetTable& rtt,
+                                                  const Vector<CRef<core::RenderSubpassState>>& states);
+    Res<CRef<core::Framebuffer>> requestFramebuffer(const RenderTargetTable& rtt, const core::RenderPass& render_pass);
 };
 
 NAMESPACE_END(vkt)

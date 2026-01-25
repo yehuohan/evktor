@@ -42,7 +42,7 @@ Res<RenderContext> RenderContext::from(const CoreApi& api,
     return Ok(std::move(render_context));
 }
 
-RenderContext::RenderContext(RenderContext&& rhs) : RenderResource(rhs.api), api(rhs.api), thread_count(rhs.thread_count) {
+RenderContext::RenderContext(RenderContext&& rhs) : RenderResource(rhs.api), thread_count(rhs.thread_count) {
     frame_index = rhs.frame_index;
     frame_actived = rhs.frame_actived;
     frames = std::move(rhs.frames);
@@ -124,7 +124,7 @@ Res<CRef<core::CommandBuffer>> RenderContext::beginFrame() {
         frame_index = (frame_index + 1) % frames.size();
     }
     if (frame_index >= frames.size()) {
-        return Er("The activated frame index {} is out of frames count {}", frame_index, frames.size());
+        return Er("The activated frame index = {} is out of frames count = {}", frame_index, frames.size());
     }
 
     // Reset the frame to begin

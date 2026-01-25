@@ -15,11 +15,18 @@ class RenderTarget : private NonCopyable {
     friend struct std::hash<vkt::RenderTargetTable>;
     friend class RenderTargetTable;
     friend class RenderPipeline;
+    friend class RenderResource;
 
 protected:
     Texture texture;
+    /** The `ops.load/store` is the first/last subpass operator on the `texture` */
     core::AttachmentOps ops = core::AttachmentOps::ignore();
+    /** The `stencil_ops.load/store` is the first/last subpass operator on the depth-stencil `texture` */
     core::AttachmentOps stencil_ops = core::AttachmentOps::ignore();
+    /** `layouts.initial/final` is `texture` layouts before/after the whole render pass
+     *
+     * The `texture` layout for subpass is specified by VkAttachmentReference.layout
+     */
     core::AttachmentLayouts layouts = core::AttachmentLayouts::color();
     VkClearValue clear{};
 
@@ -140,9 +147,9 @@ struct hash<Vector<vkt::RenderTarget>> {
  */
 template <>
 struct hash<vkt::RenderTargetTable> {
-    size_t operator()(const vkt::RenderTargetTable& render_target_table) const {
+    size_t operator()(const vkt::RenderTargetTable& rtt) const {
         size_t res = 0;
-        for (const auto& rt : render_target_table.getTargets()) {
+        for (const auto& rt : rtt.getTargets()) {
             hashCombine(res, rt.getImage());
             hashCombine(res, rt.getImageView());
         }

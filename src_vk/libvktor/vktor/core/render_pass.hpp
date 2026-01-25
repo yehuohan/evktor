@@ -107,6 +107,7 @@ public:
                              AttachmentOps::stencil(),
                              AttachmentLayouts::depthstencil());
     }
+    Self addSubpass(const Vector<uint32_t>& colors, uint32_t depthstencil = VK_ATTACHMENT_UNUSED);
     Self addSubpass(const Vector<uint32_t>& inputs,
                     const Vector<uint32_t>& colors,
                     uint32_t depthstencil = VK_ATTACHMENT_UNUSED);
@@ -130,6 +131,32 @@ NAMESPACE_END(core)
 NAMESPACE_END(vkt)
 
 NAMESPACE_BEGIN(std)
+
+template <>
+struct hash<vkt::core::RenderSubpassState> {
+    size_t operator()(const vkt::core::RenderSubpassState& state) const {
+        size_t res = 0;
+        for (const auto a : state.inputs) {
+            hashCombine(res, a);
+        }
+        for (const auto a : state.colors) {
+            hashCombine(res, a);
+        }
+        hashCombine(res, state.depthstencil);
+        return res;
+    }
+};
+
+template <>
+struct hash<Vector<CRef<vkt::core::RenderSubpassState>>> {
+    size_t operator()(const Vector<CRef<vkt::core::RenderSubpassState>>& states) const {
+        size_t res = 0;
+        for (const auto& s : states) {
+            hashCombine(res, s.get());
+        }
+        return res;
+    }
+};
 
 template <>
 struct hash<vkt::core::RenderPass> {

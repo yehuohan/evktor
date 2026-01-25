@@ -1,23 +1,33 @@
 #pragma once
+#include "render_cmdbuf.hpp"
 #include "vktor/base/shader.hpp"
 #include "vktor/core/render_pass.hpp"
 
 NAMESPACE_BEGIN(vkt)
 
+/**
+ * @brief Render pipeline subpass with vertex and fragment shader
+ */
 class RenderSubpass : private NonCopyable {
-private:
+protected:
+    const String name;
+
     Shader vert_shader;
     Shader frag_shader;
 
-    /** Render targets info for subpass
+    /** Specify which render targets are required by this subpass
      *
      * By default the color attachment is RT-0
      */
     core::RenderSubpassState state{{}, {0}, VK_ATTACHMENT_UNUSED};
 
 public:
-    explicit RenderSubpass(Shader&& vert, Shader&& frag) : vert_shader(std::move(vert)), frag_shader(std::move(frag)) {}
+    explicit RenderSubpass(Shader&& vert, Shader&& frag, const String& name = "")
+        : name(name)
+        , vert_shader(std::move(vert))
+        , frag_shader(std::move(frag)) {}
     RenderSubpass(RenderSubpass&&);
+    virtual ~RenderSubpass() {}
 
     inline const Vector<CRef<Shader>> Shaders() const {
         return {newCRef(vert_shader), newCRef(frag_shader)};
@@ -28,52 +38,22 @@ public:
     inline const Shader& fragShader() const {
         return frag_shader;
     }
+    inline const String& getName() const {
+        return name;
+    }
+
     /** Set input render targets (alias input attachments) */
-    inline void setRTInputs(Vector<uint32_t>&& inputs) {
-        state.inputs = std::move(inputs);
-    }
+    RenderSubpass& setRTInputs(const Vector<uint32_t>& inputs);
     /** Set color render targets (alias color attachments) */
-    inline void setRTColors(Vector<uint32_t>&& colors) {
-        state.colors = std::move(colors);
-    }
+    RenderSubpass& setRTColors(const Vector<uint32_t>& colors);
     /** Set depth stencil render target (alias depth stencil attachment) */
-    inline void setRTDepthStencil(uint32_t depthstencil) {
-        state.depthstencil = depthstencil;
-    }
+    RenderSubpass& setRTDepthStencil(uint32_t depthstencil);
     inline const core::RenderSubpassState& getState() const {
         return state;
     }
+
+    /** @brief Draw custom subpass */
+    virtual Res<Void> draw(RenderCmdbuf& rd_cmdbuf) = 0;
 };
 
 NAMESPACE_END(vkt)
-
-NAMESPACE_BEGIN(std)
-
-template <>
-struct hash<vkt::RenderSubpass> {
-    size_t operator()(const vkt::RenderSubpass& render_subpass) const {
-        size_t res = 0;
-        const auto& info = render_subpass.getState();
-        for (const auto a : info.inputs) {
-            hashCombine(res, a);
-        }
-        for (const auto a : info.colors) {
-            hashCombine(res, a);
-        }
-        hashCombine(res, info.depthstencil);
-        return res;
-    }
-};
-
-template <>
-struct hash<Vector<vkt::RenderSubpass>> {
-    size_t operator()(const Vector<vkt::RenderSubpass>& render_subpasses) const {
-        size_t res = 0;
-        for (const auto& subpass : render_subpasses) {
-            hashCombine(res, subpass);
-        }
-        return res;
-    }
-};
-
-NAMESPACE_END(std)

@@ -1,4 +1,5 @@
 #include "render_resource.hpp"
+#include <functional>
 #include <set>
 
 NAMESPACE_BEGIN(vkt)
@@ -94,22 +95,29 @@ Res<CRef<ComputePipeline>> RenderResource::requestComputePipeline(const ComputeP
     });
 }
 
-Res<CRef<RenderPass>> RenderResource::requestRenderPass(const RenderTargetTable& render_target_table,
-                                                        const RenderPipeline& render_pipeline) {
-    size_t key = hash(render_target_table.getTargets(), render_pipeline.getSubpasses());
-    return render_passes.request(key, [&render_target_table, &render_pipeline]() {
-        return render_pipeline.newRenderPass(render_target_table);
+Res<CRef<RenderPass>> RenderResource::requestRenderPass(const RenderTargetTable& rtt,
+                                                        const Vector<CRef<core::RenderSubpassState>>& states) {
+    size_t key = hash(rtt.getTargets(), states);
+    return render_passes.request(key, [this, &rtt, &states]() {
+        RenderPassState rso{};
+        for (const auto& rt : rtt.getTargets()) {
+            auto& image = rt.getImage();
+            rso.addAttachment(image.getFormat(), image.getSamples(), rt.ops, rt.stencil_ops, rt.layouts);
+        }
+        for (const auto& state : states) {
+            rso.addSubpass(state.get());
+        }
+        return rso.into(api);
     });
 }
 
-Res<CRef<Framebuffer>> RenderResource::requestFramebuffer(const RenderTargetTable& render_target_table,
-                                                          const RenderPass& render_pass) {
-    size_t key = hash(render_target_table, render_pass);
-    return framebuffers.request(key, [this, &render_target_table, &render_pass]() {
+Res<CRef<Framebuffer>> RenderResource::requestFramebuffer(const RenderTargetTable& rtt, const RenderPass& render_pass) {
+    size_t key = hash(rtt, render_pass);
+    return framebuffers.request(key, [this, &rtt, &render_pass]() {
         FramebufferState fso{};
         fso.setRenderPass(render_pass);
-        fso.addAttachments(render_target_table.getImageViews());
-        fso.setExtent(render_target_table.getExtent());
+        fso.addAttachments(rtt.getImageViews());
+        fso.setExtent(rtt.getExtent());
         return fso.into(api);
     });
 }

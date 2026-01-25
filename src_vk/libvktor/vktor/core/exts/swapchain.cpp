@@ -112,7 +112,7 @@ VkResult Swapchain::acquireNextImage(uint32_t& image_index, VkSemaphore semaphor
 
 Res<Image> Swapchain::newImage(uint32_t index) const {
     if (index >= images.size()) {
-        return Er("The index {} is out of swapchain images", index);
+        return Er("The index = {} is out of swapchain images", index);
     }
     Image image = Image::borrow(api,
                                 images[index],
@@ -129,7 +129,7 @@ Res<Image> Swapchain::newImage(uint32_t index) const {
 
 Res<ImageView> Swapchain::newImageView(uint32_t index) const {
     if (index >= images.size()) {
-        return Er("The index {} is out of swapchain imageviews", index);
+        return Er("The index = {} is out of swapchain imageviews", index);
     }
     return ImageViewState("SwapchainImageView" + std::to_string(index))
         .setImage(images[index])

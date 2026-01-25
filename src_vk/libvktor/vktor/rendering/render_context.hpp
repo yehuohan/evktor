@@ -1,14 +1,12 @@
 #pragma once
 #include "render_frame.hpp"
 #include "render_resource.hpp"
-#include "render_subpass.hpp"
 #include "vktor/core/exts/swapchain.hpp"
 
 NAMESPACE_BEGIN(vkt)
 
 class RenderContext : public RenderResource {
 private:
-    const core::CoreApi& api;
     const size_t thread_count = 1;
 
     uint32_t frame_index = 0;
@@ -33,12 +31,13 @@ public:
     static const FnSwapchainRTT defaultFnSwapchainRTT;
 
 private:
-    explicit RenderContext(const core::CoreApi& api, size_t thread_count)
-        : RenderResource(api)
-        , api(api)
-        , thread_count(thread_count) {}
+    explicit RenderContext(const core::CoreApi& api, size_t thread_count) : RenderResource(api), thread_count(thread_count) {}
 
 public:
+    operator const core::CoreApi&() const {
+        return api;
+    }
+
     /**
      * @brief Create RenderContext without swapchain
      */
@@ -111,7 +110,7 @@ public:
      */
     inline Ref<RenderFrame> getFrame() {
         OnCheck(frame_index < frames.size(),
-                "The activated frame index {} is out of frames count {}",
+                "The activated frame index = {} is out of frames count = {}",
                 frame_index,
                 frames.size());
         return newRef(frames[frame_index]);
