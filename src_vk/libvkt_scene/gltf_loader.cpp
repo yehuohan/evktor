@@ -558,8 +558,7 @@ void GLTFLoader::loadSceneNodes(Scene& scene, int32_t scene_index) const {
         if (gnode.mesh >= 0) {
             assert(static_cast<size_t>(gnode.mesh) < meshes.size());
             auto& mesh = meshes[gnode.mesh];
-            node->setComponent(*mesh);
-            mesh->addNode(*node); // 一个Mesh可能存在于多个节点
+            node->setComponent(*mesh); // 不同的Node可能指向同一个Mesh
         }
         nodes.push_back(std::move(node));
     }

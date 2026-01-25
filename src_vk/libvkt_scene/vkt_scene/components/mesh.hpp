@@ -61,7 +61,6 @@ public:
 class Mesh : public Component {
 private:
     Vector<SubMesh*> subs{};
-    Vector<Node*> nodes{};
 
 public:
     Mesh(const String& name = "") : Component(name) {}
@@ -72,12 +71,6 @@ public:
     }
 
 public:
-    inline void addNode(Node& node) {
-        nodes.push_back(&node);
-    }
-    inline const Vector<Node*>& getNodes() const {
-        return nodes;
-    }
     inline void addSubmesh(SubMesh& sub) {
         subs.push_back(&sub);
     }
