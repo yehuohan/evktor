@@ -1,7 +1,5 @@
 #include "scene.hpp"
 
-using namespace vkt;
-
 NAMESPACE_BEGIN(vktscn)
 
 void Scene::addComponent(Box<Component>&& component) {

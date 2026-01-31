@@ -5,7 +5,7 @@ project(vkt_scene)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vkt_scene SRC)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vkt_scene/components SRC)
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vkt_scene/scripts SRC)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/vkt_scene/subpasses SRC)
 
 add_library(${PROJECT_NAME} STATIC ${SRC})
 
