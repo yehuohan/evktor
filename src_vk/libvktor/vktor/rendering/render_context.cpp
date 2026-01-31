@@ -20,7 +20,7 @@ Res<RenderContext> RenderContext::from(const CoreApi& api, uint32_t frame_count,
     RenderContext render_context(api, thread_count);
     render_context.frame_index = 0;
     for (uint32_t k = 0; k < frame_count; k++) {
-        render_context.frames.push_back(RenderFrame(api, thread_count));
+        render_context.frames.emplace_back(api, thread_count);
     }
     return Ok(std::move(render_context));
 }
@@ -62,7 +62,7 @@ Res<CRef<core::Swapchain>> RenderContext::reinitSwapchain() {
     // Re-initialize render frames
     for (uint32_t k = 0; k < swapchain->image_count; k++) {
         if (k >= frames.size()) {
-            frames.push_back(RenderFrame(api, thread_count));
+            frames.emplace_back(api, thread_count);
         }
         // Set swapchain render target table for render frames
         auto res_rtt = newSwapchainRTT(Arg<Swapchain>(*swapchain, k));

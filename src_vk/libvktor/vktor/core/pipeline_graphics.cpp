@@ -41,17 +41,17 @@ Self GraphicsPipelineState::addShader(VkShaderModule shader,
                                       VkShaderStageFlagBits stage,
                                       const String& entry,
                                       const ShaderSpecialization& spec) {
-    shaders.push_back(PipelineShader{shader, stage, entry, spec});
+    shaders.emplace_back(shader, stage, entry, spec);
     return *this;
 }
 
 Self GraphicsPipelineState::addVertShader(VkShaderModule shader, const String& entry, const ShaderSpecialization& spec) {
-    shaders.push_back(PipelineShader{shader, VK_SHADER_STAGE_VERTEX_BIT, entry, spec});
+    shaders.emplace_back(shader, VK_SHADER_STAGE_VERTEX_BIT, entry, spec);
     return *this;
 }
 
 Self GraphicsPipelineState::addFragShader(VkShaderModule shader, const String& entry, const ShaderSpecialization& spec) {
-    shaders.push_back(PipelineShader{shader, VK_SHADER_STAGE_FRAGMENT_BIT, entry, spec});
+    shaders.emplace_back(shader, VK_SHADER_STAGE_FRAGMENT_BIT, entry, spec);
     return *this;
 }
 
@@ -87,7 +87,7 @@ Self GraphicsPipelineState::addViewport(const VkViewport& viewport) {
 }
 
 Self GraphicsPipelineState::addViewport(float x, float y, float width, float height, float min_depth, float max_depth) {
-    viewports.push_back(VkViewport{x, y, width, height, min_depth, max_depth});
+    viewports.emplace_back(x, y, width, height, min_depth, max_depth);
     return *this;
 }
 
@@ -97,7 +97,7 @@ Self GraphicsPipelineState::addScissor(const VkRect2D& rect) {
 }
 
 Self GraphicsPipelineState::addScissor(int32_t x, int32_t y, uint32_t width, uint32_t height) {
-    scissors.push_back(VkRect2D{x, y, width, height});
+    scissors.emplace_back(VkOffset2D{x, y}, VkExtent2D{width, height});
     return *this;
 }
 
@@ -249,8 +249,7 @@ Res<GraphicsPipeline> GraphicsPipeline::from(const CoreApi& api, const GraphicsP
         stage.module = s.shader;
         stage.pName = s.entry.c_str();
         if (s.spec.data && !s.spec.entries.empty()) {
-            shader_spec_infos.push_back(
-                VkSpecializationInfo{u32(s.spec.entries.size()), s.spec.entries.data(), s.spec.data_size, s.spec.data});
+            shader_spec_infos.emplace_back(u32(s.spec.entries.size()), s.spec.entries.data(), s.spec.data_size, s.spec.data);
             stage.pSpecializationInfo = &shader_spec_infos.back();
         }
         shader_stages.push_back(stage);

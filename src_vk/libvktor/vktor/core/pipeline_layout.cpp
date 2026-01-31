@@ -21,27 +21,27 @@ Self PipelineLayoutState::addPushConstantRange(const VkPushConstantRange& range)
 }
 
 Self PipelineLayoutState::addPushConstantRange(VkShaderStageFlags stage, uint32_t size, uint32_t offset) {
-    push_constants.push_back(VkPushConstantRange{stage, offset, size});
+    push_constants.emplace_back(stage, offset, size);
     return *this;
 }
 
 Self PipelineLayoutState::addGraphicsPushConstantRange(uint32_t size, uint32_t offset) {
-    push_constants.push_back(VkPushConstantRange{VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offset, size});
+    push_constants.emplace_back(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offset, size);
     return *this;
 }
 
 Self PipelineLayoutState::addVertPushConstantRange(uint32_t size, uint32_t offset) {
-    push_constants.push_back(VkPushConstantRange{VK_SHADER_STAGE_VERTEX_BIT, offset, size});
+    push_constants.emplace_back(VK_SHADER_STAGE_VERTEX_BIT, offset, size);
     return *this;
 }
 
 Self PipelineLayoutState::addFragPushConstantRange(uint32_t size, uint32_t offset) {
-    push_constants.push_back(VkPushConstantRange{VK_SHADER_STAGE_FRAGMENT_BIT, offset, size});
+    push_constants.emplace_back(VK_SHADER_STAGE_FRAGMENT_BIT, offset, size);
     return *this;
 }
 
 Self PipelineLayoutState::addCompPushConstantRange(uint32_t size, uint32_t offset) {
-    push_constants.push_back(VkPushConstantRange{VK_SHADER_STAGE_COMPUTE_BIT, offset, size});
+    push_constants.emplace_back(VK_SHADER_STAGE_COMPUTE_BIT, offset, size);
     return *this;
 }
 

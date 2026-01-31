@@ -27,20 +27,20 @@ DescriptorInfo& DescriptorInfo::nextImg(VkImageView img_view, VkImageLayout img_
 }
 
 DescriptorArrayInfo& DescriptorArrayInfo::addBuf(uint32_t binding, VkBuffer buf, VkDeviceSize range, VkDeviceSize offset) {
-    bufs[binding].push_back(VkDescriptorBufferInfo{buf, offset, range});
+    bufs[binding].emplace_back(buf, offset, range);
     return *this;
 }
 
 DescriptorArrayInfo& DescriptorArrayInfo::nextBuf(VkBuffer buf, VkDeviceSize range, VkDeviceSize offset) {
     uint32_t binding = bufs.size() + imgs.size();
-    bufs[binding].push_back(VkDescriptorBufferInfo{buf, offset, range});
+    bufs[binding].emplace_back(buf, offset, range);
     return *this;
 }
 
 DescriptorArrayInfo& DescriptorArrayInfo::pushBuf(VkBuffer buf, VkDeviceSize range, VkDeviceSize offset) {
     uint32_t binding = bufs.size() + imgs.size();
     binding = binding > 0 ? binding - 1 : 0;
-    bufs[binding].push_back(VkDescriptorBufferInfo{buf, offset, range});
+    bufs[binding].emplace_back(buf, offset, range);
     return *this;
 }
 
@@ -48,20 +48,20 @@ DescriptorArrayInfo& DescriptorArrayInfo::addImg(uint32_t binding,
                                                  VkImageView img_view,
                                                  VkImageLayout img_layout,
                                                  VkSampler sampler) {
-    imgs[binding].push_back(VkDescriptorImageInfo{sampler, img_view, img_layout});
+    imgs[binding].emplace_back(sampler, img_view, img_layout);
     return *this;
 }
 
 DescriptorArrayInfo& DescriptorArrayInfo::nextImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler) {
     uint32_t binding = bufs.size() + imgs.size();
-    imgs[binding].push_back(VkDescriptorImageInfo{sampler, img_view, img_layout});
+    imgs[binding].emplace_back(sampler, img_view, img_layout);
     return *this;
 }
 
 DescriptorArrayInfo& DescriptorArrayInfo::pushImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler) {
     uint32_t binding = bufs.size() + imgs.size();
     binding = binding > 0 ? binding - 1 : 0;
-    imgs[binding].push_back(VkDescriptorImageInfo{sampler, img_view, img_layout});
+    imgs[binding].emplace_back(sampler, img_view, img_layout);
     return *this;
 }
 

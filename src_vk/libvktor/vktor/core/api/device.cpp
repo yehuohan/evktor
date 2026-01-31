@@ -107,7 +107,7 @@ Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     for (auto& q : phy_dev.get().queue_family_props) {
         // Update the number of queues to create
         q.second.count = std::min<uint32_t>(info.max_queue_count, q.second.count);
-        priorities.push_back(Vector<float>(q.second.count, VKT_CORE_QUEUE_PRIORITY));
+        priorities.emplace_back(q.second.count, VKT_CORE_QUEUE_PRIORITY);
 
         auto dev_queue_ci = Itor::DeviceQueueCreateInfo();
         dev_queue_ci.queueFamilyIndex = q.first;

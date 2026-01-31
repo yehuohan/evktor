@@ -55,7 +55,7 @@ Shader::Self Shader::setDefine(const String& name, const String& value) {
         iter->first = name;
         iter->second = value;
     } else {
-        src_defs.push_back(std::make_pair(name, value));
+        src_defs.emplace_back(name, value);
     }
     return *this;
 }
@@ -89,7 +89,7 @@ Self Shader::setEntry(const String& _entry) {
 }
 
 Self Shader::addDescriptor(ShaderDescriptor::Type type, uint32_t binding, uint32_t set, uint32_t count) {
-    desc_sets[set].push_back(ShaderDescriptor(type, set, binding, count));
+    desc_sets[set].emplace_back(type, set, binding, count);
     return *this;
 }
 
@@ -100,9 +100,9 @@ Self Shader::setPushConstant(uint32_t size, uint32_t offset) {
 }
 
 Self Shader::addSpecConstant(uint32_t id, const uint8_t* data, size_t data_size) {
-    auto spec_entry = ShaderSpecConstant::Entry{id, static_cast<uint32_t>(spec_constant.data.size()), data_size};
+    auto offset = u32(spec_constant.data.size());
     spec_constant.data.insert(spec_constant.data.end(), data, data + data_size);
-    spec_constant.entries.push_back(spec_entry);
+    spec_constant.entries.emplace_back(id, offset, data_size);
     return *this;
 }
 

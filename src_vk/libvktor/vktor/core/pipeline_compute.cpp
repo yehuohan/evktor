@@ -24,7 +24,7 @@ Self ComputePipelineState::setSpecializationData(const void* data, size_t data_s
 }
 
 Self ComputePipelineState::addSpecializationEntry(uint32_t id, uint32_t offset, size_t size) {
-    shader.spec.entries.push_back(VkSpecializationMapEntry{id, offset, size});
+    shader.spec.entries.emplace_back(id, offset, size);
     return *this;
 }
 

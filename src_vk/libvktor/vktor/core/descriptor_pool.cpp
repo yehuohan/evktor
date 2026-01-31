@@ -81,7 +81,7 @@ Res<DescriptorPool> DescriptorPool::from(const DescriptorSetLayout& setlayout, c
     }
     Vector<VkDescriptorPoolSize> poolsizes{};
     for (const auto& t : desc_types) {
-        poolsizes.push_back(VkDescriptorPoolSize{t.first, t.second * info.maxsets});
+        poolsizes.emplace_back(t.first, t.second * info.maxsets);
     }
 
     // VkDescriptorSetLayoutBinding: `descriptorCount` specifies the number of `descriptorType` of the set's `binding`;
