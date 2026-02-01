@@ -1,6 +1,6 @@
 #pragma once
-#include "vkt_scene/scene.hpp"
 #include <tiny_gltf.h>
+#include <vkt_scene/scene.hpp>
 #include <vktor/core/api/api.hpp>
 
 class GLTFLoader : private NonCopyable {

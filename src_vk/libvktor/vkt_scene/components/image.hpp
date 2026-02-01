@@ -1,7 +1,7 @@
 #pragma once
 #include "../component.hpp"
-#include <vktor/core/image.hpp>
-#include <vktor/core/image_view.hpp>
+#include "vktor/core/image.hpp"
+#include "vktor/core/image_view.hpp"
 
 NAMESPACE_BEGIN(vktscn)
 

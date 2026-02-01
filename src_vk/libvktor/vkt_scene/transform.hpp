@@ -1,6 +1,6 @@
 #pragma once
-#include <share/share.hpp>
-#include <share/traits.hpp>
+#include "share/share.hpp"
+#include "share/traits.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>

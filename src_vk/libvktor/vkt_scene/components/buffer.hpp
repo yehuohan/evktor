@@ -1,6 +1,6 @@
 #pragma once
 #include "../component.hpp"
-#include <vktor/core/buffer.hpp>
+#include "vktor/core/buffer.hpp"
 
 NAMESPACE_BEGIN(vktscn)
 

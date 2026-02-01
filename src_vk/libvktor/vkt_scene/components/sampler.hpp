@@ -1,6 +1,6 @@
 #pragma once
 #include "../component.hpp"
-#include <vktor/core/sampler.hpp>
+#include "vktor/core/sampler.hpp"
 
 NAMESPACE_BEGIN(vktscn)
 
