@@ -13,7 +13,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/install/Debug/evktor.exe",
-            "args": ["${workspaceFolder}/../assets", "${workspaceFolder}/glsl"],
+            "args": ["${workspaceFolder}/../assets", "${workspaceFolder}/shaders"],
             "cwd": "${workspaceFolder}",
             // "environment": [ { "name": "PATH", "value": "." } ],
             "externalConsole": false,
