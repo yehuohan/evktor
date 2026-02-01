@@ -9,17 +9,15 @@ layout(location = 0) out vec3 out_color;
 layout(location = 1) out vec3 out_normal;
 layout(location = 2) out vec2 out_texcoord;
 
-layout(set = 0, binding = 0) uniform UBO {
+layout(set = 0, binding = 0) uniform BuiltinUniform {
     mat4 model;
     mat4 view;
     mat4 proj;
 } ubo;
 
-
 void main() {
     out_color = inp_color;
     out_normal = inp_normal;
     out_texcoord = inp_texcoord;
-    //gl_Position = vec4(inp_pos, 1.0);
     gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inp_pos, 1.0);
 }
