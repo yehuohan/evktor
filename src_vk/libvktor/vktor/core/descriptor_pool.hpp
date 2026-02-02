@@ -80,14 +80,3 @@ public:
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)
-
-NAMESPACE_BEGIN(std)
-
-template <>
-struct hash<vkt::core::DescriptorPool> {
-    inline size_t operator()(const vkt::core::DescriptorPool& desc_pool) const {
-        return hash<VkDescriptorPool>{}(desc_pool);
-    }
-};
-
-NAMESPACE_END(std)

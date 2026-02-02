@@ -144,7 +144,11 @@ Res<CRef<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLa
     DescriptorSet* descset = nullptr;
     {
         auto& descsets = desc_sets[thread_index];
-        size_t key = hash(desc_setlayout, desc_pool, desc_info);
+        // The DescriptorPooler.request() always return the last DescriptorPool.
+        // If DescriptorPool's allocated DescriptorSet is more than maxsets, a new DescriptorPool will be created.
+        // So compute hash on DescriptorPool will result different key with same DescriptorSetLayout.
+        // So must hash DescriptorSetLayout and DescriptorInfo/DescriptorArrayInfo only.
+        size_t key = hash(desc_setlayout, desc_info);
         if (auto it = descsets.find(key); it != descsets.end()) {
             descset = &it->second;
         } else {
