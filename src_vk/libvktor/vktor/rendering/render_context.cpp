@@ -197,4 +197,29 @@ Res<CRef<core::Semaphore>> RenderContext::submit(const core::CommandBuffer& cmdb
     return Ok(newCRef(signal_semaphore));
 }
 
+void RenderContext::watchStatus() const {
+    vktOut("RenderContext {{\n"
+           "\tFrames                : {}/{}\n"
+           "\tShader modules        : {}\n"
+           "\tDescriptor setlayouts : {}\n"
+           "\tPipeline layouts      : {}\n"
+           "\tGraphics pipelines    : {}\n"
+           "\tCompute pipelines     : {}\n"
+           "\tRender passes         : {}\n"
+           "\tFramebuffers          : {}\n"
+           "}}",
+           frame_index,
+           frames.size(),
+           shader_modules.size(),
+           descriptor_setlayouts.size(),
+           pipeline_layouts.size(),
+           graphics_pipelines.size(),
+           compute_pipelines.size(),
+           render_passes.size(),
+           framebuffers.size());
+    if (frame_index < frames.size()) {
+        frames[frame_index].watchStatus();
+    }
+}
+
 NAMESPACE_END(vkt)

@@ -131,6 +131,9 @@ public:
     inline uint32_t getFrameCount() const {
         return frames.size();
     }
+
+public:
+    void watchStatus() const;
 };
 
 NAMESPACE_END(vkt)

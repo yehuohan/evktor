@@ -160,4 +160,27 @@ Res<CRef<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLa
     return Ok(newCRef(*descset));
 }
 
+void RenderFrame::watchStatus() const {
+    for (size_t k = 0; k < thread_count; k++) {
+        vktOut("RenderFrame[{}] {{\n"
+               "\tCommand pools      : {}\n"
+               "\tDescriptor poolers : {}\n"
+               "\tDescriptor sets    : {}\n"
+               "\tFence pool         : {} + {}\n"
+               "\tSemaphore pool     : {} + {}\n"
+               "\tEvent pool         : {} + {}\n"
+               "}}",
+               k,
+               cmd_pools[k].size(),
+               desc_poolers[k].size(),
+               desc_sets[k].size(),
+               fence_pool.getCount(),
+               fence_pool.getCacheCount(),
+               semaphore_pool.getCount(),
+               semaphore_pool.getCacheCount(),
+               event_pool.getCount(),
+               event_pool.getCacheCount());
+    }
+}
+
 NAMESPACE_END(vkt)

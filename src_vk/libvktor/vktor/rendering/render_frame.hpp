@@ -99,6 +99,9 @@ private:
                                                         core::DescriptorPool& desc_pool,
                                                         const T& desc_info,
                                                         size_t thread_index);
+
+public:
+    void watchStatus() const;
 };
 
 NAMESPACE_END(vkt)

@@ -61,6 +61,13 @@ public:
     VkResult waitPool(uint64_t timeout = UINT64_MAX);
     /** Reset actived fences and reback cached fences */
     VkResult resetPool();
+
+    inline size_t getCount() const {
+        return fences.size();
+    }
+    inline size_t getCacheCount() const {
+        return fences_cache.size();
+    }
 };
 
 NAMESPACE_END(core)

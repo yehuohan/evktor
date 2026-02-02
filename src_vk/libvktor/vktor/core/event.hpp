@@ -56,6 +56,13 @@ public:
     void reback(Event&& event);
     /** Reset actived events and cached events*/
     void resetPool();
+
+    inline size_t getCount() const {
+        return events.size();
+    }
+    inline size_t getCacheCount() const {
+        return events_cache.size();
+    }
 };
 
 NAMESPACE_END(core)

@@ -60,6 +60,13 @@ public:
     void reback(Semaphore&& semaphore);
     /** Reset actived semaphores and cached semaphores*/
     void resetPool();
+
+    inline size_t getCount() const {
+        return semaphores.size();
+    }
+    inline size_t getCacheCount() const {
+        return semaphores_cache.size();
+    }
 };
 
 NAMESPACE_END(core)
