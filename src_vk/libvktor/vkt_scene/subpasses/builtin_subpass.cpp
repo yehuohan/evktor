@@ -42,9 +42,9 @@ Res<Void> BuiltinSubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
     ubo_ptr->view = camera_view;
     ubo_ptr->proj = camera_proj;
 
-    desc_info.setBuf(0, builtin_ubo[rfrm_idx]);
+    desc_info.setBuf(0).bind(builtin_ubo[rfrm_idx]);
     if (mesh->texture) {
-        desc_info.setImg(1, mesh->texture->getImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, *mesh->sampler);
+        desc_info.setImg(1).bind(*mesh->texture).bind(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL).bind(*mesh->sampler);
     }
 
     auto res_desc_setlayout = rctx.requestDescriptorSetLayout(0, Shaders());

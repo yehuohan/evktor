@@ -4,13 +4,13 @@
 #include "vktor/base/shader.hpp"
 #include "vktor/base/texture.hpp"
 #include "vktor/core/buffer.hpp"
-#include "vktor/core/descriptor_pool.hpp"
-#include "vktor/core/descriptor_set.hpp"
 #include "vktor/core/descriptor_setlayout.hpp"
+#include "vktor/core/device_memory.hpp"
 #include "vktor/core/framebuffer.hpp"
 #include "vktor/core/pipeline_compute.hpp"
 #include "vktor/core/pipeline_graphics.hpp"
 #include "vktor/core/pipeline_layout.hpp"
+#include "vktor/core/query_pool.hpp"
 #include "vktor/core/render_pass.hpp"
 
 NAMESPACE_BEGIN(vkt)

@@ -1,8 +1,5 @@
 #pragma once
 #include "render_context.hpp"
-#include "vktor/core/command_buffer.hpp"
-#include "vktor/core/framebuffer.hpp"
-#include "vktor/core/render_pass.hpp"
 
 NAMESPACE_BEGIN(vkt)
 

@@ -1,50 +1,64 @@
 #pragma once
 #include "__core.hpp"
 #include "__hash.hpp"
+#include "buffer.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
 struct DescriptorPool;
 
-/**
- * @brief Descriptor info to update bindings of descriptor set
- *
- * The descriptor is not an array (VkDescriptorSetLayoutBinding::descriptorCount == 1).
- */
-struct DescriptorInfo {
-    /** Map VkDescriptorSetLayoutBinding::binding to VkDescriptorBufferInfo */
-    HashMap<uint32_t, VkDescriptorBufferInfo> bufs{};
-    /** Map VkDescriptorSetLayoutBinding::binding to VkDescriptorImageInfo */
-    HashMap<uint32_t, VkDescriptorImageInfo> imgs{};
+struct DescriptorBuffer {
+    size_t index;
+    Vector<VkDescriptorBufferInfo>& bufs;
 
-    /**
-     * @brief Set buffer descriptor to binding
-     */
-    DescriptorInfo& setBuf(uint32_t binding, VkBuffer buf, VkDeviceSize range = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
-    /**
-     * @brief Set buffer descriptor to the new next binding
-     */
-    DescriptorInfo& nextBuf(VkBuffer buf, VkDeviceSize range = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
-    /**
-     * @brief Set image descriptor to binding
-     */
-    DescriptorInfo& setImg(uint32_t binding,
-                           VkImageView img_view,
-                           VkImageLayout img_layout,
-                           VkSampler sampler = VK_NULL_HANDLE);
-    /**
-     * @brief Set image descriptor to the new next binding
-     */
-    DescriptorInfo& nextImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler = VK_NULL_HANDLE);
+    DescriptorBuffer(Vector<VkDescriptorBufferInfo>& info, size_t count);
+
+    DescriptorBuffer& next();
+    DescriptorBuffer& bind(size_t index);
+    inline DescriptorBuffer& bind(const Buffer& buffer) {
+        bufs[index].buffer = buffer;
+        bufs[index].offset = 0;
+        bufs[index].range = buffer.getSize();
+        return *this;
+    }
+    inline DescriptorBuffer& bind(VkBuffer buffer) {
+        bufs[index].buffer = buffer;
+        return *this;
+    }
+    inline DescriptorBuffer& bind(VkDeviceSize offset, VkDeviceSize range) {
+        bufs[index].offset = offset;
+        bufs[index].range = range;
+        return *this;
+    }
+};
+
+struct DescriptorImage {
+    size_t index;
+    Vector<VkDescriptorImageInfo>& imgs;
+
+    DescriptorImage(Vector<VkDescriptorImageInfo>& info, size_t count);
+
+    DescriptorImage& next();
+    DescriptorImage& bind(size_t index);
+    inline DescriptorImage& bind(VkSampler sampler) {
+        imgs[index].sampler = sampler;
+        return *this;
+    }
+    inline DescriptorImage& bind(VkImageView image_view) {
+        imgs[index].imageView = image_view;
+        return *this;
+    }
+    inline DescriptorImage& bind(VkImageLayout image_layout) {
+        imgs[index].imageLayout = image_layout;
+        return *this;
+    }
 };
 
 /**
  * @brief Descriptor info to update bindings of descriptor set
- *
- * The descriptor may be an array (VkDescriptorSetLayoutBinding::descriptorCount > 1).
  */
-struct DescriptorArrayInfo {
+struct DescriptorInfo {
     /** Map VkDescriptorSetLayoutBinding::binding to VkDescriptorBufferInfo array
      * (The array size should be VkDescriptorSetLayoutBinding::descriptorCount)
      */
@@ -54,33 +68,21 @@ struct DescriptorArrayInfo {
      */
     HashMap<uint32_t, Vector<VkDescriptorImageInfo>> imgs{};
 
-    /**
-     * @brief Add buffer descriptor to binding (as descriptor array)
-     */
-    DescriptorArrayInfo& addBuf(uint32_t binding, VkBuffer buf, VkDeviceSize range = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
-    /**
-     * @brief Set buffer descriptor to the new next binding
-     */
-    DescriptorArrayInfo& nextBuf(VkBuffer buf, VkDeviceSize range = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
-    /**
-     * @brief Push buffer descriptor to the last binding (as descriptor array)
-     */
-    DescriptorArrayInfo& pushBuf(VkBuffer buf, VkDeviceSize range = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
-    /**
-     * @brief Add image descriptor to binding (as descriptor array)
-     */
-    DescriptorArrayInfo& addImg(uint32_t binding,
-                                VkImageView img_view,
-                                VkImageLayout img_layout,
-                                VkSampler sampler = VK_NULL_HANDLE);
-    /**
-     * @brief Set image descriptor to the new next binding
-     */
-    DescriptorArrayInfo& nextImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler = VK_NULL_HANDLE);
-    /**
-     * @brief Push image descriptor to the last binding (as descriptor array)
-     */
-    DescriptorArrayInfo& pushImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler = VK_NULL_HANDLE);
+    inline uint32_t bindingCount() const {
+        return u32(bufs.size() + imgs.size());
+    }
+    inline DescriptorBuffer setBuf(uint32_t binding, size_t count = 1) {
+        return DescriptorBuffer(bufs[binding], count);
+    }
+    inline DescriptorBuffer addBuf(size_t count = 1) {
+        return DescriptorBuffer(bufs[bindingCount()], count);
+    }
+    inline DescriptorImage setImg(uint32_t binding, size_t count = 1) {
+        return DescriptorImage(imgs[binding], count);
+    }
+    inline DescriptorImage addImg(size_t count = 1) {
+        return DescriptorImage(imgs[bindingCount()], count);
+    }
 };
 
 /**
@@ -97,8 +99,7 @@ struct DescriptorSet : public CoreResource<VkDescriptorSet, VK_OBJECT_TYPE_DESCR
     /**
      * @brief Update descriptor set
      */
-    void update(const DescriptorInfo& desc_info) const;
-    void update(const DescriptorArrayInfo& desc_arrinfo) const;
+    void update(const DescriptorInfo& desc_arrinfo) const;
 };
 
 NAMESPACE_END(core)
@@ -108,21 +109,7 @@ NAMESPACE_BEGIN(std)
 
 template <>
 struct hash<vkt::core::DescriptorInfo> {
-    size_t operator()(const vkt::core::DescriptorInfo& desc_info) const {
-        size_t res = 0;
-        for (const auto& item : desc_info.bufs) {
-            hashCombine(res, item.second);
-        }
-        for (const auto& item : desc_info.imgs) {
-            hashCombine(res, item.second);
-        }
-        return res;
-    }
-};
-
-template <>
-struct hash<vkt::core::DescriptorArrayInfo> {
-    size_t operator()(const vkt::core::DescriptorArrayInfo& desc_arrinfo) const {
+    size_t operator()(const vkt::core::DescriptorInfo& desc_arrinfo) const {
         size_t res = 0;
         for (const auto& item : desc_arrinfo.bufs) {
             for (const auto& buf : item.second) {

@@ -4,64 +4,55 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-DescriptorInfo& DescriptorInfo::setBuf(uint32_t binding, VkBuffer buf, VkDeviceSize range, VkDeviceSize offset) {
-    bufs[binding] = VkDescriptorBufferInfo{buf, offset, range};
+DescriptorBuffer::DescriptorBuffer(Vector<VkDescriptorBufferInfo>& info, size_t count) : bufs(info) {
+    index = 0;
+    if (index >= count) {
+        vktLogW("Going to bind an invalid index = {} of DescriptorBuffer", index);
+    }
+    if (bufs.size() != count) {
+        bufs.resize(count);
+    }
+}
+
+DescriptorBuffer& DescriptorBuffer::next() {
+    index++;
+    if (index >= bufs.size()) {
+        vktLogW("Going to bind an invalid index = {} of DescriptorBuffer", index);
+    }
     return *this;
 }
 
-DescriptorInfo& DescriptorInfo::nextBuf(VkBuffer buf, VkDeviceSize range, VkDeviceSize offset) {
-    uint32_t binding = bufs.size() + imgs.size();
-    bufs[binding] = VkDescriptorBufferInfo{buf, offset, range};
+DescriptorBuffer& DescriptorBuffer::bind(size_t _index) {
+    index = _index;
+    if (index >= bufs.size()) {
+        vktLogW("Going to bind an invalid index = {} of DescriptorBuffer", index);
+    }
     return *this;
 }
 
-DescriptorInfo& DescriptorInfo::setImg(uint32_t binding, VkImageView img_view, VkImageLayout img_layout, VkSampler sampler) {
-    imgs[binding] = VkDescriptorImageInfo{sampler, img_view, img_layout};
+DescriptorImage::DescriptorImage(Vector<VkDescriptorImageInfo>& info, size_t count) : imgs(info) {
+    index = 0;
+    if (index >= count) {
+        vktLogW("Going to bind an invalid index = {} of DescriptorImage", index);
+    }
+    if (imgs.size() != count) {
+        imgs.resize(count);
+    }
+}
+
+DescriptorImage& DescriptorImage::next() {
+    index++;
+    if (index >= imgs.size()) {
+        vktLogW("Going to bind an invalid index = {} of DescriptorImage", index);
+    }
     return *this;
 }
 
-DescriptorInfo& DescriptorInfo::nextImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler) {
-    uint32_t binding = bufs.size() + imgs.size();
-    imgs[binding] = VkDescriptorImageInfo{sampler, img_view, img_layout};
-    return *this;
-}
-
-DescriptorArrayInfo& DescriptorArrayInfo::addBuf(uint32_t binding, VkBuffer buf, VkDeviceSize range, VkDeviceSize offset) {
-    bufs[binding].emplace_back(buf, offset, range);
-    return *this;
-}
-
-DescriptorArrayInfo& DescriptorArrayInfo::nextBuf(VkBuffer buf, VkDeviceSize range, VkDeviceSize offset) {
-    uint32_t binding = bufs.size() + imgs.size();
-    bufs[binding].emplace_back(buf, offset, range);
-    return *this;
-}
-
-DescriptorArrayInfo& DescriptorArrayInfo::pushBuf(VkBuffer buf, VkDeviceSize range, VkDeviceSize offset) {
-    uint32_t binding = bufs.size() + imgs.size();
-    binding = binding > 0 ? binding - 1 : 0;
-    bufs[binding].emplace_back(buf, offset, range);
-    return *this;
-}
-
-DescriptorArrayInfo& DescriptorArrayInfo::addImg(uint32_t binding,
-                                                 VkImageView img_view,
-                                                 VkImageLayout img_layout,
-                                                 VkSampler sampler) {
-    imgs[binding].emplace_back(sampler, img_view, img_layout);
-    return *this;
-}
-
-DescriptorArrayInfo& DescriptorArrayInfo::nextImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler) {
-    uint32_t binding = bufs.size() + imgs.size();
-    imgs[binding].emplace_back(sampler, img_view, img_layout);
-    return *this;
-}
-
-DescriptorArrayInfo& DescriptorArrayInfo::pushImg(VkImageView img_view, VkImageLayout img_layout, VkSampler sampler) {
-    uint32_t binding = bufs.size() + imgs.size();
-    binding = binding > 0 ? binding - 1 : 0;
-    imgs[binding].emplace_back(sampler, img_view, img_layout);
+DescriptorImage& DescriptorImage::bind(size_t _index) {
+    index = _index;
+    if (index >= imgs.size()) {
+        vktLogW("Going to bind an invalid index = {} of DescriptorImage", index);
+    }
     return *this;
 }
 
@@ -80,34 +71,7 @@ DescriptorSet::~DescriptorSet() {
     handle = VK_NULL_HANDLE;
 }
 
-void DescriptorSet::update(const DescriptorInfo& desc_info) const {
-    Vector<VkWriteDescriptorSet> desc_writes{};
-    for (const auto& item : desc_info.bufs) {
-        const auto& bind = desc_pool.desc_setlayout.bindings.at(item.first);
-        auto write = Itor::WriteDescriptorSet();
-        write.dstSet = handle;
-        write.dstBinding = bind.binding;
-        write.dstArrayElement = 0;
-        write.descriptorCount = bind.descriptorCount;
-        write.descriptorType = bind.descriptorType;
-        write.pBufferInfo = &item.second;
-        desc_writes.push_back(write);
-    }
-    for (const auto& item : desc_info.imgs) {
-        const auto& bind = desc_pool.desc_setlayout.bindings.at(item.first);
-        auto write = Itor::WriteDescriptorSet();
-        write.dstSet = handle;
-        write.dstBinding = bind.binding;
-        write.dstArrayElement = 0;
-        write.descriptorCount = bind.descriptorCount;
-        write.descriptorType = bind.descriptorType;
-        write.pImageInfo = &item.second;
-        desc_writes.push_back(write);
-    }
-    vkUpdateDescriptorSets(api, desc_writes.size(), desc_writes.data(), 0, nullptr);
-}
-
-void DescriptorSet::update(const DescriptorArrayInfo& desc_arrinfo) const {
+void DescriptorSet::update(const DescriptorInfo& desc_arrinfo) const {
     Vector<VkWriteDescriptorSet> desc_writes{};
     for (const auto& item : desc_arrinfo.bufs) {
         const auto& bind = desc_pool.desc_setlayout.bindings.at(item.first);

@@ -30,8 +30,8 @@ void case_rctx_dynamic_rendering() {
                                 Texture2D::UsageBits::Sampled | Texture2D::UsageBits::TransferDst);
     auto spl = SamplerState{}.setLinear().into(api).unwrap();
     auto desc_info = DescriptorInfo{};
-    desc_info.nextBuf(ubo_buf, ubo_buf.getSize());
-    desc_info.nextImg(tex.getImageView(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, spl);
+    desc_info.addBuf().bind(ubo_buf);
+    desc_info.addImg().bind(tex).bind(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL).bind(spl);
 
     // Create pipeline
     auto& desc_setlayout = rctx->requestDescriptorSetLayout(0, shaders).unwrap().get();

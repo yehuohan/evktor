@@ -55,7 +55,7 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
         OnErr(res_ptr);
         pbr_ubo_ptr.push_back(static_cast<PBRUniform*>(res_ptr.unwrap()));
     }
-    desc_info.setBuf(0, pbr_ubo[rfrm_idx]);
+    desc_info.setBuf(0).bind(pbr_ubo[rfrm_idx]);
     auto& ubo_ptr = pbr_ubo_ptr[rfrm_idx];
 
     auto res_desc_setlayout = rctx.requestDescriptorSetLayout(0, Shaders());
@@ -106,7 +106,10 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
                 auto* pbr_mat = sub->getPBRMaterial();
                 if (pbr_mat) {
                     if (auto tex = pbr_mat->getTexture("base_color_texture"); tex) {
-                        desc_info.setImg(1, *tex->getImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, *tex->getSampler());
+                        desc_info.setImg(1)
+                            .bind(*tex->getImage())
+                            .bind(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+                            .bind(*tex->getSampler());
                     }
                 }
                 auto res_desc_set = rfrm.requestDescriptorSet(desc_setlayout, desc_info);

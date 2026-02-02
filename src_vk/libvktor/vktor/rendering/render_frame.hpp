@@ -56,13 +56,11 @@ public:
     Res<CRef<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
                                                         const core::DescriptorInfo& desc_info,
                                                         size_t thread_index = 0);
-    /**
-     * @brief Request one descriptor set from an available descriptor pool that is got from pooler
-     */
-    Res<CRef<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
-                                                        const core::DescriptorArrayInfo& desc_info,
-                                                        size_t thread_index = 0);
 
+private:
+    Res<Ref<core::DescriptorPool>> requestDescriptorPool(const core::DescriptorSetLayout& desc_setlayout, size_t thread_index);
+
+public:
     inline Res<CRef<core::Fence>> requestFence() {
         return fence_pool.request();
     }
@@ -90,15 +88,6 @@ public:
     inline void rebackEvent(core::Event&& event) {
         return event_pool.reback(std::move(event));
     }
-
-private:
-    Res<Ref<core::DescriptorPool>> requestDescriptorPool(const core::DescriptorSetLayout& desc_setlayout, size_t thread_index);
-    /** T should be DescriptorInfo or DescriptorArrayInfo */
-    template <typename T>
-    Res<CRef<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
-                                                        core::DescriptorPool& desc_pool,
-                                                        const T& desc_info,
-                                                        size_t thread_index);
 
 public:
     void watchStatus() const;

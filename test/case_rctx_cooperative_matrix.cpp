@@ -132,10 +132,10 @@ void case_rctx_cooperative_matrix() {
     auto kern = vkt.newStorageBuffer(params.KH * params.KW * params.IC * params.OC * sizeof(float));
     auto bias = vkt.newStorageBuffer(params.OC * sizeof(float));
     auto desc_info = DescriptorInfo{};
-    desc_info.nextBuf(yout, yout.getSize());
-    desc_info.nextBuf(xinp, xinp.getSize());
-    desc_info.nextBuf(kern, kern.getSize());
-    desc_info.nextBuf(bias, bias.getSize());
+    desc_info.addBuf().bind(yout);
+    desc_info.addBuf().bind(xinp);
+    desc_info.addBuf().bind(kern);
+    desc_info.addBuf().bind(bias);
 
     // Create pipeline
     auto& desc_setlayout = rctx->requestDescriptorSetLayout(0, shaders).unwrap().get();

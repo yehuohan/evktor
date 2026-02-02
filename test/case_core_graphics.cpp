@@ -90,8 +90,8 @@ void case_core_graphics() {
     auto tex_imgview = ImageViewState{}.setFromImage(tex_img).into(api).unwrap();
     auto spl = SamplerState{}.setLinear().into(api).unwrap();
     auto desc_info = DescriptorInfo{};
-    desc_info.bufs[0] = VkDescriptorBufferInfo{ubo_buf, 0, sizeof(Triangle::UBO)};
-    desc_info.imgs[1] = VkDescriptorImageInfo{spl, tex_imgview, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
+    desc_info.addBuf().bind(ubo_buf);
+    desc_info.addImg().bind(spl).bind(tex_imgview).bind(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     desc_set.update(desc_info);
 
     // Create staging buffer

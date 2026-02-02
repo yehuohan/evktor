@@ -57,8 +57,8 @@ void case_core_compute() {
                        .unwrap();
     auto out_imgview = ImageViewState{}.setFromImage(out_img).into(api).unwrap();
     auto desc_info = DescriptorInfo{};
-    desc_info.imgs[0] = VkDescriptorImageInfo{VK_NULL_HANDLE, inp_imgview, VK_IMAGE_LAYOUT_GENERAL};
-    desc_info.imgs[1] = VkDescriptorImageInfo{VK_NULL_HANDLE, out_imgview, VK_IMAGE_LAYOUT_GENERAL};
+    desc_info.addImg().bind(inp_imgview).bind(VK_IMAGE_LAYOUT_GENERAL);
+    desc_info.addImg().bind(out_imgview).bind(VK_IMAGE_LAYOUT_GENERAL);
     desc_set.update(desc_info);
 
     // Create staging buffer
