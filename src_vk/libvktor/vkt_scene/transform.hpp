@@ -1,10 +1,7 @@
 #pragma once
+#include "share/libglm.hpp"
 #include "share/share.hpp"
 #include "share/traits.hpp"
-
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/glm.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 NAMESPACE_BEGIN(vktscn)
 

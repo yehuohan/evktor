@@ -1,9 +1,9 @@
 #pragma once
 #include "share/helpers.hpp"
+#include "share/libglm.hpp"
 #include "share/share.hpp"
 #include "vktor/base/texture.hpp"
 #include "vktor/core/buffer.hpp"
-#include <glm/glm.hpp>
 
 NAMESPACE_BEGIN(vktscn)
 

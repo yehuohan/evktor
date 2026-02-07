@@ -40,7 +40,7 @@ public:
     inline size_t getId() const {
         return id;
     }
-    inline const std::string& getName() const {
+    inline const String& getName() const {
         return name;
     }
     /**

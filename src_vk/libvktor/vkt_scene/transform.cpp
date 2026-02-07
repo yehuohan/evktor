@@ -1,6 +1,5 @@
 #include "transform.hpp"
 #include "node.hpp"
-#include <glm/gtx/matrix_decompose.hpp>
 
 NAMESPACE_BEGIN(vktscn)
 

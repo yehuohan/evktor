@@ -1,6 +1,5 @@
 #pragma once
 #include "../component.hpp"
-#include "../node.hpp"
 #include "buffer.hpp"
 #include "material.hpp"
 

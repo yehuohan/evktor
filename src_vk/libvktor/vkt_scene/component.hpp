@@ -11,7 +11,7 @@ public:
     Component(const String& name) : name(name) {}
     virtual ~Component() = default;
 
-    const std::string& getName() const {
+    const String& getName() const {
         return name;
     }
     virtual std::type_index getType() const = 0;

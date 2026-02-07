@@ -1,7 +1,7 @@
 #pragma once
 #include "../component.hpp"
+#include "share/libglm.hpp"
 #include "texture.hpp"
-#include <glm/glm.hpp>
 
 NAMESPACE_BEGIN(vktscn)
 
@@ -31,7 +31,7 @@ public:
     float occlusion_strength = 1.0;
 
 public:
-    Material(const std::string& name = "") : Component(name) {}
+    Material(const String& name = "") : Component(name) {}
     virtual ~Material() = default;
 
     virtual std::type_index getType() const override {
@@ -58,6 +58,9 @@ public:
     PBRMaterial(const String& name = "") : Material(name) {}
     virtual ~PBRMaterial() = default;
 
+    /**
+     * @brief PBRMaterial override `getType()`, so has different type compared to Material
+     */
     virtual std::type_index getType() const override {
         return typeid(PBRMaterial);
     }

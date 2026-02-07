@@ -1,7 +1,5 @@
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/io.hpp>
-#include <glm/gtx/quaternion.hpp>
 #include <iostream>
+#include <share/libglm.hpp>
 
 /**
  * @brief Compute model-view-projection
