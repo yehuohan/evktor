@@ -1,5 +1,5 @@
 #pragma once
-#include <share/libglm.hpp>
+#include <external/libglm.hpp>
 
 namespace vktdev {
 

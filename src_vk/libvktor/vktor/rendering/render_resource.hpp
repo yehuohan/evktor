@@ -1,6 +1,5 @@
 #pragma once
 #include "render_target.hpp"
-#include "share/resource_cache.hpp"
 #include "vktor/base/shader.hpp"
 #include "vktor/base/texture.hpp"
 #include "vktor/core/buffer.hpp"

@@ -1,6 +1,6 @@
 #pragma once
 #include "../component.hpp"
-#include "share/libglm.hpp"
+#include "external/libglm.hpp"
 #include "texture.hpp"
 
 NAMESPACE_BEGIN(vktscn)

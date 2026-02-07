@@ -48,7 +48,7 @@ class OnStringGenerator(BaseGenerator):
         out = []
         out.append("#pragma once\n\n")
         out.append("#include <vulkan/vulkan.h>\n")
-        out.append('#include "share/helpers.hpp"\n\n')
+        out.append('#include "share/share.hpp"\n\n')
         out.append(f"#define VkStr(Type, Var) {'::'.join(self.namespaces)}::On_Str_##Type(Var)\n\n")
         out.append("\n".join(map(lambda ns: f"namespace {ns} {LBracket}", self.namespaces)))
 

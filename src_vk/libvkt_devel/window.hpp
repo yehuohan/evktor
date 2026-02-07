@@ -1,7 +1,6 @@
 #pragma once
 #include <camera.hpp>
 #include <cstdint>
-#include <share/helpers.hpp>
 #include <share/share.hpp>
 #include <vktor/core/api/instance.hpp>
 

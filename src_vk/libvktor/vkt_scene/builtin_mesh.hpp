@@ -1,6 +1,5 @@
 #pragma once
-#include "share/helpers.hpp"
-#include "share/libglm.hpp"
+#include "external/libglm.hpp"
 #include "share/share.hpp"
 #include "vktor/base/texture.hpp"
 #include "vktor/core/buffer.hpp"

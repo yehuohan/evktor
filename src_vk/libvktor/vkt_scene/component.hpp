@@ -1,6 +1,5 @@
 #pragma once
 #include "share/share.hpp"
-#include "share/traits.hpp"
 #include <typeindex>
 
 NAMESPACE_BEGIN(vktscn)

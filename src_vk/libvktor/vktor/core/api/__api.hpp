@@ -3,11 +3,7 @@
 
 #include "generated/vk_initializer.hpp"
 #include "generated/vk_string.hpp"
-#include "share/defines.hpp"
-#include "share/helpers.hpp"
-#include "share/result.hpp"
 #include "share/share.hpp"
-#include "share/traits.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)

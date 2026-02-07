@@ -9,20 +9,20 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugUtilsMessengerCallback(VkDebugUtilsMessageSe
                                                            [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageTypes,
                                                            const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
                                                            [[maybe_unused]] void* pUserData) {
-    String msg("");
+    FmtLevel level = FmtLevel::N;
     if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
-        msg = "V";
+        level = FmtLevel::V;
     }
     if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) {
-        msg = "I";
+        level = FmtLevel::I;
     }
     if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
-        msg = "W";
+        level = FmtLevel::W;
     }
     if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
-        msg = "E";
+        level = FmtLevel::E;
     }
-    vktLog(msg, "{}\n", pCallbackData->pMessage);
+    vktLog(level, "{}\n", pCallbackData->pMessage);
 
     return VK_FALSE;
 }

@@ -1,5 +1,5 @@
+#include <external/libglm.hpp>
 #include <iostream>
-#include <share/libglm.hpp>
 
 /**
  * @brief Compute model-view-projection

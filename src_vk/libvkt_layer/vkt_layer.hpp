@@ -1,13 +1,13 @@
 #pragma once
 #include "entry.hpp"
 #include "generated/vk_ldt.hpp"
-#include "share/traits.hpp"
-#include <share/helpers.hpp>
 #include <share/share.hpp>
 
-#define vktlyrOut(f, ...)  vkt::print(vktFmt("[vktlyr] " f "\n", ##__VA_ARGS__))
-#define vktlyrLogW(f, ...) vkt::print(vktFmt("[vktlyr][W] " f "\n", ##__VA_ARGS__))
-#define vktlyrLogE(f, ...) vkt::print(vktFmt("[vktlyr][E({}:{})] " f "\n", __FILE__, __LINE__, ##__VA_ARGS__))
+inline constexpr char VKTLYR_TAG[] = "vktlyr";
+
+#define vktlyrOut(f, ...)  fmtPrint<VKTLYR_TAG>(FmtLevel::N, std::source_location::current(), f, ##__VA_ARGS__)
+#define vktlyrLogW(f, ...) fmtPrint<VKTLYR_TAG>(FmtLevel::W, std::source_location::current(), f, ##__VA_ARGS__)
+#define vktlyrLogE(f, ...) fmtPrint<VKTLYR_TAG>(FmtLevel::E, std::source_location::current(), f, ##__VA_ARGS__)
 
 /**
  * @brief Reference layer implementation

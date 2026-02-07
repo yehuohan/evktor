@@ -1,7 +1,6 @@
 #pragma once
-#include "share/libglm.hpp"
+#include "external/libglm.hpp"
 #include "share/share.hpp"
-#include "share/traits.hpp"
 
 NAMESPACE_BEGIN(vktscn)
 

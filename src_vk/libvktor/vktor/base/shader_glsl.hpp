@@ -1,9 +1,6 @@
 #pragma once
 #include "generated/vk_string.hpp"
-#include "share/helpers.hpp"
-#include "share/result.hpp"
 #include "share/share.hpp"
-#include "share/traits.hpp"
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/SPIRV/GlslangToSpv.h>

@@ -4,7 +4,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vktor/vktor.hpp>
 
-#define tstOut(f, ...) vkt::print(vktFmt("[tst] " f "\n", ##__VA_ARGS__))
+inline constexpr char TST_TAG[] = "tst";
+
+#define tstOut(f, ...) fmtPrint<TST_TAG>(FmtLevel::N, std::source_location::current(), f, ##__VA_ARGS__)
 
 using namespace vkt;
 using namespace vkt::core;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "share/helpers.hpp"
+#include "share/share.hpp"
 #include <vulkan/vulkan.h>
 
 #define VkStr(Type, Var) vkt::On_Str_##Type(Var)

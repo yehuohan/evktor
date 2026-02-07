@@ -19,7 +19,7 @@ from generators.ldt_generator import LDTGenerator
 from generators.initializer_generator import InitializerGenerator
 from generators.onstring_generator import OnStringGenerator
 
-__VK_Out = f"{__DIR_ROOT}/src"
+__VK_Out = f"{__DIR_ROOT}/src_vk"
 __VK_Sty = f"{__DIR_ROOT}/.clang-format"
 __VK_Xml = f"{__DIR_VkHeaders}/vk.xml"
 __VK_Api = "vulkan"

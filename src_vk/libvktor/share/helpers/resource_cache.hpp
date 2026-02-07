@@ -1,7 +1,7 @@
 #pragma once
+#include "../printer.hpp"
 #include "helpers.hpp"
 #include "result.hpp"
-#include "share.hpp"
 #include "traits.hpp"
 #include <functional>
 #include <mutex>
