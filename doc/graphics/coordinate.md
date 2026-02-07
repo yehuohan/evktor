@@ -1,8 +1,9 @@
 
-# Perspective
+# Perspective (Right Handed)
 
 ![Perspective](./imgs/Perspective.png)
 
+上图为右手坐标系，相机空间Z轴观察方向为负Z轴（即Z-）方向。
 点`P`为光线上的一点，`P`的坐标除以`k`，即表示缩放`k`倍，使得`P`投影在屏幕上。
 
 - 根据线段的缩放有： `x' / x = y' / y = z' / z = 1 / k`, `k = z / d`
@@ -47,9 +48,9 @@
 - `Tz = -2 * n * f / (f - n)`
 
 
-# NDC
+# NDC (Right Handed)
 
-Vulkan的NDC坐标系：
+Vulkan的NDC坐标系（右手食指指向X+，中指指向Y+，大姆指指向Z+）：
 
 ```
        Z
@@ -67,4 +68,4 @@ Vulkan的NDC坐标系：
 - NDC之前的矩阵变换均会影响Culling。
 - 集成Vulkan时，常用的flip NDC Y轴的方法：
     - 把flip Y轴的矩阵，合入到投影矩阵中；
-    - 使用`VK_KHR_maintenance1`；
+    - 使用`VK_KHR_maintenance1`，设置负Height的Viewport来翻转Y轴的映射关系；
