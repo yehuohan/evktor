@@ -29,7 +29,7 @@ public:
 
 public:
     inline void addNode(Box<Node>&& _node) {
-        nodes.emplace_back(std::move(_node));
+        nodes.push_back(std::move(_node));
     }
     inline void setNodes(Vector<Box<Node>>&& _nodes, size_t _root_node) {
         nodes = std::move(_nodes);
@@ -41,6 +41,7 @@ public:
     inline Node* getRootNode() {
         return root_node < nodes.size() ? nodes[root_node].get() : nullptr;
     }
+    Node* findNode(const String& node_name);
 
 public:
     void addComponent(Box<Component>&& component);
