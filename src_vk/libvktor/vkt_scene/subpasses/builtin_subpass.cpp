@@ -3,8 +3,9 @@
 
 NAMESPACE_BEGIN(vktscn)
 
-BuiltinSubpass::BuiltinSubpass(vkt::Shader&& vert, vkt::Shader&& frag, Box<BuiltinMesh>&& mesh)
+BuiltinSubpass::BuiltinSubpass(vkt::Shader&& vert, vkt::Shader&& frag, Box<BuiltinMesh>&& mesh, Camera& camera)
     : RenderSubpass(std::move(vert), std::move(frag), "Builtin")
+    , camera(camera)
     , mesh(std::move(mesh)) {}
 
 BuiltinSubpass::~BuiltinSubpass() {
@@ -39,8 +40,8 @@ Res<Void> BuiltinSubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
     }
     auto& ubo_ptr = builtin_ubo_ptr[rfrm_idx];
     ubo_ptr->model = glm::mat4(1.0);
-    ubo_ptr->view = camera_view;
-    ubo_ptr->proj = camera_proj;
+    ubo_ptr->view = camera.getView();
+    ubo_ptr->proj = camera.getProj();
 
     desc_info.setBuf(0).bind(builtin_ubo[rfrm_idx]);
     if (mesh->texture) {
@@ -72,9 +73,10 @@ Res<Void> BuiltinSubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
         .setPipelineLayout(pipeline_layout)
         .addVertexInputBindings(BuiltinMesh::vertex_input_bindings)
         .addVertexInputAttributes(BuiltinMesh::vertex_input_attrs)
-        .addViewport(0.0, extent.height, extent.width, -float(extent.height))
+        .addViewport(0.0, extent.height, extent.width, -float(extent.height)) // Flip NDC Y axis
         .addScissor(0, 0, extent.width, extent.height)
-        .setDepthTest(VK_TRUE, VK_TRUE)
+        .setRasterizationCullFace(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE)
+        .setDepthTest(VK_TRUE, VK_TRUE, VK_COMPARE_OP_GREATER) // Greater for reversed-z
         .addColorBlendAttachment(color_blend_attm_state);
     auto res_pipeline = rctx.requestGraphicsPipeline(pso);
     OnErr(res_pipeline);

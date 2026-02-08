@@ -1,5 +1,6 @@
 #pragma once
 #include "component.hpp"
+#include "components/camera.hpp"
 #include "components/image.hpp"
 #include "components/material.hpp"
 #include "components/mesh.hpp"

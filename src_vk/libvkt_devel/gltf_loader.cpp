@@ -1,6 +1,5 @@
 #include "gltf_helper.hpp"
 #include <algorithm>
-#include <glm/gtc/type_ptr.hpp>
 #include <queue>
 #include <vktor/core/command_buffer.hpp>
 #include <vktor/core/command_pool.hpp>
@@ -428,7 +427,7 @@ void GLTFLoader::loadTextures(Scene& scene) const {
     }
 }
 
-void GLTFLoader::loadMaterials(Scene& scene) const {
+void GLTFLoader::loadPBRMaterials(Scene& scene) const {
     auto textures = scene.getComponents<Texture>();
 
     for (size_t k = 0; k < gmodel.materials.size(); k++) {
@@ -558,6 +557,32 @@ void GLTFLoader::loadMeshes(Scene& scene) const {
     }
 }
 
+void GLTFLoader::loadCameras(Scene& scene) const {
+    for (auto& gcamera : gmodel.cameras) {
+        Box<Camera> camera = nullptr;
+        if (gcamera.type == "perspective") {
+            auto persp_camera = newBox<PerspCamera>(gcamera.name);
+            persp_camera->aspect = static_cast<float>(gcamera.perspective.aspectRatio);
+            persp_camera->fovy = static_cast<float>(gcamera.perspective.yfov);
+            persp_camera->znear = static_cast<float>(gcamera.perspective.znear);
+            persp_camera->zfar = static_cast<float>(gcamera.perspective.zfar);
+            camera = std::move(persp_camera);
+        } else if (gcamera.type == "orthographic") {
+            auto ortho_camera = newBox<OrthoCamera>(gcamera.name);
+            ortho_camera->left = -static_cast<float>(gcamera.orthographic.xmag);
+            ortho_camera->right = static_cast<float>(gcamera.orthographic.xmag);
+            ortho_camera->bottom = -static_cast<float>(gcamera.orthographic.ymag);
+            ortho_camera->top = static_cast<float>(gcamera.orthographic.ymag);
+            ortho_camera->znear = static_cast<float>(gcamera.orthographic.znear);
+            ortho_camera->zfar = static_cast<float>(gcamera.orthographic.zfar);
+            camera = std::move(ortho_camera);
+        } else {
+            vktLogW("Unsupported camera: {}", gcamera.type);
+        }
+        scene.addComponent(std::move(camera));
+    }
+}
+
 void GLTFLoader::loadSceneNodes(Scene& scene, int32_t scene_index) const {
     if (scene_index < 0) {
         scene_index = gmodel.defaultScene;
@@ -565,6 +590,7 @@ void GLTFLoader::loadSceneNodes(Scene& scene, int32_t scene_index) const {
     assert(static_cast<size_t>(scene_index) < gmodel.scenes.size());
 
     auto meshes = scene.getComponents<Mesh>();
+    auto cameras = scene.getComponents<Camera>();
 
     // Load nodes
     Vector<Box<Node>> nodes{};
@@ -579,6 +605,15 @@ void GLTFLoader::loadSceneNodes(Scene& scene, int32_t scene_index) const {
             auto& mesh = meshes[gnode.mesh];
             node->setComponent(*mesh); // 不同的Node可能指向同一个Mesh
         }
+
+        // Setup node's camera
+        if (gnode.camera >= 0) {
+            assert(static_cast<size_t>(gnode.camera) < cameras.size());
+            auto camera = cameras[gnode.camera];
+            node->setComponent(*camera);
+            camera->setNode(*node);
+        }
+
         nodes.push_back(std::move(node));
     }
 
@@ -606,6 +641,15 @@ void GLTFLoader::loadSceneNodes(Scene& scene, int32_t scene_index) const {
 
     nodes.push_back(std::move(root_node));
     scene.setNodes(std::move(nodes), nodes.size() - 1);
+
+    // Add default camera
+    auto default_camera_node = newBox<Node>(-1, "default.camera");
+    Box<Camera> default_camera = newBox<PerspCamera>("default.camera");
+    default_camera_node->setComponent(*default_camera);
+    default_camera->setNode(*default_camera_node);
+    scene.getRootNode()->addChild(*default_camera_node);
+    scene.addNode(std::move(default_camera_node));
+    scene.addComponent(std::move(default_camera));
 }
 
 Box<Scene> GLTFLoader::loadScene(int32_t scene_index) const {
@@ -614,10 +658,11 @@ Box<Scene> GLTFLoader::loadScene(int32_t scene_index) const {
     loadSamplers(*scene);
     loadBuffers(*scene);
     loadImages(*scene);
-    loadTextures(*scene);                // Require images, samplers
-    loadMaterials(*scene);               // Require textures
-    loadMeshes(*scene);                  // Require buffers, materials
-    loadSceneNodes(*scene, scene_index); // Require meshes
+    loadTextures(*scene);     // Require images, samplers
+    loadPBRMaterials(*scene); // Require textures
+    loadMeshes(*scene);       // Require buffers, pbr_materials
+    loadCameras(*scene);
+    loadSceneNodes(*scene, scene_index); // Require meshes, cameras
 
     return scene;
 }

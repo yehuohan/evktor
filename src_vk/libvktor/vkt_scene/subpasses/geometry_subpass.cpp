@@ -21,9 +21,10 @@ static const auto vertex_input_attrs = Vector<VkVertexInputAttributeDescription>
     VkVertexInputAttributeDescription{2, 2, VK_FORMAT_R32G32B32_SFLOAT, 0},
 };
 
-GeometrySubpass::GeometrySubpass(vkt::Shader&& vert, vkt::Shader&& frag, Box<Scene>&& scene)
+GeometrySubpass::GeometrySubpass(vkt::Shader&& vert, vkt::Shader&& frag, Box<Scene>&& _scene, Camera& _camera)
     : RenderSubpass(std::move(vert), std::move(frag), "OpaquePass")
-    , scene(std::move(scene)) {}
+    , camera(_camera)
+    , scene(std::move(_scene)) {}
 
 GeometrySubpass::~GeometrySubpass() {
     scene.reset();
@@ -57,6 +58,7 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
     }
     desc_info.setBuf(0).bind(pbr_ubo[rfrm_idx]);
     auto& ubo_ptr = pbr_ubo_ptr[rfrm_idx];
+    ubo_ptr->view_proj = camera.getProj() * camera.getView();
 
     auto res_desc_setlayout = rctx.requestDescriptorSetLayout(0, Shaders());
     OnErr(res_desc_setlayout);
@@ -83,9 +85,10 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
         .setPipelineLayout(pipeline_layout)
         .addVertexInputBindings(vertex_input_bindings)
         .addVertexInputAttributes(vertex_input_attrs)
-        .addViewport(0.0, extent.height, extent.width, -float(extent.height))
+        .addViewport(0.0, extent.height, extent.width, -float(extent.height)) // Flip NDC Y axis
         .addScissor(0, 0, extent.width, extent.height)
-        .setDepthTest(VK_TRUE, VK_TRUE)
+        .setRasterizationCullFace(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE)
+        .setDepthTest(VK_TRUE, VK_TRUE, VK_COMPARE_OP_GREATER) // Greater for reversed-z
         .addColorBlendAttachment(color_blend_attm_state);
     auto res_pipeline = rctx.requestGraphicsPipeline(pso);
     OnErr(res_pipeline);
@@ -101,7 +104,6 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
         if (auto mesh = node.getComponent<Mesh>(); mesh) {
             for (auto& sub : mesh->getSubmeshes()) {
                 ubo_ptr->model = node.getTransform().getWorldMatrix();
-                ubo_ptr->view_proj = camera_proj * camera_view;
 
                 auto* pbr_mat = sub->getPBRMaterial();
                 if (pbr_mat) {

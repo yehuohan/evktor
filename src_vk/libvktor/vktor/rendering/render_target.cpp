@@ -11,11 +11,11 @@ RenderTarget::RenderTarget(Texture&& _texture) : texture(std::move(_texture)) {
     if (isDepthOnlyFormat(format)) {
         set(AttachmentOps::depth());
         set(AttachmentLayouts::depthstencil());
-        set(VkClearDepthStencilValue{1.0, 0});
+        set(VkClearDepthStencilValue{0.0, 0}); // Clear with 0.0 for reversed-z
     } else if (isDepthStencilFormat(format)) {
         set(AttachmentOps::depth(), AttachmentOps::stencil());
         set(AttachmentLayouts::depthstencil());
-        set(VkClearDepthStencilValue{1.0, 0});
+        set(VkClearDepthStencilValue{0.0, 0}); // Clear with 0.0 for reversed-z
     } else {
         set(AttachmentOps::color());
         set(AttachmentLayouts::color());

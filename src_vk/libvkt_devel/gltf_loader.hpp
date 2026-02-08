@@ -27,8 +27,9 @@ protected:
     void loadBuffers(vktscn::Scene& scene) const;
     void loadImages(vktscn::Scene& scene) const;
     void loadTextures(vktscn::Scene& scene) const;
-    void loadMaterials(vktscn::Scene& scene) const;
+    void loadPBRMaterials(vktscn::Scene& scene) const;
     void loadMeshes(vktscn::Scene& scene) const;
+    void loadCameras(vktscn::Scene& scene) const;
     void loadSceneNodes(vktscn::Scene& scene, int32_t scene_index) const;
     Box<vktscn::Scene> loadScene(int32_t scene_index) const;
 
