@@ -1,7 +1,7 @@
 #pragma once
-#include <camera.hpp>
 #include <cstdint>
 #include <share/share.hpp>
+#include <vkt_scene/components/camera.hpp>
 #include <vktor/core/api/instance.hpp>
 
 #define GLFW_INCLUDE_VULKAN
@@ -14,7 +14,6 @@ protected:
     uint32_t width;
     uint32_t height;
     GLFWwindow* window = nullptr;
-    Box<ICamera> camera = nullptr;
     bool framebuffer_resized = false;
     float fps = 0.0f;
 
@@ -36,14 +35,12 @@ public:
      * @brief Get surface extent
      */
     VkExtent2D getExtent() const;
-    void setCamera(ICamera::Type type, glm::vec3 eye_pos = glm::vec3(0.0f, 0.0f, 0.0f));
 
     virtual void run();
     virtual void tick(float cur_time, float delta_time) = 0;
 
 protected:
-    virtual void processKeys(float delta_time);
-    virtual void processCursorPos(const uint32_t wid, const uint32_t hei);
+    virtual void tick_camera(vktscn::PerspCamera& camera, float delta_time);
 };
 
 NAMESPACE_END(vktdev)

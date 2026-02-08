@@ -1,7 +1,5 @@
 #include "camera.hpp"
 
-namespace vktdev {
-
 void CameraArcball::processCameraMove(Movement dir, float delta_time) {
     float vel = delta_time * speed;
     switch (dir) {
@@ -111,5 +109,3 @@ void CameraFirstPerson::update() {
     up = glm::normalize(glm::cross(right, dir));       // right, center, up是正交直角坐标系
     center = eye + dir;
 }
-
-} // namespace vktdev

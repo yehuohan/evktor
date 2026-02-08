@@ -1,7 +1,7 @@
 #pragma once
-#include <external/libglm.hpp>
-
-namespace vktdev {
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/glm.hpp>
 
 /**
  * @brief Camera interface
@@ -130,5 +130,3 @@ public:
     virtual void processCameraMove(Movement dir, float delta_time) override;
     virtual void processMouseMove(const glm::vec2& pa, const glm::vec2& pb) override;
 };
-
-} // namespace vktdev

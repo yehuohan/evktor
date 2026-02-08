@@ -3,14 +3,11 @@
  * @brief Graphics window
  */
 #pragma once
+#include "camera.hpp"
 #include <GLFW/glfw3.h>
 #include <cstdint>
-#include <glm/glm.hpp>
 #include <iostream>
 #include <memory>
-#include "camera.hpp"
-
-using namespace vktdev;
 
 class XWin {
 public:

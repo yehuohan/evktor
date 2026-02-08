@@ -16,14 +16,7 @@ Window::Window(uint32_t width, uint32_t height) : width(width), height(height) {
         throw vktErr("Failed to create GLFW window");
     }
     glfwSetWindowUserPointer(window, this);
-
     glfwSetWindowSizeLimits(window, 1, 1, GLFW_DONT_CARE, GLFW_DONT_CARE);
-    glfwSetScrollCallback(window, [](GLFWwindow* win, double xoffset, double yoffset) {
-        auto user = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
-        if (user && user->camera) {
-            user->camera->processMouseScroll(yoffset);
-        }
-    });
     glfwSetFramebufferSizeCallback(window, [](GLFWwindow* win, int wid, int hei) {
         auto user = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
         if (user) {
@@ -32,6 +25,7 @@ Window::Window(uint32_t width, uint32_t height) : width(width), height(height) {
     });
 
     glfwMakeContextCurrent(window);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // 隐藏光标，并Capture光标
 }
 
 Window::~Window() {
@@ -64,16 +58,13 @@ VkExtent2D Window::getExtent() const {
     return VkExtent2D{u32(wid), u32(hei)};
 }
 
-void Window::setCamera(ICamera::Type type, glm::vec3 eye_pos) {
-    switch (type) {
-    case ICamera::Arcball: camera.reset(new CameraArcball(eye_pos)); break;
-    case ICamera::FirstPerson: camera.reset(new CameraFirstPerson(eye_pos)); break;
-    }
-}
-
 void Window::run() {
     float last_time = 0.0f;
     while (!glfwWindowShouldClose(window)) {
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window, true);
+        }
+
         double timeout = -1.0;
         if (last_time > 0.0 && fps > 0.0) {
             timeout = 1.0 / fps - (glfwGetTime() - last_time);
@@ -88,73 +79,56 @@ void Window::run() {
         float delta_time = cur_time - last_time;
         last_time = cur_time;
 
-        processKeys(delta_time);
-        processCursorPos(width, height);
-
         tick(cur_time, delta_time);
     }
 }
 
-void Window::processKeys(float delta_time) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+void Window::tick_camera(vktscn::PerspCamera& camera, float delta_time) {
+    const float speed = 5.5f;       /**< 摄像机移动速度 */
+    const float sensitivity = 50.0; /**< 鼠标移动灵敏度 */
 
-    if (!camera)
-        return;
+    glm::vec3 delta_translation(0.0f, 0.0f, 0.0f);
+    glm::vec3 delta_rotation(0.0f, 0.0f, 0.0f);
 
-    int dir = -1;
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-        dir = ICamera::Movement::Forward;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        dir = ICamera::Movement::Backward;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        dir = ICamera::Movement::Leftward;
-    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
-        dir = ICamera::Movement::Rightward;
-    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-        dir = ICamera::Movement::Upward;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        dir = ICamera::Movement::Downward;
-    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-        dir = ICamera::Movement::Reset;
-
-    if (dir >= 0)
-        camera->processCameraMove((ICamera::Movement)dir, delta_time);
-}
-
-void Window::processCursorPos(const uint32_t wid, const uint32_t hei) {
-    if (!camera)
-        return;
-
-    static bool first = true;
-    static uint8_t last_btn = GLFW_RELEASE;
-    static glm::vec2 pa;
-
-    if (camera->type == ICamera::Arcball) {
-        uint8_t btn = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1);
-        if (btn == GLFW_RELEASE) {
-            last_btn = btn;
-            return;
-        } else if (btn == GLFW_PRESS) {
-            if (last_btn == GLFW_RELEASE)
-                first = true;
-        }
-        last_btn = btn;
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    } else if (glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 
-    double xpos, ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
+    {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        glm::vec2 cur(2.0 * xpos / width - 1.0, 2.0 * ypos / height - 1.0);
 
-    if (first) {
-        pa.x = 2.0 * xpos / wid - 1.0;
-        pa.y = 2.0 * ypos / hei - 1.0;
-        first = false;
-        return;
+        static glm::vec2 pre = cur;
+        delta_rotation = glm::vec3(pre - cur, 0.0) * sensitivity;
+        pre = cur;
     }
-    glm::vec2 pb(2.0 * xpos / wid - 1.0, 2.0 * ypos / hei - 1.0);
-    camera->processMouseMove(pa, pb);
+    {
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+            delta_translation.z -= speed;
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            delta_translation.z += speed;
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            delta_translation.x -= speed;
+        if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+            delta_translation.x += speed;
+        if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+            delta_translation.y += speed;
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            delta_translation.y -= speed;
+    }
 
-    pa = pb;
+    delta_translation *= delta_time;
+    delta_rotation *= delta_time;
+
+    auto& tr = camera.getNode()->getTransform();
+    glm::quat qx = glm::angleAxis(delta_rotation.y, glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::quat qy = glm::angleAxis(delta_rotation.x, glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::quat rot = glm::normalize(qy * tr.getRotation() * qx);
+    tr.setTranslation(tr.getTranslation() + delta_translation * glm::conjugate(rot));
+    tr.setRotation(rot);
 }
 
 NAMESPACE_END(vktdev)

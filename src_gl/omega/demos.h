@@ -1,7 +1,6 @@
 #ifndef DEMOS_H
 #define DEMOS_H
 
-#include "assets.hpp"
 #include "model.h"
 #include "mesh_data.h"
 #include "glbase.h"
@@ -9,8 +8,8 @@
 #include "font.h"
 #include "utils.h"
 
-#define DWID 800
-#define DHEI 600
+#define DWID 1920
+#define DHEI 1080
 
 #define GLSL_VERT_MESH_DATA         Assets::shader("omega/mesh_data.vert")
 #define GLSL_FRAG_MESH_DATA         Assets::shader("omega/mesh_data.frag")

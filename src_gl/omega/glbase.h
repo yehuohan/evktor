@@ -16,7 +16,9 @@
 #include <memory>
 #include "xwin.h"
 #include "utils.h"
+#include "assets.hpp"
 
+using namespace vktdev;
 
 class LnGL : public XWin {
 public:
