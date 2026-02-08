@@ -8,6 +8,101 @@ NAMESPACE_BEGIN(core)
 
 struct CommandPool;
 
+template <typename S, typename Stage, typename Access>
+struct IPipelineBarrier : private NonCopyable, private NonMoveable {
+protected:
+    const VkCommandBuffer cmdbuf;
+    VkDependencyFlags flags = 0;
+    Stage src_stage;
+    Stage dst_stage;
+    Access src_access;
+    Access dst_access;
+    VkImageLayout old_layout;
+    VkImageLayout new_layout;
+    uint32_t src_qfi;
+    uint32_t dst_qfi;
+
+public:
+    IPipelineBarrier(const VkCommandBuffer cmdbuf, VkDependencyFlags flags = 0) : cmdbuf(cmdbuf), flags(flags) {}
+
+    S& from(Stage stage, Access access, uint32_t qfi = VK_QUEUE_FAMILY_IGNORED) {
+        src_stage = stage;
+        src_access = access;
+        src_qfi = qfi;
+        return static_cast<S&>(*this);
+    }
+    S& into(Stage stage, Access access, uint32_t qfi = VK_QUEUE_FAMILY_IGNORED) {
+        dst_stage = stage;
+        dst_access = access;
+        dst_qfi = qfi;
+        return static_cast<S&>(*this);
+    }
+    S& next(Stage stage, Access access, uint32_t qfi = VK_QUEUE_FAMILY_IGNORED) {
+        from(dst_stage, dst_access, dst_qfi);
+        into(stage, access, qfi);
+        return static_cast<S&>(*this);
+    }
+    S& from(Stage stage, Access access, VkImageLayout layout, uint32_t qfi = VK_QUEUE_FAMILY_IGNORED) {
+        src_stage = stage;
+        src_access = access;
+        old_layout = layout;
+        src_qfi = qfi;
+        return static_cast<S&>(*this);
+    }
+    S& into(Stage stage, Access access, VkImageLayout layout, uint32_t qfi = VK_QUEUE_FAMILY_IGNORED) {
+        dst_stage = stage;
+        dst_access = access;
+        new_layout = layout;
+        dst_qfi = qfi;
+        return static_cast<S&>(*this);
+    }
+    S& next(Stage stage, Access access, VkImageLayout layout, uint32_t qfi = VK_QUEUE_FAMILY_IGNORED) {
+        from(dst_stage, dst_access, new_layout, dst_qfi);
+        into(stage, access, layout, qfi);
+        return static_cast<S&>(*this);
+    }
+};
+
+struct PipelineBarrier : public IPipelineBarrier<PipelineBarrier, VkPipelineStageFlags, VkAccessFlags> {
+public:
+    PipelineBarrier(const VkCommandBuffer cmdbuf, VkDependencyFlags flags = 0);
+
+    /** @brief Add memory barrier */
+    PipelineBarrier& mem(const void* next = nullptr);
+    /** @brief Add buffer barrier */
+    PipelineBarrier& buf(VkBuffer buffer,
+                         VkDeviceSize offset = 0,
+                         VkDeviceSize size = VK_WHOLE_SIZE,
+                         const void* next = nullptr);
+    PipelineBarrier& buf(const Buffer& buffer, const void* next = nullptr);
+    /** @brief Add image barrier */
+    PipelineBarrier& img(
+        VkImage image,
+        VkImageSubresourceRange subresource_range = VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
+        const void* next = nullptr);
+    PipelineBarrier& img(const Arg<Image>& image, const void* next = nullptr);
+};
+
+struct PipelineBarrier2 : public IPipelineBarrier<PipelineBarrier2, VkPipelineStageFlags2, VkAccessFlags2> {
+public:
+    PipelineBarrier2(const VkCommandBuffer cmdbuf, VkDependencyFlags flags = 0);
+
+    /** @brief Add memory barrier */
+    PipelineBarrier2& mem(const void* next = nullptr);
+    /** @brief Add buffer barrier */
+    PipelineBarrier2& buf(VkBuffer buffer,
+                          VkDeviceSize offset = 0,
+                          VkDeviceSize size = VK_WHOLE_SIZE,
+                          const void* next = nullptr);
+    PipelineBarrier2& buf(const Buffer& buffer, const void* next = nullptr);
+    /** @brief Add image barrier */
+    PipelineBarrier2& img(
+        VkImage image,
+        VkImageSubresourceRange subresource_range = VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
+        const void* next = nullptr);
+    PipelineBarrier2& img(const Arg<Image>& image, const void* next = nullptr);
+};
+
 /**
  * @brief Command buffer
  *
@@ -205,69 +300,16 @@ public:
                                  VkPipelineStageFlags dst_stage,
                                  const Vector<VkMemoryBarrier>& barriers,
                                  VkDependencyFlags flags = 0) const;
-    Self cmdMemoryBarrier(VkPipelineStageFlags src_stage,
-                          VkPipelineStageFlags dst_stage,
-                          VkAccessFlags src_access,
-                          VkAccessFlags dst_access,
-                          VkDependencyFlags flags = 0) const;
-    Self cmdMemoryBarrier2(const Vector<VkMemoryBarrier2>& barriers, VkDependencyFlags flags = 0) const;
-    Self cmdMemoryBarrier2(VkPipelineStageFlags2 src_stage,
-                           VkPipelineStageFlags2 dst_stage,
-                           VkAccessFlags2 src_access,
-                           VkAccessFlags2 dst_access,
-                           VkDependencyFlags flags = 0) const;
     inline Self cmdBufferMemoryBarrier(VkPipelineStageFlags src_stage,
                                        VkPipelineStageFlags dst_stage,
                                        const Vector<VkBufferMemoryBarrier>& barriers,
                                        VkDependencyFlags flags = 0) const;
-    /**
-     * @brief Buffer memory barrier
-     *
-     * If `size` is 0, then use `buf.size`.
-     */
-    Self cmdBufferMemoryBarrier(const Buffer& buf,
-                                VkPipelineStageFlags src_stage,
-                                VkPipelineStageFlags dst_stage,
-                                VkAccessFlags src_access,
-                                VkAccessFlags dst_access,
-                                VkDeviceSize offset = 0,
-                                VkDeviceSize size = 0,
-                                VkDependencyFlags flags = 0) const;
-    Self cmdBufferMemoryBarrier2(const Vector<VkBufferMemoryBarrier2>& barriers, VkDependencyFlags flags = 0) const;
-    /**
-     * @brief Buffer memory barrier
-     *
-     * If `size` is 0, then use `buf.size`.
-     */
-    Self cmdBufferMemoryBarrier2(const Buffer& buf,
-                                 VkPipelineStageFlags2 src_stage,
-                                 VkPipelineStageFlags2 dst_stage,
-                                 VkAccessFlags2 src_access,
-                                 VkAccessFlags2 dst_access,
-                                 VkDeviceSize offset = 0,
-                                 VkDeviceSize size = 0,
-                                 VkDependencyFlags flags = 0) const;
     inline Self cmdImageMemoryBarrier(VkPipelineStageFlags src_stage,
                                       VkPipelineStageFlags dst_stage,
                                       const Vector<VkImageMemoryBarrier>& barriers,
                                       VkDependencyFlags flags = 0) const;
-    Self cmdImageMemoryBarrier(const Arg<Image>& img,
-                               VkPipelineStageFlags src_stage,
-                               VkPipelineStageFlags dst_stage,
-                               VkAccessFlags src_access,
-                               VkAccessFlags dst_access,
-                               VkImageLayout old_layout,
-                               VkImageLayout new_layout,
-                               VkDependencyFlags flags = 0) const;
-    Self cmdImageMemoryBarrier2(const Vector<VkImageMemoryBarrier2>& barriers, VkDependencyFlags flags = 0) const;
-    Self cmdImageMemoryBarrier2(const Arg<Image>& img,
-                                VkPipelineStageFlags2 src_stage,
-                                VkPipelineStageFlags2 dst_stage,
-                                VkAccessFlags2 src_access,
-                                VkAccessFlags2 dst_access,
-                                VkImageLayout old_layout,
-                                VkImageLayout new_layout,
-                                VkDependencyFlags flags = 0) const;
+    inline PipelineBarrier cmdPipelineBarrier(VkDependencyFlags flags = 0) const;
+    inline PipelineBarrier2 cmdPipelineBarrier2(VkDependencyFlags flags = 0) const;
 
 public:
     inline Self cmdResetQueryPool(VkQueryPool query_pool, uint32_t first, uint32_t count) const;
@@ -545,6 +587,14 @@ inline CommandBuffer::Self CommandBuffer::cmdImageMemoryBarrier(VkPipelineStageF
                                                                 VkDependencyFlags flags) const {
     vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, 0, nullptr, u32(barriers.size()), barriers.data());
     return *this;
+}
+
+inline PipelineBarrier CommandBuffer::cmdPipelineBarrier(VkDependencyFlags flags) const {
+    return PipelineBarrier(handle, flags);
+}
+
+inline PipelineBarrier2 CommandBuffer::cmdPipelineBarrier2(VkDependencyFlags flags) const {
+    return PipelineBarrier2(handle, flags);
 }
 
 inline CommandBuffer::Self CommandBuffer::cmdResetQueryPool(VkQueryPool query_pool, uint32_t first, uint32_t count) const {

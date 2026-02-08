@@ -97,35 +97,25 @@ void case_rctx_dynamic_rendering() {
     // Record command
     staging.copyFrom(tri.tex.data());
     cmdbuf.begin();
-    cmdbuf.cmdImageMemoryBarrier(Arg{tex.getImage()},
-                                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
-                                 VK_ACCESS_NONE,
-                                 VK_ACCESS_TRANSFER_WRITE_BIT,
-                                 VK_IMAGE_LAYOUT_UNDEFINED,
-                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+    auto barrier = cmdbuf.cmdPipelineBarrier();
+    barrier.from(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_NONE, VK_IMAGE_LAYOUT_UNDEFINED)
+        .into(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+        .img(Arg{tex.getImage()});
     cmdbuf.cmdCopyBufferToImage(staging, Arg{tex.getImage()});
-    cmdbuf.cmdImageMemoryBarrier(Arg{tex.getImage()},
-                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
-                                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                                 VK_ACCESS_TRANSFER_WRITE_BIT,
-                                 VK_ACCESS_SHADER_READ_BIT,
-                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    cmdbuf.cmdImageMemoryBarrier(Arg{out_color},
-                                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                                 VK_ACCESS_NONE,
-                                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                                 VK_IMAGE_LAYOUT_UNDEFINED,
-                                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-    cmdbuf.cmdImageMemoryBarrier(Arg{out_depth},
-                                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                                 VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
-                                 VK_ACCESS_NONE,
-                                 VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-                                 VK_IMAGE_LAYOUT_UNDEFINED,
-                                 VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL);
+    barrier.next(VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+        .img(Arg{tex.getImage()});
+
+    barrier.from(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_NONE, VK_IMAGE_LAYOUT_UNDEFINED)
+        .into(VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
+              VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+              VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL)
+        .img(Arg{out_depth});
+    barrier.from(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_NONE, VK_IMAGE_LAYOUT_UNDEFINED)
+        .into(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+              VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+              VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+        .img(Arg{out_color});
     cmdbuf.cmdBeginRendering(rtt.getExtent(), rtt.getAttachmentInfos(), 1, 1)
         .cmdBindGraphicsPipeline(pipeline)
         .cmdBindGraphicsDescriptorSets(pipeline_layout, 0, {desc_set})
@@ -135,14 +125,10 @@ void case_rctx_dynamic_rendering() {
         .cmdBindIndexBuffer(index_buf, 0, VK_INDEX_TYPE_UINT32)
         .cmdDrawIndexed(3, 1, 0, 0, 0)
         .cmdEndRendering();
-    cmdbuf.cmdImageMemoryBarrier(Arg{out_color},
-                                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
-                                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                                 VK_ACCESS_TRANSFER_READ_BIT,
-                                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+    barrier.next(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
+        .img(Arg{out_color});
     cmdbuf.cmdCopyImageToBuffer(Arg{out_color}, staging);
+
     cmdbuf.end();
     queue.submit(cmdbuf);
     queue.waitIdle();

@@ -72,40 +72,25 @@ void case_core_compute() {
 
     // Record command
     cmdbuf.begin();
-    cmdbuf.cmdImageMemoryBarrier(Arg{inp_img},
-                                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
-                                 VK_ACCESS_NONE,
-                                 VK_ACCESS_TRANSFER_WRITE_BIT,
-                                 VK_IMAGE_LAYOUT_UNDEFINED,
-                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+    auto barrier = cmdbuf.cmdPipelineBarrier();
+    barrier.from(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_NONE, VK_IMAGE_LAYOUT_UNDEFINED)
+        .into(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+        .img(Arg{inp_img});
     cmdbuf.cmdCopyBufferToImage(staging, Arg{inp_img});
-    cmdbuf.cmdImageMemoryBarrier(Arg{inp_img},
-                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
-                                 VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-                                 VK_ACCESS_TRANSFER_READ_BIT,
-                                 VK_ACCESS_SHADER_READ_BIT,
-                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                 VK_IMAGE_LAYOUT_GENERAL);
-    cmdbuf.cmdImageMemoryBarrier(Arg{out_img},
-                                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                                 VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-                                 VK_ACCESS_NONE,
-                                 VK_ACCESS_SHADER_WRITE_BIT,
-                                 VK_IMAGE_LAYOUT_UNDEFINED,
-                                 VK_IMAGE_LAYOUT_GENERAL);
+    barrier.next(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_GENERAL).img(Arg{inp_img});
+
+    barrier.from(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_NONE, VK_IMAGE_LAYOUT_UNDEFINED)
+        .into(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_GENERAL)
+        .img(Arg{out_img});
     cmdbuf.cmdBindComputePipeline(pipeline)
         .cmdBindComputeDescriptorSets(pipeline_layout, 0, {desc_set})
         .cmdPushCompConstants(pipeline_layout, &quad.push_args, sizeof(Quad::PushArgs))
         .cmdDispatch(quad.group_count_x, quad.group_count_y, quad.group_count_z);
-    cmdbuf.cmdImageMemoryBarrier(Arg{out_img},
-                                 VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
-                                 VK_ACCESS_SHADER_WRITE_BIT,
-                                 VK_ACCESS_TRANSFER_READ_BIT,
-                                 VK_IMAGE_LAYOUT_GENERAL,
-                                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+    barrier.next(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
+        .img(Arg{out_img});
     cmdbuf.cmdCopyImageToBuffer(Arg{out_img}, staging);
+
     cmdbuf.end();
     queue.submit(cmdbuf);
     queue.waitIdle();

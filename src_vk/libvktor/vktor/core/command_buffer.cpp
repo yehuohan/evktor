@@ -5,6 +5,166 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
+PipelineBarrier::PipelineBarrier(const VkCommandBuffer cmdbuf, VkDependencyFlags flags)
+    : IPipelineBarrier<PipelineBarrier, VkPipelineStageFlags, VkAccessFlags>(cmdbuf, flags) {}
+
+PipelineBarrier& PipelineBarrier::mem(const void* next) {
+    auto barrier = Itor::MemoryBarrier(next);
+    barrier.srcAccessMask = src_access;
+    barrier.dstAccessMask = dst_access;
+    vkCmdPipelineBarrier(cmdbuf, src_stage, dst_stage, flags, 1, &barrier, 0, nullptr, 0, nullptr);
+    return *this;
+}
+
+PipelineBarrier& PipelineBarrier::buf(VkBuffer buffer, VkDeviceSize offset, VkDeviceSize size, const void* next) {
+    auto barrier = Itor::BufferMemoryBarrier(next);
+    barrier.srcAccessMask = src_access;
+    barrier.dstAccessMask = dst_access;
+    barrier.srcQueueFamilyIndex = src_qfi;
+    barrier.dstQueueFamilyIndex = dst_qfi;
+    barrier.buffer = buffer;
+    barrier.offset = offset;
+    barrier.size = size;
+    vkCmdPipelineBarrier(cmdbuf, src_stage, dst_stage, flags, 0, nullptr, 1, &barrier, 0, nullptr);
+    return *this;
+}
+
+PipelineBarrier& PipelineBarrier::buf(const Buffer& buffer, const void* next) {
+    auto barrier = Itor::BufferMemoryBarrier(next);
+    barrier.srcAccessMask = src_access;
+    barrier.dstAccessMask = dst_access;
+    barrier.srcQueueFamilyIndex = src_qfi;
+    barrier.dstQueueFamilyIndex = dst_qfi;
+    barrier.buffer = buffer;
+    barrier.offset = 0;
+    barrier.size = buffer.getSize();
+    vkCmdPipelineBarrier(cmdbuf, src_stage, dst_stage, flags, 0, nullptr, 1, &barrier, 0, nullptr);
+    return *this;
+}
+
+PipelineBarrier& PipelineBarrier::img(VkImage image, VkImageSubresourceRange subresource_range, const void* next) {
+    auto barrier = Itor::ImageMemoryBarrier(next);
+    barrier.srcAccessMask = src_access;
+    barrier.dstAccessMask = dst_access;
+    barrier.oldLayout = old_layout;
+    barrier.newLayout = new_layout;
+    barrier.srcQueueFamilyIndex = src_qfi;
+    barrier.dstQueueFamilyIndex = dst_qfi;
+    barrier.image = image;
+    barrier.subresourceRange = subresource_range;
+    vkCmdPipelineBarrier(cmdbuf, src_stage, dst_stage, flags, 0, nullptr, 0, nullptr, 1, &barrier);
+    return *this;
+}
+
+PipelineBarrier& PipelineBarrier::img(const Arg<Image>& image, const void* next) {
+    auto barrier = Itor::ImageMemoryBarrier(next);
+    barrier.srcAccessMask = src_access;
+    barrier.dstAccessMask = dst_access;
+    barrier.oldLayout = old_layout;
+    barrier.newLayout = new_layout;
+    barrier.srcQueueFamilyIndex = src_qfi;
+    barrier.dstQueueFamilyIndex = dst_qfi;
+    barrier.image = image;
+    barrier.subresourceRange = image;
+    vkCmdPipelineBarrier(cmdbuf, src_stage, dst_stage, flags, 0, nullptr, 0, nullptr, 1, &barrier);
+    return *this;
+}
+
+PipelineBarrier2::PipelineBarrier2(const VkCommandBuffer cmdbuf, VkDependencyFlags flags)
+    : IPipelineBarrier<PipelineBarrier2, VkPipelineStageFlags2, VkAccessFlags2>(cmdbuf, flags) {}
+
+PipelineBarrier2& PipelineBarrier2::mem(const void* next) {
+    auto barrier = Itor::MemoryBarrier2();
+    barrier.srcStageMask = src_stage;
+    barrier.dstStageMask = dst_stage;
+    barrier.srcAccessMask = src_access;
+    barrier.dstAccessMask = dst_access;
+    auto info = Itor::DependencyInfo(next);
+    info.dependencyFlags = flags;
+    info.pMemoryBarriers = &barrier;
+    info.memoryBarrierCount = 1;
+    vkCmdPipelineBarrier2(cmdbuf, &info);
+    return *this;
+}
+
+PipelineBarrier2& PipelineBarrier2::buf(VkBuffer buffer, VkDeviceSize offset, VkDeviceSize size, const void* next) {
+    auto barrier = Itor::BufferMemoryBarrier2(next);
+    barrier.srcStageMask = src_stage;
+    barrier.dstStageMask = dst_stage;
+    barrier.srcAccessMask = src_access;
+    barrier.dstAccessMask = dst_access;
+    barrier.srcQueueFamilyIndex = src_qfi;
+    barrier.dstQueueFamilyIndex = dst_qfi;
+    barrier.buffer = buffer;
+    barrier.offset = offset;
+    barrier.size = size;
+    auto info = Itor::DependencyInfo(next);
+    info.dependencyFlags = flags;
+    info.pBufferMemoryBarriers = &barrier;
+    info.bufferMemoryBarrierCount = 1;
+    vkCmdPipelineBarrier2(cmdbuf, &info);
+    return *this;
+}
+
+PipelineBarrier2& PipelineBarrier2::buf(const Buffer& buffer, const void* next) {
+    auto barrier = Itor::BufferMemoryBarrier2(next);
+    barrier.srcStageMask = src_stage;
+    barrier.dstStageMask = dst_stage;
+    barrier.srcAccessMask = src_access;
+    barrier.dstAccessMask = dst_access;
+    barrier.srcQueueFamilyIndex = src_qfi;
+    barrier.dstQueueFamilyIndex = dst_qfi;
+    barrier.buffer = buffer;
+    barrier.offset = 0;
+    barrier.size = buffer.getSize();
+    auto info = Itor::DependencyInfo(next);
+    info.dependencyFlags = flags;
+    info.pBufferMemoryBarriers = &barrier;
+    info.bufferMemoryBarrierCount = 1;
+    vkCmdPipelineBarrier2(cmdbuf, &info);
+    return *this;
+}
+
+PipelineBarrier2& PipelineBarrier2::img(VkImage image, VkImageSubresourceRange subresource_range, const void* next) {
+    auto barrier = Itor::ImageMemoryBarrier2(next);
+    barrier.srcStageMask = src_stage;
+    barrier.dstStageMask = dst_stage;
+    barrier.srcAccessMask = src_access;
+    barrier.dstAccessMask = dst_access;
+    barrier.oldLayout = old_layout;
+    barrier.newLayout = new_layout;
+    barrier.srcQueueFamilyIndex = src_qfi;
+    barrier.dstQueueFamilyIndex = dst_qfi;
+    barrier.image = image;
+    barrier.subresourceRange = subresource_range;
+    auto info = Itor::DependencyInfo(next);
+    info.dependencyFlags = flags;
+    info.pImageMemoryBarriers = &barrier;
+    info.imageMemoryBarrierCount = 1;
+    vkCmdPipelineBarrier2(cmdbuf, &info);
+    return *this;
+}
+
+PipelineBarrier2& PipelineBarrier2::img(const Arg<Image>& image, const void* next) {
+    auto barrier = Itor::ImageMemoryBarrier2(next);
+    barrier.srcStageMask = src_stage;
+    barrier.dstStageMask = dst_stage;
+    barrier.srcAccessMask = src_access;
+    barrier.dstAccessMask = dst_access;
+    barrier.oldLayout = old_layout;
+    barrier.newLayout = new_layout;
+    barrier.srcQueueFamilyIndex = src_qfi;
+    barrier.dstQueueFamilyIndex = dst_qfi;
+    barrier.image = image;
+    barrier.subresourceRange = image;
+    auto info = Itor::DependencyInfo(next);
+    info.dependencyFlags = flags;
+    info.pImageMemoryBarriers = &barrier;
+    info.imageMemoryBarrierCount = 1;
+    vkCmdPipelineBarrier2(cmdbuf, &info);
+    return *this;
+}
+
 using Self = CommandBuffer::Self;
 
 CommandBuffer::CommandBuffer(const CommandPool& command_pool) : CoreResource(command_pool.api), command_pool(command_pool) {}
@@ -224,159 +384,6 @@ CommandBuffer::Self CommandBuffer::cmdCopyBufferToImage(const Buffer& buf,
     copy.imageOffset = VkOffset3D{0, 0, 0};
     copy.imageExtent = img.a.extent;
     vkCmdCopyBufferToImage(handle, buf, img, img_layout, 1, &copy);
-    return *this;
-}
-
-CommandBuffer::Self CommandBuffer::cmdMemoryBarrier(VkPipelineStageFlags src_stage,
-                                                    VkPipelineStageFlags dst_stage,
-                                                    VkAccessFlags src_access,
-                                                    VkAccessFlags dst_access,
-                                                    VkDependencyFlags flags) const {
-    auto barrier = Itor::MemoryBarrier();
-    barrier.srcAccessMask = src_access;
-    barrier.dstAccessMask = dst_access;
-    vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 1, &barrier, 0, nullptr, 0, nullptr);
-    return *this;
-}
-
-CommandBuffer::Self CommandBuffer::cmdMemoryBarrier2(const Vector<VkMemoryBarrier2>& barriers, VkDependencyFlags flags) const {
-    auto info = Itor::DependencyInfo();
-    info.dependencyFlags = flags;
-    info.memoryBarrierCount = u32(barriers.size());
-    info.pMemoryBarriers = barriers.data();
-    vkCmdPipelineBarrier2(handle, &info);
-    return *this;
-}
-
-CommandBuffer::Self CommandBuffer::cmdMemoryBarrier2(VkPipelineStageFlags2 src_stage,
-                                                     VkPipelineStageFlags2 dst_stage,
-                                                     VkAccessFlags2 src_access,
-                                                     VkAccessFlags2 dst_access,
-                                                     VkDependencyFlags flags) const {
-    auto barrier = Itor::MemoryBarrier2();
-    barrier.srcStageMask = src_stage;
-    barrier.dstStageMask = dst_stage;
-    barrier.srcAccessMask = src_access;
-    barrier.dstAccessMask = dst_access;
-    auto info = Itor::DependencyInfo();
-    info.dependencyFlags = flags;
-    info.memoryBarrierCount = 1;
-    info.pMemoryBarriers = &barrier;
-    vkCmdPipelineBarrier2(handle, &info);
-    return *this;
-}
-
-CommandBuffer::Self CommandBuffer::cmdBufferMemoryBarrier(const Buffer& buf,
-                                                          VkPipelineStageFlags src_stage,
-                                                          VkPipelineStageFlags dst_stage,
-                                                          VkAccessFlags src_access,
-                                                          VkAccessFlags dst_access,
-                                                          VkDeviceSize offset,
-                                                          VkDeviceSize size,
-                                                          VkDependencyFlags flags) const {
-    auto barrier = Itor::BufferMemoryBarrier();
-    barrier.srcAccessMask = src_access;
-    barrier.dstAccessMask = dst_access;
-    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.buffer = buf;
-    barrier.offset = offset;
-    barrier.size = size == 0 ? buf.size : size;
-    vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, 1, &barrier, 0, nullptr);
-    return *this;
-}
-
-CommandBuffer::Self CommandBuffer::cmdBufferMemoryBarrier2(const Vector<VkBufferMemoryBarrier2>& barriers,
-                                                           VkDependencyFlags flags) const {
-    auto info = Itor::DependencyInfo();
-    info.dependencyFlags = flags;
-    info.bufferMemoryBarrierCount = u32(barriers.size());
-    info.pBufferMemoryBarriers = barriers.data();
-    vkCmdPipelineBarrier2(handle, &info);
-    return *this;
-}
-
-CommandBuffer::Self CommandBuffer::cmdBufferMemoryBarrier2(const Buffer& buf,
-                                                           VkPipelineStageFlags2 src_stage,
-                                                           VkPipelineStageFlags2 dst_stage,
-                                                           VkAccessFlags2 src_access,
-                                                           VkAccessFlags2 dst_access,
-                                                           VkDeviceSize offset,
-                                                           VkDeviceSize size,
-                                                           VkDependencyFlags flags) const {
-    auto barrier = Itor::BufferMemoryBarrier2();
-    barrier.srcStageMask = src_stage;
-    barrier.dstStageMask = dst_stage;
-    barrier.srcAccessMask = src_access;
-    barrier.dstAccessMask = dst_access;
-    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.buffer = buf;
-    barrier.offset = offset;
-    barrier.size = size == 0 ? buf.size : size;
-    auto info = Itor::DependencyInfo();
-    info.dependencyFlags = flags;
-    info.bufferMemoryBarrierCount = 1;
-    info.pBufferMemoryBarriers = &barrier;
-    vkCmdPipelineBarrier2(handle, &info);
-    return *this;
-}
-
-CommandBuffer::Self CommandBuffer::cmdImageMemoryBarrier(const Arg<Image>& img,
-                                                         VkPipelineStageFlags src_stage,
-                                                         VkPipelineStageFlags dst_stage,
-                                                         VkAccessFlags src_access,
-                                                         VkAccessFlags dst_access,
-                                                         VkImageLayout old_layout,
-                                                         VkImageLayout new_layout,
-                                                         VkDependencyFlags flags) const {
-    auto barrier = Itor::ImageMemoryBarrier();
-    barrier.srcAccessMask = src_access;
-    barrier.dstAccessMask = dst_access;
-    barrier.oldLayout = old_layout;
-    barrier.newLayout = new_layout;
-    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.image = img;
-    barrier.subresourceRange = img;
-    vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, 0, nullptr, 1, &barrier);
-    return *this;
-}
-
-CommandBuffer::Self CommandBuffer::cmdImageMemoryBarrier2(const Vector<VkImageMemoryBarrier2>& barriers,
-                                                          VkDependencyFlags flags) const {
-    auto info = Itor::DependencyInfo();
-    info.dependencyFlags = flags;
-    info.imageMemoryBarrierCount = u32(barriers.size());
-    info.pImageMemoryBarriers = barriers.data();
-    vkCmdPipelineBarrier2(handle, &info);
-    return *this;
-}
-
-CommandBuffer::Self CommandBuffer::cmdImageMemoryBarrier2(const Arg<Image>& img,
-                                                          VkPipelineStageFlags2 src_stage,
-                                                          VkPipelineStageFlags2 dst_stage,
-                                                          VkAccessFlags2 src_access,
-                                                          VkAccessFlags2 dst_access,
-                                                          VkImageLayout old_layout,
-                                                          VkImageLayout new_layout,
-                                                          VkDependencyFlags flags) const {
-    auto barrier = Itor::ImageMemoryBarrier2();
-    barrier.srcStageMask = src_stage;
-    barrier.dstStageMask = dst_stage;
-    barrier.srcAccessMask = src_access;
-    barrier.dstAccessMask = dst_access;
-    barrier.oldLayout = old_layout;
-    barrier.newLayout = new_layout;
-    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.image = img;
-    barrier.subresourceRange = img;
-    auto info = Itor::DependencyInfo();
-    info.dependencyFlags = flags;
-    info.imageMemoryBarrierCount = 1;
-    info.pImageMemoryBarriers = &barrier;
-    vkCmdPipelineBarrier2(handle, &info);
     return *this;
 }
 

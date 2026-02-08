@@ -129,28 +129,20 @@ void case_core_graphics() {
     // Record command
     staging.copyFrom(tri.tex.data());
     cmdbuf.begin();
-    cmdbuf.cmdImageMemoryBarrier(Arg{tex_img},
-                                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
-                                 VK_ACCESS_NONE,
-                                 VK_ACCESS_TRANSFER_WRITE_BIT,
-                                 VK_IMAGE_LAYOUT_UNDEFINED,
-                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+    auto barrier = cmdbuf.cmdPipelineBarrier();
+    barrier.from(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_NONE, VK_IMAGE_LAYOUT_UNDEFINED)
+        .into(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+        .img(Arg{tex_img});
     cmdbuf.cmdCopyBufferToImage(staging, Arg{tex_img});
-    cmdbuf.cmdImageMemoryBarrier(Arg{tex_img},
-                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
-                                 VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                                 VK_ACCESS_TRANSFER_WRITE_BIT,
-                                 VK_ACCESS_SHADER_READ_BIT,
-                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    cmdbuf.cmdImageMemoryBarrier(Arg{out_img},
-                                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                                 VK_ACCESS_NONE,
-                                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                                 VK_IMAGE_LAYOUT_UNDEFINED,
-                                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+    barrier.next(VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+        .img(Arg{tex_img});
+
+    barrier.from(VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_ACCESS_NONE, VK_IMAGE_LAYOUT_UNDEFINED)
+        .into(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+              VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+              VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+        .img(Arg{out_img});
     cmdbuf.beginRenderPass({tri.wid, tri.hei}, render_pass, framebuffer, {VkClearValue{}})
         .cmdBindGraphicsPipeline(pipeline)
         .cmdBindGraphicsDescriptorSets(pipeline_layout, 0, {desc_set})
@@ -160,14 +152,10 @@ void case_core_graphics() {
         .cmdBindIndexBuffer(index_buf, 0, VK_INDEX_TYPE_UINT32)
         .cmdDrawIndexed(3, 1, 0, 0, 0)
         .endRenderPass();
-    cmdbuf.cmdImageMemoryBarrier(Arg{out_img},
-                                 VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                                 VK_PIPELINE_STAGE_TRANSFER_BIT,
-                                 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-                                 VK_ACCESS_TRANSFER_READ_BIT,
-                                 VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                                 VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+    barrier.next(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
+        .img(Arg{out_img});
     cmdbuf.cmdCopyImageToBuffer(Arg{out_img}, staging);
+
     cmdbuf.end();
     queue.submit(cmdbuf);
     queue.waitIdle();
