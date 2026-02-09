@@ -1,4 +1,4 @@
-#include "scene.hpp"
+#include "vkt_scene.hpp"
 #include <queue>
 
 NAMESPACE_BEGIN(vktscn)

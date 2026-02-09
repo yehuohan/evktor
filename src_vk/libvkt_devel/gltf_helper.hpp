@@ -1,4 +1,5 @@
 // This helper is only for gltf_loader.cpp
+#pragma once
 #include "gltf_loader.hpp"
 
 template <class T, class Y>

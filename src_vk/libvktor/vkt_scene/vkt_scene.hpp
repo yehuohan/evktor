@@ -7,6 +7,8 @@
 #include "components/sampler.hpp"
 #include "components/texture.hpp"
 #include "node.hpp"
+#include "subpasses/builtin_subpass.hpp"
+#include "subpasses/geometry_subpass.hpp"
 #include <algorithm>
 
 NAMESPACE_BEGIN(vktscn)

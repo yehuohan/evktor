@@ -405,7 +405,7 @@ void GLTFLoader::loadTextures(Scene& scene) const {
     for (size_t k = 0; k < gmodel.textures.size(); k++) {
         const auto& gtexture = gmodel.textures[k];
 
-        auto texture = newBox<Texture>(gtexture.name);
+        auto texture = newBox<vktscn::Texture>(gtexture.name);
         assert(0 <= gtexture.source && static_cast<size_t>(gtexture.source) < images.size());
         texture->setImage(*images[gtexture.source]);
         if (0 <= gtexture.sampler) {
@@ -425,7 +425,7 @@ void GLTFLoader::loadTextures(Scene& scene) const {
 }
 
 void GLTFLoader::loadPBRMaterials(Scene& scene) const {
-    auto textures = scene.getComponents<Texture>();
+    auto textures = scene.getComponents<vktscn::Texture>();
 
     for (size_t k = 0; k < gmodel.materials.size(); k++) {
         const auto& gmaterial = gmodel.materials[k];

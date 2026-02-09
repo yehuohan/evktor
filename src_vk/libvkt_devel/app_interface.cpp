@@ -1,11 +1,11 @@
-#include "window.hpp"
+#include "app_interface.hpp"
 #include <generated/vk_string.hpp>
 
 NAMESPACE_BEGIN(vktdev)
 
 using namespace vkt;
 
-Window::Window(uint32_t width, uint32_t height) : width(width), height(height) {
+IApp::IApp(uint32_t width, uint32_t height) : width(width), height(height) {
     if (!glfwInit()) {
         throw vktErr("Failed to init GLFW");
     };
@@ -18,7 +18,7 @@ Window::Window(uint32_t width, uint32_t height) : width(width), height(height) {
     glfwSetWindowUserPointer(window, this);
     glfwSetWindowSizeLimits(window, 1, 1, GLFW_DONT_CARE, GLFW_DONT_CARE);
     glfwSetFramebufferSizeCallback(window, [](GLFWwindow* win, int wid, int hei) {
-        auto user = reinterpret_cast<Window*>(glfwGetWindowUserPointer(win));
+        auto user = reinterpret_cast<IApp*>(glfwGetWindowUserPointer(win));
         if (user) {
             user->framebuffer_resized = true;
         }
@@ -28,14 +28,14 @@ Window::Window(uint32_t width, uint32_t height) : width(width), height(height) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // 隐藏光标，并Capture光标
 }
 
-Window::~Window() {
+IApp::~IApp() {
     if (window) {
         glfwDestroyWindow(window);
     }
     glfwTerminate();
 }
 
-Vector<const char*> Window::requiredInstanceExtensions() const {
+Vector<const char*> IApp::requiredInstanceExtensions() const {
     const char** glfw_exts;
     uint32_t glfw_exts_cnt = 0;
     glfw_exts = glfwGetRequiredInstanceExtensions(&glfw_exts_cnt);
@@ -43,7 +43,7 @@ Vector<const char*> Window::requiredInstanceExtensions() const {
     return exts;
 }
 
-VkSurfaceKHR Window::createSurface(const vkt::core::Instance& instance) const {
+VkSurfaceKHR IApp::createSurface(const vkt::core::Instance& instance) const {
     VkSurfaceKHR surface = VK_NULL_HANDLE;
     auto res = glfwCreateWindowSurface(instance, window, instance, &surface);
     if (res != VK_SUCCESS) {
@@ -52,13 +52,13 @@ VkSurfaceKHR Window::createSurface(const vkt::core::Instance& instance) const {
     return surface;
 }
 
-VkExtent2D Window::getExtent() const {
+VkExtent2D IApp::getExtent() const {
     int wid, hei;
     glfwGetFramebufferSize(window, &wid, &hei);
     return VkExtent2D{u32(wid), u32(hei)};
 }
 
-void Window::run() {
+void IApp::run() {
     float last_time = 0.0f;
     while (!glfwWindowShouldClose(window)) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -83,7 +83,7 @@ void Window::run() {
     }
 }
 
-void Window::tick_camera(vktscn::PerspCamera& camera, float delta_time) {
+void IApp::tick_camera(vktscn::PerspCamera& camera, float delta_time) {
     const float speed = 5.5f;       /**< 摄像机移动速度 */
     const float sensitivity = 50.0; /**< 鼠标移动灵敏度 */
 

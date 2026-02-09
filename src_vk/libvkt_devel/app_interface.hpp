@@ -9,7 +9,7 @@
 
 NAMESPACE_BEGIN(vktdev)
 
-class Window {
+class IApp {
 protected:
     uint32_t width;
     uint32_t height;
@@ -18,8 +18,8 @@ protected:
     float fps = 0.0f;
 
 public:
-    Window(uint32_t width, uint32_t height);
-    virtual ~Window();
+    IApp(uint32_t width, uint32_t height);
+    virtual ~IApp();
 
     /**
      * @brief Get required instance extensions from GLFW

@@ -1,8 +1,10 @@
 #pragma once
-#include "vkt_scene/scene.hpp"
+#include "vkt_scene/components/camera.hpp"
 #include "vktor/rendering/render_subpass.hpp"
 
 NAMESPACE_BEGIN(vktscn)
+
+class Scene;
 
 struct PBRUniform {
     alignas(16) glm::mat4 model;

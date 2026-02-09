@@ -1,4 +1,5 @@
 #include "geometry_subpass.hpp"
+#include "vkt_scene/vkt_scene.hpp"
 #include "vktor/core/descriptor_set.hpp"
 #include <queue>
 
