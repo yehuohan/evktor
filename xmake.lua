@@ -21,6 +21,7 @@ add_requires("stb 2025.03.14")
 add_requires("imgui 1.90", { configs = { glfw = true, vulkan = true } })
 add_requires("tinygltf 2.8.22")
 add_requires("fmt 10.1.1")
+add_requires("cxxopts 3.3.1")
 
 local src_dir = "$(scriptdir)/src_vk/"
 
@@ -60,7 +61,7 @@ target("evktor", function()
 	set_kind("binary")
 	add_files(src_dir .. "main/**.cpp")
 	add_includedirs(src_dir .. "main")
-	add_packages("vkt_devel", "vktor")
+	add_packages("vkt_devel", "vktor", "cxxopts")
 	add_deps("vkt_devel", "vktor")
 end)
 

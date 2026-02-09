@@ -48,3 +48,6 @@ find_path(TINYGLTF_INCLUDE_DIRS "tiny_gltf.h")
 
 # Target: fmt::fmt, fmt::fmt-header-only
 find_package(fmt CONFIG REQUIRED)
+
+# Target: cxxopts::cxxopts
+find_package(cxxopts CONFIG REQUIRED)
