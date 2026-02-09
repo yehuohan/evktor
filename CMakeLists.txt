@@ -23,8 +23,8 @@ include(FindDeps)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src_vk/libvktor)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src_vk/libvkt_devel)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src_vk/libvkt_layer)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src_vk/evktor)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src_vk/sigma)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src_vk/main)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 # Install
