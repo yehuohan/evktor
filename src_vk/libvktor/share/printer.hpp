@@ -61,8 +61,7 @@ inline constexpr char VKTOR_TAG[] = "vkt";
 #define vktLogW(f, ...)   vktLog(FmtLevel::W, f, ##__VA_ARGS__)
 #define vktLogE(f, ...)   vktLog(FmtLevel::E, f, ##__VA_ARGS__)
 
-#define vktErrThrow(f, ...) std::runtime_error(vktFmt(f, ##__VA_ARGS__))
-#define vktErr(f, ...)      vktErrThrow(__FILE__ ":{}:0: error: " f, __LINE__, ##__VA_ARGS__)
+#define vktErr(f, ...) std::runtime_error(vktFmt(__FILE__ ":{}:0: error: " f, __LINE__, ##__VA_ARGS__))
 /** Alias Er to Err<std::runtime_error> */
 #define Er(f, ...) Err(vktErr(f, ##__VA_ARGS__))
 
@@ -93,10 +92,9 @@ inline constexpr char VKTOR_TAG[] = "vkt";
     }
 
 /** Assert with message */
-#define OnCheck(c, f, ...)             \
-    {                                  \
-        if (!(c)) {                    \
-            vktLogE(f, ##__VA_ARGS__); \
-            assert(0);                 \
-        }                              \
+#define OnCheck(c, f, ...)                  \
+    {                                       \
+        if (!(c)) {                         \
+            throw vktErr(f, ##__VA_ARGS__); \
+        }                                   \
     }
