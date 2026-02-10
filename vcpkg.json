@@ -8,7 +8,7 @@
         {
             "name": "imgui",
             "features": [ "glfw-binding", "vulkan-binding" ],
-            "version>=": "1.90"
+            "version>=": "1.91.9"
         },
         { "name": "tinygltf", "version>=": "2.8.22" },
         { "name": "fmt", "version>=": "10.1.1" },
