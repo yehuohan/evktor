@@ -25,9 +25,37 @@ Res<Texture2D> Texture2D::from(const CoreApi& api,
                          .into(api);
     OnErr(res_image);
     auto image = res_image.unwrap();
+
     auto res_view = ImageViewState().setFromImage(image).into(api);
     OnErr(res_view);
+
     return Ok(Texture2D(std::move(image), res_view.unwrap()));
+}
+
+TextureCube::TextureCube(core::Image&& image, core::ImageView&& imageview) : Texture(std::move(image), std::move(imageview)) {}
+
+Res<TextureCube> TextureCube::from(const core::CoreApi& api,
+                                   VkFormat format,
+                                   const VkExtent2D& extent,
+                                   Usage usage,
+                                   uint32_t mip_levels,
+                                   Sample samples) {
+    auto res_image = ImageState()
+                         .setFlags(VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT)
+                         .setFormat(format)
+                         .setExtent(extent)
+                         .setUsage(static_cast<VkImageUsageFlags>(usage))
+                         .setMipLevels(mip_levels)
+                         .setArrayLayers(6)
+                         .setSamples(static_cast<VkSampleCountFlagBits>(samples))
+                         .into(api);
+    OnErr(res_image);
+    auto image = res_image.unwrap();
+
+    auto res_view = ImageViewState().setFromImage(image).setType(VK_IMAGE_VIEW_TYPE_CUBE).into(api);
+    OnErr(res_view);
+
+    return Ok(TextureCube(std::move(image), res_view.unwrap()));
 }
 
 NAMESPACE_END(vkt)
