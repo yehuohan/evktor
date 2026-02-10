@@ -75,6 +75,16 @@ class Texture2DArray : public Texture2D {};
 
 class Texture3D : public Texture {};
 
-class TextureCube : public Texture {};
+class TextureCube : public Texture {
+public:
+    explicit TextureCube(core::Image&& image, core::ImageView&& imageview);
+
+    static Res<TextureCube> from(const core::CoreApi& api,
+                                 VkFormat format,
+                                 const VkExtent2D& extent,
+                                 Usage usage,
+                                 uint32_t mip_levels = 1,
+                                 Sample samples = S1);
+};
 
 NAMESPACE_END(vkt)

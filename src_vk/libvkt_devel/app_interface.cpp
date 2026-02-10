@@ -43,7 +43,7 @@ Vector<const char*> IApp::requiredInstanceExtensions() const {
     return exts;
 }
 
-VkSurfaceKHR IApp::createSurface(const vkt::core::Instance& instance) const {
+VkSurfaceKHR IApp::createSurface(const core::Instance& instance) const {
     VkSurfaceKHR surface = VK_NULL_HANDLE;
     auto res = glfwCreateWindowSurface(instance, window, instance, &surface);
     if (res != VK_SUCCESS) {
@@ -83,7 +83,65 @@ void IApp::run() {
     }
 }
 
-void IApp::tick_camera(vktscn::PerspCamera& camera, float delta_time) {
+void IApp::setupGui(const core::Swapchain& swapchain) {
+    VkDescriptorPoolSize poolsizes[] = {
+        {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1 + 15}
+    };
+    auto descpool_ci = Itor::DescriptorPoolCreateInfo();
+    descpool_ci.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+    descpool_ci.maxSets = 16 * swapchain.image_count;
+    descpool_ci.poolSizeCount = 1;
+    descpool_ci.pPoolSizes = poolsizes;
+    auto res = vkCreateDescriptorPool(swapchain.api, &descpool_ci, swapchain.api, &gui_desc_pool);
+    if (res != VK_SUCCESS) {
+        throw vktErr("Failed to create gui descriptor pool: {}", VkStr(VkResult, res));
+    }
+
+    gui_render_pass = newBox<core::RenderPass>(
+        core::RenderPassState{}
+            .addAttachment(
+                swapchain.image_format,
+                VK_SAMPLE_COUNT_1_BIT,
+                core::AttachmentOps{VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_STORE},
+                core::AttachmentOps{},
+                core::AttachmentLayouts{VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL})
+            .addSubpass({0})
+            .into(swapchain.api)
+            .unwrap());
+
+    // gui_window->Surface = swapchain.api;
+    // gui_window->SurfaceFormat = swaImGui_ImplVulkanH_SelectSurfaceFormat(swapchain.api, gui_window->Surface,
+    // requestSurfaceImageFormat, (size_t)IM_COUNTOF(requestSurfaceImageFormat), requestSurfaceColorSpace);
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+    ImGui::StyleColorsDark();
+
+    const auto& api = swapchain.api;
+    ImGui_ImplGlfw_InitForVulkan(window, true);
+    ImGui_ImplVulkan_InitInfo info = {};
+    info.Instance = api;
+    info.PhysicalDevice = api;
+    info.Device = api;
+    info.QueueFamily = api.graphicsQueue().unwrap().get().family_index;
+    info.Queue = api.graphicsQueue().unwrap().get();
+    info.MinImageCount = swapchain.image_count;
+    info.ImageCount = swapchain.image_count;
+    info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+    info.DescriptorPool = gui_desc_pool;
+    info.RenderPass = *gui_render_pass;
+    info.Subpass = 0;
+    ImGui_ImplVulkan_Init(&info);
+
+    OnCheck(ImGui::GetCurrentContext(), "Failed to init ImGui context");
+}
+
+void IApp::tickCamera(vktscn::PerspCamera& camera, float delta_time) {
     const float speed = 5.5f;       /**< 摄像机移动速度 */
     const float sensitivity = 50.0; /**< 鼠标移动灵敏度 */
 

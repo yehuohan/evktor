@@ -12,7 +12,10 @@ private:
     Vktor vkt;
     Box<RenderContext> rctx = nullptr;
     Box<RenderPipeline> base = nullptr;
+    Box<RenderPipeline> skybox = nullptr;
     PerspCamera* scene_camera = nullptr;
+
+    Box<TextureCube> tex_cube = nullptr;
 
 public:
     App(int argc, char* argv[]);
@@ -20,6 +23,7 @@ public:
 
     void run() override;
     void tick(float cur_time, float delta_time) override;
+    void drawGui(const core::CommandBuffer& cmdbuf, float delta_time);
 
 private:
     void setup();

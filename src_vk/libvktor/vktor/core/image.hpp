@@ -36,6 +36,7 @@ public:
         image_ci.pQueueFamilyIndices = nullptr;
     }
 
+    Self setFlags(VkImageCreateFlags flags);
     Self setFormat(VkFormat format);
     Self setExtent(const VkExtent3D& extent);
     inline Self setExtent(const VkExtent2D& extent) {

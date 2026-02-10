@@ -27,6 +27,11 @@ static VkImageType getType(const VkExtent3D& extent) {
     return type;
 }
 
+Self ImageState::setFlags(VkImageCreateFlags flags) {
+    image_ci.flags = flags;
+    return *this;
+}
+
 Self ImageState::setFormat(VkFormat format) {
     image_ci.format = format;
     return *this;
