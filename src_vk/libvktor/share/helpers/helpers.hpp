@@ -90,7 +90,7 @@ inline void hashCombine(size_t& seed, const T& first, const Args&... args) {
 }
 
 /**
- * @brief Hash function for libvktor
+ * @brief Hash function
  *
  * Just implement std::hash via hashCombine for what need to hash
  */

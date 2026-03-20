@@ -84,14 +84,14 @@ public:
     inline VkResult setDebugName(VkObjectType type, uint64_t handle, const char* name) const {
         return debug->setDebugName(device, type, handle, name);
     }
-    inline void cmdBeginLabel(VkCommandBuffer cmdbuf, const char* name) const {
-        return debug->cmdBeginLabel(cmdbuf, name);
+    inline void cmdBeginLabel(VkCommandBuffer cmdbuf, const char* name, const IDebug::Color& color = IDebug::None) const {
+        return debug->cmdBeginLabel(cmdbuf, name, color);
     }
     inline void cmdEndLabel(VkCommandBuffer cmdbuf) const {
         return debug->cmdEndLabel(cmdbuf);
     }
-    inline void cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const {
-        return debug->cmdInsertLabel(cmdbuf, name);
+    inline void cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name, const IDebug::Color& color = IDebug::None) const {
+        return debug->cmdInsertLabel(cmdbuf, name, color);
     }
 };
 

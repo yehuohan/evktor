@@ -100,13 +100,13 @@ VkResult Debug::setDebugName(VkDevice device, VkObjectType type, uint64_t hdl, c
     return vkSetDebugUtilsObjectNameEXT(device, &name_info);
 }
 
-void Debug::cmdBeginLabel(VkCommandBuffer cmdbuf, const char* name) const {
+void Debug::cmdBeginLabel(VkCommandBuffer cmdbuf, const char* name, const Color& color) const {
     VkDebugUtilsLabelEXT label_info = Itor::DebugUtilsLabelEXT();
     label_info.pLabelName = name;
-    label_info.color[0] = 0.0f;
-    label_info.color[1] = 0.0f;
-    label_info.color[2] = 0.0f;
-    label_info.color[3] = 1.0f;
+    label_info.color[0] = color.r;
+    label_info.color[1] = color.g;
+    label_info.color[2] = color.b;
+    label_info.color[3] = color.a;
     vkCmdBeginDebugUtilsLabelEXT(cmdbuf, &label_info);
 }
 
@@ -114,13 +114,13 @@ void Debug::cmdEndLabel(VkCommandBuffer cmdbuf) const {
     vkCmdEndDebugUtilsLabelEXT(cmdbuf);
 }
 
-void Debug::cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const {
+void Debug::cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name, const Color& color) const {
     VkDebugUtilsLabelEXT label_info = Itor::DebugUtilsLabelEXT();
     label_info.pLabelName = name;
-    label_info.color[0] = 0.0f;
-    label_info.color[1] = 0.0f;
-    label_info.color[2] = 0.0f;
-    label_info.color[3] = 1.0f;
+    label_info.color[0] = color.r;
+    label_info.color[1] = color.g;
+    label_info.color[2] = color.b;
+    label_info.color[3] = color.a;
     vkCmdInsertDebugUtilsLabelEXT(cmdbuf, &label_info);
 }
 

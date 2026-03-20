@@ -15,15 +15,35 @@ public:
     explicit IDebug() {}
     virtual ~IDebug() {}
 
+public:
+    struct Color {
+        float r;
+        float g;
+        float b;
+        float a;
+    };
+
+    inline static const Color None = Color{0.0, 0.0, 0.0, 0.0};
+    inline static const Color White = Color{1.0, 1.0, 1.0, 1.0};
+    inline static const Color Black = Color{0.0, 0.0, 0.0, 1.0};
+    inline static const Color Red = Color{1.0, 0.0, 0.0, 1.0};
+    inline static const Color Green = Color{0.0, 1.0, 0.0, 1.0};
+    inline static const Color Blue = Color{0.0, 0.0, 1.0, 1.0};
+
+public:
     virtual VkResult setDebugName([[maybe_unused]] VkDevice device,
                                   [[maybe_unused]] VkObjectType type,
                                   [[maybe_unused]] uint64_t hdl,
                                   [[maybe_unused]] const char* name) const {
         return VK_SUCCESS;
     }
-    virtual void cmdBeginLabel([[maybe_unused]] VkCommandBuffer cmdbuf, [[maybe_unused]] const char* name) const {}
+    virtual void cmdBeginLabel([[maybe_unused]] VkCommandBuffer cmdbuf,
+                               [[maybe_unused]] const char* name,
+                               [[maybe_unused]] const Color& color = None) const {}
     virtual void cmdEndLabel([[maybe_unused]] VkCommandBuffer cmdbuf) const {}
-    virtual void cmdInsertLabel([[maybe_unused]] VkCommandBuffer cmdbuf, [[maybe_unused]] const char* name) const {}
+    virtual void cmdInsertLabel([[maybe_unused]] VkCommandBuffer cmdbuf,
+                                [[maybe_unused]] const char* name,
+                                [[maybe_unused]] const Color& color = None) const {}
 };
 
 /**
@@ -88,9 +108,9 @@ public:
      * name from a temporal `String` is okay.
      */
     virtual VkResult setDebugName(VkDevice device, VkObjectType type, uint64_t hdl, const char* name) const override;
-    virtual void cmdBeginLabel(VkCommandBuffer cmdbuf, const char* name) const override;
+    virtual void cmdBeginLabel(VkCommandBuffer cmdbuf, const char* name, const Color& color = None) const override;
     virtual void cmdEndLabel(VkCommandBuffer cmdbuf) const override;
-    virtual void cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name) const override;
+    virtual void cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name, const Color& color = None) const override;
 
     static Res<Debug> from(CRef<Instance> instance, const DebugState& info);
 };
