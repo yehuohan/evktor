@@ -78,7 +78,7 @@ public:
     /** @brief Add image barrier */
     PipelineBarrier& img(
         VkImage image,
-        VkImageSubresourceRange subresource_range = VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
+        const VkImageSubresourceRange& subresource_range = VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
         const void* next = nullptr);
     PipelineBarrier& img(const Arg<Image>& image, const void* next = nullptr);
 };
@@ -98,7 +98,7 @@ public:
     /** @brief Add image barrier */
     PipelineBarrier2& img(
         VkImage image,
-        VkImageSubresourceRange subresource_range = VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
+        const VkImageSubresourceRange& subresource_range = VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1},
         const void* next = nullptr);
     PipelineBarrier2& img(const Arg<Image>& image, const void* next = nullptr);
 };

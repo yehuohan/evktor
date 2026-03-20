@@ -42,7 +42,7 @@ PipelineBarrier& PipelineBarrier::buf(const Buffer& buffer, const void* next) {
     return *this;
 }
 
-PipelineBarrier& PipelineBarrier::img(VkImage image, VkImageSubresourceRange subresource_range, const void* next) {
+PipelineBarrier& PipelineBarrier::img(VkImage image, const VkImageSubresourceRange& subresource_range, const void* next) {
     auto barrier = Itor::ImageMemoryBarrier(next);
     barrier.srcAccessMask = src_access;
     barrier.dstAccessMask = dst_access;
@@ -125,7 +125,7 @@ PipelineBarrier2& PipelineBarrier2::buf(const Buffer& buffer, const void* next) 
     return *this;
 }
 
-PipelineBarrier2& PipelineBarrier2::img(VkImage image, VkImageSubresourceRange subresource_range, const void* next) {
+PipelineBarrier2& PipelineBarrier2::img(VkImage image, const VkImageSubresourceRange& subresource_range, const void* next) {
     auto barrier = Itor::ImageMemoryBarrier2(next);
     barrier.srcStageMask = src_stage;
     barrier.dstStageMask = dst_stage;
@@ -288,23 +288,15 @@ CommandBuffer::Self CommandBuffer::cmdBlitImageMip(const Arg<Image>& img,
 CommandBuffer::Self CommandBuffer::cmdGenImageMips(const Arg<Image>& img, VkFilter filter) const {
     uint32_t mip_wid = img.a.extent.width;
     uint32_t mip_hei = img.a.extent.height;
-    Vector<VkImageMemoryBarrier> barriers{Itor::ImageMemoryBarrier()};
-    auto& barrier = barriers[0];
-    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.image = img;
-    barrier.subresourceRange.aspectMask = img.aspect;
-    barrier.subresourceRange.baseArrayLayer = img.layer;
-    barrier.subresourceRange.layerCount = img.layer_count;
-    barrier.subresourceRange.levelCount = 1;
+    VkImageSubresourceRange sub = img;
+    sub.levelCount = 1;
+    auto bar = cmdPipelineBarrier();
     for (uint32_t k = 1; k < img.a.mip_levels; k++) {
         uint32_t mip = k - 1;
-        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-        barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-        barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-        barrier.subresourceRange.baseMipLevel = mip;
-        cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, barriers);
+        sub.baseMipLevel = mip;
+        bar.from(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+            .into(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
+            .img(img.a, sub);
         cmdBlitImageMip(img, mip, VkExtent2D{mip_wid, mip_hei}, filter);
         if (mip_wid > 1) {
             mip_wid >>= 1;
@@ -312,19 +304,14 @@ CommandBuffer::Self CommandBuffer::cmdGenImageMips(const Arg<Image>& img, VkFilt
         if (mip_hei > 1) {
             mip_hei >>= 1;
         }
-        barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-        barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-        barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, barriers);
+        bar.next(VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+            .img(img.a, sub);
     }
     if (img.a.mip_levels >= 1) {
-        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-        barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-        barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        barrier.subresourceRange.baseMipLevel = img.a.mip_levels - 1;
-        cmdImageMemoryBarrier(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, barriers);
+        sub.baseMipLevel = img.a.mip_levels - 1;
+        bar.from(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+            .into(VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+            .img(img.a, sub);
     }
     return *this;
 }

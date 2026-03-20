@@ -63,6 +63,11 @@ class Texture2D : public Texture {
 public:
     explicit Texture2D(core::Image&& image, core::ImageView&& imageview);
 
+    /**
+     * @brief Create Texture2D
+     *
+     * Texture2D will compute `mip_levels` auto if it's 0.
+     */
     static Res<Texture2D> from(const core::CoreApi& api,
                                VkFormat format,
                                const VkExtent2D& extent,
@@ -75,6 +80,21 @@ class Texture2DArray : public Texture2D {};
 
 class Texture3D : public Texture {};
 
-class TextureCube : public Texture {};
+class TextureCube : public Texture {
+public:
+    explicit TextureCube(core::Image&& image, core::ImageView&& imageview);
+
+    /**
+     * @brief Create TextureCube
+     *
+     * TextureCube will compute `mip_levels` auto if it's 0.
+     */
+    static Res<TextureCube> from(const core::CoreApi& api,
+                                 VkFormat format,
+                                 const VkExtent2D& extent,
+                                 Usage usage,
+                                 uint32_t mip_levels = 1,
+                                 Sample samples = S1);
+};
 
 NAMESPACE_END(vkt)

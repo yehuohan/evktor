@@ -77,9 +77,8 @@ void App::setupBasePass() {
 
         // Subpass for builtin mesh
         auto [pixels, w, h] = Assets::loadTexRGBA8(Assets::tex("box.png"));
-        uint32_t mip_levels = static_cast<uint32_t>(std::floor(std::log2(std::max<int>(w, h)))) + 1;
         auto mesh_tex = newBox<Texture2D>(
-            vkt.newTexture2D(VK_FORMAT_R8G8B8A8_SRGB, VkExtent2D(w, h), Texture2D::Transfer | Texture2D::Sampled, mip_levels));
+            vkt.newTexture2D(VK_FORMAT_R8G8B8A8_SRGB, VkExtent2D(w, h), Texture2D::Transfer | Texture2D::Sampled, 0));
         vkt.pushData(mesh_tex->getImage(), pixels);
         auto mesh = newBox<BuiltinMesh>(BuiltinMesh::from(vkt, BuiltinMeshData::Frustum, std::move(mesh_tex)).unwrap());
         base->addSubpass<BuiltinSubpass>(std::move(vert), std::move(frag), std::move(mesh), *scene_camera)

@@ -49,6 +49,11 @@ public:
                                   Texture2D::Usage usage,
                                   uint32_t mip_levels = 1,
                                   Texture2D::Sample samples = Texture2D::S1) const;
+    inline TextureCube newTextureCube(VkFormat format,
+                                      const VkExtent2D& extent,
+                                      TextureCube::Usage usage,
+                                      uint32_t mip_levels = 1,
+                                      TextureCube::Sample samples = Texture2D::S1) const;
     inline core::Buffer newIndexBuffer(VkDeviceSize size) const;
     inline core::Buffer newVertexBuffer(VkDeviceSize size) const;
     inline core::Buffer newUniformBuffer(VkDeviceSize size) const;
@@ -82,6 +87,14 @@ inline Texture2D Vktor::newTexture2D(VkFormat format,
                                      uint32_t mip_levels,
                                      Texture2D::Sample samples) const {
     return Texture2D::from(*api, format, extent, usage, mip_levels, samples).unwrap();
+}
+
+inline TextureCube Vktor::newTextureCube(VkFormat format,
+                                         const VkExtent2D& extent,
+                                         TextureCube::Usage usage,
+                                         uint32_t mip_levels,
+                                         TextureCube::Sample samples) const {
+    return TextureCube::from(*api, format, extent, usage, mip_levels, samples).unwrap();
 }
 
 inline core::Buffer Vktor::newIndexBuffer(VkDeviceSize size) const {
