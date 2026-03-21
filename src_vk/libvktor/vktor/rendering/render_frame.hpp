@@ -21,8 +21,6 @@ private:
     const core::CoreApi& api;
 
     const size_t thread_count = 1;
-    /** Render target table for swapchain */
-    Box<RenderTargetTable> swapchain_rtt = nullptr;
     /** Map queue family index to command pool */
     Vector<HashMap<uint32_t, core::CommandPool>> cmd_pools{};
     /** Map DescriptorSetLayout to DescriptorPooler */
@@ -37,8 +35,6 @@ public:
     explicit RenderFrame(const core::CoreApi& api, size_t thread_count);
     RenderFrame(RenderFrame&&);
 
-    void setSwapchainRTT(Box<RenderTargetTable>&& rtt = nullptr);
-    Res<CRef<RenderTargetTable>> getSwapchainRTT() const;
     Res<Void> resetFrame();
     /**
      * @brief Reset all descriptor pools and sets within thread index

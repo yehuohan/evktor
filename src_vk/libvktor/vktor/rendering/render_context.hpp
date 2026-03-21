@@ -12,6 +12,7 @@ private:
     uint32_t frame_index = 0;
     bool frame_actived = false;
     Vector<RenderFrame> frames{};
+    Vector<RenderTargetTable> frames_rtt{};
 
     VkExtent2D surface_extent{0, 0};
     Box<core::Swapchain> swapchain = nullptr;
@@ -109,12 +110,20 @@ public:
      * @brief Get the activated render frame
      */
     inline Ref<RenderFrame> getFrame() {
-        OnCheck(frame_index < frames.size(),
-                "The activated frame index = {} is out of frames count = {}",
-                frame_index,
-                frames.size());
+        OnCheck(frame_index < frames.size(), "Bad activated frame index: {} > {}", frame_index, frames.size());
         return newRef(frames[frame_index]);
     }
+    /**
+     * @brief Get the activated render target table
+     */
+    inline Res<Ref<RenderTargetTable>> getFrameRTT() {
+        if (hasSwapchain()) {
+            OnCheck(frame_index < frames_rtt.size(), "Bad activated frame index: {} > {}", frame_index, frames_rtt.size());
+            return Ok(newRef(frames_rtt[frame_index]));
+        }
+        return Er("The render target table requires swapchain");
+    }
+
     /**
      * @brief Get the activated render frame index
      *

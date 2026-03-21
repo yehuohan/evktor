@@ -78,6 +78,8 @@ private:
 public:
     explicit RenderTargetTable() {}
     RenderTargetTable(RenderTargetTable&&);
+    RenderTargetTable& operator=(RenderTargetTable&&);
+
     Res<Ref<RenderTarget>> addTarget(RenderTarget&& target);
     Res<Ref<RenderTarget>> addTarget(Texture&& texture);
     Res<Ref<RenderTarget>> addTarget(const core::CoreApi& api, const VkExtent2D& extent, VkFormat format);

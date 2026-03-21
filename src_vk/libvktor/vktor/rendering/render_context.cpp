@@ -11,7 +11,7 @@ const RenderContext::FnSwapchainRTT RenderContext::defaultFnSwapchainRTT =
     auto res_color = rtt.addTarget(swapchain);
     OnErr(res_color);
     // RT-1: depth
-    auto res_depth = rtt.addTarget(swapchain.a.api, swapchain.a.image_extent, VK_FORMAT_D32_SFLOAT);
+    auto res_depth = rtt.addTarget(swapchain.a.api, swapchain.a.image_extent, VK_FORMAT_D24_UNORM_S8_UINT);
     OnErr(res_depth);
     return Ok(std::move(rtt));
 };
@@ -46,6 +46,7 @@ RenderContext::RenderContext(RenderContext&& rhs) : RenderResource(rhs.api), thr
     frame_index = rhs.frame_index;
     frame_actived = rhs.frame_actived;
     frames = std::move(rhs.frames);
+    frames_rtt = std::move(rhs.frames_rtt);
     surface_extent = rhs.surface_extent;
     swapchain = std::move(rhs.swapchain);
     swapchain_state = std::move(rhs.swapchain_state);
@@ -64,10 +65,13 @@ Res<CRef<core::Swapchain>> RenderContext::reinitSwapchain() {
         if (k >= frames.size()) {
             frames.emplace_back(api, thread_count);
         }
-        // Set swapchain render target table for render frames
+        // Re-initialize render target table for each render frame
+        if (k >= frames_rtt.size()) {
+            frames_rtt.emplace_back();
+        }
         auto res_rtt = newSwapchainRTT(Arg<Swapchain>(*swapchain, k));
         OnErr(res_rtt);
-        frames[k].setSwapchainRTT(newBox<RenderTargetTable>(res_rtt.unwrap()));
+        frames_rtt[k] = res_rtt.unwrap();
     }
     return Ok(newCRef(*swapchain));
 }

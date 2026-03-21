@@ -111,6 +111,14 @@ RenderTargetTable::RenderTargetTable(RenderTargetTable&& rhs) {
     targets = std::move(rhs.targets);
 };
 
+RenderTargetTable& RenderTargetTable::operator=(RenderTargetTable&& rhs) {
+    if (this != &rhs) {
+        extent = rhs.extent;
+        targets = std::move(rhs.targets);
+    }
+    return *this;
+}
+
 Res<Ref<RenderTarget>> RenderTargetTable::addTarget(RenderTarget&& target) {
     static const auto getExtent = [](const RenderTarget& rt) {
         const VkExtent3D e = rt.getImage().getExtent();

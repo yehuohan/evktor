@@ -21,21 +21,9 @@ RenderFrame::RenderFrame(RenderFrame&& rhs)
     , fence_pool(std::move(rhs.fence_pool))
     , semaphore_pool(std::move(rhs.semaphore_pool))
     , event_pool(std::move(rhs.event_pool)) {
-    swapchain_rtt = std::move(rhs.swapchain_rtt);
     cmd_pools = std::move(rhs.cmd_pools);
     desc_poolers = std::move(rhs.desc_poolers);
     desc_sets = std::move(rhs.desc_sets);
-}
-
-void RenderFrame::setSwapchainRTT(Box<RenderTargetTable>&& rtt) {
-    swapchain_rtt = std::move(rtt);
-}
-
-Res<CRef<RenderTargetTable>> RenderFrame::getSwapchainRTT() const {
-    if (swapchain_rtt) {
-        return Ok(newCRef(*swapchain_rtt));
-    }
-    return Er("There's not a valid render target table in this render frame");
 }
 
 Res<Void> RenderFrame::resetFrame() {
