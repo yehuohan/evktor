@@ -20,14 +20,14 @@ class RenderTarget : private NonCopyable {
 protected:
     Texture texture;
     /** The `ops.load/store` is the first/last subpass operator on the `texture` */
-    core::AttachmentOps ops = core::AttachmentOps::ignore();
+    core::AttachmentOps ops = core::AttachmentOps::Ignore;
     /** The `stencil_ops.load/store` is the first/last subpass operator on the depth-stencil `texture` */
-    core::AttachmentOps stencil_ops = core::AttachmentOps::ignore();
+    core::AttachmentOps stencil_ops = core::AttachmentOps::Ignore;
     /** `layouts.initial/final` is `texture` layouts before/after the whole render pass
      *
      * The `texture` layout for subpass is specified by VkAttachmentReference.layout
      */
-    core::AttachmentLayouts layouts = core::AttachmentLayouts::color();
+    core::AttachmentLayouts layouts = core::AttachmentLayouts::Color;
     VkClearValue clear{};
 
 public:
@@ -59,12 +59,12 @@ public:
      * Must transit image layout to `layouts.final` manually
      */
     VkRenderingAttachmentInfo getAttachmentInfo(const void* next = nullptr) const;
-    Self set(const core::AttachmentOps& ops);
-    Self set(const core::AttachmentOps& ops, const core::AttachmentOps& stencil_ops);
-    Self set(const core::AttachmentLayouts& layouts);
-    Self set(const VkImageLayout final_layout);
-    Self set(const VkClearColorValue& color);
-    Self set(const VkClearDepthStencilValue& depthstencil);
+    Self setOps(const core::AttachmentOps& ops);
+    Self setOps(const core::AttachmentOps& ops, const core::AttachmentOps& stencil_ops);
+    Self setLayouts(const core::AttachmentLayouts& layouts);
+    Self nextLayout(const VkImageLayout final_layout);
+    Self setClearValue(const VkClearColorValue& color);
+    Self setClearValue(const VkClearDepthStencilValue& depthstencil);
 };
 
 /**
@@ -85,6 +85,9 @@ public:
     Res<Ref<RenderTarget>> operator[](size_t index);
 
     inline const Vector<RenderTarget>& getTargets() const {
+        return targets;
+    }
+    inline Vector<RenderTarget>& getTargets() {
         return targets;
     }
     inline VkExtent2D getExtent() const {

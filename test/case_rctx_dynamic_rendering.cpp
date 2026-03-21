@@ -89,7 +89,7 @@ void case_rctx_dynamic_rendering() {
                       .unwrap())
         .unwrap()
         .get()
-        .set(VkClearColorValue{});
+        .setClearValue(VkClearColorValue{});
     rtt.addTarget(api, VkExtent2D{tri.wid, tri.hei}, VK_FORMAT_D32_SFLOAT).unwrap();
     auto& out_color = rtt[0].unwrap().get().getImage();
     auto& out_depth = rtt[1].unwrap().get().getImage();

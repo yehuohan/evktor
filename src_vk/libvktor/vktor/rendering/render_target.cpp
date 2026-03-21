@@ -9,17 +9,19 @@ using Self = RenderTarget::Self;
 RenderTarget::RenderTarget(Texture&& _texture) : texture(std::move(_texture)) {
     auto format = texture.getImage().getFormat();
     if (isDepthOnlyFormat(format)) {
-        set(AttachmentOps::depth());
-        set(AttachmentLayouts::depthstencil());
-        set(VkClearDepthStencilValue{0.0, 0}); // Clear with 0.0 for reversed-z
+        setOps(AttachmentOps::ClearStore);
+        setLayouts(AttachmentLayouts::DepthStencil);
+        setClearValue(VkClearDepthStencilValue{0.0, 0}); // Clear with 0.0 for reversed-z
     } else if (isDepthStencilFormat(format)) {
-        set(AttachmentOps::depth(), AttachmentOps::stencil());
-        set(AttachmentLayouts::depthstencil());
-        set(VkClearDepthStencilValue{0.0, 0}); // Clear with 0.0 for reversed-z
+        setOps(AttachmentOps::ClearStore, AttachmentOps::ClearStore);
+        setLayouts(AttachmentLayouts::DepthStencil);
+        setClearValue(VkClearDepthStencilValue{0.0, 0}); // Clear with 0.0 for reversed-z
     } else {
-        set(AttachmentOps::color());
-        set(AttachmentLayouts::color());
-        set(VkClearColorValue{0.0f, 0.0f, 0.0f, 1.0f});
+        setOps(AttachmentOps::ClearStore);
+        setLayouts(AttachmentLayouts::Color);
+        setClearValue(VkClearColorValue{
+            {0.0f, 0.0f, 0.0f, 1.0f}
+        });
     }
 }
 
@@ -51,9 +53,11 @@ Res<RenderTarget> RenderTarget::from(const Arg<Swapchain>& swapchain) {
     auto imageview = swapchain.a.newImageView(swapchain.image_index);
     OnErr(imageview);
     RenderTarget rt(Texture(image.unwrap(), imageview.unwrap()));
-    rt.set(AttachmentOps::color());
-    rt.set(AttachmentLayouts::present());
-    rt.set(VkClearColorValue{0.0f, 0.0f, 0.0f, 1.0f});
+    rt.setOps(AttachmentOps::ClearStore);
+    rt.setLayouts(AttachmentLayouts::Present);
+    rt.setClearValue(VkClearColorValue{
+        {0.0f, 0.0f, 0.0f, 1.0f}
+    });
     return Ok(std::move(rt));
 }
 
@@ -70,33 +74,34 @@ VkRenderingAttachmentInfo RenderTarget::getAttachmentInfo(const void* next) cons
     return info;
 }
 
-Self RenderTarget::set(const AttachmentOps& _ops) {
+Self RenderTarget::setOps(const AttachmentOps& _ops) {
     ops = _ops;
     return *this;
 }
 
-Self RenderTarget::set(const AttachmentOps& _ops, const AttachmentOps& _stencil_ops) {
+Self RenderTarget::setOps(const AttachmentOps& _ops, const AttachmentOps& _stencil_ops) {
     ops = _ops;
     stencil_ops = _stencil_ops;
     return *this;
 }
 
-Self RenderTarget::set(const AttachmentLayouts& _layouts) {
+Self RenderTarget::setLayouts(const AttachmentLayouts& _layouts) {
     layouts = _layouts;
     return *this;
 }
 
-Self RenderTarget::set(const VkImageLayout final_layout) {
+Self RenderTarget::nextLayout(const VkImageLayout final_layout) {
+    layouts.initial = layouts.final;
     layouts.final = final_layout;
     return *this;
 }
 
-Self RenderTarget::set(const VkClearColorValue& color) {
+Self RenderTarget::setClearValue(const VkClearColorValue& color) {
     clear.color = color;
     return *this;
 }
 
-Self RenderTarget::set(const VkClearDepthStencilValue& depthstencil) {
+Self RenderTarget::setClearValue(const VkClearDepthStencilValue& depthstencil) {
     clear.depthStencil = depthstencil;
     return *this;
 }

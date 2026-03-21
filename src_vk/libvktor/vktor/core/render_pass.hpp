@@ -10,39 +10,21 @@ struct AttachmentOps {
     VkAttachmentLoadOp load = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     VkAttachmentStoreOp store = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
-    static AttachmentOps ignore() {
-        return AttachmentOps{VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE};
-    };
-    static AttachmentOps input() {
-        return AttachmentOps{VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_DONT_CARE};
-    };
-    static AttachmentOps color() {
-        return AttachmentOps{VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE};
-    };
-    static AttachmentOps depth() {
-        return AttachmentOps{VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE};
-    };
-    static AttachmentOps stencil() {
-        return AttachmentOps{VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE};
-    };
+    static const AttachmentOps Ignore;
+    static const AttachmentOps LoadOnly;
+    static const AttachmentOps OnlyStore;
+    static const AttachmentOps LoadStore;
+    static const AttachmentOps ClearStore;
 };
 
 struct AttachmentLayouts {
     VkImageLayout initial = VK_IMAGE_LAYOUT_UNDEFINED;
     VkImageLayout final = VK_IMAGE_LAYOUT_UNDEFINED;
 
-    static AttachmentLayouts input() {
-        return AttachmentLayouts{VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
-    }
-    static AttachmentLayouts color() {
-        return AttachmentLayouts{VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
-    }
-    static AttachmentLayouts present() {
-        return AttachmentLayouts{VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR};
-    }
-    static AttachmentLayouts depthstencil() {
-        return AttachmentLayouts{VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
-    }
+    static const AttachmentLayouts Input;
+    static const AttachmentLayouts Color;
+    static const AttachmentLayouts Present;
+    static const AttachmentLayouts DepthStencil;
 };
 
 struct RenderSubpassState {
@@ -91,21 +73,30 @@ public:
                        AttachmentOps ops,
                        AttachmentOps stencil_ops,
                        AttachmentLayouts layouts);
-    inline Self addInputAttachment(VkFormat format, VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT) {
-        return addAttachment(format, samples, AttachmentOps::input(), AttachmentOps::ignore(), AttachmentLayouts::input());
+    inline Self addInputAttachment(VkFormat format,
+                                   VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT,
+                                   AttachmentOps ops = AttachmentOps::LoadOnly,
+                                   AttachmentLayouts layouts = AttachmentLayouts::Input) {
+        return addAttachment(format, samples, ops, AttachmentOps::Ignore, layouts);
     }
-    inline Self addColorAttachment(VkFormat format, VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT) {
-        return addAttachment(format, samples, AttachmentOps::color(), AttachmentOps::ignore(), AttachmentLayouts::color());
+    inline Self addColorAttachment(VkFormat format,
+                                   VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT,
+                                   AttachmentOps ops = AttachmentOps::ClearStore,
+                                   AttachmentLayouts layouts = AttachmentLayouts::Color) {
+        return addAttachment(format, samples, ops, AttachmentOps::Ignore, layouts);
     }
-    inline Self addPresentAttachment(VkFormat format, VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT) {
-        return addAttachment(format, samples, AttachmentOps::color(), AttachmentOps::ignore(), AttachmentLayouts::present());
+    inline Self addPresentAttachment(VkFormat format,
+                                     VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT,
+                                     AttachmentOps ops = AttachmentOps::ClearStore,
+                                     AttachmentLayouts layouts = AttachmentLayouts::Present) {
+        return addAttachment(format, samples, ops, AttachmentOps::Ignore, layouts);
     }
-    inline Self addDepthStencilAttachment(VkFormat format, VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT) {
-        return addAttachment(format,
-                             samples,
-                             AttachmentOps::depth(),
-                             AttachmentOps::stencil(),
-                             AttachmentLayouts::depthstencil());
+    inline Self addDepthStencilAttachment(VkFormat format,
+                                          VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT,
+                                          AttachmentOps ops = AttachmentOps::ClearStore,
+                                          AttachmentOps stencil_ops = AttachmentOps::ClearStore,
+                                          AttachmentLayouts layouts = AttachmentLayouts::DepthStencil) {
+        return addAttachment(format, samples, ops, stencil_ops, layouts);
     }
     Self addSubpass(const Vector<uint32_t>& colors, uint32_t depthstencil = VK_ATTACHMENT_UNUSED);
     Self addSubpass(const Vector<uint32_t>& inputs,

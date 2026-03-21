@@ -4,6 +4,19 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
+const AttachmentOps AttachmentOps::Ignore{VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_DONT_CARE};
+const AttachmentOps AttachmentOps::LoadOnly{VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_DONT_CARE};
+const AttachmentOps AttachmentOps::OnlyStore{VK_ATTACHMENT_LOAD_OP_DONT_CARE, VK_ATTACHMENT_STORE_OP_STORE};
+const AttachmentOps AttachmentOps::LoadStore{VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_STORE};
+const AttachmentOps AttachmentOps::ClearStore{VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE};
+
+const AttachmentLayouts AttachmentLayouts::Input{VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
+const AttachmentLayouts AttachmentLayouts::Color{VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
+const AttachmentLayouts AttachmentLayouts::Present{VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR};
+const AttachmentLayouts AttachmentLayouts::DepthStencil{VK_IMAGE_LAYOUT_UNDEFINED,
+                                                        VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
+
 using Self = RenderPassState::Self;
 
 Self RenderPassState::addAttachment(VkFormat format,
