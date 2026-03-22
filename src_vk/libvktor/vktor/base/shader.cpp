@@ -9,8 +9,7 @@ using namespace core;
 
 using Self = Shader::Self;
 
-Shader::Shader(Shader&& rhs) {
-    src = std::move(rhs.src);
+Shader::Shader(Shader&& rhs) : src(std::move(rhs.src)) {
     src_path = std::move(rhs.src_path);
     src_id = rhs.src_id;
     src_defs = std::move(rhs.src_defs);
@@ -27,19 +26,21 @@ Shader::Shader(Shader&& rhs) {
     spec_constant = std::move(rhs.spec_constant);
 }
 
-Shader Shader::from(const VkShaderStageFlagBits stage, String&& source, const String& fullpath) {
-    Shader shader{};
+Res<Shader> Shader::from(const VkShaderStageFlagBits stage, const Ptr<String>& source, const String& fullpath) {
+    if (!source) {
+        return Er("Shader requires valid source: {}", fullpath);
+    }
+    Shader shader{source};
     shader.stage = stage;
-    shader.src = std::move(source);
-    shader.src_id = hash(shader.src);
+    shader.src_id = hash(*shader.src);
     shader.src_path = fullpath;
-    return shader;
+    return Ok(shader);
 }
 
 Res<ShaderModule> Shader::into(const CoreApi& api) const {
     auto cur_id = hash(*this);
     if (spv_id != hash(*this)) {
-        auto res = ShaderGlsl::get().compile(stage, src, entry, getPreamble(), src_path);
+        auto res = ShaderGlsl::get().compile(stage, *src, entry, getPreamble(), src_path);
         OnErr(res);
         spv = res.unwrap();
         spv_id = cur_id;

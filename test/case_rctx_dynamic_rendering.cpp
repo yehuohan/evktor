@@ -14,8 +14,8 @@ void case_rctx_dynamic_rendering() {
     tstOut("Command buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
-    auto shader_vert = Shader::fromVert(vktdev::Assets::loadShader(tri.vert_file), tri.vert_file);
-    auto shader_frag = Shader::fromFrag(vktdev::Assets::loadShader(tri.frag_file), tri.frag_file);
+    auto shader_vert = Shader::fromVert(vktdev::Assets::getShader(tri.vert_file)).unwrap();
+    auto shader_frag = Shader::fromFrag(vktdev::Assets::getShader(tri.frag_file)).unwrap();
     shader_vert.addDescriptor(ShaderDescriptor::Type::BufferUniform, 0).setPushConstant(sizeof(int));
     shader_frag.addDescriptor(ShaderDescriptor::Type::ImageSampler, 1)
         .setPushConstant(sizeof(int), 20)

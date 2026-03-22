@@ -13,7 +13,7 @@ void case_core_compute() {
     tstOut("Command buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
-    auto shader_comp = Shader::fromComp(vktdev::Assets::loadShader(quad.comp_file), quad.comp_file).into(api).unwrap();
+    auto shader_comp = Shader::fromComp(vktdev::Assets::getShader(quad.comp_file)).unwrap().into(api).unwrap();
     // auto shader  = ShaderModuleState().setCode(quad_slang, quad_slang_size).into(api).unwrap();
 
     // Create pipeline

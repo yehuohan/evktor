@@ -55,8 +55,8 @@ class Shader {
     friend struct std::hash<Shader>;
 
 private:
-    String src = "";                              /**< Glsl or slang shader source */
-    size_t src_id = 0;                            /**< src_id = hash(src) */
+    const Ptr<String> src = nullptr;
+    size_t src_id = 0;                            /**< src_id = hash(*src) */
     String src_path = "";                         /**< Source fullpath for debug */
     Vector<std::pair<String, String>> src_defs{}; /**< Source defines */
 
@@ -75,7 +75,7 @@ private:
     ShaderSpecConstant spec_constant{};
 
 private:
-    Shader() = default;
+    Shader(const Ptr<String>& src) : src(src) {}
 
 public:
     using Self = Shader&;
@@ -83,15 +83,24 @@ public:
     Shader(const Shader& rhs) = default;
     Shader(Shader&&);
 
-    static Shader from(const VkShaderStageFlagBits stage, String&& source, const String& fullpath = "");
-    static Shader fromVert(String&& source, const String& fullpath = "") {
-        return from(VK_SHADER_STAGE_VERTEX_BIT, std::move(source), fullpath);
+    static Res<Shader> from(const VkShaderStageFlagBits stage, const Ptr<String>& source, const String& fullpath = "");
+    static Res<Shader> fromVert(const Ptr<String>& source, const String& fullpath = "") {
+        return from(VK_SHADER_STAGE_VERTEX_BIT, source, fullpath);
     }
-    static Shader fromFrag(String&& source, const String& fullpath = "") {
-        return from(VK_SHADER_STAGE_FRAGMENT_BIT, std::move(source), fullpath);
+    static Res<Shader> fromVert(const std::tuple<const Ptr<String>, const String>& source_and_fullpath) {
+        return from(VK_SHADER_STAGE_VERTEX_BIT, std::get<0>(source_and_fullpath), std::get<1>(source_and_fullpath));
     }
-    static Shader fromComp(String&& source, const String& fullpath = "") {
-        return from(VK_SHADER_STAGE_COMPUTE_BIT, std::move(source), fullpath);
+    static Res<Shader> fromFrag(const Ptr<String>& source, const String& fullpath = "") {
+        return from(VK_SHADER_STAGE_FRAGMENT_BIT, source, fullpath);
+    }
+    static Res<Shader> fromFrag(const std::tuple<const Ptr<String>, const String>& source_and_fullpath) {
+        return from(VK_SHADER_STAGE_FRAGMENT_BIT, std::get<0>(source_and_fullpath), std::get<1>(source_and_fullpath));
+    }
+    static Res<Shader> fromComp(const Ptr<String>& source, const String& fullpath = "") {
+        return from(VK_SHADER_STAGE_COMPUTE_BIT, source, fullpath);
+    }
+    static Res<Shader> fromComp(const std::tuple<const Ptr<String>, const String>& source_and_fullpath) {
+        return from(VK_SHADER_STAGE_COMPUTE_BIT, std::get<0>(source_and_fullpath), std::get<1>(source_and_fullpath));
     }
 
     Res<core::ShaderModule> into(const core::CoreApi& api) const;

@@ -56,10 +56,8 @@ void App::setupBasePass() {
     scene_camera->aspect = (float)width / height;
 
     {
-        auto vert_file = Assets::shader("pbr.vert");
-        auto frag_file = Assets::shader("pbr.frag");
-        auto vert = Shader::fromVert(Assets::loadShader(vert_file), vert_file);
-        auto frag = Shader::fromFrag(Assets::loadShader(frag_file), frag_file);
+        auto vert = Shader::fromVert(Assets::getShader("pbr.vert")).unwrap();
+        auto frag = Shader::fromFrag(Assets::getShader("pbr.frag")).unwrap();
         vert.addDescriptor(ShaderDescriptor::BufferUniform, 0);
         frag.addDescriptor(ShaderDescriptor::ImageSampler, 1);
 
@@ -69,10 +67,8 @@ void App::setupBasePass() {
             .setRTDepthStencil(1);
     }
     {
-        auto vert_file = Assets::shader("builtin.vert");
-        auto frag_file = Assets::shader("builtin.frag");
-        auto vert = Shader::fromVert(Assets::loadShader(vert_file), vert_file);
-        auto frag = Shader::fromFrag(Assets::loadShader(frag_file), frag_file);
+        auto vert = Shader::fromVert(Assets::getShader("builtin.vert")).unwrap();
+        auto frag = Shader::fromFrag(Assets::getShader("builtin.frag")).unwrap();
         vert.addDescriptor(ShaderDescriptor::BufferUniform, 0);
         frag.addDescriptor(ShaderDescriptor::ImageSampler, 1);
         frag.setDefine("HAS_TEX");
@@ -96,10 +92,8 @@ void App::setupSkyboxPass() {
     skybox = newBox<RenderPipeline>(*rctx, "Skybox");
 
     {
-        auto vert_file = Assets::shader("builtin.vert");
-        auto frag_file = Assets::shader("builtin.frag");
-        auto vert = Shader::fromVert(Assets::loadShader(vert_file), vert_file);
-        auto frag = Shader::fromFrag(Assets::loadShader(frag_file), frag_file);
+        auto vert = Shader::fromVert(Assets::getShader("builtin.vert")).unwrap();
+        auto frag = Shader::fromFrag(Assets::getShader("builtin.frag")).unwrap();
         vert.addDescriptor(ShaderDescriptor::BufferUniform, 0);
         frag.addDescriptor(ShaderDescriptor::ImageSampler, 1);
         vert.setDefine("HAS_SKYBOX");
@@ -139,12 +133,12 @@ void App::tick(float cur_time, float delta_time) {
     rts[0].setOps(core::AttachmentOps::ClearStore);
     rts[0].setLayouts(core::AttachmentLayouts::Color);
     rts[1].setOps(core::AttachmentOps::ClearStore);
-    base->draw(cmdbuf, rtt);
+    base->draw(cmdbuf, rtt).unwrap();
     rts[0].setOps(core::AttachmentOps::LoadStore);
     rts[0].nextLayout(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
     rts[1].setOps(core::AttachmentOps::LoadStore);
     rts[1].nextLayout(VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-    skybox->draw(cmdbuf, rtt);
+    skybox->draw(cmdbuf, rtt).unwrap();
 
     cmdbuf.end();
     auto& sem = rctx->submit(cmdbuf).unwrap().get();

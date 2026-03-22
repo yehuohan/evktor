@@ -107,7 +107,7 @@ void case_rctx_cooperative_matrix() {
 
     // Create shader module
     const String comp_file = vktdev::Assets::shader("test/conv2d.comp");
-    auto shader_comp = Shader::fromComp(vktdev::Assets::loadShader(comp_file), comp_file);
+    auto shader_comp = Shader::fromComp(vktdev::Assets::getShader(comp_file)).unwrap();
     if (use_coopmat) {
         shader_comp.setDefine("USE_NHWC")
             .setDefine("USE_COOPMAT")

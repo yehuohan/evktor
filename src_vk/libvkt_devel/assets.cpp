@@ -5,6 +5,7 @@ namespace vktdev {
 
 std::string Assets::path_assets = std::string(".");
 std::string Assets::path_shader = std::string(".");
+std::unordered_map<std::string, std::shared_ptr<std::string>> Assets::shaders{};
 
 void Assets::setDirs(const std::string& assets_dir, const std::string& shader_dir) {
     Assets::path_assets = assets_dir;
@@ -53,12 +54,21 @@ std::tuple<std::vector<uint8_t>, uint32_t, uint32_t> Assets::loadCubeRGBA8(const
     return {std::move(cube_pixels), cube_wid, cube_hei};
 }
 
-std::string Assets::loadShader(const std::string& filename) {
-    std::ifstream fin(filename, std::ios::in);
-    if (!fin.is_open()) {
-        throw std::runtime_error(fmt::format("Failed to load shader: {}", filename));
+std::tuple<const std::shared_ptr<std::string>, const std::string> Assets::getShader(const std::string& filename) {
+    auto filepath = Assets::shader(filename);
+
+    if (auto it = shaders.find(filename); it != shaders.end()) {
+        return {it->second, filepath};
+    } else {
+        std::ifstream fin(filepath, std::ios::in);
+        if (!fin.is_open()) {
+            throw std::runtime_error(fmt::format("Failed to load shader: {}", filename));
+        }
+        std::string code({std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()});
+
+        auto res = shaders.insert({filename, std::make_shared<std::string>(code)});
+        return {res.first->second, filepath};
     }
-    return std::string({std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>()});
 }
 
 } // namespace vktdev

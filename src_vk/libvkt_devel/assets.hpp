@@ -2,15 +2,18 @@
 #include <cstdint>
 #include <fmt/core.h>
 #include <fstream>
+#include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace vktdev {
 
 class Assets {
-public:
+private:
     static std::string path_assets;
     static std::string path_shader;
+    static std::unordered_map<std::string, std::shared_ptr<std::string>> shaders; /**< Map shader filename to shader code */
 
 public:
     Assets() = delete;
@@ -60,7 +63,12 @@ public:
                                                                               const std::string& back);
 
 public:
-    static std::string loadShader(const std::string& filename);
+    /**
+     * @brief Get shader source code and shader file path
+     *
+     * @return [code, filepath] of shader
+     */
+    static std::tuple<const std::shared_ptr<std::string>, const std::string> getShader(const std::string& filename);
     static inline std::vector<uint32_t> loadSpirv(const std::string& filename) {
         return Assets::loadBinary<uint32_t>(Assets::shader(filename));
     }
