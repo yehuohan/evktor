@@ -1,6 +1,6 @@
 {
     "dependencies": [
-        { "name": "glslang", "features": [ "tools" ], "version>=": "13.0.0" },
+        { "name": "glslang", "version>=": "15.0.0" },
         { "name": "vulkan-memory-allocator", "version>=": "3.3.0" },
         { "name": "glfw3", "version>=": "3.3.9" },
         { "name": "glm", "version>=": "1.0.1" },
