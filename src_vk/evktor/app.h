@@ -12,6 +12,7 @@ private:
     Vktor vkt;
     Box<RenderContext> rctx = nullptr;
     Box<RenderPipeline> base = nullptr;
+    Box<RenderPipeline> skybox = nullptr;
     PerspCamera* scene_camera = nullptr;
 
 public:
@@ -24,4 +25,5 @@ public:
 private:
     void setup();
     void setupBasePass();
+    void setupSkyboxPass();
 };

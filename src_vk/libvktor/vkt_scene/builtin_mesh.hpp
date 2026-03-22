@@ -41,7 +41,7 @@ private:
     vkt::core::Buffer index;
     vkt::core::Buffer vertex;
     Box<vkt::core::Sampler> sampler = nullptr;
-    Box<vkt::Texture2D> texture = nullptr;
+    Box<vkt::Texture> texture = nullptr;
 
     static const Vector<VkVertexInputBindingDescription> vertex_input_bindings;
     static const Vector<VkVertexInputAttributeDescription> vertex_input_attrs;
@@ -51,13 +51,13 @@ public:
                 vkt::core::Buffer&& index,
                 vkt::core::Buffer&& vertex,
                 Box<vkt::core::Sampler>&& sampler = nullptr,
-                Box<vkt::Texture2D>&& texture = nullptr);
+                Box<vkt::Texture>&& texture = nullptr);
     BuiltinMesh(BuiltinMesh&&);
 
 public:
     static Res<BuiltinMesh> from(const vkt::core::CoreApi& api,
                                  const BuiltinMeshData& data,
-                                 Box<vkt::Texture2D>&& texture = nullptr);
+                                 Box<vkt::Texture>&& texture = nullptr);
 };
 
 NAMESPACE_END(vktscn)

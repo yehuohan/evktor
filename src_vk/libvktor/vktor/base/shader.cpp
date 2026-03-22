@@ -75,6 +75,13 @@ Shader::Self Shader::delAllDefines() {
     return *this;
 }
 
+bool Shader::hasDefine(const String& name) {
+    auto iter = std::find_if(src_defs.begin(), src_defs.end(), [&name](const std::pair<String, String> item) {
+        return name == item.first;
+    });
+    return iter != src_defs.end();
+}
+
 String Shader::getPreamble() const {
     String preamble("");
     for (const auto& item : src_defs) {

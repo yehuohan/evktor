@@ -17,6 +17,7 @@ public:
 
     static void setDirs(const std::string& assets_dir, const std::string& shader_dir = ".");
 
+public:
     inline static std::string tex(const std::string& filename) {
         return fmt::format("{}/textures/{}", Assets::path_assets, filename);
     }
@@ -33,24 +34,38 @@ public:
         return fmt::format("{}/fonts/{}", Assets::path_assets, filename);
     }
 
+public:
     /**
      * @brief Load texture in RGB8 format
      *
-     * @return The return contains [pixels, width, height]
+     * @return [pixels, width, height] of texture
      */
     static std::tuple<std::vector<uint8_t>, uint32_t, uint32_t> loadTexRGB8(const std::string& filename);
     /**
      * @brief Load texture in RGBA8 format
      *
-     * @return The return contains [pixels, width, height]
+     * @return [pixels, width, height] of texture
      */
     static std::tuple<std::vector<uint8_t>, uint32_t, uint32_t> loadTexRGBA8(const std::string& filename);
+    /**
+     * @brief Load cube textures in RGBA8 format
+     *
+     * @return [pixels, width, height] of textures
+     */
+    static std::tuple<std::vector<uint8_t>, uint32_t, uint32_t> loadCubeRGBA8(const std::string& right,
+                                                                              const std::string& left,
+                                                                              const std::string& top,
+                                                                              const std::string& bottom,
+                                                                              const std::string& front,
+                                                                              const std::string& back);
 
+public:
     static std::string loadShader(const std::string& filename);
     static inline std::vector<uint32_t> loadSpirv(const std::string& filename) {
         return Assets::loadBinary<uint32_t>(Assets::shader(filename));
     }
 
+public:
     /**
      * @brief Load binary
      */

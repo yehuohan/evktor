@@ -78,6 +78,10 @@ Res<Void> BuiltinSubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
         .setRasterizationCullFace(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE)
         .setDepthTest(VK_TRUE, VK_TRUE, VK_COMPARE_OP_GREATER) // Greater for reversed-z
         .addColorBlendAttachment(color_blend_attm_state);
+    if (frag_shader.hasDefine("HAS_SKYBOX")) {
+        pso.setRasterizationCullFace(VK_CULL_MODE_FRONT_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE)
+            .setDepthTest(VK_TRUE, VK_TRUE, VK_COMPARE_OP_GREATER_OR_EQUAL);
+    }
     auto res_pipeline = rctx.requestGraphicsPipeline(pso);
     OnErr(res_pipeline);
     auto& pipeline = res_pipeline.unwrap().get();

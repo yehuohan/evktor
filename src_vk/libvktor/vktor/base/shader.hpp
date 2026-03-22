@@ -100,6 +100,7 @@ public:
     Self setDefine(const String& name, const String& value = "");
     Self delDefine(const String& name);
     Self delAllDefines();
+    bool hasDefine(const String& name);
     inline const String& getSourcePath() const {
         return src_path;
     }

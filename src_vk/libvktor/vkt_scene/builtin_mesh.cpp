@@ -157,7 +157,7 @@ BuiltinMesh::BuiltinMesh(const BuiltinMeshData& data,
                          vkt::core::Buffer&& index,
                          vkt::core::Buffer&& vertex,
                          Box<vkt::core::Sampler>&& sampler,
-                         Box<vkt::Texture2D>&& texture)
+                         Box<vkt::Texture>&& texture)
     : data(data)
     , index(std::move(index))
     , vertex(std::move(vertex))
@@ -171,7 +171,7 @@ BuiltinMesh::BuiltinMesh(BuiltinMesh&& rhs)
     , sampler(std::move(rhs.sampler))
     , texture(std::move(rhs.texture)) {}
 
-Res<BuiltinMesh> BuiltinMesh::from(const vkt::core::CoreApi& api, const BuiltinMeshData& data, Box<vkt::Texture2D>&& texture) {
+Res<BuiltinMesh> BuiltinMesh::from(const vkt::core::CoreApi& api, const BuiltinMeshData& data, Box<vkt::Texture>&& texture) {
     auto res_index = vkt::core::BufferState{}
                          .setSize(data.indices.size() * sizeof(uint16_t))
                          .setUsage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
