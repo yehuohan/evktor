@@ -23,6 +23,9 @@ public:
     Self setAddressMode(VkSamplerAddressMode u,
                         VkSamplerAddressMode v,
                         VkSamplerAddressMode w = VK_SAMPLER_ADDRESS_MODE_REPEAT);
+    Self setMipLodBias(float bias);
+    Self setLod(float min_lod, float max_lod);
+    Self setAnisotropy(VkBool32 enable, float max_anisotropy = 1.0);
     Self setNearest();
     Self setLinear();
 

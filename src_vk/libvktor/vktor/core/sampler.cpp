@@ -23,6 +23,23 @@ Self SamplerState::setAddressMode(VkSamplerAddressMode u, VkSamplerAddressMode v
     return *this;
 }
 
+Self SamplerState::setMipLodBias(float bias) {
+    sampler_ci.mipLodBias = bias;
+    return *this;
+}
+
+Self SamplerState::setLod(float min_lod, float max_lod) {
+    sampler_ci.minLod = min_lod;
+    sampler_ci.maxLod = max_lod;
+    return *this;
+}
+
+Self SamplerState::setAnisotropy(VkBool32 enable, float max_anisotropy) {
+    sampler_ci.anisotropyEnable = enable;
+    sampler_ci.maxAnisotropy = max_anisotropy;
+    return *this;
+}
+
 Self SamplerState::setNearest() {
     sampler_ci.magFilter = VK_FILTER_NEAREST;
     sampler_ci.minFilter = VK_FILTER_NEAREST;
