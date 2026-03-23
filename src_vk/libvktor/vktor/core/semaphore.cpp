@@ -68,25 +68,25 @@ SemaphorePool::~SemaphorePool() {
     semaphores_cache.clear();
 }
 
-Res<CRef<Semaphore>> SemaphorePool::request() {
+Res<CRef<Semaphore>> SemaphorePool::request(String&& name) {
     if (active_count < semaphores.size()) {
         return Ok(newCRef(semaphores[active_count++]));
     }
 
-    auto res = SemaphoreState().into(api);
+    auto res = SemaphoreState(std::move(name)).into(api);
     OnErr(res);
     semaphores.push_back(res.unwrap());
     active_count++;
     return Ok(newCRef(semaphores.back()));
 }
 
-Res<Semaphore> SemaphorePool::acquire() {
+Res<Semaphore> SemaphorePool::acquire(String&& name) {
     if (active_count < semaphores.size()) {
         auto sem = std::move(semaphores.back());
         semaphores.pop_back();
         return Ok(std::move(sem));
     }
-    return SemaphoreState().into(api);
+    return SemaphoreState(std::move(name)).into(api);
 }
 
 void SemaphorePool::reback(Semaphore&& semaphore) {

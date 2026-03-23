@@ -49,25 +49,25 @@ EventPool::~EventPool() {
     events_cache.clear();
 }
 
-Res<CRef<Event>> EventPool::request() {
+Res<CRef<Event>> EventPool::request(String&& name) {
     if (active_count < events.size()) {
         return Ok(newCRef(events[active_count++]));
     }
 
-    auto res = EventState().into(api);
+    auto res = EventState(std::move(name)).into(api);
     OnErr(res);
     events.push_back(res.unwrap());
     active_count++;
     return Ok(newCRef(events.back()));
 }
 
-Res<Event> EventPool::acquire() {
+Res<Event> EventPool::acquire(String&& name) {
     if (active_count < events.size()) {
         auto evt = std::move(events.back());
         events.pop_back();
         return Ok(std::move(evt));
     }
-    return EventState().into(api);
+    return EventState(std::move(name)).into(api);
 }
 
 void EventPool::reback(Event&& event) {

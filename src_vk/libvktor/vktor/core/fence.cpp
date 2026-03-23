@@ -57,25 +57,25 @@ FencePool::~FencePool() {
     fences_cache.clear();
 }
 
-Res<CRef<Fence>> FencePool::request() {
+Res<CRef<Fence>> FencePool::request(String&& name) {
     if (active_count < fences.size()) {
         return Ok(newCRef(fences[active_count++]));
     }
 
-    auto res = FenceState().into(api);
+    auto res = FenceState(std::move(name)).into(api);
     OnErr(res);
     fences.push_back(res.unwrap());
     active_count++;
     return Ok(newCRef(fences.back()));
 }
 
-Res<Fence> FencePool::acquire() {
+Res<Fence> FencePool::acquire(String&& name) {
     if (active_count < fences.size()) {
         auto fen = std::move(fences.back());
         fences.pop_back();
         return Ok(std::move(fen));
     }
-    return FenceState().into(api);
+    return FenceState(std::move(name)).into(api);
 }
 
 void FencePool::reback(Fence&& fence) {

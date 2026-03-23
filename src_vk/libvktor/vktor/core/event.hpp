@@ -49,9 +49,9 @@ public:
     ~EventPool();
 
     /** Request event without ownership */
-    Res<CRef<Event>> request();
+    Res<CRef<Event>> request(String&& name = "Event");
     /** Acquire event with ownership */
-    Res<Event> acquire();
+    Res<Event> acquire(String&& name = "Event");
     /** Reback acquired event with ownership */
     void reback(Event&& event);
     /** Reset actived events and cached events*/

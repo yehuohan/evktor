@@ -16,18 +16,19 @@ RenderResource::RenderResource(RenderResource&& rhs) : api(rhs.api) {
     framebuffers = std::move(rhs.framebuffers);
 }
 
-Res<CRef<ShaderModule>> RenderResource::requestShaderModule(const Shader& shader) {
+Res<CRef<ShaderModule>> RenderResource::requestShaderModule(const Shader& shader, String&& name) {
     size_t key = hash(shader);
-    return shader_modules.request(key, [this, &shader]() -> Res<ShaderModule> {
-        return shader.into(api);
+    return shader_modules.request(key, [this, &shader, &name]() -> Res<ShaderModule> {
+        return shader.into(api, std::move(name));
     });
 }
 
 Res<CRef<DescriptorSetLayout>> RenderResource::requestDescriptorSetLayout(const uint32_t set,
-                                                                          const Vector<CRef<Shader>>& shaders) {
+                                                                          const Vector<CRef<Shader>>& shaders,
+                                                                          String&& name) {
     size_t key = hash(set, shaders);
-    return descriptor_setlayouts.request(key, [this, set, &shaders]() -> Res<DescriptorSetLayout> {
-        DescriptorSetLayoutState dso{};
+    return descriptor_setlayouts.request(key, [this, set, &shaders, &name]() -> Res<DescriptorSetLayout> {
+        DescriptorSetLayoutState dso{std::move(name)};
         for (const auto& ref : shaders) {
             auto& s = ref.get();
             switch (s.getStage()) {
@@ -53,10 +54,10 @@ Res<CRef<DescriptorSetLayout>> RenderResource::requestDescriptorSetLayout(const 
     });
 }
 
-Res<CRef<PipelineLayout>> RenderResource::requestPipelineLayout(const Vector<CRef<Shader>>& shaders) {
+Res<CRef<PipelineLayout>> RenderResource::requestPipelineLayout(const Vector<CRef<Shader>>& shaders, String&& name) {
     size_t key = hash(shaders);
-    return pipeline_layouts.request(key, [this, &shaders]() -> Res<PipelineLayout> {
-        PipelineLayoutState plso{};
+    return pipeline_layouts.request(key, [this, &shaders, &name]() -> Res<PipelineLayout> {
+        PipelineLayoutState plso{std::move(name)};
         std::set<uint32_t> sets{};
         for (const auto& ref : shaders) {
             // Collect all set index
@@ -96,10 +97,11 @@ Res<CRef<ComputePipeline>> RenderResource::requestComputePipeline(const ComputeP
 }
 
 Res<CRef<RenderPass>> RenderResource::requestRenderPass(const RenderTargetTable& rtt,
-                                                        const Vector<CRef<core::RenderSubpassState>>& states) {
+                                                        const Vector<CRef<core::RenderSubpassState>>& states,
+                                                        String&& name) {
     size_t key = hash(rtt.getTargets(), states);
-    return render_passes.request(key, [this, &rtt, &states]() {
-        RenderPassState rso{};
+    return render_passes.request(key, [this, &rtt, &states, &name]() {
+        RenderPassState rso{std::move(name)};
         for (const auto& rt : rtt.getTargets()) {
             auto& image = rt.getImage();
             rso.addAttachment(image.getFormat(), image.getSamples(), rt.ops, rt.stencil_ops, rt.layouts);
@@ -111,10 +113,12 @@ Res<CRef<RenderPass>> RenderResource::requestRenderPass(const RenderTargetTable&
     });
 }
 
-Res<CRef<Framebuffer>> RenderResource::requestFramebuffer(const RenderTargetTable& rtt, const RenderPass& render_pass) {
+Res<CRef<Framebuffer>> RenderResource::requestFramebuffer(const RenderTargetTable& rtt,
+                                                          const RenderPass& render_pass,
+                                                          String&& name) {
     size_t key = hash(rtt, render_pass);
-    return framebuffers.request(key, [this, &rtt, &render_pass]() {
-        FramebufferState fso{};
+    return framebuffers.request(key, [this, &rtt, &render_pass, &name]() {
+        FramebufferState fso{std::move(name)};
         fso.setRenderPass(render_pass);
         fso.addAttachments(rtt.getImageViews());
         fso.setExtent(rtt.getExtent());

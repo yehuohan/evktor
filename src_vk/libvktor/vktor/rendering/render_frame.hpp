@@ -45,41 +45,46 @@ public:
      *
      * Reset command buffer via vkResetCommandBuffer or vkBeginCommandBuffer
      */
-    Res<CRef<core::CommandBuffer>> requestCommandBuffer(const core::Queue& queue, size_t thread_index = 0);
+    Res<CRef<core::CommandBuffer>> requestCommandBuffer(const core::Queue& queue,
+                                                        const String& cmd_name = "Command",
+                                                        size_t thread_index = 0);
     /**
      * @brief Request one descriptor set from an available descriptor pool that is got from pooler
      */
     Res<CRef<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
                                                         const core::DescriptorInfo& desc_info,
+                                                        const String& desc_name = "Descriptor",
                                                         size_t thread_index = 0);
 
 private:
-    Res<Ref<core::DescriptorPool>> requestDescriptorPool(const core::DescriptorSetLayout& desc_setlayout, size_t thread_index);
+    Res<Ref<core::DescriptorPool>> requestDescriptorPool(const core::DescriptorSetLayout& desc_setlayout,
+                                                         String&& name = "Descriptor#Pool",
+                                                         size_t thread_index = 0);
 
 public:
-    inline Res<CRef<core::Fence>> requestFence() {
-        return fence_pool.request();
+    inline Res<CRef<core::Fence>> requestFence(String&& name = "Fence") {
+        return fence_pool.request(std::move(name));
     }
-    inline Res<core::Fence> acquireFence() {
-        return fence_pool.acquire();
+    inline Res<core::Fence> acquireFence(String&& name = "Fence") {
+        return fence_pool.acquire(std::move(name));
     }
     inline void rebackFence(core::Fence&& fence) {
         return fence_pool.reback(std::move(fence));
     }
-    inline Res<CRef<core::Semaphore>> requestSemaphore() {
-        return semaphore_pool.request();
+    inline Res<CRef<core::Semaphore>> requestSemaphore(String&& name = "Semaphore") {
+        return semaphore_pool.request(std::move(name));
     }
-    inline Res<core::Semaphore> acquireSemaphore() {
-        return semaphore_pool.acquire();
+    inline Res<core::Semaphore> acquireSemaphore(String&& name = "Semaphore") {
+        return semaphore_pool.acquire(std::move(name));
     }
     inline void rebackSemaphore(core::Semaphore&& semaphore) {
         return semaphore_pool.reback(std::move(semaphore));
     }
-    inline Res<CRef<core::Event>> requestEvent() {
-        return event_pool.request();
+    inline Res<CRef<core::Event>> requestEvent(String&& name = "Event") {
+        return event_pool.request(std::move(name));
     }
-    inline Res<core::Event> acquireEvent() {
-        return event_pool.acquire();
+    inline Res<core::Event> acquireEvent(String&& name = "Event") {
+        return event_pool.acquire(std::move(name));
     }
     inline void rebackEvent(core::Event&& event) {
         return event_pool.reback(std::move(event));

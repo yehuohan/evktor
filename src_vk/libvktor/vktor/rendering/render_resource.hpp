@@ -30,14 +30,20 @@ public:
     RenderResource(const core::CoreApi& api) : api(api) {}
     RenderResource(RenderResource&&);
 
-    Res<CRef<core::ShaderModule>> requestShaderModule(const Shader& shader);
-    Res<CRef<core::DescriptorSetLayout>> requestDescriptorSetLayout(const uint32_t set, const Vector<CRef<Shader>>& shaders);
-    Res<CRef<core::PipelineLayout>> requestPipelineLayout(const Vector<CRef<Shader>>& shaders);
+    Res<CRef<core::ShaderModule>> requestShaderModule(const Shader& shader, String&& name = "ShaderModule");
+    Res<CRef<core::DescriptorSetLayout>> requestDescriptorSetLayout(const uint32_t set,
+                                                                    const Vector<CRef<Shader>>& shaders,
+                                                                    String&& name = "DescriptorSetLayout");
+    Res<CRef<core::PipelineLayout>> requestPipelineLayout(const Vector<CRef<Shader>>& shaders,
+                                                          String&& name = "PipelineLayout");
     Res<CRef<core::GraphicsPipeline>> requestGraphicsPipeline(const core::GraphicsPipelineState& pso);
     Res<CRef<core::ComputePipeline>> requestComputePipeline(const core::ComputePipelineState& pso);
     Res<CRef<core::RenderPass>> requestRenderPass(const RenderTargetTable& rtt,
-                                                  const Vector<CRef<core::RenderSubpassState>>& states);
-    Res<CRef<core::Framebuffer>> requestFramebuffer(const RenderTargetTable& rtt, const core::RenderPass& render_pass);
+                                                  const Vector<CRef<core::RenderSubpassState>>& states,
+                                                  String&& name = "RenderPass");
+    Res<CRef<core::Framebuffer>> requestFramebuffer(const RenderTargetTable& rtt,
+                                                    const core::RenderPass& render_pass,
+                                                    String&& name = "Framebuffer");
 };
 
 NAMESPACE_END(vkt)

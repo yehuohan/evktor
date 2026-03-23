@@ -75,7 +75,7 @@ public:
     DescriptorPooler(DescriptorPooler&&);
     ~DescriptorPooler();
 
-    Res<Ref<DescriptorPool>> request();
+    Res<Ref<DescriptorPool>> request(String&& name = "DescriptorSetPool");
 };
 
 NAMESPACE_END(core)

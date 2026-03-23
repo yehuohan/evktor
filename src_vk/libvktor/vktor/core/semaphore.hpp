@@ -53,9 +53,9 @@ public:
     ~SemaphorePool();
 
     /** Request semaphore without ownership */
-    Res<CRef<Semaphore>> request();
+    Res<CRef<Semaphore>> request(String&& name = "Semaphore");
     /** Acquire semaphore with ownership */
-    Res<Semaphore> acquire();
+    Res<Semaphore> acquire(String&& name = "Semaphore");
     /** Reback acquired semaphore with ownership */
     void reback(Semaphore&& semaphore);
     /** Reset actived semaphores and cached semaphores*/

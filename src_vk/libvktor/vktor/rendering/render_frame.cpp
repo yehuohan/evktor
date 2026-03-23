@@ -52,7 +52,7 @@ void RenderFrame::resetDescriptorSets(size_t thread_index) {
     }
 }
 
-Res<CRef<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, size_t thread_index) {
+Res<CRef<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, const String& cmd_name, size_t thread_index) {
     if (thread_index >= cmd_pools.size()) {
         return Er("Thread index is out of command pool array");
     }
@@ -64,7 +64,7 @@ Res<CRef<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, s
         if (auto it = cmdpools.find(queue.family_index); it != cmdpools.end()) {
             cmdpool = &it->second;
         } else {
-            auto res = CommandPoolState()
+            auto res = CommandPoolState(vktFmt("{}#Pool", cmd_name))
                            .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
                            .setQueueFamilyIndex(queue.family_index)
                            .into(api);
@@ -74,14 +74,15 @@ Res<CRef<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, s
         }
     }
 
-    return cmdpool->allocate(CommandPool::Level::Primary);
+    return cmdpool->allocate(CommandPool::Level::Primary, vktFmt("{}#Buffer", cmd_name));
 }
 
 Res<CRef<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLayout& desc_setlayout,
                                                            const DescriptorInfo& desc_info,
+                                                           const String& desc_name,
                                                            size_t thread_index) {
     // Get descriptor pool
-    auto res = requestDescriptorPool(desc_setlayout, thread_index);
+    auto res = requestDescriptorPool(desc_setlayout, vktFmt("{}#Pool", desc_name), thread_index);
     OnErr(res);
     auto& desc_pool = res.unwrap().get();
 
@@ -101,7 +102,7 @@ Res<CRef<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLa
         if (auto it = descsets.find(key); it != descsets.end()) {
             descset = &it->second;
         } else {
-            auto res = desc_pool.allocate();
+            auto res = desc_pool.allocate(nullptr, vktFmt("{}#Set", desc_name));
             OnErr(res);
             auto iter = descsets.insert({key, res.unwrap()}).first;
             descset = &iter->second;
@@ -113,7 +114,9 @@ Res<CRef<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLa
     return Ok(newCRef(*descset));
 }
 
-Res<Ref<DescriptorPool>> RenderFrame::requestDescriptorPool(const DescriptorSetLayout& desc_setlayout, size_t thread_index) {
+Res<Ref<DescriptorPool>> RenderFrame::requestDescriptorPool(const DescriptorSetLayout& desc_setlayout,
+                                                            String&& name,
+                                                            size_t thread_index) {
     if (thread_index >= desc_poolers.size()) {
         return Er("Thread index is out of descriptor pooler array");
     }
@@ -132,7 +135,7 @@ Res<Ref<DescriptorPool>> RenderFrame::requestDescriptorPool(const DescriptorSetL
     }
 
     // Get available descriptor pool from pooler
-    return descpooler->request();
+    return descpooler->request(std::move(name));
 }
 
 void RenderFrame::watchStatus() const {

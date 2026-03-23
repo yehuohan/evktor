@@ -108,9 +108,9 @@ DescriptorPooler::~DescriptorPooler() {
     desc_pools.clear();
 }
 
-Res<Ref<DescriptorPool>> DescriptorPooler::request() {
+Res<Ref<DescriptorPool>> DescriptorPooler::request(String&& name) {
     if (desc_pools.empty() || !desc_pools.back().available()) {
-        auto res = DescriptorPoolState()
+        auto res = DescriptorPoolState(std::move(name))
                        // Enable vkFreeDescriptorSets to free descriptor set
                        .setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT)
                        .setMaxsets(VKT_CORE_MAX_SETS)

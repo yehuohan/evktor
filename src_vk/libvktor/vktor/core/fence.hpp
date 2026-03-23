@@ -52,9 +52,9 @@ public:
     ~FencePool();
 
     /** Request fence without ownership */
-    Res<CRef<Fence>> request();
+    Res<CRef<Fence>> request(String&& name = "Fence");
     /** Acquire fence with ownership */
-    Res<Fence> acquire();
+    Res<Fence> acquire(String&& name = "Fence");
     /** Reback acquired fence with ownership */
     void reback(Fence&& fence);
     /** Wait actived fences */

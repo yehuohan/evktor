@@ -103,7 +103,7 @@ public:
         return from(VK_SHADER_STAGE_COMPUTE_BIT, std::get<0>(source_and_fullpath), std::get<1>(source_and_fullpath));
     }
 
-    Res<core::ShaderModule> into(const core::CoreApi& api) const;
+    Res<core::ShaderModule> into(const core::CoreApi& api, String&& name = "ShaderModule") const;
 
 public:
     Self setDefine(const String& name, const String& value = "");
