@@ -13,11 +13,14 @@ App::App(int argc, char* argv[]) : IApp(1920, 1080) {
 
 App::~App() {
     vkt.api->waitIdle();
+
     skybox.reset();
     base.reset();
     rctx.reset();
-    vkt.api.reset();
+    scene.reset();
     scene_camera = nullptr;
+
+    vkt.api.reset();
 }
 
 void App::run() {
@@ -46,15 +49,16 @@ void App::setup() {
         .addDesiredPresentMode(VK_PRESENT_MODE_FIFO_KHR)
         .setDesiredExtent(getExtent());
     rctx = vkt.newRctx(std::move(sso));
+
+    // Load scene
+    scene = newBox<Scene>();
+    GLTFLoader(vkt).loadScene(*scene, Assets::scene("Sponza/glTF/Sponza.gltf"));
+    scene_camera = dynamic_cast<PerspCamera*>(scene->findNode("default.camera")->getComponent<Camera>());
+    scene_camera->aspect = (float)width / height;
 }
 
 void App::setupBasePass() {
     base = newBox<RenderPipeline>(*rctx, "Base");
-
-    auto scene = GLTFLoader(vkt).loadScene(Assets::scene("Sponza/glTF/Sponza.gltf"));
-    scene_camera = dynamic_cast<PerspCamera*>(scene->findNode("default.camera")->getComponent<Camera>());
-    scene_camera->aspect = (float)width / height;
-
     {
         auto vert = Shader::fromVert(Assets::getShader("pbr.vert")).unwrap();
         auto frag = Shader::fromFrag(Assets::getShader("pbr.frag")).unwrap();
@@ -62,7 +66,7 @@ void App::setupBasePass() {
         frag.addDescriptor(ShaderDescriptor::ImageSampler, 1);
 
         // Subpass for base scene
-        base->addSubpass<GeometrySubpass>(std::move(vert), std::move(frag), std::move(scene), *scene_camera)
+        base->addSubpass<GeometrySubpass>(std::move(vert), std::move(frag), *scene, *scene_camera)
             .setRTColors({0})
             .setRTDepthStencil(1);
     }
@@ -123,7 +127,7 @@ void App::setupSkyboxPass() {
 }
 
 void App::tick(float cur_time, float delta_time) {
-    tick_camera(*scene_camera, delta_time);
+    tickCamera(*scene_camera, delta_time);
 
     auto& cmdbuf = rctx->beginFrame().unwrap().get();
     auto& rtt = rctx->getFrameRTT().unwrap().get();

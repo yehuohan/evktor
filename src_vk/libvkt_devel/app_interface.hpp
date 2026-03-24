@@ -1,11 +1,14 @@
 #pragma once
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
 #include <cstdint>
 #include <share/share.hpp>
 #include <vkt_scene/components/camera.hpp>
 #include <vktor/core/api/instance.hpp>
-
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
+#include <vktor/core/descriptor_pool.hpp>
+#include <vktor/core/exts/swapchain.hpp>
+#include <vktor/core/render_pass.hpp>
 
 NAMESPACE_BEGIN(vktdev)
 
@@ -40,7 +43,7 @@ public:
     virtual void tick(float cur_time, float delta_time) = 0;
 
 protected:
-    virtual void tick_camera(vktscn::PerspCamera& camera, float delta_time);
+    void tickCamera(vktscn::PerspCamera& camera, float delta_time);
 };
 
 NAMESPACE_END(vktdev)

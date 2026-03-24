@@ -430,7 +430,7 @@ void GLTFLoader::loadPBRMaterials(Scene& scene) const {
     for (size_t k = 0; k < gmodel.materials.size(); k++) {
         const auto& gmaterial = gmodel.materials[k];
 
-        auto material = std::make_unique<PBRMaterial>(gmaterial.name);
+        auto material = newBox<PBRMaterial>(gmaterial.name);
 
         // Basic
         material->emissive_factor = glm::vec3(gmaterial.emissiveFactor[0],
@@ -445,17 +445,17 @@ void GLTFLoader::loadPBRMaterials(Scene& scene) const {
         }
         material->alpha_cutoff = gmaterial.alphaCutoff;
         material->double_sided = gmaterial.doubleSided;
-        if (0 <= gmaterial.emissiveTexture.index && static_cast<size_t>(gmaterial.emissiveTexture.index)) {
+        if (0 <= gmaterial.emissiveTexture.index && static_cast<size_t>(gmaterial.emissiveTexture.index) < textures.size()) {
             material->setTexture("emissive_texture", *textures[gmaterial.emissiveTexture.index]);
         }
 
         // Additional
         material->normal_scale = gmaterial.normalTexture.scale;
         material->occlusion_strength = gmaterial.occlusionTexture.strength;
-        if (0 <= gmaterial.normalTexture.index && static_cast<size_t>(gmaterial.normalTexture.index)) {
+        if (0 <= gmaterial.normalTexture.index && static_cast<size_t>(gmaterial.normalTexture.index) < textures.size()) {
             material->setTexture("normal_texture", *textures[gmaterial.normalTexture.index]);
         }
-        if (0 <= gmaterial.occlusionTexture.index && static_cast<size_t>(gmaterial.occlusionTexture.index)) {
+        if (0 <= gmaterial.occlusionTexture.index && static_cast<size_t>(gmaterial.occlusionTexture.index) < textures.size()) {
             material->setTexture("occlusion_texture", *textures[gmaterial.occlusionTexture.index]);
         }
 
@@ -649,38 +649,34 @@ void GLTFLoader::loadSceneNodes(Scene& scene, int32_t scene_index) const {
     scene.addComponent(std::move(default_camera));
 }
 
-Box<Scene> GLTFLoader::loadScene(int32_t scene_index) const {
-    Box<Scene> scene = newBox<Scene>();
-
-    loadSamplers(*scene);
-    loadBuffers(*scene);
-    loadImages(*scene);
-    loadTextures(*scene);     // Require images, samplers
-    loadPBRMaterials(*scene); // Require textures
-    loadMeshes(*scene);       // Require buffers, pbr_materials
-    loadCameras(*scene);
-    loadSceneNodes(*scene, scene_index); // Require meshes, cameras
-
-    return scene;
+void GLTFLoader::loadScene(vktscn::Scene& scene, int32_t scene_index) const {
+    loadSamplers(scene);
+    loadBuffers(scene);
+    loadImages(scene);
+    loadTextures(scene);     // Require images, samplers
+    loadPBRMaterials(scene); // Require textures
+    loadMeshes(scene);       // Require buffers, pbr_materials
+    loadCameras(scene);
+    loadSceneNodes(scene, scene_index); // Require meshes, cameras
 }
 
-Box<Scene> GLTFLoader::loadScene(const String& filename, int32_t scene_index) {
+bool GLTFLoader::loadScene(vktscn::Scene& scene, const String& filename, int32_t scene_index) {
     std::string err;
     std::string warn;
     tinygltf::TinyGLTF gloader;
 
     vktOut("Load scene from {}", filename);
     bool res = gloader.LoadASCIIFromFile(&gmodel, &err, &warn, filename);
-    if (!res) {
-        vktLogE("Failed to parse gltf: {}", filename);
-        return nullptr;
-    }
     if (!err.empty()) {
         vktLogE("{}", err);
-        return nullptr;
     }
     if (!warn.empty()) {
         vktLogW("{}", warn);
     }
-    return loadScene(scene_index);
+    if (!res) {
+        vktLogE("Failed to parse gltf: {}", filename);
+        return false;
+    }
+    loadScene(scene, scene_index);
+    return true;
 }

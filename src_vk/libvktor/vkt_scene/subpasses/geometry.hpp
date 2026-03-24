@@ -13,13 +13,13 @@ struct PBRUniform {
 
 class GeometrySubpass : public vkt::RenderSubpass {
 private:
+    Scene& scene;
     Camera& camera;
-    Box<vktscn::Scene> scene = nullptr;
     Vector<vkt::core::Buffer> pbr_ubo{};
     Vector<PBRUniform*> pbr_ubo_ptr{};
 
 public:
-    GeometrySubpass(vkt::Shader&& vert, vkt::Shader&& frag, Box<Scene>&& scene, Camera& camera);
+    GeometrySubpass(vkt::Shader&& vert, vkt::Shader&& frag, Scene& scene, Camera& camera);
     ~GeometrySubpass();
 
     virtual Res<Void> draw(vkt::RenderCmdbuf& rd_cmdbuf) override;

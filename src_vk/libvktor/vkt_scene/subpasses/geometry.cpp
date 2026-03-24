@@ -1,4 +1,4 @@
-#include "geometry_subpass.hpp"
+#include "geometry.hpp"
 #include "vkt_scene/vkt_scene.hpp"
 #include "vktor/core/descriptor_set.hpp"
 #include <queue>
@@ -22,13 +22,12 @@ static const auto vertex_input_attrs = Vector<VkVertexInputAttributeDescription>
     VkVertexInputAttributeDescription{2, 2, VK_FORMAT_R32G32B32_SFLOAT, 0},
 };
 
-GeometrySubpass::GeometrySubpass(vkt::Shader&& vert, vkt::Shader&& frag, Box<Scene>&& _scene, Camera& _camera)
+GeometrySubpass::GeometrySubpass(vkt::Shader&& vert, vkt::Shader&& frag, Scene& _scene, Camera& _camera)
     : RenderSubpass(std::move(vert), std::move(frag), "OpaquePass")
-    , camera(_camera)
-    , scene(std::move(_scene)) {}
+    , scene(_scene)
+    , camera(_camera) {}
 
 GeometrySubpass::~GeometrySubpass() {
-    scene.reset();
     for (auto& ubo : pbr_ubo) {
         ubo.unmap();
     }
@@ -96,7 +95,7 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
     auto& pipeline = res_pipeline.unwrap().get();
     cmdbuf.cmdBindGraphicsPipeline(pipeline);
 
-    auto& root = *scene->getRootNode();
+    auto& root = *scene.getRootNode();
     std::queue<Node*> nodes(std::deque<Node*>(root.getChildren().begin(), root.getChildren().end()));
     while (!nodes.empty()) {
         auto& node = *nodes.front();

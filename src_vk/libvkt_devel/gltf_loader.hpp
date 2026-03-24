@@ -30,8 +30,8 @@ protected:
     void loadMeshes(vktscn::Scene& scene) const;
     void loadCameras(vktscn::Scene& scene) const;
     void loadSceneNodes(vktscn::Scene& scene, int32_t scene_index) const;
-    Box<vktscn::Scene> loadScene(int32_t scene_index) const;
+    void loadScene(vktscn::Scene& scene, int32_t scene_index) const;
 
 public:
-    Box<vktscn::Scene> loadScene(const String& filename, int32_t scene_index = -1);
+    bool loadScene(vktscn::Scene& scene, const String& filename, int32_t scene_index = -1);
 };

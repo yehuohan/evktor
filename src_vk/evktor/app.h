@@ -10,10 +10,13 @@ using namespace vktscn;
 class App : public IApp {
 private:
     Vktor vkt;
+
+    Box<Scene> scene;
+    PerspCamera* scene_camera = nullptr;
+
     Box<RenderContext> rctx = nullptr;
     Box<RenderPipeline> base = nullptr;
     Box<RenderPipeline> skybox = nullptr;
-    PerspCamera* scene_camera = nullptr;
 
 public:
     App(int argc, char* argv[]);

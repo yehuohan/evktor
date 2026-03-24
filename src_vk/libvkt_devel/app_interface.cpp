@@ -43,7 +43,7 @@ Vector<const char*> IApp::requiredInstanceExtensions() const {
     return exts;
 }
 
-VkSurfaceKHR IApp::createSurface(const vkt::core::Instance& instance) const {
+VkSurfaceKHR IApp::createSurface(const core::Instance& instance) const {
     VkSurfaceKHR surface = VK_NULL_HANDLE;
     auto res = glfwCreateWindowSurface(instance, window, instance, &surface);
     if (res != VK_SUCCESS) {
@@ -83,7 +83,7 @@ void IApp::run() {
     }
 }
 
-void IApp::tick_camera(vktscn::PerspCamera& camera, float delta_time) {
+void IApp::tickCamera(vktscn::PerspCamera& camera, float delta_time) {
     const float speed = 5.5f;       /**< 摄像机移动速度 */
     const float sensitivity = 50.0; /**< 鼠标移动灵敏度 */
 
