@@ -25,16 +25,6 @@ add_requires("cxxopts 3.3.1")
 
 local src_dir = "$(scriptdir)/src_vk/"
 
---- Target: libvkt_devel
-target("vkt_devel", function()
-	set_kind("static")
-	add_files(src_dir .. "libvkt_devel/**.cpp")
-	add_includedirs(src_dir .. "libvkt_devel", { public = true })
-	add_packages("glfw", "stb", "imgui", "tinygltf", { public = true })
-	add_packages("vktor")
-	add_deps("vktor")
-end)
-
 --- Target: vktor
 target("vktor", function()
 	set_kind("static")
@@ -61,8 +51,8 @@ target("evktor", function()
 	set_kind("binary")
 	add_files(src_dir .. "evktor/**.cpp")
 	add_includedirs(src_dir .. "evktor")
-	add_packages("vkt_devel", "vktor", "cxxopts")
-	add_deps("vkt_devel", "vktor")
+	add_packages("vktor", "glfw", "stb", "imgui", "tinygltf", "cxxopts")
+	add_deps("vktor")
 end)
 
 --- Target: vkt_layer
@@ -97,10 +87,10 @@ end)
 --- Target: tst_main
 target("tst_main", function()
 	set_kind("binary")
-	add_files("$(scriptdir)/test/*.cpp")
-	add_includedirs("$(scriptdir)/test")
-	add_packages("vkt_devel", "vktor")
-	add_deps("vkt_devel", "vktor")
+	add_files("$(scriptdir)/test/*.cpp", src_dir .. "evktor/devel/assets.cpp")
+	add_includedirs("$(scriptdir)/test", src_dir .. "evktor/devel")
+	add_packages("vktor", "stb", "tinygltf")
+	add_deps("vktor")
 
 	on_prepare(function(tar)
 		local case_exts = ""
@@ -124,6 +114,6 @@ target("tags", function()
 	set_kind("phony")
 	set_default(false)
 	on_build(function()
-		os.exec("ctags -R $(scriptdir)/src")
+		os.exec("ctags -R $(scriptdir)/src_vk")
 	end)
 end)

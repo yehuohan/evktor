@@ -1,5 +1,5 @@
 #pragma once
-#include <vkt_devel.hpp>
+#include "devel/devel.hpp"
 #include <vkt_scene/vkt_scene.hpp>
 #include <vktor/vktor.hpp>
 

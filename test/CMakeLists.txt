@@ -39,8 +39,15 @@ endif()
 
 project(tst_main)
 
-add_executable(${PROJECT_NAME} ${SRC})
-target_link_libraries(${PROJECT_NAME} vkt_devel vktor)
+include_directories(${PROJECT_ROOT}/src_vk/evktor/devel)
+set(SRC_EXT ${PROJECT_ROOT}/src_vk/evktor/devel/assets.cpp)
+
+add_executable(${PROJECT_NAME} ${SRC} ${SRC_EXT})
+target_link_libraries(${PROJECT_NAME} vktor)
 target_include_directories(${PROJECT_NAME} PUBLIC ${EXECUTABLE_OUTPUT_PATH}/test)
+target_include_directories(${PROJECT_NAME} PRIVATE ${Stb_INCLUDE_DIR})
+target_include_directories(${PROJECT_NAME}
+    PRIVATE ${Stb_INCLUDE_DIR}
+    PRIVATE ${TINYGLTF_INCLUDE_DIRS})
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX})
