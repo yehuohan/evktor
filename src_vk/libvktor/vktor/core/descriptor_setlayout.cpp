@@ -67,7 +67,9 @@ Res<DescriptorSetLayout> DescriptorSetLayout::from(const CoreApi& api, const Des
     layout_ci.flags = info.flags;
     layout_ci.bindingCount = u32(bindings.size());
     layout_ci.pBindings = bindings.data();
-    OnRet(vkCreateDescriptorSetLayout(api, &layout_ci, api, setlayout), "Failed to create descriptor set layout");
+    OnRet(vkCreateDescriptorSetLayout(api, &layout_ci, api, setlayout),
+          "Failed to create descriptor set layout: {}",
+          info.__name);
     OnName(setlayout, info.__name);
     setlayout.bindings = std::move(info.bindings);
 

@@ -43,7 +43,7 @@ Res<PipelineCache> PipelineCache::from(const CoreApi& api, const PipelineCacheSt
     PipelineCache pipeline_cache(api);
 
     info.cache_ci.pNext = info.__next;
-    OnRet(vkCreatePipelineCache(api, &info.cache_ci, api, pipeline_cache), "Failed to create pipeline cache");
+    OnRet(vkCreatePipelineCache(api, &info.cache_ci, api, pipeline_cache), "Failed to create pipeline cache: {}", info.__name);
     OnName(pipeline_cache, info.__name);
 
     return Ok(std::move(pipeline_cache));

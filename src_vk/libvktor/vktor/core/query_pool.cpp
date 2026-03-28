@@ -60,7 +60,7 @@ Res<QueryPool> QueryPool::from(const CoreApi& api, const QueryPoolState& info) {
     QueryPool query_pool(api);
 
     info.query_pool_ci.pNext = info.__next;
-    OnRet(vkCreateQueryPool(api, &info.query_pool_ci, api, query_pool), "Failed to create query pool");
+    OnRet(vkCreateQueryPool(api, &info.query_pool_ci, api, query_pool), "Failed to create query pool: {}", info.__name);
     OnName(query_pool, info.__name);
     query_pool.query_count = info.query_pool_ci.queryCount;
 

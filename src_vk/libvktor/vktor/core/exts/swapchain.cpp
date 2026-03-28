@@ -193,7 +193,7 @@ Res<Swapchain> Swapchain::from(const CoreApi& api, const SwapchainState& info) {
     }
 
     Swapchain swapchain(api);
-    OnRet(vkCreateSwapchainKHR(api, &swapchain_ci, api, swapchain), "Failed to create swapchain");
+    OnRet(vkCreateSwapchainKHR(api, &swapchain_ci, api, swapchain), "Failed to create swapchain: {}", info.__name);
     if (info.old) {
         vkDestroySwapchainKHR(api, info.old, api);
     }

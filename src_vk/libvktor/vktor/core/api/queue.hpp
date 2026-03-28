@@ -4,11 +4,15 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-struct Queue : public CoreHandle<VkQueue> {
+class Queue : public CoreHandle<VkQueue> {
+public:
     const uint32_t family_index;
     const uint32_t index;
 
+private:
     explicit Queue(uint32_t family_index = 0, uint32_t index = 0) : family_index(family_index), index(index) {}
+
+public:
     Queue(Queue&&);
     ~Queue();
 
@@ -16,6 +20,8 @@ struct Queue : public CoreHandle<VkQueue> {
     VkResult submit(VkCommandBuffer cmdbuf, VkFence fence = VK_NULL_HANDLE) const;
     VkResult present(VkSwapchainKHR swapchain, uint32_t image_index, VkSemaphore wait_semaphore = VK_NULL_HANDLE) const;
     VkResult waitIdle() const;
+
+    static Queue from(VkDevice device, uint32_t family_index = 0, uint32_t index = 0);
 };
 
 /**

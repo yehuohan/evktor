@@ -43,7 +43,7 @@ Res<DescriptorSet> DescriptorPool::allocate(const void* next, const String& name
     descset_ai.descriptorPool = *this;
     descset_ai.descriptorSetCount = 1;
     descset_ai.pSetLayouts = desc_setlayout;
-    OnRet(vkAllocateDescriptorSets(api, &descset_ai, descset), "Failed to allocate descriptor set");
+    OnRet(vkAllocateDescriptorSets(api, &descset_ai, descset), "Failed to allocate descriptor set: {}", name);
     OnName(descset, name);
 
     count++;
@@ -93,7 +93,8 @@ Res<DescriptorPool> DescriptorPool::from(const DescriptorSetLayout& setlayout, c
     descpool_ci.poolSizeCount = u32(poolsizes.size());
     descpool_ci.pPoolSizes = poolsizes.data();
     OnRet(vkCreateDescriptorPool(setlayout.api, &descpool_ci, setlayout.api, descriptor_pool),
-          "Failed to create descriptor pool");
+          "Failed to create descriptor pool: {}",
+          info.__name);
     OnName(descriptor_pool, info.__name);
     descriptor_pool.flags = info.flags;
 

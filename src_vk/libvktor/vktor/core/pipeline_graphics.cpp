@@ -332,7 +332,9 @@ Res<GraphicsPipeline> GraphicsPipeline::from(const CoreApi& api, const GraphicsP
     }
 #endif
 
-    OnRet(vkCreateGraphicsPipelines(api, VK_NULL_HANDLE, 1, &pipeline_ci, api, pipeline), "Failed to create graphics pipeline");
+    OnRet(vkCreateGraphicsPipelines(api, VK_NULL_HANDLE, 1, &pipeline_ci, api, pipeline),
+          "Failed to create graphics pipeline: {}",
+          info.__name);
     OnName(pipeline, info.__name);
 
     return Ok(std::move(pipeline));

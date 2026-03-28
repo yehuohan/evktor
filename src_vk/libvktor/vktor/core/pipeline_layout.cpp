@@ -70,7 +70,9 @@ Res<PipelineLayout> PipelineLayout::from(const CoreApi& api, const PipelineLayou
     pipeline_layout_ci.pSetLayouts = info.desc_setlayouts.data();
     pipeline_layout_ci.pushConstantRangeCount = u32(info.push_constants.size());
     pipeline_layout_ci.pPushConstantRanges = info.push_constants.data();
-    OnRet(vkCreatePipelineLayout(api, &pipeline_layout_ci, api, pipeline_layout), "Failed to create pipeline layout");
+    OnRet(vkCreatePipelineLayout(api, &pipeline_layout_ci, api, pipeline_layout),
+          "Failed to create pipeline layout: {}",
+          info.__name);
     OnName(pipeline_layout, info.__name);
 
     return Ok(std::move(pipeline_layout));

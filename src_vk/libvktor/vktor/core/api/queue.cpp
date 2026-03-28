@@ -38,5 +38,11 @@ VkResult Queue::waitIdle() const {
     return vkQueueWaitIdle(handle);
 }
 
+Queue Queue::from(VkDevice device, uint32_t family_index, uint32_t index) {
+    Queue queue(family_index, index);
+    vkGetDeviceQueue(device, family_index, 0, queue);
+    return queue;
+}
+
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)

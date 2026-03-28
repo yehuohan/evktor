@@ -70,7 +70,9 @@ Res<ComputePipeline> ComputePipeline::from(const CoreApi& api, const ComputePipe
     pipeline_ci.basePipelineHandle = VK_NULL_HANDLE;
     pipeline_ci.basePipelineIndex = -1;
 
-    OnRet(vkCreateComputePipelines(api, VK_NULL_HANDLE, 1, &pipeline_ci, api, pipeline), "Failed to create compute pipeline");
+    OnRet(vkCreateComputePipelines(api, VK_NULL_HANDLE, 1, &pipeline_ci, api, pipeline),
+          "Failed to create compute pipeline: {}",
+          info.__name);
     OnName(pipeline, info.__name);
 
     return Ok(std::move(pipeline));

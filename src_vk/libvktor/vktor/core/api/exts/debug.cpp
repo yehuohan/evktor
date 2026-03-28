@@ -128,7 +128,8 @@ Res<Debug> Debug::from(CRef<Instance> instance, const DebugState& info) {
     Debug debug(instance);
     info.debug_ci.pNext = info.__next;
     OnRet(vkCreateDebugUtilsMessengerEXT(instance.get(), &info.debug_ci, instance.get(), &debug.handle),
-          "Failed to create debug utils messenger");
+          "Failed to create debug utils messenger: {}",
+          info.__name);
     return Ok(std::move(debug));
 }
 

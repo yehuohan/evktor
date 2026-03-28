@@ -160,7 +160,7 @@ Res<RenderPass> RenderPass::from(const CoreApi& api, const RenderPassState& info
     render_pass_ci.pDependencies = dependencies.data();
 
     RenderPass render_pass(api);
-    OnRet(vkCreateRenderPass(api, &render_pass_ci, api, render_pass), "Failed to create render pass");
+    OnRet(vkCreateRenderPass(api, &render_pass_ci, api, render_pass), "Failed to create render pass: {}", info.__name);
     OnName(render_pass, info.__name);
 
     return Ok(std::move(render_pass));

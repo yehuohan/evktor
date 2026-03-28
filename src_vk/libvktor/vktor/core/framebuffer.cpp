@@ -55,7 +55,7 @@ Res<Framebuffer> Framebuffer::from(const CoreApi& api, const FramebufferState& i
     framebuffer_ci.height = info.height;
     framebuffer_ci.layers = info.layers;
 
-    OnRet(vkCreateFramebuffer(api, &framebuffer_ci, api, framebuffer), "Failed to create framebuffer");
+    OnRet(vkCreateFramebuffer(api, &framebuffer_ci, api, framebuffer), "Failed to create framebuffer: {}", info.__name);
     OnName(framebuffer, info.__name);
 
     return Ok(std::move(framebuffer));

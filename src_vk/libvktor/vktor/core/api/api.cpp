@@ -119,14 +119,11 @@ Res<CRef<Device>> CoreApi::init(DeviceState& info) {
         uint32_t family_index = q.first;
         const auto& prop = q.second;
         for (uint32_t index = 0; index < prop.count; index++) {
-            Queue queue(family_index, index);
-            vkGetDeviceQueue(device, family_index, index, queue);
-
+            auto queue = Queue::from(device, family_index, index);
             const String name = "Queue" + std::to_string(family_index) + "." + std::to_string(index);
             OnRet(setDebugName(VK_OBJECT_TYPE_QUEUE, reinterpret_cast<uint64_t>(queue.getHandle()), name.c_str()),
                   "Failed to set debug name: {}",
                   name);
-
             queues[family_index].push_back(std::move(queue));
         }
     }
@@ -179,10 +176,7 @@ Res<CRef<Device>> CoreApi::borrow(VkDevice handle,
         queues[queue_family_indices.transfer].clear();
     }
     for (auto& q : queues) {
-        auto family_index = q.first;
-        Queue queue(family_index, 0);
-        vkGetDeviceQueue(device, family_index, 0, queue);
-        q.second.push_back(std::move(queue));
+        q.second.push_back(Queue::from(device, q.first, 0));
     }
 
     return Ok(newCRef(device));

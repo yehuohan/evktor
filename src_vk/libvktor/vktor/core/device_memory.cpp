@@ -63,7 +63,7 @@ Res<DeviceMemory> DeviceMemory::from(const CoreApi& api, const DeviceMemoryState
         return Er("Failed to find suitable device memory type");
     }
 
-    OnRet(vkAllocateMemory(api, &memory_ci, api, memory), "Faild to allocate device memory");
+    OnRet(vkAllocateMemory(api, &memory_ci, api, memory), "Faild to allocate device memory: {}", info.__name);
     OnName(memory, info.__name);
     memory.size = info.requirements.size;
 

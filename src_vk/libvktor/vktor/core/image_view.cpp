@@ -94,7 +94,7 @@ Res<ImageView> ImageView::from(const CoreApi& api, const ImageViewState& info) {
     ImageView imageview(api);
 
     info.imageview_ci.pNext = info.__next;
-    OnRet(vkCreateImageView(api, &info.imageview_ci, api, imageview), "Failed to create image view");
+    OnRet(vkCreateImageView(api, &info.imageview_ci, api, imageview), "Failed to create image view: {}", info.__name);
     OnName(imageview, info.__name);
     imageview.image = info.imageview_ci.image;
     imageview.subresource_range = info.imageview_ci.subresourceRange;

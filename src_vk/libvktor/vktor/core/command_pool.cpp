@@ -54,7 +54,7 @@ Res<CRef<CommandBuffer>> CommandPool::allocate(Level level, const String& name) 
                 cmdbuf_ai.commandPool = *this;
                 cmdbuf_ai.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
                 cmdbuf_ai.commandBufferCount = 1;
-                OnRet(vkAllocateCommandBuffers(api, &cmdbuf_ai, cmdbuf), "Failed to allocate primary command buffer");
+                OnRet(vkAllocateCommandBuffers(api, &cmdbuf_ai, cmdbuf), "Failed to allocate primary command buffer: {}", name);
                 OnName(cmdbuf, name);
 
                 active_primary_count++;
@@ -73,7 +73,9 @@ Res<CRef<CommandBuffer>> CommandPool::allocate(Level level, const String& name) 
                 cmdbuf_ai.commandPool = *this;
                 cmdbuf_ai.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
                 cmdbuf_ai.commandBufferCount = 1;
-                OnRet(vkAllocateCommandBuffers(api, &cmdbuf_ai, cmdbuf), "Failed to allocate secondary command buffer");
+                OnRet(vkAllocateCommandBuffers(api, &cmdbuf_ai, cmdbuf),
+                      "Failed to allocate secondary command buffer: {}",
+                      name);
                 OnName(cmdbuf, name);
 
                 active_secondary_count++;
@@ -101,7 +103,7 @@ Res<CommandPool> CommandPool::from(const CoreApi& api, const CommandPoolState& i
     auto cmdpool_ci = Itor::CommandPoolCreateInfo(info.__next);
     cmdpool_ci.flags = info.flags;
     cmdpool_ci.queueFamilyIndex = info.queue_family_index;
-    OnRet(vkCreateCommandPool(api, &cmdpool_ci, api, cmdpool), "Failed to create command pool");
+    OnRet(vkCreateCommandPool(api, &cmdpool_ci, api, cmdpool), "Failed to create command pool: {}", info.__name);
     OnName(cmdpool, info.__name);
 
     return Ok(std::move(cmdpool));

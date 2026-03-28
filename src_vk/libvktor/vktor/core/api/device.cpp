@@ -136,7 +136,9 @@ Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     dev_ci.ppEnabledExtensionNames = info.extensions.data();
     dev_ci.pEnabledFeatures = nullptr; // Always set features by VkPhysicalDeviceFeatures2.features
 
-    OnRet(vkCreateDevice(phy_dev.get(), &dev_ci, phy_dev.get().instance.get(), device), "Failed to create device");
+    OnRet(vkCreateDevice(phy_dev.get(), &dev_ci, phy_dev.get().instance.get(), device),
+          "Failed to create device: {}",
+          info.__name);
 
     // Support only just one VkDevice object
     volkLoadDevice(device);

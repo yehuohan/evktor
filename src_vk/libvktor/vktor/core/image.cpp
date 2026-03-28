@@ -229,7 +229,8 @@ Res<Image> Image::from(const CoreApi& api, const ImageState& info) {
     VmaAllocationInfo allocation_info{};
 
     OnRet(vmaCreateImage(api, &info.image_ci, &allocation_ci, image, &image.allocation, &allocation_info),
-          "Failed to create image");
+          "Failed to create image: {}",
+          info.__name);
     OnName(image, info.__name);
     image.type = info.image_ci.imageType;
     image.format = info.image_ci.format;

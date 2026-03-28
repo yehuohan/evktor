@@ -31,7 +31,7 @@ Res<Event> Event::from(const CoreApi& api, const EventState& info) {
     Event event(api);
 
     info.event_ci.pNext = info.__next;
-    OnRet(vkCreateEvent(api, &info.event_ci, api, event), "Failed to create event");
+    OnRet(vkCreateEvent(api, &info.event_ci, api, event), "Failed to create event: {}", info.__name);
     OnName(event, info.__name);
 
     return Ok(std::move(event));

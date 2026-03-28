@@ -133,7 +133,7 @@ Res<Instance> Instance::from(InstanceState& info) {
     }
 
     Instance instance{};
-    OnRet(vkCreateInstance(&instance_ci, info.allocator, instance), "Failed to create instance");
+    OnRet(vkCreateInstance(&instance_ci, info.allocator, instance), "Failed to create instance: {}", info.__name);
     instance.allocator = info.allocator;
     instance.api_version = info.app_info.apiVersion;
 

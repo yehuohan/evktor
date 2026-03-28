@@ -99,7 +99,7 @@ Res<Sampler> Sampler::from(const CoreApi& api, const SamplerState& info) {
     Sampler sampler(api);
 
     info.sampler_ci.pNext = info.__next;
-    OnRet(vkCreateSampler(api, &info.sampler_ci, api, sampler), "Failed to create sampler");
+    OnRet(vkCreateSampler(api, &info.sampler_ci, api, sampler), "Failed to create sampler: {}", info.__name);
     OnName(sampler, info.__name);
 
     return Ok(std::move(sampler));

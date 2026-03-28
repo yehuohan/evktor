@@ -50,7 +50,7 @@ Res<Semaphore> Semaphore::from(const CoreApi& api, const SemaphoreState& info) {
     Semaphore semaphore(api);
 
     info.semaphore_ci.pNext = info.__next;
-    OnRet(vkCreateSemaphore(api, &info.semaphore_ci, api, semaphore), "Failed to create semaphore");
+    OnRet(vkCreateSemaphore(api, &info.semaphore_ci, api, semaphore), "Failed to create semaphore: {}", info.__name);
     OnName(semaphore, info.__name);
 
     return Ok(std::move(semaphore));

@@ -40,7 +40,7 @@ Res<ShaderModule> ShaderModule::from(const CoreApi& api, const ShaderModuleState
     auto shader_ci = Itor::ShaderModuleCreateInfo(info.__next);
     shader_ci.codeSize = info.code_size;
     shader_ci.pCode = info.code;
-    OnRet(vkCreateShaderModule(api, &shader_ci, api, shader_module), "Failed to create shader module");
+    OnRet(vkCreateShaderModule(api, &shader_ci, api, shader_module), "Failed to create shader module: {}", info.__name);
     OnName(shader_module, info.__name);
 
     return Ok(std::move(shader_module));
