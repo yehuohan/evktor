@@ -92,6 +92,7 @@ protected:
     VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT;
     VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
 
+    VkDeviceSize memory_size = 0;
     VkDeviceMemory memory = VK_NULL_HANDLE;
     VmaAllocation allocation = VK_NULL_HANDLE;
 
@@ -147,22 +148,20 @@ public:
     Res<void*> map() const;
     void unmap() const;
     VkResult getFd(int& fd, VkExternalMemoryHandleTypeFlagBits hdl_type = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT);
+#ifdef VK_USE_PLATFORM_WIN32_KHR
     VkResult getWin32Handle(HANDLE& hdl,
                             VkExternalMemoryHandleTypeFlagBits hdl_type = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT);
+#endif
 
     static Res<Image> from(const CoreApi& api, const ImageState& info);
     /**
      * @brief Borrow image from already created image (e.g. for swapchain images)
      */
     static Image borrow(const CoreApi& api,
-                        const VkImage image,
-                        VkFormat format,
-                        VkExtent3D extent,
-                        uint32_t mip_levels = 1,
-                        uint32_t array_layers = 1,
-                        VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT,
-                        VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL,
-                        VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT);
+                        const ImageState& info,
+                        VkImage image,
+                        VkDeviceMemory memory = VK_NULL_HANDLE,
+                        VkDeviceSize memory_size = VK_WHOLE_SIZE);
 };
 
 /**

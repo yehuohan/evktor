@@ -141,14 +141,13 @@ bool Image::copyFrom(const void* src, const VkDeviceSize src_size, uint32_t mip,
     VkDeviceSize mem_size = std::min<VkDeviceSize>(src_size, subresource_layout.size);
     VkDeviceSize offset = subresource_layout.offset;
 
-    void* data;
-    auto res = vmaMapMemory(api, allocation, &data);
-    if (VK_SUCCESS != res) {
-        vktLogE("Failed to map image memory: {}", VkStr(VkResult, res));
+    auto res = map();
+    if (res.isErr()) {
         return false;
     }
+    void* data = res.unwrap();
     std::memcpy((uint8_t*)data + offset, src, (size_t)mem_size);
-    vmaUnmapMemory(api, allocation);
+    unmap();
     return true;
 }
 
@@ -157,25 +156,32 @@ bool Image::copyInto(void* dst, const VkDeviceSize dst_size = 0, uint32_t mip, u
     VkDeviceSize mem_size = std::min<VkDeviceSize>(dst_size, subresource_layout.size);
     VkDeviceSize offset = subresource_layout.offset;
 
-    void* data;
-    auto res = vmaMapMemory(api, allocation, &data);
-    if (VK_SUCCESS != res) {
-        vktLogE("Failed to map image memory: {}", VkStr(VkResult, res));
+    auto res = map();
+    if (res.isErr()) {
         return false;
     }
+    void* data = res.unwrap();
     std::memcpy(dst, (uint8_t*)data + offset, (size_t)mem_size);
-    vmaUnmapMemory(api, allocation);
+    unmap();
     return true;
 }
 
 Res<void*> Image::map() const {
     void* data;
-    OnRet(vmaMapMemory(api, allocation, &data), "Failed to map image memory");
+    if (allocation) {
+        OnRet(vmaMapMemory(api, allocation, &data), "Failed to map image memory with allocation");
+    } else if (memory) {
+        OnRet(vkMapMemory(api, memory, 0, memory_size, 0, &data), "Failed to map image memory");
+    }
     return Ok(data);
 }
 
 void Image::unmap() const {
-    vmaUnmapMemory(api, allocation);
+    if (allocation) {
+        vmaUnmapMemory(api, allocation);
+    } else if (memory) {
+        vkUnmapMemory(api, memory);
+    }
 }
 
 VkResult Image::getFd(int& fd, VkExternalMemoryHandleTypeFlagBits hdl_type) {
@@ -185,12 +191,14 @@ VkResult Image::getFd(int& fd, VkExternalMemoryHandleTypeFlagBits hdl_type) {
     return vkGetMemoryFdKHR(api, &fd_gi, &fd);
 }
 
+#ifdef VK_USE_PLATFORM_WIN32_KHR
 VkResult Image::getWin32Handle(HANDLE& hdl, VkExternalMemoryHandleTypeFlagBits hdl_type) {
     auto hdl_gi = Itor::MemoryGetWin32HandleInfoKHR();
     hdl_gi.memory = memory;
     hdl_gi.handleType = hdl_type;
     return vkGetMemoryWin32HandleKHR(api, &hdl_gi, &hdl);
 }
+#endif
 
 Res<Image> Image::from(const CoreApi& api, const ImageState& info) {
     Image image(api);
@@ -233,33 +241,33 @@ Res<Image> Image::from(const CoreApi& api, const ImageState& info) {
     image.usage = info.image_ci.usage;
     image.layout = info.image_ci.initialLayout;
     image.memory = allocation_info.deviceMemory;
+    image.memory_size = allocation_info.size;
 
     return Ok(std::move(image));
 }
 
 Image Image::borrow(const CoreApi& api,
-                    const VkImage _image,
-                    VkFormat _format,
-                    VkExtent3D _extent,
-                    uint32_t _mip_levels,
-                    uint32_t _array_layers,
-                    VkSampleCountFlagBits _samples,
-                    VkImageTiling _tiling,
-                    VkImageUsageFlags _usage) {
+                    const ImageState& info,
+                    VkImage _image,
+                    VkDeviceMemory memory,
+                    VkDeviceSize memory_size) {
     if (VK_NULL_HANDLE == _image) {
         vktLogW("Image should borrow from a existed & valid VkImage");
     }
     Image image(api);
     image.__borrowed = true;
     image.handle = _image;
-    image.type = getType(_extent);
-    image.format = _format;
-    image.extent = _extent;
-    image.mip_levels = _mip_levels;
-    image.array_layers = _array_layers;
-    image.samples = _samples;
-    image.tiling = _tiling;
-    image.usage = _usage;
+    image.type = info.image_ci.imageType;
+    image.format = info.image_ci.format;
+    image.extent = info.image_ci.extent;
+    image.mip_levels = info.image_ci.mipLevels;
+    image.array_layers = info.image_ci.arrayLayers;
+    image.samples = info.image_ci.samples;
+    image.tiling = info.image_ci.tiling;
+    image.usage = info.image_ci.usage;
+    image.layout = info.image_ci.initialLayout;
+    image.memory = memory;
+    image.memory_size = memory_size;
     return image;
 }
 

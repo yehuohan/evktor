@@ -114,16 +114,16 @@ Res<Image> Swapchain::newImage(uint32_t index) const {
     if (index >= images.size()) {
         return Er("The index = {} is out of swapchain images", index);
     }
-    Image image = Image::borrow(api,
-                                images[index],
-                                image_format,
-                                VkExtent3D{image_extent.width, image_extent.height, 1},
-                                1,
-                                image_layers,
-                                VK_SAMPLE_COUNT_1_BIT,
-                                VK_IMAGE_TILING_OPTIMAL,
-                                image_usage);
-    OnName(image, "SwapchainImage" + std::to_string(index));
+    ImageState info{"SwapchainImage" + std::to_string(index)};
+    info.setFormat(image_format);
+    info.setExtent(image_extent.width, image_extent.height);
+    info.setMipLevels(1);
+    info.setArrayLayers(image_layers);
+    info.setSamples(VK_SAMPLE_COUNT_1_BIT);
+    info.setTiling(VK_IMAGE_TILING_OPTIMAL);
+    info.setUsage(image_usage);
+    Image image = Image::borrow(api, info, images[index]);
+    OnName(image, info.__name);
     return Ok(std::move(image));
 }
 

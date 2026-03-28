@@ -88,7 +88,10 @@ public:
     /**
      * @brief Borrow buffer from already created buffer
      */
-    static Buffer borrow(const CoreApi& api, const VkBuffer buffer, VkDeviceSize size);
+    static Buffer borrow(const CoreApi& api,
+                         VkBuffer buffer,
+                         VkDeviceMemory memory = VK_NULL_HANDLE,
+                         VkDeviceSize size = VK_WHOLE_SIZE);
 };
 
 NAMESPACE_END(core)
