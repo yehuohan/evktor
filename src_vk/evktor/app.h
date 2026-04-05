@@ -24,6 +24,7 @@ public:
 
     void run() override;
     void tick(float cur_time, float delta_time) override;
+    void drawGui(const core::CommandBuffer& cmdbuf, float delta_time);
 
 private:
     void setup();

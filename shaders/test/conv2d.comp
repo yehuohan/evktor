@@ -92,7 +92,7 @@ layout(binding = 2, set = 0) readonly buffer Kern {
 layout(binding = 3, set = 0) readonly buffer Bias {
     float bias[];
 };
-layout(push_constant) readonly uniform Args {
+layout(push_constant) uniform Args {
     Conv2DParams a;
 };
 

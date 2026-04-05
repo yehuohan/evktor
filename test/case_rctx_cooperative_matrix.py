@@ -21,19 +21,20 @@ class Conv2DParams:
 
 def gen(params: Conv2DParams):
     # yout = np.zeros((1, params.OH, params.OW, params.OC), dtype=np.float32)
-    xinp = np.zeros((1, params.IH, params.IW, params.IC), dtype=np.float32)
-    kern = np.zeros((params.KH, params.KW, params.IC, params.OC), dtype=np.float32)
-    bias = np.zeros((params.OC,), dtype=np.float32)
+    xinp = np.zeros((1, params.IH, params.IW, params.IC), dtype=np.int8)
+    kern = np.zeros((params.KH, params.KW, params.IC, params.OC), dtype=np.int8)
+    bias = np.zeros((params.OC,), dtype=np.int8)
     buf = np.zeros_like(xinp).flatten()
     for k in range(buf.size):
-        buf[k] = float(k % 255) / 255.0
+        # buf[k] = float(k % 255) / 255.0
+        buf[k] = k % 255 - 128
     # yout.flat[:] = buf[: yout.size]
     xinp.flat[:] = buf[: xinp.size]
     kern.flat[:] = buf[: kern.size]
     bias.flat[:] = buf[: bias.size]
-    xinp = torch.tensor(xinp, dtype=torch.float32)
-    kern = torch.tensor(kern, dtype=torch.float32)
-    bias = torch.tensor(bias, dtype=torch.float32)
+    xinp = torch.tensor(xinp, dtype=torch.int8)
+    kern = torch.tensor(kern, dtype=torch.int8)
+    bias = torch.tensor(bias, dtype=torch.int8)
     return (xinp, kern, bias)
 
 
@@ -54,7 +55,8 @@ def conv2d(USE_NHWC):
 
     yout = yout.numpy().flatten()
     yout = yout[:: yout.size // 11]
-    print(", ".join([f"{y:9.6f}" for y in yout]))
+    # print(", ".join([f"{y:9.6f}" for y in yout]))
+    print(", ".join([f"{y}" for y in yout]))
 
 
 conv2d(True)

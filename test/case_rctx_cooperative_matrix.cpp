@@ -31,19 +31,22 @@ struct Conv2DTiles {
     uint32_t TILE_K = 16;
 };
 
+// #define DType float
+#define DType int8_t
+
 void case_rctx_cooperative_matrix() {
     // Create RenderContext
     Vktor vkt;
     CoreApi& api = vkt.createApi(nullptr, nullptr, nullptr, [](const PhysicalDevice& phydev, DeviceState& dso) {
-        static auto cm_feats = Itor::PhysicalDeviceCooperativeMatrixFeaturesKHR();
-        cm_feats.cooperativeMatrix = VK_TRUE;
-        dso.setNext(&cm_feats)
-            .tryAddExtension(VK_KHR_COOPERATIVE_MATRIX_EXTENSION_NAME)
-            .setFeatures<VkPhysicalDeviceVulkan12Features>([](VkPhysicalDeviceVulkan12Features& feats) {
-                feats.shaderFloat16 = VK_TRUE;
-                feats.vulkanMemoryModel = VK_TRUE;
-                feats.vulkanMemoryModelDeviceScope = VK_TRUE;
-            });
+        // static auto cm_feats = Itor::PhysicalDeviceCooperativeMatrixFeaturesKHR();
+        // cm_feats.cooperativeMatrix = VK_TRUE;
+        // dso.setNext(&cm_feats)
+        //     .tryAddExtension(VK_KHR_COOPERATIVE_MATRIX_EXTENSION_NAME)
+        //     .setFeatures<VkPhysicalDeviceVulkan12Features>([](VkPhysicalDeviceVulkan12Features& feats) {
+        //         feats.shaderFloat16 = VK_TRUE;
+        //         feats.vulkanMemoryModel = VK_TRUE;
+        //         feats.vulkanMemoryModelDeviceScope = VK_TRUE;
+        //     });
     });
     auto rctx = vkt.newRctx(1);
     auto& rfrm = rctx->getFrame().get();
@@ -52,7 +55,7 @@ void case_rctx_cooperative_matrix() {
     Conv2DParams params{};
     Conv2DTiles tiles{};
     uint32_t sub_group_size;
-    bool use_coopmat = true;
+    bool use_coopmat = false;
     if (use_coopmat) {
         Vector<VkCooperativeMatrixPropertiesKHR> cm_props;
         enumerate(cm_props,
@@ -106,8 +109,7 @@ void case_rctx_cooperative_matrix() {
     tstOut("Command buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
-    const String comp_file = vktdev::Assets::shader("test/conv2d.comp");
-    auto shader_comp = Shader::fromComp(vktdev::Assets::getShader(comp_file)).unwrap();
+    auto shader_comp = Shader::fromComp(vktdev::Assets::getShader("test/conv2d_i8.comp")).unwrap();
     if (use_coopmat) {
         shader_comp.setDefine("USE_NHWC")
             .setDefine("USE_COOPMAT")
@@ -127,10 +129,10 @@ void case_rctx_cooperative_matrix() {
     auto shaders = Vector<CRef<Shader>>{newCRef(shader_comp)};
 
     // Create descriptors
-    auto yout = vkt.newStorageBuffer(params.OH * params.OW * params.OC * sizeof(float));
-    auto xinp = vkt.newStorageBuffer(params.IH * params.IW * params.IC * sizeof(float));
-    auto kern = vkt.newStorageBuffer(params.KH * params.KW * params.IC * params.OC * sizeof(float));
-    auto bias = vkt.newStorageBuffer(params.OC * sizeof(float));
+    auto yout = vkt.newStorageBuffer(params.OH * params.OW * params.OC * sizeof(DType));
+    auto xinp = vkt.newStorageBuffer(params.IH * params.IW * params.IC * sizeof(DType));
+    auto kern = vkt.newStorageBuffer(params.KH * params.KW * params.IC * params.OC * sizeof(DType));
+    auto bias = vkt.newStorageBuffer(params.OC * sizeof(DType));
     auto desc_info = DescriptorInfo{};
     desc_info.addBuf().bind(yout);
     desc_info.addBuf().bind(xinp);
@@ -152,9 +154,10 @@ void case_rctx_cooperative_matrix() {
 
     // Create staging buffer
     auto staging = vkt.newStagingBuffer(std::max<VkDeviceSize>(yout.getSize(), xinp.getSize()));
-    Vector<float> buf(staging.getSize() / sizeof(float));
+    Vector<DType> buf(staging.getSize() / sizeof(DType));
     for (size_t k = 0; k < buf.size(); k++) {
-        buf[k] = float(k % 255) / 255.0;
+        // buf[k] = (k % 255) / 255.0;
+        buf[k] = k % 255 - 128;
     }
     staging.copyFrom(buf.data());
     cmdbuf.begin();
@@ -180,9 +183,9 @@ void case_rctx_cooperative_matrix() {
     queue.waitIdle();
 
     // Check staging buffer
-    Vector<float> out(yout.getSize() / sizeof(float));
+    Vector<DType> out(yout.getSize() / sizeof(DType));
     staging.copyInto(out.data(), yout.getSize());
-    Vector<float> disp{};
+    Vector<DType> disp{};
     for (size_t k = 0; k < out.size(); k += out.size() / 11) {
         disp.push_back(out[k]);
     }
