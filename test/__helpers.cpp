@@ -9,7 +9,7 @@ Quad::Quad() {
     cha = 4;
     num = wid * hei * cha;
 
-    comp_file = vktdev::Assets::shader("test/quad.comp");
+    comp_file = "test/quad.comp";
     group_count_x = (wid + 7) / 8;
     group_count_y = (hei + 7) / 8;
     group_count_z = 1;
@@ -60,8 +60,8 @@ Triangle::Triangle() {
     cha = 4;
     num = wid * hei * cha;
 
-    vert_file = vktdev::Assets::shader("test/triangle.vert");
-    frag_file = vktdev::Assets::shader("test/triangle.frag");
+    vert_file = "test/triangle.vert";
+    frag_file = "test/triangle.frag";
     push_args.flipy = 1;
     push_args.scaler = 2;
     spec_args.alpha = 3;

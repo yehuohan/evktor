@@ -39,11 +39,11 @@ x-evktor: x-src
 
 x-sigma: x-src
     @echo [Run] evktor/test/tst_main core
-    VK_LAYER_PATH={{dir_xinstall}}/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_xinstall}}/bin/tst_main core_graphics
+    VK_LAYER_PATH={{dir_xinstall}}/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_xinstall}}/bin/tst_main core_graphics -a {{dir_root}}/../assets -s {{dir_root}}/shaders
 
 x-test case="": x-src
     @echo [Run] evktor/test
-    {{dir_xinstall}}/bin/tst_main {{case}}
+    {{dir_xinstall}}/bin/tst_main {{case}} -a {{dir_root}}/../assets -s {{dir_root}}/shaders
 
 evktor: src
     @echo [Run] evktor...
@@ -52,13 +52,13 @@ evktor: src
 sigma: src
     @echo [Run] evktor/test/tst_main core
     # Replace layers with VK_LAYER_PATH
-    VK_LAYER_PATH={{dir_install}}/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_main core_graphics
+    VK_LAYER_PATH={{dir_install}}/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_main core_graphics -a {{dir_root}}/../assets -s {{dir_root}}/shaders
     # Append layers from VK_ADD_LAYER_PATH (why VK_ADD_LAYER_PATH not work?)
     # VK_ADD_LAYER_PATH={{dir_install}}/layer VK_INSTANCE_LAYERS=VK_LAYER_VKTOR_Sample {{dir_install}}/tst_main core_graphics
 
 test case="": src
     @echo [Run] evktor/test
-    {{dir_install}}/tst_main {{case}}
+    {{dir_install}}/tst_main {{case}} -a {{dir_root}}/../assets -s {{dir_root}}/shaders
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Build src_vk
