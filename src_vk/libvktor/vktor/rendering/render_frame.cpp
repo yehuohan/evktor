@@ -81,11 +81,6 @@ Res<CRef<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLa
                                                            const DescriptorInfo& desc_info,
                                                            const String& desc_name,
                                                            size_t thread_index) {
-    // Get descriptor pool
-    auto res = requestDescriptorPool(desc_setlayout, vktFmt("{}#Pool", desc_name), thread_index);
-    OnErr(res);
-    auto& desc_pool = res.unwrap().get();
-
     if (thread_index >= desc_sets.size()) {
         return Er("Thread index is out of descriptor set array");
     }
@@ -102,12 +97,17 @@ Res<CRef<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLa
         if (auto it = descsets.find(key); it != descsets.end()) {
             descset = &it->second;
         } else {
-            auto res = desc_pool.allocate(nullptr, vktFmt("{}#Set", desc_name));
+            // Get descriptor pool
+            auto res_pool = requestDescriptorPool(desc_setlayout, vktFmt("{}#Pool", desc_name), thread_index);
+            OnErr(res_pool);
+            auto& desc_pool = res_pool.unwrap().get();
+
+            auto res = desc_pool.allocate(desc_setlayout, nullptr, vktFmt("{}#Set", desc_name));
             OnErr(res);
             auto iter = descsets.insert({key, res.unwrap()}).first;
             descset = &iter->second;
             // Update descriptor for the first allocation time
-            descset->update(desc_info);
+            descset->update(desc_info, desc_setlayout);
         }
     }
 
@@ -129,13 +129,13 @@ Res<Ref<DescriptorPool>> RenderFrame::requestDescriptorPool(const DescriptorSetL
         if (auto it = descpoolers.find(key); it != descpoolers.end()) {
             descpooler = &it->second;
         } else {
-            auto iter = descpoolers.insert({key, DescriptorPooler(desc_setlayout)}).first;
+            auto iter = descpoolers.insert({key, DescriptorPooler()}).first;
             descpooler = &iter->second;
         }
     }
 
     // Get available descriptor pool from pooler
-    return descpooler->request(std::move(name));
+    return descpooler->request(desc_setlayout, std::move(name));
 }
 
 void RenderFrame::watchStatus() const {

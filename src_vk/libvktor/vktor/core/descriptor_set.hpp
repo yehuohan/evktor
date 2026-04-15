@@ -2,6 +2,7 @@
 #include "__core.hpp"
 #include "__hash.hpp"
 #include "buffer.hpp"
+#include "descriptor_setlayout.hpp"
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -91,15 +92,13 @@ struct DescriptorInfo {
  * DescriptorSet should be allocated with DescriptorPool::allocate() as vkAllocateDescriptorSets need VkDescriptorPool.
  */
 struct DescriptorSet : public CoreResource<VkDescriptorSet, VK_OBJECT_TYPE_DESCRIPTOR_SET> {
-    DescriptorPool& desc_pool;
-
-    explicit DescriptorSet(DescriptorPool& pool);
+    explicit DescriptorSet(const CoreApi& api);
     DescriptorSet(DescriptorSet&&);
     ~DescriptorSet();
     /**
      * @brief Update descriptor set
      */
-    void update(const DescriptorInfo& desc_arrinfo) const;
+    void update(const DescriptorInfo& info, const DescriptorSetLayout& setlayout) const;
 };
 
 NAMESPACE_END(core)
@@ -109,14 +108,14 @@ NAMESPACE_BEGIN(std)
 
 template <>
 struct hash<vkt::core::DescriptorInfo> {
-    size_t operator()(const vkt::core::DescriptorInfo& desc_arrinfo) const {
+    size_t operator()(const vkt::core::DescriptorInfo& desc_info) const {
         size_t res = 0;
-        for (const auto& item : desc_arrinfo.bufs) {
+        for (const auto& item : desc_info.bufs) {
             for (const auto& buf : item.second) {
                 hashCombine(res, buf);
             }
         }
-        for (const auto& item : desc_arrinfo.imgs) {
+        for (const auto& item : desc_info.imgs) {
             for (const auto& img : item.second) {
                 hashCombine(res, img);
             }

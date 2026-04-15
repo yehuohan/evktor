@@ -40,6 +40,7 @@ public:
 struct DescriptorSetLayout : public CoreResource<VkDescriptorSetLayout, VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT> {
     friend struct DescriptorSet;
     friend struct DescriptorPool;
+    friend class DescriptorPoolState;
 
 protected:
     /**

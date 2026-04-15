@@ -6,59 +6,59 @@ NAMESPACE_BEGIN(core)
 
 DescriptorBuffer::DescriptorBuffer(Vector<VkDescriptorBufferInfo>& info, size_t count) : bufs(info) {
     index = 0;
-    if (index >= count) {
-        vktLogW("Going to bind an invalid index = {} of DescriptorBuffer", index);
-    }
+    count = std::max<size_t>(1, count);
     if (bufs.size() != count) {
         bufs.resize(count);
     }
 }
 
 DescriptorBuffer& DescriptorBuffer::next() {
-    index++;
-    if (index >= bufs.size()) {
-        vktLogW("Going to bind an invalid index = {} of DescriptorBuffer", index);
+    if (index + 1 < bufs.size()) {
+        index++;
+    } else {
+        vktLogW("Going to bind an invalid index + 1 = {} >= {} of DescriptorBuffer", index + 1, bufs.size());
     }
     return *this;
 }
 
 DescriptorBuffer& DescriptorBuffer::bind(size_t _index) {
-    index = _index;
-    if (index >= bufs.size()) {
-        vktLogW("Going to bind an invalid index = {} of DescriptorBuffer", index);
+    if (_index < bufs.size()) {
+        index = _index;
+    } else {
+        vktLogW("Going to bind an invalid index = {} >= {} of DescriptorBuffer", _index, bufs.size());
     }
     return *this;
 }
 
 DescriptorImage::DescriptorImage(Vector<VkDescriptorImageInfo>& info, size_t count) : imgs(info) {
     index = 0;
-    if (index >= count) {
-        vktLogW("Going to bind an invalid index = {} of DescriptorImage", index);
-    }
+    count = std::max<size_t>(1, count);
     if (imgs.size() != count) {
         imgs.resize(count);
     }
 }
 
 DescriptorImage& DescriptorImage::next() {
-    index++;
-    if (index >= imgs.size()) {
-        vktLogW("Going to bind an invalid index = {} of DescriptorImage", index);
+    if (index + 1 < imgs.size()) {
+        index++;
+    } else {
+        vktLogW("Going to bind an invalid index + 1 = {} >= {} of DescriptorImage", index + 1, imgs.size());
     }
     return *this;
 }
 
 DescriptorImage& DescriptorImage::bind(size_t _index) {
-    index = _index;
-    if (index >= imgs.size()) {
-        vktLogW("Going to bind an invalid index = {} of DescriptorImage", index);
+    if (_index < imgs.size()) {
+        index = _index;
+    } else {
+        vktLogW("Going to bind an invalid index = {} >= {} of DescriptorImage", _index, imgs.size());
     }
     return *this;
 }
 
-DescriptorSet::DescriptorSet(DescriptorPool& pool) : CoreResource(pool.api), desc_pool(pool) {}
+DescriptorSet::DescriptorSet(const CoreApi& api) : CoreResource(api) {}
 
-DescriptorSet::DescriptorSet(DescriptorSet&& rhs) : CoreResource(rhs.api), desc_pool(rhs.desc_pool) {
+DescriptorSet::DescriptorSet(DescriptorSet&& rhs) : CoreResource(rhs.api) {
     handle = rhs.handle;
     rhs.handle = VK_NULL_HANDLE;
     __borrowed = rhs.__borrowed;
@@ -71,10 +71,10 @@ DescriptorSet::~DescriptorSet() {
     handle = VK_NULL_HANDLE;
 }
 
-void DescriptorSet::update(const DescriptorInfo& desc_arrinfo) const {
+void DescriptorSet::update(const DescriptorInfo& info, const DescriptorSetLayout& setlayout) const {
     Vector<VkWriteDescriptorSet> desc_writes{};
-    for (const auto& item : desc_arrinfo.bufs) {
-        const auto& bind = desc_pool.desc_setlayout.bindings.at(item.first);
+    for (const auto& item : info.bufs) {
+        const auto& bind = setlayout.bindings.at(item.first);
         const auto& bufs = item.second;
         auto write = Itor::WriteDescriptorSet();
         write.dstSet = handle;
@@ -85,8 +85,8 @@ void DescriptorSet::update(const DescriptorInfo& desc_arrinfo) const {
         write.pBufferInfo = bufs.data();
         desc_writes.push_back(write);
     }
-    for (const auto& item : desc_arrinfo.imgs) {
-        const auto& bind = desc_pool.desc_setlayout.bindings.at(item.first);
+    for (const auto& item : info.imgs) {
+        const auto& bind = setlayout.bindings.at(item.first);
         const auto& imgs = item.second;
         auto write = Itor::WriteDescriptorSet();
         write.dstSet = handle;

@@ -109,7 +109,7 @@ public:
  * CommandBuffer must be allocated with CommandPool::allocate().
  */
 struct CommandBuffer : public CoreResource<VkCommandBuffer, VK_OBJECT_TYPE_COMMAND_BUFFER> {
-    const CommandPool& command_pool;
+    const VkCommandPool command_pool = VK_NULL_HANDLE;
 
 public:
     using Self = const CommandBuffer&;

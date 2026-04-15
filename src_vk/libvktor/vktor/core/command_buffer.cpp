@@ -177,7 +177,7 @@ CommandBuffer::CommandBuffer(CommandBuffer&& rhs) : CoreResource(rhs.api), comma
 
 CommandBuffer::~CommandBuffer() {
     if (!__borrowed && handle) {
-        vkFreeCommandBuffers(command_pool.api, command_pool, 1, &handle);
+        vkFreeCommandBuffers(api, command_pool, 1, &handle);
     }
     handle = VK_NULL_HANDLE;
 }

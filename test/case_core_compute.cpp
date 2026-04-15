@@ -37,11 +37,8 @@ void case_core_compute() {
     tstOut("Compute pipeline: {}", fmt::ptr((VkPipeline)pipeline));
 
     // Create descriptors
-    auto desc_pool = DescriptorPoolState{}
-                         .setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT)
-                         .into(desc_set_layout)
-                         .unwrap();
-    auto desc_set = desc_pool.allocate().unwrap();
+    auto desc_pool = DescriptorPoolState{}.setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT).into(api).unwrap();
+    auto desc_set = desc_pool.allocate(desc_set_layout).unwrap();
     auto inp_img = ImageState{}
                        .setFormat(VK_FORMAT_R32G32B32A32_SFLOAT)
                        .setExtent(quad.wid, quad.hei)
@@ -59,7 +56,7 @@ void case_core_compute() {
     auto desc_info = DescriptorInfo{};
     desc_info.addImg().bind(inp_imgview).bind(VK_IMAGE_LAYOUT_GENERAL);
     desc_info.addImg().bind(out_imgview).bind(VK_IMAGE_LAYOUT_GENERAL);
-    desc_set.update(desc_info);
+    desc_set.update(desc_info, desc_set_layout);
 
     // Create staging buffer
     auto staging = BufferState{}

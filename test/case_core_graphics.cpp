@@ -69,11 +69,8 @@ void case_core_graphics() {
         FramebufferState{}.setRenderPass(render_pass).setExtent(tri.wid, tri.hei).addAttachment(out_imgview).into(api).unwrap();
 
     // Create descriptors
-    auto desc_pool = DescriptorPoolState{}
-                         .setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT)
-                         .into(desc_set_layout)
-                         .unwrap();
-    auto desc_set = desc_pool.allocate().unwrap();
+    auto desc_pool = DescriptorPoolState{}.setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT).into(api).unwrap();
+    auto desc_set = desc_pool.allocate(desc_set_layout).unwrap();
     auto ubo_buf = BufferState{}
                        .setSize(sizeof(Triangle::UBO))
                        .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
@@ -92,7 +89,7 @@ void case_core_graphics() {
     auto desc_info = DescriptorInfo{};
     desc_info.addBuf().bind(ubo_buf);
     desc_info.addImg().bind(spl).bind(tex_imgview).bind(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    desc_set.update(desc_info);
+    desc_set.update(desc_info, desc_set_layout);
 
     // Create staging buffer
     auto staging = BufferState{}
