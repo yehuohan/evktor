@@ -184,6 +184,9 @@ bool isDepthStencilFormat(VkFormat format);
  */
 VkImageAspectFlags getAspectMask(VkFormat format);
 
+VkExtent3D minExtent3D(const VkExtent3D& a, const VkExtent3D& b);
+VkExtent3D maxExtent3D(const VkExtent3D& a, const VkExtent3D& b);
+
 template <>
 struct Arg<Image> : private NonCopyable {
     const Image& a;
@@ -193,14 +196,18 @@ struct Arg<Image> : private NonCopyable {
     uint32_t mip_count = 1;
     uint32_t layer = 0; /**< Base layer or the layer index */
     uint32_t layer_count = 1;
+    VkOffset3D copy_offset;
+    VkExtent3D copy_extent;
 
 public:
-    explicit Arg(const Image& a) : a(a) {
+    explicit Arg(const Image& a, const VkOffset3D offset = {0, 0, 0}, const VkExtent3D extent = {~0UL, ~0UL, ~0UL}) : a(a) {
         aspect = getAspectMask(a.format);
         mip = 0;
         mip_count = a.mip_levels;
         layer = 0;
         layer_count = a.array_layers;
+        copy_offset = offset;
+        copy_extent = minExtent3D(a.getExtent(), extent);
     }
     OnConstType(VkImage, a.getHandle());
     operator VkImageSubresourceRange() const {

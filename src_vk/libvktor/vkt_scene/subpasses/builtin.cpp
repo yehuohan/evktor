@@ -91,9 +91,9 @@ Res<Void> BuiltinSubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
     OnErr(res_desc_set);
     auto& desc_set = res_desc_set.unwrap().get();
 
-    cmdbuf.cmdBindGraphicsDescriptorSets(pipeline_layout, 0, {desc_set})
+    cmdbuf.cmdBindGraphicsDescriptorSet(pipeline_layout, desc_set)
         .cmdBindIndexBufferU16(mesh->index)
-        .cmdBindVertexBuffers({mesh->vertex})
+        .cmdBindVertexBuffer(mesh->vertex)
         .cmdDrawIndexed(u32(mesh->data.indices.size()));
 
     return Ok(Void{});

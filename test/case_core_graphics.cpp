@@ -145,7 +145,7 @@ void case_core_graphics() {
         .cmdBindGraphicsDescriptorSets(pipeline_layout, 0, {desc_set})
         .cmdPushVertConstants(pipeline_layout, &tri.push_args.flipy, sizeof(int), 0)
         .cmdPushFragConstants(pipeline_layout, &tri.push_args.scaler, sizeof(int), 20)
-        .cmdBindVertexBuffers({vertex_buf})
+        .cmdBindVertexBuffer(vertex_buf)
         .cmdBindIndexBuffer(index_buf, 0, VK_INDEX_TYPE_UINT32)
         .cmdDrawIndexed(3, 1, 0, 0, 0)
         .endRenderPass();

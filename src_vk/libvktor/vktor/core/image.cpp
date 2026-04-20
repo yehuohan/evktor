@@ -295,5 +295,21 @@ VkImageAspectFlags getAspectMask(VkFormat format) {
     }
 }
 
+VkExtent3D minExtent3D(const VkExtent3D& a, const VkExtent3D& b) {
+    return VkExtent3D{
+        std::min<uint32_t>(a.width, b.width),
+        std::min<uint32_t>(a.height, b.height),
+        std::min<uint32_t>(a.depth, b.depth),
+    };
+}
+
+VkExtent3D maxExtent3D(const VkExtent3D& a, const VkExtent3D& b) {
+    return VkExtent3D{
+        std::max<uint32_t>(a.width, b.width),
+        std::max<uint32_t>(a.height, b.height),
+        std::max<uint32_t>(a.depth, b.depth),
+    };
+}
+
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)

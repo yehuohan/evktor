@@ -118,19 +118,15 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
                 OnErr(res_desc_set);
                 auto& desc_set = res_desc_set.unwrap().get();
 
-                cmdbuf.cmdBindGraphicsDescriptorSets(pipeline_layout, 0, {desc_set})
-                    .cmdBindVertexBuffers(
-                        {
-                            *sub->getVertexBuffer("position"),
-                            *sub->getVertexBuffer("texcoord_0"),
-                            *sub->getVertexBuffer("normal"),
-                        },
-                        {
-                            sub->getVertexBuffer("position")->offset,
-                            sub->getVertexBuffer("texcoord_0")->offset,
-                            sub->getVertexBuffer("normal")->offset,
-
-                        });
+                static VkBuffer buffers[3];
+                static VkDeviceSize offsets[3];
+                buffers[0] = *sub->getVertexBuffer("position");
+                buffers[1] = *sub->getVertexBuffer("texcoord_0");
+                buffers[2] = *sub->getVertexBuffer("normal");
+                offsets[0] = sub->getVertexBuffer("position")->offset;
+                offsets[1] = sub->getVertexBuffer("texcoord_0")->offset;
+                offsets[2] = sub->getVertexBuffer("normal")->offset;
+                cmdbuf.cmdBindGraphicsDescriptorSet(pipeline_layout, desc_set).cmdBindVertexBuffers(3, buffers, offsets);
                 if (sub->index_count > 0) {
                     cmdbuf.cmdBindIndexBuffer(*sub->getIndexBuffer(), sub->getIndexBuffer()->offset, sub->index_type);
                     cmdbuf.cmdDrawIndexed(u32(sub->index_count));

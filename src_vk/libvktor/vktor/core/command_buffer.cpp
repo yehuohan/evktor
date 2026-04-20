@@ -229,21 +229,38 @@ Self CommandBuffer::beginRenderPass(const VkOffset2D offset,
 
 CommandBuffer::Self CommandBuffer::cmdBlitImage(const Arg<Image>& src,
                                                 const Arg<Image>& dst,
+                                                VkOffset3D src_offsets[2],
+                                                VkOffset3D dst_offsets[2],
                                                 VkImageLayout src_layout,
                                                 VkImageLayout dst_layout,
                                                 VkFilter filter) const {
-    const VkOffset3D offset_min{0, 0, 0};
-    VkOffset3D offset_max{};
-    offset_max.x = std::min<uint32_t>(src.a.extent.width, dst.a.extent.width);
-    offset_max.y = std::min<uint32_t>(src.a.extent.height, dst.a.extent.height);
-    offset_max.z = std::min<uint32_t>(src.a.extent.depth, dst.a.extent.depth);
     VkImageBlit blit{};
     blit.srcSubresource = src;
-    blit.srcOffsets[0] = offset_min;
-    blit.srcOffsets[1] = offset_max;
+    blit.srcOffsets[0] = src_offsets[0];
+    blit.srcOffsets[1] = src_offsets[1];
     blit.dstSubresource = dst;
-    blit.dstOffsets[0] = offset_min;
-    blit.dstOffsets[1] = offset_max;
+    blit.dstOffsets[0] = dst_offsets[0];
+    blit.dstOffsets[1] = dst_offsets[1];
+    vkCmdBlitImage(handle, src, src_layout, dst, dst_layout, 1, &blit, filter);
+    return *this;
+}
+
+CommandBuffer::Self CommandBuffer::cmdBlitImage(const Arg<Image>& src,
+                                                const Arg<Image>& dst,
+                                                VkImageLayout src_layout,
+                                                VkImageLayout dst_layout,
+                                                VkFilter filter) const {
+    VkImageBlit blit{};
+    blit.srcSubresource = src;
+    blit.srcOffsets[0] = src.copy_offset;
+    blit.srcOffsets[1] = VkOffset3D{src.copy_offset.x + (int32_t)src.copy_extent.width,
+                                    src.copy_offset.y + (int32_t)src.copy_extent.height,
+                                    src.copy_offset.z + (int32_t)src.copy_extent.depth};
+    blit.dstSubresource = dst;
+    blit.dstOffsets[0] = dst.copy_offset;
+    blit.dstOffsets[1] = VkOffset3D{dst.copy_offset.x + (int32_t)dst.copy_extent.width,
+                                    dst.copy_offset.y + (int32_t)dst.copy_extent.height,
+                                    dst.copy_offset.z + (int32_t)dst.copy_extent.depth};
     vkCmdBlitImage(handle, src, src_layout, dst, dst_layout, 1, &blit, filter);
     return *this;
 }
@@ -322,12 +339,10 @@ CommandBuffer::Self CommandBuffer::cmdCopyImage(const Arg<Image>& src,
                                                 VkImageLayout dst_layout) const {
     VkImageCopy copy{};
     copy.srcSubresource = src;
-    copy.srcOffset = VkOffset3D{0, 0, 0};
+    copy.srcOffset = src.copy_offset;
     copy.dstSubresource = dst;
-    copy.dstOffset = VkOffset3D{0, 0, 0};
-    copy.extent.width = std::min<uint32_t>(src.a.extent.width, dst.a.extent.width);
-    copy.extent.height = std::min<uint32_t>(src.a.extent.height, dst.a.extent.height);
-    copy.extent.depth = std::min<uint32_t>(src.a.extent.depth, dst.a.extent.depth);
+    copy.dstOffset = dst.copy_offset;
+    copy.extent = minExtent3D(src.copy_extent, dst.copy_extent);
     vkCmdCopyImage(handle, src, src_layout, dst, dst_layout, 1, &copy);
     return *this;
 }
@@ -348,28 +363,34 @@ CommandBuffer::Self CommandBuffer::cmdCopyBuffer(const Buffer& src,
 
 CommandBuffer::Self CommandBuffer::cmdCopyImageToBuffer(const Arg<Image>& img,
                                                         const Buffer& buf,
+                                                        VkDeviceSize buf_offset,
+                                                        uint32_t buf_row_len,
+                                                        uint32_t buf_img_hei,
                                                         VkImageLayout img_layout) const {
     VkBufferImageCopy copy{};
     copy.imageSubresource = img;
-    copy.imageOffset = VkOffset3D{0, 0, 0};
-    copy.imageExtent = img.a.extent;
-    copy.bufferOffset = 0;
-    copy.bufferRowLength = 0;
-    copy.bufferImageHeight = 0;
+    copy.imageOffset = img.copy_offset;
+    copy.imageExtent = img.copy_extent;
+    copy.bufferOffset = buf_offset;
+    copy.bufferRowLength = buf_row_len;
+    copy.bufferImageHeight = buf_img_hei;
     vkCmdCopyImageToBuffer(handle, img, img_layout, buf, 1, &copy);
     return *this;
 };
 
 CommandBuffer::Self CommandBuffer::cmdCopyBufferToImage(const Buffer& buf,
                                                         const Arg<Image>& img,
+                                                        VkDeviceSize buf_offset,
+                                                        uint32_t buf_row_len,
+                                                        uint32_t buf_img_hei,
                                                         VkImageLayout img_layout) const {
     VkBufferImageCopy copy{};
-    copy.bufferOffset = 0;
-    copy.bufferRowLength = 0;
-    copy.bufferImageHeight = 0;
+    copy.bufferOffset = buf_offset;
+    copy.bufferRowLength = buf_row_len;
+    copy.bufferImageHeight = buf_img_hei;
     copy.imageSubresource = img;
-    copy.imageOffset = VkOffset3D{0, 0, 0};
-    copy.imageExtent = img.a.extent;
+    copy.imageOffset = img.copy_offset;
+    copy.imageExtent = img.copy_extent;
     vkCmdCopyBufferToImage(handle, buf, img, img_layout, 1, &copy);
     return *this;
 }
