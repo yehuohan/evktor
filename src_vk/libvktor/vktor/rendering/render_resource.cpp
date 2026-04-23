@@ -74,8 +74,7 @@ Res<CRef<PipelineLayout>> RenderResource::requestPipelineLayout(const Vector<CRe
         }
         // Collect all descriptor sets
         for (const auto& s : sets) {
-            auto res = requestDescriptorSetLayout(s, shaders);
-            OnErr(res);
+            OnErr(res, requestDescriptorSetLayout(s, shaders));
             plso.addDescriptorSetLayout(res.unwrap().get());
         }
         return plso.into(api);

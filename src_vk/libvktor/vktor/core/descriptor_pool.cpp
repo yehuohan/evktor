@@ -124,13 +124,13 @@ DescriptorPooler::~DescriptorPooler() {
 
 Res<Ref<DescriptorPool>> DescriptorPooler::request(const DescriptorSetLayout& setlayout, String&& name) {
     if (desc_pools.empty() || !desc_pools.back().available()) {
-        auto res = DescriptorPoolState(std::move(name))
-                       // Enable vkFreeDescriptorSets to free descriptor set
-                       .setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT)
-                       .setMaxsets(VKT_CORE_MAX_SETS)
-                       .setFromSetLayout(setlayout)
-                       .into(setlayout.api);
-        OnErr(res);
+        OnErr(res,
+              DescriptorPoolState(std::move(name))
+                  // Enable vkFreeDescriptorSets to free descriptor set
+                  .setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT)
+                  .setMaxsets(VKT_CORE_MAX_SETS)
+                  .setFromSetLayout(setlayout)
+                  .into(setlayout.api));
         desc_pools.push_back(res.unwrap());
     }
 

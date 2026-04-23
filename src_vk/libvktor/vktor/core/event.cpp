@@ -54,8 +54,7 @@ Res<CRef<Event>> EventPool::request(String&& name) {
         return Ok(newCRef(*events[active_count++]));
     }
 
-    auto res = EventState(std::move(name)).into(api);
-    OnErr(res);
+    OnErr(res, EventState(std::move(name)).into(api));
     events.push_back(newBox<Event>(res.unwrap()));
     active_count++;
     return Ok(newCRef(*events.back()));

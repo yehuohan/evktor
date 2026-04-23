@@ -78,23 +78,31 @@ inline constexpr char VKTOR_TAG[] = "vkt";
         }                                                                             \
     }
 
-/**
- * @brief By pass Result<Err>
- *
- * 'e' must not be '__res__'
- */
-#define OnErr(e)                             \
-    {                                        \
-        auto& __res__ = (e);                 \
-        if (__res__.isErr()) {               \
-            return Err(__res__.unwrapErr()); \
-        }                                    \
+/** @brief By pass Result<Err> */
+#define OnErr(r, e)                \
+    auto r [[maybe_unused]] = (e); \
+    if (r.isErr()) {               \
+        return Err(r.unwrapErr()); \
     }
 
+/** @brief By pass and unwrap Result<Err> */
+#define OnUnwrap(r, e)                         \
+    auto __res_##r##__ = (e);                  \
+    if (__res_##r##__.isErr()) {               \
+        return Err(__res_##r##__.unwrapErr()); \
+    }                                          \
+    auto r [[maybe_unused]] = __res_##r##__.unwrap();
+
+/** @brief By pass and unwrap Result<Ref<Err>> */
+#define OnUnwrapGet(r, e)                      \
+    auto __res_##r##__ = (e);                  \
+    if (__res_##r##__.isErr()) {               \
+        return Err(__res_##r##__.unwrapErr()); \
+    }                                          \
+    auto& r [[maybe_unused]] = __res_##r##__.unwrap().get();
+
 /** Assert with message */
-#define OnCheck(e, f, ...)                  \
-    {                                       \
-        if (!(e)) {                         \
-            throw vktErr(f, ##__VA_ARGS__); \
-        }                                   \
+#define OnCheck(e, f, ...)              \
+    if (!(e)) {                         \
+        throw vktErr(f, ##__VA_ARGS__); \
     }

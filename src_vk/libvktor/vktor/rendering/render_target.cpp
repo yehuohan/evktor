@@ -34,24 +34,19 @@ RenderTarget::RenderTarget(RenderTarget&& rhs) : RenderTarget(std::move(rhs.text
 
 Res<RenderTarget> RenderTarget::from(const CoreApi& api, const VkExtent2D& extent, VkFormat format) {
     bool ds = isDepthStencilFormat(format);
-    auto res_image = ImageState(ds ? "RTDepth" : "RTColor")
-                         .setFormat(format)
-                         .setExtent(extent)
-                         .setUsage(ds ? VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)
-                         .into(api);
-    OnErr(res_image);
-    Image image = res_image.unwrap();
-    auto res_imageview = ImageViewState(ds ? "RTDepthView" : "RTColorView").setFromImage(image).into(api);
-    OnErr(res_imageview);
-    ImageView imageview = res_imageview.unwrap();
+    OnUnwrap(image,
+             ImageState(ds ? "RTDepth" : "RTColor")
+                 .setFormat(format)
+                 .setExtent(extent)
+                 .setUsage(ds ? VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT : VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT)
+                 .into(api));
+    OnUnwrap(imageview, ImageViewState(ds ? "RTDepthView" : "RTColorView").setFromImage(image).into(api));
     return Ok(RenderTarget(Texture(std::move(image), std::move(imageview))));
 }
 
 Res<RenderTarget> RenderTarget::from(const Arg<Swapchain>& swapchain) {
-    auto image = swapchain.a.newImage(swapchain.image_index);
-    OnErr(image);
-    auto imageview = swapchain.a.newImageView(swapchain.image_index);
-    OnErr(imageview);
+    OnErr(image, swapchain.a.newImage(swapchain.image_index));
+    OnErr(imageview, swapchain.a.newImageView(swapchain.image_index));
     RenderTarget rt(Texture(image.unwrap(), imageview.unwrap()));
     rt.setOps(AttachmentOps::ClearStore);
     rt.setLayouts(AttachmentLayouts::Present);
@@ -148,14 +143,12 @@ Res<Ref<RenderTarget>> RenderTargetTable::addTarget(Texture&& texture) {
 }
 
 Res<Ref<RenderTarget>> RenderTargetTable::addTarget(const CoreApi& api, const VkExtent2D& extent, VkFormat format) {
-    auto rt = RenderTarget::from(api, extent, format);
-    OnErr(rt);
+    OnErr(rt, RenderTarget::from(api, extent, format));
     return addTarget(rt.unwrap());
 }
 
 Res<Ref<RenderTarget>> RenderTargetTable::addTarget(const Arg<Swapchain>& swapchain) {
-    auto rt = RenderTarget::from(swapchain);
-    OnErr(rt);
+    OnErr(rt, RenderTarget::from(swapchain));
     return addTarget(rt.unwrap());
 }
 

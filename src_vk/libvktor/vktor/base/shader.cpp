@@ -40,8 +40,7 @@ Res<Shader> Shader::from(const VkShaderStageFlagBits stage, const Ptr<String>& s
 Res<ShaderModule> Shader::into(const CoreApi& api, String&& name) const {
     auto cur_id = hash(*this);
     if (spv_id != hash(*this)) {
-        auto res = ShaderGlsl::get().compile(stage, *src, entry, getPreamble(), src_path);
-        OnErr(res);
+        OnErr(res, ShaderGlsl::get().compile(stage, *src, entry, getPreamble(), src_path));
         spv = res.unwrap();
         spv_id = cur_id;
     }
