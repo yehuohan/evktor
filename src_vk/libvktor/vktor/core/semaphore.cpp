@@ -73,8 +73,7 @@ Res<CRef<Semaphore>> SemaphorePool::request(String&& name) {
         return Ok(newCRef(*semaphores[active_count++]));
     }
 
-    auto res = SemaphoreState(std::move(name)).into(api);
-    OnErr(res);
+    OnErr(res, SemaphoreState(std::move(name)).into(api));
     semaphores.push_back(newBox<Semaphore>(res.unwrap()));
     active_count++;
     return Ok(newCRef(*semaphores.back()));

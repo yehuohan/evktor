@@ -21,12 +21,8 @@ Res<Void> RenderPipeline::draw(const core::CommandBuffer& cmdbuf, const RenderTa
         return Er("There's no subpass to draw for this render pipeline");
     }
 
-    auto res_render_pass = rctx.requestRenderPass(rtt, getSubpassStates());
-    OnErr(res_render_pass);
-    auto& render_pass = res_render_pass.unwrap().get();
-    auto res_framebuffer = rctx.requestFramebuffer(rtt, render_pass);
-    OnErr(res_framebuffer);
-    auto& framebuffer = res_framebuffer.unwrap().get();
+    OnUnwrapGet(render_pass, rctx.requestRenderPass(rtt, getSubpassStates()));
+    OnUnwrapGet(framebuffer, rctx.requestFramebuffer(rtt, render_pass));
 
     const core::CoreApi& api = rctx;
     RenderCmdbuf rd_cmdbuf(rctx, rtt, cmdbuf, render_pass, framebuffer);
@@ -44,8 +40,7 @@ Res<Void> RenderPipeline::draw(const core::CommandBuffer& cmdbuf, const RenderTa
 
         auto subpass_name = subpass->getName().empty() ? vktFmt("Subpass #{}", k) : subpass->getName();
         api.cmdBeginLabel(cmdbuf, subpass_name.c_str());
-        auto res = subpass->draw(rd_cmdbuf);
-        OnErr(res);
+        OnErr(res, subpass->draw(rd_cmdbuf));
         api.cmdEndLabel(cmdbuf);
     }
     cmdbuf.endRenderPass();

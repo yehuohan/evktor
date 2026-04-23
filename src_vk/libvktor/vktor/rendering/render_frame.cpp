@@ -64,11 +64,11 @@ Res<CRef<CommandBuffer>> RenderFrame::requestCommandBuffer(const Queue& queue, c
         if (auto it = cmdpools.find(queue.family_index); it != cmdpools.end()) {
             cmdpool = &it->second;
         } else {
-            auto res = CommandPoolState(vktFmt("{}#Pool", cmd_name))
-                           .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
-                           .setQueueFamilyIndex(queue.family_index)
-                           .into(api);
-            OnErr(res);
+            OnErr(res,
+                  CommandPoolState(vktFmt("{}#Pool", cmd_name))
+                      .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
+                      .setQueueFamilyIndex(queue.family_index)
+                      .into(api));
             auto iter = cmdpools.insert({queue.family_index, res.unwrap()}).first;
             cmdpool = &iter->second;
         }
@@ -98,16 +98,12 @@ Res<CRef<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLa
             descset = &*it->second;
         } else {
             // Get descriptor pool
-            auto res_pool = requestDescriptorPool(desc_setlayout, vktFmt("{}#Pool", desc_name), thread_index);
-            OnErr(res_pool);
-            auto& desc_pool = res_pool.unwrap().get();
+            OnUnwrapGet(desc_pool, requestDescriptorPool(desc_setlayout, vktFmt("{}#Pool", desc_name), thread_index));
 
-            auto res = desc_pool.allocate(desc_setlayout, nullptr, vktFmt("{}#Set", desc_name));
-            OnErr(res);
+            OnErr(res, desc_pool.allocate(desc_setlayout, nullptr, vktFmt("{}#Set", desc_name)));
             auto iter = descsets.insert({key, newBox<DescriptorSet>(res.unwrap())}).first;
             descset = &*iter->second;
-            // Update descriptor for the first allocation time
-            descset->update(desc_info, desc_setlayout);
+            descset->update(desc_info, desc_setlayout); // Update descriptor for the first allocation time
         }
     }
 

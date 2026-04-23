@@ -62,8 +62,7 @@ Res<CRef<Fence>> FencePool::request(String&& name) {
         return Ok(newCRef(*fences[active_count++]));
     }
 
-    auto res = FenceState(std::move(name)).into(api);
-    OnErr(res);
+    OnErr(res, FenceState(std::move(name)).into(api));
     fences.push_back(newBox<Fence>(res.unwrap()));
     active_count++;
     return Ok(newCRef(*fences.back()));

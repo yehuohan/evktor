@@ -8,11 +8,9 @@ const RenderContext::FnSwapchainRTT RenderContext::defaultFnSwapchainRTT =
     [](const Arg<Swapchain>& swapchain) -> Res<RenderTargetTable> {
     RenderTargetTable rtt{};
     // RT-0: Color
-    auto res_color = rtt.addTarget(swapchain);
-    OnErr(res_color);
+    OnUnwrap(color, rtt.addTarget(swapchain));
     // RT-1: depth
-    auto res_depth = rtt.addTarget(swapchain.a.api, swapchain.a.image_extent, VK_FORMAT_D24_UNORM_S8_UINT);
-    OnErr(res_depth);
+    OnUnwrap(depth, rtt.addTarget(swapchain.a.api, swapchain.a.image_extent, VK_FORMAT_D24_UNORM_S8_UINT));
     return Ok(std::move(rtt));
 };
 
@@ -37,8 +35,7 @@ Res<RenderContext> RenderContext::from(const CoreApi& api,
     }
     render_context.frame_index = 0;
     render_context.swapchain_state = newBox<SwapchainState>(std::move(info));
-    auto res = render_context.reinitSwapchain();
-    OnErr(res);
+    OnUnwrap(res, render_context.reinitSwapchain());
     return Ok(std::move(render_context));
 }
 
@@ -56,8 +53,7 @@ RenderContext::RenderContext(RenderContext&& rhs) : RenderResource(rhs.api), thr
 Res<CRef<core::Swapchain>> RenderContext::reinitSwapchain() {
     // Re-initialize swapchain, must reset swapchain before info.into().
     swapchain.reset();
-    auto res_swc = swapchain_state->into(api);
-    OnErr(res_swc);
+    OnErr(res_swc, swapchain_state->into(api));
     swapchain = newBox<Swapchain>(res_swc.unwrap());
     surface_extent = swapchain->image_extent;
     // Re-initialize render frames
@@ -69,8 +65,7 @@ Res<CRef<core::Swapchain>> RenderContext::reinitSwapchain() {
         if (k >= frames_rtt.size()) {
             frames_rtt.emplace_back();
         }
-        auto res_rtt = newSwapchainRTT(Arg<Swapchain>(*swapchain, k));
-        OnErr(res_rtt);
+        OnErr(res_rtt, newSwapchainRTT(Arg<Swapchain>(*swapchain, k)));
         frames_rtt[k] = res_rtt.unwrap();
     }
     return Ok(newCRef(*swapchain));
@@ -107,8 +102,7 @@ Res<CRef<core::CommandBuffer>> RenderContext::beginFrame() {
     auto& prev_frame = frames[frame_index];
     if (hasSwapchain()) {
         // Use previous frame's semaphore in current frame need ownership
-        auto res_sem = prev_frame.acquireSemaphore();
-        OnErr(res_sem);
+        OnErr(res_sem, prev_frame.acquireSemaphore());
         acquisition = newBox<Semaphore>(res_sem.unwrap());
 
         // Acquire next swapchain image
@@ -133,13 +127,11 @@ Res<CRef<core::CommandBuffer>> RenderContext::beginFrame() {
 
     // Reset the frame to begin
     auto& frame = frames[frame_index];
-    auto res_void = frame.resetFrame();
-    OnErr(res_void);
+    OnErr(res_void, frame.resetFrame());
     frame_actived = true;
 
-    auto res_queue = api.graphicsQueue();
-    OnErr(res_queue);
-    return frame.requestCommandBuffer(res_queue.unwrap().get());
+    OnUnwrapGet(queue, api.graphicsQueue());
+    return frame.requestCommandBuffer(queue);
 }
 
 Res<Void> RenderContext::endFrame(VkSemaphore wait_semaphore) {
@@ -149,9 +141,7 @@ Res<Void> RenderContext::endFrame(VkSemaphore wait_semaphore) {
 
     auto& frame = frames[frame_index];
     if (hasSwapchain()) {
-        auto res_queue = api.presentQueue();
-        OnErr(res_queue);
-        auto& queue = res_queue.unwrap().get();
+        OnUnwrapGet(queue, api.presentQueue());
 
         // Present swapchain image
         auto res = queue.present(*swapchain, frame_index, wait_semaphore);
@@ -173,16 +163,9 @@ Res<Void> RenderContext::endFrame(VkSemaphore wait_semaphore) {
 
 Res<CRef<core::Semaphore>> RenderContext::submit(const core::CommandBuffer& cmdbuf) {
     auto& frame = frames[frame_index];
-    auto res_queue = api.graphicsQueue();
-    OnErr(res_queue);
-    auto& queue = res_queue.unwrap().get();
-
-    auto res_fence = frame.requestFence();
-    OnErr(res_fence);
-    auto& fence = res_fence.unwrap().get();
-    auto res_semaphore = frame.requestSemaphore();
-    OnErr(res_semaphore);
-    auto& signal_semaphore = res_semaphore.unwrap().get();
+    OnUnwrapGet(queue, api.graphicsQueue());
+    OnUnwrapGet(fence, frame.requestFence());
+    OnUnwrapGet(signal_semaphore, frame.requestSemaphore());
 
     auto submit_info = Itor::SubmitInfo();
     submit_info.commandBufferCount = 1;

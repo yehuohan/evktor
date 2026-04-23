@@ -172,28 +172,27 @@ BuiltinMesh::BuiltinMesh(BuiltinMesh&& rhs)
     , texture(std::move(rhs.texture)) {}
 
 Res<BuiltinMesh> BuiltinMesh::from(const vkt::core::CoreApi& api, const BuiltinMeshData& data, Box<vkt::Texture>&& texture) {
-    auto res_index = vkt::core::BufferState{}
-                         .setSize(data.indices.size() * sizeof(uint16_t))
-                         .setUsage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
-                         .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
-                         .into(api);
-    OnErr(res_index);
+    OnErr(res_index,
+          vkt::core::BufferState{}
+              .setSize(data.indices.size() * sizeof(uint16_t))
+              .setUsage(VK_BUFFER_USAGE_INDEX_BUFFER_BIT)
+              .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
+              .into(api));
     auto index = res_index.unwrap();
     index.copyFrom(data.indices.data());
 
-    auto res_vertex = vkt::core::BufferState{}
-                          .setSize(data.vertices.size() * sizeof(BuiltinMeshData::Vertex))
-                          .setUsage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
-                          .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
-                          .into(api);
-    OnErr(res_vertex);
+    OnErr(res_vertex,
+          vkt::core::BufferState{}
+              .setSize(data.vertices.size() * sizeof(BuiltinMeshData::Vertex))
+              .setUsage(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT)
+              .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
+              .into(api));
     auto vertex = res_vertex.unwrap();
     vertex.copyFrom(data.vertices.data());
 
     Box<vkt::core::Sampler> sampler = nullptr;
     if (texture) {
-        auto res_sampler = vkt::core::SamplerState().setNearest().into(api);
-        OnErr(res_sampler);
+        OnErr(res_sampler, vkt::core::SamplerState().setNearest().into(api));
         sampler = newBox<vkt::core::Sampler>(res_sampler.unwrap());
     }
 

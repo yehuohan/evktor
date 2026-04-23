@@ -65,8 +65,7 @@ public:
         if (auto it = this->find(key); this->found(it)) {
             ptr = &it->second;
         } else {
-            auto res = fn();
-            OnErr(res);
+            OnErr(res, fn());
             auto iter = this->add(key, res.unwrap());
             ptr = &iter->second;
         }

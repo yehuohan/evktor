@@ -44,36 +44,25 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
     vkt::core::DescriptorInfo desc_info{};
 
     for (size_t k = pbr_ubo.size(); k < rctx.getFrameCount(); k++) {
-        auto res_ubo = vkt::core::BufferState{}
-                           .setSize(sizeof(PBRUniform))
-                           .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
-                           .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
-                           .into(rctx);
-        OnErr(res_ubo);
+        OnErr(res_ubo,
+              vkt::core::BufferState{}
+                  .setSize(sizeof(PBRUniform))
+                  .setUsage(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT)
+                  .setMemoryFlags(VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT)
+                  .into(rctx));
         pbr_ubo.push_back(res_ubo.unwrap());
 
-        auto res_ptr = pbr_ubo.back().map();
-        OnErr(res_ptr);
+        OnErr(res_ptr, pbr_ubo.back().map());
         pbr_ubo_ptr.push_back(static_cast<PBRUniform*>(res_ptr.unwrap()));
     }
     desc_info.setBuf(0).bind(pbr_ubo[rfrm_idx]);
     auto& ubo_ptr = pbr_ubo_ptr[rfrm_idx];
     ubo_ptr->view_proj = camera.getProj() * camera.getView();
 
-    auto res_desc_setlayout = rctx.requestDescriptorSetLayout(0, Shaders());
-    OnErr(res_desc_setlayout);
-    auto& desc_setlayout = res_desc_setlayout.unwrap().get();
-
-    auto res_pipeline_layout = rctx.requestPipelineLayout(Shaders());
-    OnErr(res_pipeline_layout);
-    auto& pipeline_layout = res_pipeline_layout.unwrap().get();
-
-    auto res_vert = rctx.requestShaderModule(vert_shader);
-    OnErr(res_vert);
-    auto& vert = res_vert.unwrap().get();
-    auto res_frag = rctx.requestShaderModule(frag_shader);
-    OnErr(res_frag);
-    auto& frag = res_frag.unwrap().get();
+    OnUnwrapGet(desc_setlayout, rctx.requestDescriptorSetLayout(0, Shaders()));
+    OnUnwrapGet(pipeline_layout, rctx.requestPipelineLayout(Shaders()));
+    OnUnwrapGet(vert, rctx.requestShaderModule(vert_shader));
+    OnUnwrapGet(frag, rctx.requestShaderModule(frag_shader));
 
     VkPipelineColorBlendAttachmentState color_blend_attm_state{};
     color_blend_attm_state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
@@ -90,9 +79,7 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
         .setRasterizationCullFace(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE)
         .setDepthTest(VK_TRUE, VK_TRUE, VK_COMPARE_OP_GREATER) // Greater for reversed-z
         .addColorBlendAttachment(color_blend_attm_state);
-    auto res_pipeline = rctx.requestGraphicsPipeline(pso);
-    OnErr(res_pipeline);
-    auto& pipeline = res_pipeline.unwrap().get();
+    OnUnwrapGet(pipeline, rctx.requestGraphicsPipeline(pso));
     cmdbuf.cmdBindGraphicsPipeline(pipeline);
 
     auto& root = *scene.getRootNode();
@@ -114,9 +101,7 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
                             .bind(*tex->getSampler());
                     }
                 }
-                auto res_desc_set = rfrm.requestDescriptorSet(desc_setlayout, desc_info);
-                OnErr(res_desc_set);
-                auto& desc_set = res_desc_set.unwrap().get();
+                OnUnwrapGet(desc_set, rfrm.requestDescriptorSet(desc_setlayout, desc_info));
 
                 static VkBuffer buffers[3];
                 static VkDeviceSize offsets[3];
@@ -126,6 +111,7 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
                 offsets[0] = sub->getVertexBuffer("position")->offset;
                 offsets[1] = sub->getVertexBuffer("texcoord_0")->offset;
                 offsets[2] = sub->getVertexBuffer("normal")->offset;
+
                 cmdbuf.cmdBindGraphicsDescriptorSet(pipeline_layout, desc_set).cmdBindVertexBuffers(3, buffers, offsets);
                 if (sub->index_count > 0) {
                     cmdbuf.cmdBindIndexBuffer(*sub->getIndexBuffer(), sub->getIndexBuffer()->offset, sub->index_type);

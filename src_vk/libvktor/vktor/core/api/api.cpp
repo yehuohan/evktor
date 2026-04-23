@@ -11,8 +11,7 @@ CoreApi::~CoreApi() {
 }
 
 Res<CRef<Instance>> CoreApi::init(InstanceState& info) {
-    auto res = info.into();
-    OnErr(res);
+    OnErr(res, info.into());
     instance = res.unwrap();
 
     // Reset objects that depends on instance
@@ -26,8 +25,7 @@ Res<CRef<Instance>> CoreApi::borrow(VkInstance handle,
                                     PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
                                     uint32_t api_version,
                                     VkAllocationCallbacks* allocator) {
-    auto res = Instance::borrow(handle, fpGetInstanceProcAddr, api_version, allocator);
-    OnErr(res);
+    OnErr(res, Instance::borrow(handle, fpGetInstanceProcAddr, api_version, allocator));
     instance = res.unwrap();
 
     // Reset objects that depends on instance
@@ -41,8 +39,7 @@ Res<CRef<PhysicalDevice>> CoreApi::init(PhysicalDeviceState& info) {
     if (!instance.handle) {
         return Er("Must have initialized a valid instance to initialize physical device");
     }
-    auto res = info.into(newCRef(instance));
-    OnErr(res);
+    OnErr(res, info.into(newCRef(instance)));
     physical_device = res.unwrap();
     return Ok(newCRef(physical_device));
 }
@@ -51,8 +48,7 @@ Res<CRef<PhysicalDevice>> CoreApi::borrow(VkPhysicalDevice handle, VkSurfaceKHR 
     if (!instance.handle) {
         return Er("Must have borrowed a valid instance to initialize physical device");
     }
-    auto res = PhysicalDevice::borrow(newCRef(instance), handle, surface);
-    OnErr(res);
+    OnErr(res, PhysicalDevice::borrow(newCRef(instance), handle, surface));
     physical_device = res.unwrap();
     return Ok(newCRef(physical_device));
 }
@@ -105,8 +101,7 @@ Res<CRef<Device>> CoreApi::init(DeviceState& info) {
     if (!physical_device.handle) {
         return Er("Must have initialized a valid physical device");
     }
-    auto res = info.into(newCRef(physical_device));
-    OnErr(res);
+    OnErr(res, info.into(newCRef(physical_device)));
     device = res.unwrap();
 
     OnRet(setDebugName(VK_OBJECT_TYPE_DEVICE, reinterpret_cast<uint64_t>(device.handle), info.__name.c_str()),
@@ -156,8 +151,7 @@ Res<CRef<Device>> CoreApi::borrow(VkDevice handle,
     if (!physical_device.handle) {
         return Er("Must have borrowed a valid physical device");
     }
-    auto res = Device::borrow(newCRef(physical_device), handle, fpGetDeviceProcAddr, mem_allocator);
-    OnErr(res);
+    OnErr(res, Device::borrow(newCRef(physical_device), handle, fpGetDeviceProcAddr, mem_allocator));
     device = res.unwrap();
 
     // Only get one queue for each queue family
@@ -235,8 +229,7 @@ Res<CRef<IDebug>> CoreApi::add(DebugState& info) {
     if (!instance.handle) {
         return Er("Must have initialized or borrowed a valid instance to add debug utils messenger");
     }
-    auto res = info.into(instance);
-    OnErr(res);
+    OnErr(res, info.into(instance));
     debug = newBox<Debug>(res.unwrap());
     return Ok(newCRef(*debug));
 }
@@ -245,8 +238,7 @@ Res<CRef<Surface>> CoreApi::add(VkSurfaceKHR _surface, bool with_ownership) {
     if (!instance.handle) {
         return Er("Must have initialized or borrowed a valid instance to add surface");
     }
-    auto res = with_ownership ? Surface::from(newCRef(instance), _surface) : Surface::borrow(newCRef(instance), _surface);
-    OnErr(res);
+    OnErr(res, with_ownership ? Surface::from(newCRef(instance), _surface) : Surface::borrow(newCRef(instance), _surface));
     surface = newBox<Surface>(res.unwrap());
     return Ok(newCRef(*surface));
 }
