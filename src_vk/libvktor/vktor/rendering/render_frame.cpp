@@ -95,7 +95,7 @@ Res<CRef<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLa
         // So must hash DescriptorSetLayout and DescriptorInfo only.
         size_t key = hash(desc_setlayout, desc_info);
         if (auto it = descsets.find(key); it != descsets.end()) {
-            descset = &it->second;
+            descset = &*it->second;
         } else {
             // Get descriptor pool
             auto res_pool = requestDescriptorPool(desc_setlayout, vktFmt("{}#Pool", desc_name), thread_index);
@@ -104,8 +104,8 @@ Res<CRef<DescriptorSet>> RenderFrame::requestDescriptorSet(const DescriptorSetLa
 
             auto res = desc_pool.allocate(desc_setlayout, nullptr, vktFmt("{}#Set", desc_name));
             OnErr(res);
-            auto iter = descsets.insert({key, res.unwrap()}).first;
-            descset = &iter->second;
+            auto iter = descsets.insert({key, newBox<DescriptorSet>(res.unwrap())}).first;
+            descset = &*iter->second;
             // Update descriptor for the first allocation time
             descset->update(desc_info, desc_setlayout);
         }

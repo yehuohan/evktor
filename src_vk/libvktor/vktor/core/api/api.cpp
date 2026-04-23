@@ -182,6 +182,12 @@ Res<CRef<Device>> CoreApi::borrow(VkDevice handle,
     return Ok(newCRef(device));
 }
 
+/**
+ * @brief Get queue according to indices
+ *
+ * Queue reference is safe for CoreApi.queues will only initialize once at
+ * CoreApi::init(DeviceState&) or CoreApi::borrow(VkDevice).
+ */
 static Res<CRef<Queue>> getQueue(const HashMap<uint32_t, Vector<Queue>>& queues,
                                  const uint32_t family_index,
                                  const uint32_t index) {

@@ -40,7 +40,7 @@ class FencePool : private NonCopyable {
 private:
     uint32_t active_count = 0;
     /** Actived fences */
-    Vector<Fence> fences{};
+    Vector<Box<Fence>> fences{};
     /** Cached fences */
     Vector<Fence> fences_cache{};
 

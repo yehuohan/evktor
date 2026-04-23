@@ -68,11 +68,11 @@ inline constexpr char VKTOR_TAG[] = "vkt";
 /**
  * @brief Return Er on non-success Vulkan result
  *
- * 'r' must not be '__res__'
+ * 'e' must not be '__res__'
  */
-#define OnRet(r, f, ...)                                                              \
+#define OnRet(e, f, ...)                                                              \
     {                                                                                 \
-        VkResult __res__ = (r);                                                       \
+        VkResult __res__ = (e);                                                       \
         if (__res__ != VK_SUCCESS) {                                                  \
             return Er("[VkResult = {}] " f, VkStr(VkResult, __res__), ##__VA_ARGS__); \
         }                                                                             \
@@ -81,20 +81,20 @@ inline constexpr char VKTOR_TAG[] = "vkt";
 /**
  * @brief By pass Result<Err>
  *
- * 'r' must not be '__res__'
+ * 'e' must not be '__res__'
  */
-#define OnErr(r)                             \
+#define OnErr(e)                             \
     {                                        \
-        auto& __res__ = (r);                 \
+        auto& __res__ = (e);                 \
         if (__res__.isErr()) {               \
             return Err(__res__.unwrapErr()); \
         }                                    \
     }
 
 /** Assert with message */
-#define OnCheck(c, f, ...)                  \
+#define OnCheck(e, f, ...)                  \
     {                                       \
-        if (!(c)) {                         \
+        if (!(e)) {                         \
             throw vktErr(f, ##__VA_ARGS__); \
         }                                   \
     }

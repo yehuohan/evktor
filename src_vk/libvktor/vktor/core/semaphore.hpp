@@ -41,7 +41,7 @@ class SemaphorePool : private NonCopyable {
 private:
     uint32_t active_count = 0;
     /** Actived semaphores */
-    Vector<Semaphore> semaphores{};
+    Vector<Box<Semaphore>> semaphores{};
     /** Cached semaphores */
     Vector<Semaphore> semaphores_cache{};
 

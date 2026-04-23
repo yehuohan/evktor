@@ -37,7 +37,7 @@ class EventPool : private NonCopyable {
 private:
     uint32_t active_count = 0;
     /** Actived events */
-    Vector<Event> events{};
+    Vector<Box<Event>> events{};
     /** Cached events */
     Vector<Event> events_cache{};
 

@@ -30,8 +30,8 @@ struct CommandPool : public CoreResource<VkCommandPool, VK_OBJECT_TYPE_COMMAND_P
     };
 
 protected:
-    Vector<CommandBuffer> primaries{};
-    Vector<CommandBuffer> secondaries{};
+    Vector<Box<CommandBuffer>> primaries{};
+    Vector<Box<CommandBuffer>> secondaries{};
     uint32_t active_primary_count = 0;
     uint32_t active_secondary_count = 0;
 
@@ -44,7 +44,7 @@ public:
     /**
      * @brief Allocate one command buffer
      *
-     * Store allocated CommandBuffer within this CommandPool, so return the referrence of the CommandBuffer.
+     * To return the referrence of the CommandBuffer, store allocated CommandBuffer inside Box.
      * And free CommandBuffer by removing CommandBuffer from `primaries` or `secondaries`.
      */
     Res<CRef<CommandBuffer>> allocate(Level level, const String& name = "CommandBuffer");

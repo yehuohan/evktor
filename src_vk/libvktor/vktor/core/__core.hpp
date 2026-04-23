@@ -4,7 +4,7 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-#define OnName(r, n) OnRet(r.setDebugName(n), "Failed to set debug name: {}", n)
+#define OnName(r, n) OnRet((r).setDebugName(n), "Failed to set debug name: {}", n)
 
 /**
  * @brief Vulkan core resource type

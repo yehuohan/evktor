@@ -26,7 +26,7 @@ private:
     /** Map DescriptorSetLayout to DescriptorPooler */
     Vector<HashMap<size_t, core::DescriptorPooler>> desc_poolers{};
     /** Map DescriptorSetLayout + DescriptorPool + DescriptorInfo to DescriptorSet */
-    Vector<HashMap<size_t, core::DescriptorSet>> desc_sets{};
+    Vector<HashMap<size_t, Box<core::DescriptorSet>>> desc_sets{};
     core::FencePool fence_pool;
     core::SemaphorePool semaphore_pool;
     core::EventPool event_pool;
@@ -50,6 +50,8 @@ public:
                                                         size_t thread_index = 0);
     /**
      * @brief Request one descriptor set from an available descriptor pool that is got from pooler
+     *
+     * To return the referrence of the DescriptorSet, store DescriptorSet inside Box.
      */
     Res<CRef<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
                                                         const core::DescriptorInfo& desc_info,
@@ -57,6 +59,11 @@ public:
                                                         size_t thread_index = 0);
 
 private:
+    /**
+     * @brief Request one descriptor pool
+     *
+     * DescriptorPool will only be referrenced inside RenderFrame, so can store DescriptorPool without Box.
+     */
     Res<Ref<core::DescriptorPool>> requestDescriptorPool(const core::DescriptorSetLayout& desc_setlayout,
                                                          String&& name = "Descriptor#Pool",
                                                          size_t thread_index = 0);
