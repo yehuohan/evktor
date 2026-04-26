@@ -203,6 +203,8 @@ Res<Swapchain> Swapchain::from(const CoreApi& api, const SwapchainState& info) {
     swapchain.image_extent = image_extent;
     swapchain.image_layers = info.image_layers;
     swapchain.image_usage = info.image_usage;
+    swapchain.surface_format = surface_format;
+    swapchain.present_mode = present_mode;
     vktLogD("Swapchain is created: {{\n"
             "\tColor format(VkFormat): {}\n"
             "\tImage extent: {}x{}\n"

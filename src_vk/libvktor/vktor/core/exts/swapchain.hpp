@@ -44,6 +44,8 @@ struct Swapchain : public CoreResource<VkSwapchainKHR, VK_OBJECT_TYPE_SWAPCHAIN_
     VkExtent2D image_extent;       /**< VkImage extent */
     uint32_t image_layers;         /**< VkImage array layers  */
     VkImageUsageFlags image_usage; /**< VkImage usage */
+    VkSurfaceFormatKHR surface_format;
+    VkPresentModeKHR present_mode;
 
 protected:
     explicit Swapchain(const CoreApi& api) : CoreResource(api) {}

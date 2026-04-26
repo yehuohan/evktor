@@ -83,6 +83,56 @@ void IApp::run() {
     }
 }
 
+void IApp::setupGui(const core::Swapchain& swapchain) {
+    gui_desc_pool = newBox<core::DescriptorPool>(core::DescriptorPoolState("GuiDescriptorPool")
+                                                     .setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT)
+                                                     .setMaxsets(16 * swapchain.image_count)
+                                                     .addPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1 + 15)
+                                                     .into(swapchain.api)
+                                                     .unwrap());
+    gui_render_pass = newBox<core::RenderPass>(
+        core::RenderPassState{}
+            .addAttachment(
+                swapchain.image_format,
+                VK_SAMPLE_COUNT_1_BIT,
+                core::AttachmentOps{VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_STORE_OP_STORE},
+                core::AttachmentOps{},
+                core::AttachmentLayouts{VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL})
+            .addSubpass({0})
+            .into(swapchain.api)
+            .unwrap());
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    ImGui::StyleColorsDark();
+
+    const auto& api = swapchain.api;
+    ImGui_ImplGlfw_InitForVulkan(window, true);
+    ImGui_ImplVulkan_InitInfo info = {};
+    info.Instance = api;
+    info.PhysicalDevice = api;
+    info.Device = api;
+    info.QueueFamily = api.graphicsQueue().unwrap().get().family_index;
+    info.Queue = api.graphicsQueue().unwrap().get();
+    info.MinImageCount = swapchain.image_count;
+    info.ImageCount = swapchain.image_count;
+    info.DescriptorPool = *gui_desc_pool;
+    info.PipelineInfoMain.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+    info.PipelineInfoMain.RenderPass = *gui_render_pass;
+    info.PipelineInfoMain.Subpass = 0;
+
+    VkPhysicalDeviceProperties properties;
+    vkGetPhysicalDeviceProperties(api, &properties);
+
+    ImGui_ImplVulkan_Init(&info);
+
+    OnCheck(ImGui::GetCurrentContext(), "Failed to init ImGui context");
+}
+
 void IApp::tickCamera(vktscn::PerspCamera& camera, float delta_time) {
     const float speed = 5.5f;       /**< 摄像机移动速度 */
     const float sensitivity = 50.0; /**< 鼠标移动灵敏度 */

@@ -18,10 +18,10 @@ add_requires("vulkan-memory-allocator 3.3.0")
 add_requires("glfw 3.3.9")
 add_requires("glm 1.0.1")
 add_requires("stb 2025.03.14")
-add_requires("imgui 1.91.9", { configs = { glfw = true, vulkan = true } })
+add_requires("imgui v1.92.7", { configs = { glfw = true, vulkan = true } })
 add_requires("tinygltf 2.8.22")
 add_requires("fmt 10.1.1")
-add_requires("cxxopts 3.3.1")
+add_requires("cxxopts v3.3.1")
 
 local src_dir = "$(scriptdir)/src_vk/"
 
@@ -89,7 +89,7 @@ target("tst_main", function()
 	set_kind("binary")
 	add_files("$(scriptdir)/test/*.cpp", src_dir .. "evktor/devel/assets.cpp")
 	add_includedirs("$(scriptdir)/test", src_dir .. "evktor/devel")
-	add_packages("vktor", "stb", "tinygltf")
+	add_packages("vktor", "stb", "tinygltf", "cxxopts")
 	add_deps("vktor")
 
 	on_prepare(function(tar)
