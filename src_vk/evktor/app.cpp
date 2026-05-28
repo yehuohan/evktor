@@ -14,6 +14,8 @@ App::App(int argc, char* argv[]) : IApp(1920, 1080) {
 App::~App() {
     vkt.api->waitIdle();
 
+    shutdownGui();
+
     skybox.reset();
     base.reset();
     rctx.reset();
@@ -49,6 +51,9 @@ void App::setup() {
         .addDesiredPresentMode(VK_PRESENT_MODE_FIFO_KHR)
         .setDesiredExtent(getExtent());
     rctx = vkt.newRctx(std::move(sso));
+
+    // Setup gui
+    setupGui(rctx->getSwapchain());
 
     // Load scene
     scene = newBox<Scene>();
@@ -138,14 +143,39 @@ void App::tick(float cur_time, float delta_time) {
     rts[0].setLayouts(core::AttachmentLayouts::Color);
     rts[1].setOps(core::AttachmentOps::ClearStore);
     base->draw(cmdbuf, rtt).unwrap();
+
     rts[0].setOps(core::AttachmentOps::LoadStore);
-    rts[0].nextLayout(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+    rts[0].nextLayout(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
     rts[1].setOps(core::AttachmentOps::LoadStore);
     rts[1].nextLayout(VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
     skybox->draw(cmdbuf, rtt).unwrap();
+
+    drawGui(cmdbuf, rtt);
 
     cmdbuf.end();
 
     rctx->endFrame(cmdbuf).unwrap().get().wait();
     // rctx->watchStatus();
+}
+
+void App::drawGui(const core::CommandBuffer& cmdbuf, RenderTargetTable& rtt) {
+    ImGui_ImplVulkan_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::Begin("evktor");
+    ImGui::Text("This is a demo with libvktor");
+    ImGui::End();
+
+    ImGui::Render();
+    ImDrawData* draw_data = ImGui::GetDrawData();
+
+    auto& rts = rtt.getTargets();
+    rts[0].setOps(core::AttachmentOps::LoadStore);
+    rts[0].nextLayout(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+
+    auto& framebuffer = rctx->requestFramebuffer(rtt, *gui_render_pass).unwrap().get();
+    cmdbuf.beginRenderPass(rtt.getExtent(), *gui_render_pass, framebuffer, rtt.getClearValues());
+    ImGui_ImplVulkan_RenderDrawData(draw_data, cmdbuf);
+    cmdbuf.endRenderPass();
 }

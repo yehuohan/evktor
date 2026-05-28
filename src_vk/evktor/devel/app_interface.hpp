@@ -3,6 +3,9 @@
 #include <GLFW/glfw3.h>
 
 #include <cstdint>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_vulkan.h>
 #include <share/share.hpp>
 #include <vkt_scene/components/camera.hpp>
 #include <vktor/core/api/instance.hpp>
@@ -17,8 +20,14 @@ protected:
     uint32_t width;
     uint32_t height;
     GLFWwindow* window = nullptr;
-    bool framebuffer_resized = false;
     float fps = 0.0f;
+    bool camera_active = true;
+    float camera_speed = 5.5f;       /**< 摄像机移动速度 */
+    float camera_sensitivity = 50.0; /**< 鼠标移动灵敏度 */
+
+protected:
+    Box<vkt::core::DescriptorPool> gui_desc_pool = nullptr;
+    Box<vkt::core::RenderPass> gui_render_pass = nullptr;
 
 public:
     IApp(uint32_t width, uint32_t height);
@@ -43,6 +52,8 @@ public:
     virtual void tick(float cur_time, float delta_time) = 0;
 
 protected:
+    void setupGui(const vkt::core::Swapchain& swapchain);
+    void shutdownGui();
     void tickCamera(vktscn::PerspCamera& camera, float delta_time);
 };
 

@@ -70,6 +70,10 @@ public:
         return allocator;
     }
 
+    inline uint32_t getApiVersion() const {
+        return api_version;
+    }
+
     static Res<Instance> from(InstanceState& info);
     static Res<Instance> borrow(VkInstance handle,
                                 PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
