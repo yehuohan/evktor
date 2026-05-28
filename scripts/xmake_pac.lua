@@ -1,3 +1,3 @@
 function mirror(url)
-	return url:gsub("github.com", "bgithub.xyz")
+	return url:gsub("https://github.com", "https://gh.llkk.cc/https://github.com")
 end

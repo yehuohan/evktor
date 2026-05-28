@@ -2,9 +2,10 @@ set(DEPS_DIR ${PROJECT_ROOT}/deps/${VCPKG_TARGET_TRIPLET})
 set(REPOS_DIR ${PROJECT_ROOT}/deps/repos)
 
 
-# Target: Vulkan::Headers
+# Target: Vulkan::Headers alias from Vulkan-Headers
 # find_package(VulkanHeaders CONFIG REQUIRED)
 add_subdirectory(${REPOS_DIR}/Vulkan-Headers)
+target_compile_definitions(Vulkan-Headers INTERFACE VK_NO_PROTOTYPES) # define VK_NO_PROTOTYPES to use volk
 
 # Target: volk
 # Prefer Vulkan-Headers than Vulkan SDK
