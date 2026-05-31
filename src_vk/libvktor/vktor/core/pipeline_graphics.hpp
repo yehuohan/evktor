@@ -86,6 +86,9 @@ public:
     Self setColorBlendLogicOp(VkBool32 enable, VkLogicOp op = VK_LOGIC_OP_CLEAR);
     Self addColorBlendAttachment(const VkPipelineColorBlendAttachmentState& attachment);
     Self addColorBlendAttachments(const Vector<VkPipelineColorBlendAttachmentState>& attachments);
+    Self addColorBlendAttachments(size_t count,
+                                  VkColorComponentFlags color_write_mask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                                                                           VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT);
     Self setColorBlendConstants(float c0, float c1, float c2, float c3);
     Self addDynamic(VkDynamicState dynamic);
     Self addDynamics(const Vector<VkDynamicState>& dynamics);

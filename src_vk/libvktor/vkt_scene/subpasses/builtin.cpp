@@ -52,9 +52,6 @@ Res<Void> BuiltinSubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
     OnUnwrapGet(vert, rctx.requestShaderModule(vert_shader));
     OnUnwrapGet(frag, rctx.requestShaderModule(frag_shader));
 
-    VkPipelineColorBlendAttachmentState color_blend_attm_state{};
-    color_blend_attm_state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
-                                            VK_COLOR_COMPONENT_A_BIT;
     vkt::core::GraphicsPipelineState pso{};
     pso.setRenderPass(rd_cmdbuf.render_pass, rd_cmdbuf.subpass_index)
         .addVertShader(vert, vert_shader.getEntry())
@@ -66,7 +63,7 @@ Res<Void> BuiltinSubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
         .addScissor(0, 0, extent.width, extent.height)
         .setRasterizationCullFace(VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE)
         .setDepthTest(VK_TRUE, VK_TRUE, VK_COMPARE_OP_GREATER) // Greater for reversed-z
-        .addColorBlendAttachment(color_blend_attm_state);
+        .addColorBlendAttachments(1);
     if (frag_shader.hasDefine("HAS_SKYBOX")) {
         pso.setRasterizationCullFace(VK_CULL_MODE_FRONT_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE)
             .setDepthTest(VK_TRUE, VK_TRUE, VK_COMPARE_OP_GREATER_OR_EQUAL);

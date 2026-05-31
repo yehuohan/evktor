@@ -183,6 +183,15 @@ Self GraphicsPipelineState::addColorBlendAttachments(const Vector<VkPipelineColo
     return *this;
 }
 
+Self GraphicsPipelineState::addColorBlendAttachments(size_t count, VkColorComponentFlags color_write_mask) {
+    for (size_t k = 0; k < count; k++) {
+        VkPipelineColorBlendAttachmentState color_blend_attm_state{};
+        color_blend_attm_state.colorWriteMask = color_write_mask;
+        color_blend.attachments.push_back(color_blend_attm_state);
+    }
+    return *this;
+}
+
 Self GraphicsPipelineState::setColorBlendConstants(float c0, float c1, float c2, float c3) {
     color_blend.constants[0] = c0;
     color_blend.constants[1] = c1;
