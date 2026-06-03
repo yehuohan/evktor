@@ -37,7 +37,11 @@ void case_core_compute() {
     tstOut("Compute pipeline: {}", fmt::ptr((VkPipeline)pipeline));
 
     // Create descriptors
-    auto desc_pool = DescriptorPoolState{}.setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT).into(api).unwrap();
+    auto desc_pool = DescriptorPoolState{}
+                         .setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT)
+                         .setFromSetLayout(desc_set_layout)
+                         .into(api)
+                         .unwrap();
     auto desc_set = desc_pool.allocate(desc_set_layout).unwrap();
     auto inp_img = ImageState{}
                        .setFormat(VK_FORMAT_R32G32B32A32_SFLOAT)
@@ -81,7 +85,7 @@ void case_core_compute() {
         .into(VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_GENERAL)
         .img(Arg{out_img});
     cmdbuf.cmdBindComputePipeline(pipeline)
-        .cmdBindComputeDescriptorSets(pipeline_layout, 0, {desc_set})
+        .cmdBindComputeDescriptorSets(pipeline_layout, 1, {desc_set})
         .cmdPushCompConstants(pipeline_layout, &quad.push_args, sizeof(Quad::PushArgs))
         .cmdDispatch(quad.group_count_x, quad.group_count_y, quad.group_count_z);
     barrier.next(VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)

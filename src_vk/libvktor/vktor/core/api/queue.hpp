@@ -16,12 +16,22 @@ public:
     Queue(Queue&&);
     ~Queue();
 
-    VkResult submit(const Vector<VkSubmitInfo>& submits, VkFence fence = VK_NULL_HANDLE) const;
+    VkResult submit(const VkSubmitInfo& submit, VkFence fence = VK_NULL_HANDLE) const;
     VkResult submit(VkCommandBuffer cmdbuf, VkFence fence = VK_NULL_HANDLE) const;
     VkResult present(VkSwapchainKHR swapchain, uint32_t image_index, VkSemaphore wait_semaphore = VK_NULL_HANDLE) const;
     VkResult waitIdle() const;
 
     static Queue from(VkDevice device, uint32_t family_index = 0, uint32_t index = 0);
+};
+
+struct QueueSubmitter {
+    const Queue& queue;
+    VkSubmitInfo info = Itor::SubmitInfo();
+
+    QueueSubmitter(const Queue& queue) : queue(queue) {}
+    QueueSubmitter& wait(uint32_t count, const VkSemaphore* semaphores, const VkPipelineStageFlags* stages);
+    QueueSubmitter& signal(uint32_t count, const VkSemaphore* semaphores);
+    VkResult submit(VkCommandBuffer cmdbuf, VkFence fence = VK_NULL_HANDLE);
 };
 
 /**

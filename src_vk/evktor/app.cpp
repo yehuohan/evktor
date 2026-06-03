@@ -145,9 +145,7 @@ void App::tick(float cur_time, float delta_time) {
     skybox->draw(cmdbuf, rtt).unwrap();
 
     cmdbuf.end();
-    auto& sem = rctx->submit(cmdbuf).unwrap().get();
 
-    rctx->endFrame(sem).unwrap();
-
+    rctx->endFrame(cmdbuf).unwrap().get().wait();
     // rctx->watchStatus();
 }

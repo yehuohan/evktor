@@ -102,7 +102,7 @@ void case_rctx_cooperative_matrix() {
 
     // Create command buffer
     auto& queue = api.graphicsQueue().unwrap().get();
-    auto& cmdbuf = rctx->beginFrame().unwrap().get();
+    auto& cmdbuf = rctx->getFrame().get().requestCommandBuffer(queue).unwrap().get();
     tstOut("Command buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
@@ -170,7 +170,7 @@ void case_rctx_cooperative_matrix() {
     auto gcz = (params.OC + tiles.TILE_N - 1) / tiles.TILE_N;
     cmdbuf.begin();
     cmdbuf.cmdBindComputePipeline(pipeline)
-        .cmdBindComputeDescriptorSets(pipeline_layout, 0, {desc_set})
+        .cmdBindComputeDescriptorSets(pipeline_layout, 1, {desc_set})
         .cmdPushCompConstants(pipeline_layout, &params, sizeof(Conv2DParams))
         .cmdDispatch(gcx, gcy, gcz);
     cmdbuf.cmdCopyBuffer(yout, staging);

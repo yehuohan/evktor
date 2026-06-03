@@ -10,7 +10,7 @@ void case_rctx_dynamic_rendering() {
 
     // Create command buffer
     auto& queue = api.graphicsQueue().unwrap().get();
-    auto& cmdbuf = rctx->beginFrame().unwrap().get();
+    auto& cmdbuf = rctx->getFrame().get().requestCommandBuffer(queue).unwrap().get();
     tstOut("Command buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
@@ -118,7 +118,7 @@ void case_rctx_dynamic_rendering() {
         .img(Arg{out_color});
     cmdbuf.cmdBeginRendering(rtt.getExtent(), rtt.getAttachmentInfos(), 1, 1)
         .cmdBindGraphicsPipeline(pipeline)
-        .cmdBindGraphicsDescriptorSets(pipeline_layout, 0, {desc_set})
+        .cmdBindGraphicsDescriptorSets(pipeline_layout, 1, {desc_set})
         .cmdPushVertConstants(pipeline_layout, &tri.push_args.flipy, sizeof(int), 0)
         .cmdPushFragConstants(pipeline_layout, &tri.push_args.scaler, sizeof(int), 20)
         .cmdBindVertexBuffer(vertex_buf)

@@ -134,17 +134,29 @@ Res<CRef<core::CommandBuffer>> RenderContext::beginFrame() {
     return frame.requestCommandBuffer(queue);
 }
 
-Res<Void> RenderContext::endFrame(VkSemaphore wait_semaphore) {
+Res<CRef<core::Fence>> RenderContext::endFrame(const core::CommandBuffer& cmdbuf) {
     if (!frame_actived) {
         return Er("Requires invoke beginFrame to activate the frame before endFrame");
     }
 
     auto& frame = frames[frame_index];
+    OnUnwrapGet(queue, api.graphicsQueue());
+    OnUnwrapGet(fence, frame.requestFence());
+    OnUnwrapGet(present_semaphore, frame.requestSemaphore());
+
+    QueueSubmitter submitter(queue);
+    VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_ALL_COMMANDS_BIT};
     if (hasSwapchain()) {
-        OnUnwrapGet(queue, api.presentQueue());
+        // Must render into swapchain image with graphics pipeline
+        submitter.wait(1, *acquisition, wait_stages);
+    }
+    submitter.signal(1, present_semaphore).submit(cmdbuf, fence);
+
+    if (hasSwapchain()) {
+        OnUnwrapGet(present_queue, api.presentQueue());
 
         // Present swapchain image
-        auto res = queue.present(*swapchain, frame_index, wait_semaphore);
+        auto res = present_queue.present(*swapchain, frame_index, present_semaphore);
         if (res == VK_SUBOPTIMAL_KHR || res == VK_ERROR_OUT_OF_DATE_KHR) {
             updateSwapchain();
         } else {
@@ -157,31 +169,9 @@ Res<Void> RenderContext::endFrame(VkSemaphore wait_semaphore) {
             acquisition.reset();
         }
     }
+
     frame_actived = false;
-    return Ok(Void{});
-}
-
-Res<CRef<core::Semaphore>> RenderContext::submit(const core::CommandBuffer& cmdbuf) {
-    auto& frame = frames[frame_index];
-    OnUnwrapGet(queue, api.graphicsQueue());
-    OnUnwrapGet(fence, frame.requestFence());
-    OnUnwrapGet(signal_semaphore, frame.requestSemaphore());
-
-    auto submit_info = Itor::SubmitInfo();
-    submit_info.commandBufferCount = 1;
-    submit_info.pCommandBuffers = cmdbuf;
-    submit_info.signalSemaphoreCount = 1;
-    submit_info.pSignalSemaphores = signal_semaphore;
-    if (hasSwapchain()) {
-        // Must render into swapchain image with graphics pipeline
-        VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-        submit_info.waitSemaphoreCount = 1;
-        submit_info.pWaitSemaphores = *acquisition;
-        submit_info.pWaitDstStageMask = wait_stages;
-    }
-    queue.submit({submit_info}, fence);
-
-    return Ok(newCRef(signal_semaphore));
+    return Ok(newCRef(fence));
 }
 
 void RenderContext::watchStatus() const {

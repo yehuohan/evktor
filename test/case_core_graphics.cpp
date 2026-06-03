@@ -69,7 +69,11 @@ void case_core_graphics() {
         FramebufferState{}.setRenderPass(render_pass).setExtent(tri.wid, tri.hei).addAttachment(out_imgview).into(api).unwrap();
 
     // Create descriptors
-    auto desc_pool = DescriptorPoolState{}.setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT).into(api).unwrap();
+    auto desc_pool = DescriptorPoolState{}
+                         .setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT)
+                         .setFromSetLayout(desc_set_layout)
+                         .into(api)
+                         .unwrap();
     auto desc_set = desc_pool.allocate(desc_set_layout).unwrap();
     auto ubo_buf = BufferState{}
                        .setSize(sizeof(Triangle::UBO))
@@ -142,7 +146,7 @@ void case_core_graphics() {
         .img(Arg{out_img});
     cmdbuf.beginRenderPass({tri.wid, tri.hei}, render_pass, framebuffer, {VkClearValue{}})
         .cmdBindGraphicsPipeline(pipeline)
-        .cmdBindGraphicsDescriptorSets(pipeline_layout, 0, {desc_set})
+        .cmdBindGraphicsDescriptorSets(pipeline_layout, 1, {desc_set})
         .cmdPushVertConstants(pipeline_layout, &tri.push_args.flipy, sizeof(int), 0)
         .cmdPushFragConstants(pipeline_layout, &tri.push_args.scaler, sizeof(int), 20)
         .cmdBindVertexBuffer(vertex_buf)

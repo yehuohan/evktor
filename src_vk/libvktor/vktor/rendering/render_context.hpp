@@ -96,16 +96,7 @@ public:
      *
      * @param wait_semaphore Semaphore to wait before present the activated swapchain image
      */
-    Res<Void> endFrame(VkSemaphore wait_semaphore = VK_NULL_HANDLE);
-    /**
-     * @brief Submit command buffer
-     *
-     * With swapchain, execute the command buffer after acquired the activated swapchain image.
-     * Without swapchain, execute the command buffer directly.
-     *
-     * @return Semaphore to signal after the command buffer executed
-     */
-    Res<CRef<core::Semaphore>> submit(const core::CommandBuffer& cmdbuf);
+    Res<CRef<core::Fence>> endFrame(const core::CommandBuffer& cmdbuf);
     /**
      * @brief Get the activated render frame
      */

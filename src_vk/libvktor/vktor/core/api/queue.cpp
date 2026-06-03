@@ -13,8 +13,8 @@ Queue::~Queue() {
     handle = VK_NULL_HANDLE;
 }
 
-VkResult Queue::submit(const Vector<VkSubmitInfo>& submits, VkFence fence) const {
-    return vkQueueSubmit(handle, u32(submits.size()), submits.data(), fence);
+VkResult Queue::submit(const VkSubmitInfo& submit, VkFence fence) const {
+    return vkQueueSubmit(handle, 1, &submit, fence);
 }
 
 VkResult Queue::submit(VkCommandBuffer cmdbuf, VkFence fence) const {
@@ -42,6 +42,25 @@ Queue Queue::from(VkDevice device, uint32_t family_index, uint32_t index) {
     Queue queue(family_index, index);
     vkGetDeviceQueue(device, family_index, 0, queue);
     return queue;
+}
+
+QueueSubmitter& QueueSubmitter::wait(uint32_t count, const VkSemaphore* semaphores, const VkPipelineStageFlags* stages) {
+    info.waitSemaphoreCount = count;
+    info.pWaitSemaphores = semaphores;
+    info.pWaitDstStageMask = stages;
+    return *this;
+}
+
+QueueSubmitter& QueueSubmitter::signal(uint32_t count, const VkSemaphore* semaphores) {
+    info.signalSemaphoreCount = count;
+    info.pSignalSemaphores = semaphores;
+    return *this;
+}
+
+VkResult QueueSubmitter::submit(VkCommandBuffer cmdbuf, VkFence fence) {
+    info.commandBufferCount = 1;
+    info.pCommandBuffers = &cmdbuf;
+    return queue.submit(info, fence);
 }
 
 NAMESPACE_END(core)
