@@ -39,6 +39,9 @@ void case_rctx_cooperative_matrix() {
         cm_feats.cooperativeMatrix = VK_TRUE;
         dso.setNext(&cm_feats)
             .tryAddExtension(VK_KHR_COOPERATIVE_MATRIX_EXTENSION_NAME)
+            .setFeatures<VkPhysicalDeviceVulkan11Features>([](VkPhysicalDeviceVulkan11Features& feats) {
+                feats.storageBuffer16BitAccess = VK_TRUE;
+            })
             .setFeatures<VkPhysicalDeviceVulkan12Features>([](VkPhysicalDeviceVulkan12Features& feats) {
                 feats.shaderFloat16 = VK_TRUE;
                 feats.vulkanMemoryModel = VK_TRUE;
@@ -49,6 +52,7 @@ void case_rctx_cooperative_matrix() {
     auto& rfrm = rctx->getFrame().get();
 
     // Initialize params and tiles
+    using DType = uint16_t;
     Conv2DParams params{};
     Conv2DTiles tiles{};
     uint32_t sub_group_size;
@@ -126,10 +130,10 @@ void case_rctx_cooperative_matrix() {
     auto shaders = Vector<CRef<Shader>>{newCRef(shader_comp)};
 
     // Create descriptors
-    auto yout = vkt.newStorageBuffer(params.OH * params.OW * params.OC * sizeof(float));
-    auto xinp = vkt.newStorageBuffer(params.IH * params.IW * params.IC * sizeof(float));
-    auto kern = vkt.newStorageBuffer(params.KH * params.KW * params.IC * params.OC * sizeof(float));
-    auto bias = vkt.newStorageBuffer(params.OC * sizeof(float));
+    auto yout = vkt.newStorageBuffer(params.OH * params.OW * params.OC * sizeof(DType));
+    auto xinp = vkt.newStorageBuffer(params.IH * params.IW * params.IC * sizeof(DType));
+    auto kern = vkt.newStorageBuffer(params.KH * params.KW * params.IC * params.OC * sizeof(DType));
+    auto bias = vkt.newStorageBuffer(params.OC * sizeof(DType));
     auto desc_info = DescriptorInfo{};
     desc_info.addBuf().bind(yout);
     desc_info.addBuf().bind(xinp);
@@ -151,9 +155,9 @@ void case_rctx_cooperative_matrix() {
 
     // Create staging buffer
     auto staging = vkt.newStagingBuffer(std::max<VkDeviceSize>(yout.getSize(), xinp.getSize()));
-    Vector<float> buf(staging.getSize() / sizeof(float));
+    Vector<DType> buf(staging.getSize() / sizeof(DType));
     for (size_t k = 0; k < buf.size(); k++) {
-        buf[k] = float(k % 255) / 255.0;
+        buf[k] = glm::packHalf1x16(float(k % 255) / 255.0f);
     }
     staging.copyFrom(buf.data());
     cmdbuf.begin();
@@ -179,11 +183,11 @@ void case_rctx_cooperative_matrix() {
     queue.waitIdle();
 
     // Check staging buffer
-    Vector<float> out(yout.getSize() / sizeof(float));
+    Vector<DType> out(yout.getSize() / sizeof(DType));
     staging.copyInto(out.data(), yout.getSize());
     Vector<float> disp{};
     for (size_t k = 0; k < out.size(); k += out.size() / 11) {
-        disp.push_back(out[k]);
+        disp.push_back(glm::unpackHalf1x16(out[k]));
     }
     tstOut("yout: {}", vec2str(disp));
 }

@@ -81,16 +81,16 @@ struct Conv2DParams {
 layout(local_size_x = SUB_GROUP_SIZE, local_size_y = 1, local_size_z = 1) in;
 
 layout(binding = 0, set = 0) writeonly buffer Yout {
-    float yout[];
+    DType yout[];
 };
 layout(binding = 1, set = 0) readonly buffer Xinp {
-    float xinp[];
+    DType xinp[];
 };
 layout(binding = 2, set = 0) readonly buffer Kern {
-    float kern[];
+    DType kern[];
 };
 layout(binding = 3, set = 0) readonly buffer Bias {
-    float bias[];
+    DType bias[];
 };
 layout(push_constant) uniform Args {
     Conv2DParams a;
@@ -233,7 +233,7 @@ void main() {
         for (uint idx = gtid.x; idx < TILE_M * TILE_N; idx += SUB_GROUP_SIZE) {
             uint tm = idx / TILE_N; // TILE row-index for matrix A and C
             uint tn = idx % TILE_N; // TILE col-index for matrix B and C
-            float sum = 0.0;
+            DType sum = 0.0;
             for (uint tk = 0; tk < TILE_K; tk++) {
                 sum += shmem_A[tm * TILE_K + tk] * shmem_B[tk * TILE_N + tn];
             }
@@ -269,7 +269,7 @@ void main() {
             if (a.activation == uint(ACTIVATION_ReLU)) {
                 val = max(0.0, val);
             }
-            yout[hwc2idx(yh, yw, yc, a.OH, a.OW, a.OC)] = val;
+            yout[hwc2idx(yh, yw, yc, a.OH, a.OW, a.OC)] = DType(val);
         }
     }
 }

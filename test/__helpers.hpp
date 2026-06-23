@@ -2,6 +2,7 @@
 #include "assets.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/packing.hpp>
 #include <vktor/vktor.hpp>
 
 inline constexpr char TST_TAG[] = "tst";
