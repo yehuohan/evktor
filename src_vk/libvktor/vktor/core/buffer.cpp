@@ -60,7 +60,7 @@ Buffer::~Buffer() {
 }
 
 bool Buffer::copyFrom(const void* src, const VkDeviceSize copy_size, VkDeviceSize offset) const {
-    VkDeviceSize mem_size = copy_size > 0 ? copy_size : size;
+    VkDeviceSize mem_size = copy_size == VK_WHOLE_SIZE ? size : copy_size;
 
     auto res = map();
     if (res.isErr()) {
@@ -73,7 +73,7 @@ bool Buffer::copyFrom(const void* src, const VkDeviceSize copy_size, VkDeviceSiz
 }
 
 bool Buffer::copyInto(void* dst, const VkDeviceSize copy_size, VkDeviceSize offset) const {
-    VkDeviceSize mem_size = copy_size > 0 ? copy_size : size;
+    VkDeviceSize mem_size = copy_size == VK_WHOLE_SIZE ? size : copy_size;
     auto res = map();
     if (res.isErr()) {
         return false;

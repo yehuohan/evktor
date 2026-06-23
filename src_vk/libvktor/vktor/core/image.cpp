@@ -151,7 +151,7 @@ bool Image::copyFrom(const void* src, const VkDeviceSize src_size, uint32_t mip,
     return true;
 }
 
-bool Image::copyInto(void* dst, const VkDeviceSize dst_size = 0, uint32_t mip, uint32_t layer) const {
+bool Image::copyInto(void* dst, const VkDeviceSize dst_size, uint32_t mip, uint32_t layer) const {
     VkSubresourceLayout subresource_layout = getSubresourceLayout(mip, layer);
     VkDeviceSize mem_size = std::min<VkDeviceSize>(dst_size, subresource_layout.size);
     VkDeviceSize offset = subresource_layout.offset;

@@ -291,13 +291,13 @@ public:
     /**
      * @brief Copy buffer
      *
-     * If `copy_size` is 0, then use `min(src.size, dst.size)`.
+     * If `copy_size` is VK_WHOLE_SIZE, then use `min(src.size, dst.size)`.
      */
     Self cmdCopyBuffer(const Buffer& src,
                        const Buffer& dst,
                        VkDeviceSize src_offset = 0,
                        VkDeviceSize dst_offset = 0,
-                       VkDeviceSize copy_size = 0) const;
+                       VkDeviceSize copy_size = VK_WHOLE_SIZE) const;
     Self cmdCopyImageToBuffer(const Arg<Image>& img,
                               const Buffer& buf,
                               VkDeviceSize buf_offset = 0,

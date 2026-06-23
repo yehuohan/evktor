@@ -61,21 +61,17 @@ public:
     /**
      * @brief Copy data from cpu memory `src` into gpu buffer memory
      *
-     * There should be `copy_size` <= Buffer::size - `dst_offset`
-     *
-     * @param copy_size The copy size in bytes. Give 0 to use Buffer::size.
+     * @param copy_size The copy size in bytes. VK_WHOLE_SIZE means Buffer::size.
      * @param offset The buffer memory offset to copy into
      */
-    bool copyFrom(const void* src, const VkDeviceSize copy_size = 0, VkDeviceSize offset = 0) const;
+    bool copyFrom(const void* src, const VkDeviceSize copy_size = VK_WHOLE_SIZE, VkDeviceSize offset = 0) const;
     /**
      * @brief Copy data from gpu buffer memory into cpu memory `dst`
      *
-     * There should be `copy_size` <= Buffer::size - `dst_offset`
-     *
-     * @param copy_size The copy size in bytes. Give 0 to use Buffer::size.
+     * @param copy_size The copy size in bytes. VK_WHOLE_SIZE means Buffer::size.
      * @param offset The buffer memory offset to copy from
      */
-    bool copyInto(void* dst, const VkDeviceSize copy_size = 0, VkDeviceSize offset = 0) const;
+    bool copyInto(void* dst, const VkDeviceSize copy_size = VK_WHOLE_SIZE, VkDeviceSize offset = 0) const;
     Res<void*> map() const;
     void unmap() const;
     VkResult getFd(int& fd, VkExternalMemoryHandleTypeFlagBits hdl_type = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT);

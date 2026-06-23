@@ -352,7 +352,7 @@ CommandBuffer::Self CommandBuffer::cmdCopyBuffer(const Buffer& src,
                                                  VkDeviceSize src_offset,
                                                  VkDeviceSize dst_offset,
                                                  VkDeviceSize copy_size) const {
-    VkDeviceSize size = copy_size > 0 ? copy_size : std::min<VkDeviceSize>(src.size, dst.size);
+    VkDeviceSize size = copy_size == VK_WHOLE_SIZE ? std::min<VkDeviceSize>(src.size, dst.size) : copy_size;
     VkBufferCopy copy{};
     copy.srcOffset = src_offset;
     copy.dstOffset = dst_offset;
