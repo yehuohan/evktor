@@ -36,13 +36,39 @@
  * Work group: (work-group-size需要为sub-group-size的整数倍，以8x8x1为例)
  *      Each work group: process one TILE
  *      Each work group thread: process TMxTN/8x8 elements
+ *
+ * Quantization:
+ *      quant = round(float / scale) + zero_point
+ *      float = (quant - zero_point) * scale
+ *
+ *      xinp = x = (xq - xz) * xs   (int8非对称量化)
+ *      kern = w = (wq - wz) * ws   (int8非对称量化)
+ *      bias = b = bq * xs * ws     (int32对称量化，和accumlator对齐单位)
+ *      yout = y = (yq - yz) * ys   (int8非对称量化)
+ *
+ *      y = ∑(w * x) + b
+ *      (yq - yz) * ys = ∑((xq - xz) * xs * (wq - wz) * ws) + bq * xs * ws
+ *      (yq - yz) * ys = xs * ws * (∑((xq - xz) * (wq - wz)) + bq)
+ *      (yq - yz) * ys = xs * ws * (∑(xq * wq) - ∑(xz * wq) - ∑(xq * wz) + ∑(xz * wz) + bq)
+ *      yq = xs * ws / ys * (∑(xq * wq) - xz * ∑(wq) - wz * ∑(xq) + ∑(xz * wz) + bq) + yz
+ *      yq = xs * ws / ys * (∑(xq * wq) - xz * ∑(wq) + bq) + yz
+ *           ------------    ---------- -----------------
+ *                M             Acc     E = EffectiveBias   : kern使用对称量化，wz = 0
+ *           ------------    ---------- -----------------
+ *      yq = M * (Acc + E) + yz
+ *      yq[oc] = M[oc] * (Acc + E[oc]) + yz                 : Per-channel quantization
+ *      yq[oc] = clamp(round(M[oc] * (Acc + E[oc])) + yz, -128, 127)
  */
 #version 460
 #extension GL_KHR_cooperative_matrix : enable
 #extension GL_KHR_memory_scope_semantics : enable
 #extension GL_EXT_shader_explicit_arithmetic_types : enable
+#extension GL_EXT_shader_explicit_arithmetic_types_int8 : require
+#extension GL_EXT_shader_explicit_arithmetic_types_float16 : require
+#extension GL_EXT_shader_8bit_storage : require
+#extension GL_EXT_shader_16bit_storage : require
 
-// #define USE_NHWC
+// #define USE_NCHW
 // #define USE_COOPMAT
 
 #ifndef SUB_GROUP_SIZE
@@ -87,11 +113,17 @@ layout(binding = 1, set = 0) readonly buffer Xinp {
     DType xinp[];
 };
 layout(binding = 2, set = 0) readonly buffer Kern {
-    DType kern[];
+    DType kern[]; // Kernel weight
 };
 layout(binding = 3, set = 0) readonly buffer Bias {
     DType bias[];
 };
+// layout(binding = 3, set = 0) readonly buffer Bias {
+//     int bias[]; // E[oc]
+// };
+// layout(binding = 4, set = 0) readonly buffer Scale {
+//     float scale[]; // M[oc]
+// };
 layout(push_constant) uniform Args {
     Conv2DParams a;
 };
@@ -110,12 +142,12 @@ shared DType shmem_C[TILE_M * TILE_N];
  * @brief Tensor row, col, channel to linear index
  */
 uint hwc2idx(uint h, uint w, uint c, uint Hei, uint Wid, uint Cha) {
-    #ifdef USE_NHWC
-    // NHWC
-    return (h * Wid + w) * Cha + c; // h * Wid * Cha + w * Cha + c;
-    #else
+    #ifdef USE_NCHW
     // NCHW
     return (c * Hei + h) * Wid + w; // c * Hei * Wid + h * Wid + w;
+    #else
+    // NHWC
+    return (h * Wid + w) * Cha + c; // h * Wid * Cha + w * Cha + c;
     #endif
 }
 
@@ -123,12 +155,12 @@ uint hwc2idx(uint h, uint w, uint c, uint Hei, uint Wid, uint Cha) {
  * @brief Kernel index to linear index
  */
 uint ker2idx(uint h, uint w, uint i, uint o, uint KH, uint KW, uint IC, uint OC) {
-    #ifdef USE_NHWC
-    // HWIO for NHWC
-    return ((h * KW + w) * IC + i) * OC + o; // h * KW * IC * OC + w * IC * OC + i * OC + o;
-    #else
+    #ifdef USE_NCHW
     // OIHW for NCHW
     return ((o * IC + i) * KH + h) * KW + w; // o * IC * KH * KW + i * KH * KW + h * KW + w;
+    #else
+    // HWIO for NHWC
+    return ((h * KW + w) * IC + i) * OC + o; // h * KW * IC * OC + w * IC * OC + i * OC + o;
     #endif
 }
 
@@ -144,6 +176,11 @@ void main() {
     const uint c0 = gid.z * TILE_N; // Start Tile cha-index for yout
     const uint m0 = h0 * TILE_W + w0; // Start TILE row-index for matrix C and A
     const uint n0 = c0; // Start Tile col-index for matrix C and B
+
+    // Cost for defferent TILE_M/K/N
+    // K: ceil(K / TILE_K) * TILE_K - K
+    // N: ceil(N / TILE_N) * TILE_N - N
+    // M: ceil(OH / TILE_H) * TILE_H * ceil(OW / TILE_W) * TILE_W - OH * OW
 
     #ifdef USE_COOPMAT
     CoopMatA TA;
