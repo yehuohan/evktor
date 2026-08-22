@@ -49,17 +49,11 @@ Res<PipelineLayout> PipelineLayoutState::into(const CoreApi& api) const {
     return PipelineLayout::from(api, *this);
 }
 
-PipelineLayout::PipelineLayout(PipelineLayout&& rhs) : PipelineLayout(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
-
 PipelineLayout::~PipelineLayout() {
-    if (!__borrowed && handle) {
-        vkDestroyPipelineLayout(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroyPipelineLayout(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 Res<PipelineLayout> PipelineLayout::from(const CoreApi& api, const PipelineLayoutState& info) {

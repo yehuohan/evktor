@@ -12,7 +12,7 @@ public:
     Buffer(vkt::core::Buffer&& buffer, const String& name = "") : Component(name), buffer(std::move(buffer)) {}
     virtual ~Buffer() = default;
 
-    OnConstType(VkBuffer, buffer.getHandle());
+    OnConstType(VkBuffer, buffer.handle());
     const vkt::core::Buffer& getBuffer() const {
         return buffer;
     }
@@ -27,7 +27,7 @@ struct SubBuffer {
     SubBuffer(const Buffer& buffer, VkDeviceSize offset) : buffer(&buffer), offset(offset) {}
 
     operator VkBuffer() const {
-        return buffer ? buffer->getBuffer().getHandle() : VK_NULL_HANDLE;
+        return buffer ? buffer->getBuffer().handle() : VK_NULL_HANDLE;
     }
 
     const Buffer* buffer = nullptr;

@@ -36,38 +36,65 @@ Res<Device> DeviceState::into(CRef<PhysicalDevice> phy_dev) {
     return Device::from(phy_dev, *this);
 }
 
-Device::Device(Device&& rhs) : physical_device(rhs.physical_device) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+VkResult VkHandle<VkDevice>::createMemAllocator(VkHandle<VkInstance> instance,
+                                                VkHandle<VkPhysicalDevice> phy_dev,
+                                                VmaAllocatorCreateFlags flags) {
+    if (mem_allocator) {
+        vktLogW("VkHandle<Device> memory allocator is already created");
+        return VK_SUCCESS;
+    }
+    VmaVulkanFunctions fns{};
+    VmaAllocatorCreateInfo vma_allocator_ai{};
+    vma_allocator_ai.vulkanApiVersion = instance.getApiVersion();
+    vma_allocator_ai.instance = instance;
+    vma_allocator_ai.physicalDevice = phy_dev;
+    vma_allocator_ai.device = __handle;
+    vma_allocator_ai.pVulkanFunctions = &fns;
+    vma_allocator_ai.flags = flags;
+#if 1
+    // Define VMA_STATIC_VULKAN_FUNCTIONS=0 and VMA_DYNAMIC_VULKAN_FUNCTIONS=0 to work with volk
+    auto res = vmaImportVulkanFunctionsFromVolk(&vma_allocator_ai, &fns);
+    if (VK_SUCCESS != res) {
+        vktLogE("Failed to import Vulkan functions from Volk");
+        return res;
+    }
+#else
+    // Use default VMA_DYNAMIC_VULKAN_FUNCTIONS=1
+    fns.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
+    fns.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
+#endif
+    return vmaCreateAllocator(&vma_allocator_ai, &mem_allocator);
+}
+
+Device::Device(Device&& rhs) : CoreHandle(std::move(rhs)), physical_device(rhs.physical_device) {
     mem_allocator = rhs.mem_allocator;
+    borrowed_mem_allocator = rhs.borrowed_mem_allocator;
     rhs.mem_allocator = VK_NULL_HANDLE;
+    rhs.borrowed_mem_allocator = false;
 }
 
 Device::~Device() {
-    if (mem_allocator) {
+    if (!borrowed_mem_allocator && mem_allocator) {
         vmaDestroyAllocator(mem_allocator);
     }
-    if (!__borrowed && handle) {
-        vkDestroyDevice(handle, physical_device.get().instance.get());
+    if (!borrowed() && __handle) {
+        vkDestroyDevice(__handle, physical_device.get().instance.get());
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
     mem_allocator = VK_NULL_HANDLE;
 }
 
 Device& Device::operator=(Device&& rhs) {
     if (this != &rhs) {
-        if (mem_allocator) {
+        if (!borrowed_mem_allocator && mem_allocator) {
             vmaDestroyAllocator(mem_allocator);
         }
-        if (!__borrowed && handle) {
-            vkDestroyDevice(handle, physical_device.get().instance.get());
+        if (!borrowed() && __handle) {
+            vkDestroyDevice(__handle, physical_device.get().instance.get());
         }
-
-        handle = rhs.handle;
-        rhs.handle = VK_NULL_HANDLE;
-        __borrowed = rhs.__borrowed;
+        moveFrom(std::move(rhs));
         mem_allocator = rhs.mem_allocator;
+        borrowed_mem_allocator = rhs.borrowed_mem_allocator;
         rhs.mem_allocator = VK_NULL_HANDLE;
     }
     return *this;
@@ -144,55 +171,29 @@ Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     volkLoadDevice(device);
 
     // Create memory allocator
-    OnRet(device.createMemAllocator(vma_flags), "Failed to create memory allocator");
+    OnRet(device.createMemAllocator(phy_dev.get().instance.get(), phy_dev.get(), vma_flags),
+          "Failed to create memory allocator");
 
     return Ok(std::move(device));
 }
 
 Res<Device> Device::borrow(CRef<PhysicalDevice> phy_dev,
-                           VkDevice handle,
-                           PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr,
-                           VmaAllocator mem_allocator) {
-    Device device{phy_dev};
-    device.__borrowed = true;
-    device.handle = handle;
+                           VkHandle<VkDevice> handle,
+                           PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr) {
+    if (!handle.valid()) {
+        return Er("Borrow requires a valid VkHandle for VkDevice");
+    }
 
+    Device device{phy_dev, handle};
     if (fpGetDeviceProcAddr) {
         vkGetDeviceProcAddr = fpGetDeviceProcAddr;
+        volkLoadDevice(device);
     }
-    volkLoadDevice(device);
-
-    if (mem_allocator) {
-        device.mem_allocator = mem_allocator;
-    } else {
-        OnRet(device.createMemAllocator(), "Failed to create memory allocator");
+    if (!device.borrowed_mem_allocator) {
+        OnRet(device.createMemAllocator(phy_dev.get().instance.get(), phy_dev.get()), "Failed to create memory allocator");
     }
 
     return Ok(std::move(device));
-}
-
-VkResult Device::createMemAllocator(VmaAllocatorCreateFlags flags) {
-    VmaVulkanFunctions fns{};
-    VmaAllocatorCreateInfo vma_allocator_ai{};
-    vma_allocator_ai.vulkanApiVersion = physical_device.get().instance.get().api_version;
-    vma_allocator_ai.instance = physical_device.get().instance.get();
-    vma_allocator_ai.physicalDevice = physical_device.get();
-    vma_allocator_ai.device = handle;
-    vma_allocator_ai.pVulkanFunctions = &fns;
-    vma_allocator_ai.flags = flags;
-#if 1
-    // Define VMA_STATIC_VULKAN_FUNCTIONS=0 and VMA_DYNAMIC_VULKAN_FUNCTIONS=0 to work with volk
-    auto res = vmaImportVulkanFunctionsFromVolk(&vma_allocator_ai, &fns);
-    if (VK_SUCCESS != res) {
-        vktLogE("Failed to import Vulkan functions from Volk");
-        return res;
-    }
-#else
-    // Use default VMA_DYNAMIC_VULKAN_FUNCTIONS=1
-    fns.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
-    fns.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
-#endif
-    return vmaCreateAllocator(&vma_allocator_ai, &mem_allocator);
 }
 
 NAMESPACE_END(core)

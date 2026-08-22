@@ -34,72 +34,92 @@ Res<Buffer> BufferState::into(const CoreApi& api) const {
     return Buffer::from(api, *this);
 }
 
-Buffer::Buffer(Buffer&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+Buffer::Buffer(Buffer&& rhs) : CoreResource(std::move(rhs)), borrowed_memory_mapped(rhs.borrowed_memory_mapped) {
     size = rhs.size;
-    memory = rhs.memory;
-    rhs.memory = VK_NULL_HANDLE;
     allocation = rhs.allocation;
+    memory = rhs.memory;
+    memory_mapped = rhs.memory_mapped;
     rhs.allocation = VK_NULL_HANDLE;
+    rhs.memory = VK_NULL_HANDLE;
+    rhs.memory_mapped = nullptr;
 }
 
 Buffer::~Buffer() {
-    if (!__borrowed && handle) {
+    unmap();
+    if (!borrowed() && __handle) {
         if (allocation) {
-            vmaDestroyBuffer(api, handle, allocation);
+            vmaDestroyBuffer(api, __handle, allocation);
         } else {
-            vkFreeMemory(api, memory, api);
-            vkDestroyBuffer(api, handle, api);
+            // This's a dead branch currently
+            if (memory) {
+                vkFreeMemory(api, memory, api);
+            }
+            vkDestroyBuffer(api, __handle, api);
         }
     }
-    handle = VK_NULL_HANDLE;
-    memory = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
     allocation = VK_NULL_HANDLE;
+    memory = VK_NULL_HANDLE;
+    memory_mapped = nullptr;
 }
 
 bool Buffer::copyFrom(const void* src, const VkDeviceSize copy_size, VkDeviceSize offset) const {
     VkDeviceSize mem_size = copy_size == VK_WHOLE_SIZE ? size : copy_size;
-
-    auto res = map();
-    if (res.isErr()) {
-        return false;
+    if (memory_mapped) {
+        std::memcpy((uint8_t*)memory_mapped + offset, src, (size_t)mem_size);
+    } else {
+        auto res = map();
+        if (res.isErr()) {
+            return false;
+        }
+        void* data = res.unwrap();
+        std::memcpy((uint8_t*)data + offset, src, (size_t)mem_size);
+        unmap();
     }
-    void* data = res.unwrap();
-    std::memcpy((uint8_t*)data + offset, src, (size_t)mem_size);
-    unmap();
     return true;
 }
 
 bool Buffer::copyInto(void* dst, const VkDeviceSize copy_size, VkDeviceSize offset) const {
     VkDeviceSize mem_size = copy_size == VK_WHOLE_SIZE ? size : copy_size;
-    auto res = map();
-    if (res.isErr()) {
-        return false;
+    if (memory_mapped) {
+        std::memcpy(dst, (uint8_t*)memory_mapped + offset, (size_t)mem_size);
+    } else {
+        auto res = map();
+        if (res.isErr()) {
+            return false;
+        }
+        void* data = res.unwrap();
+        std::memcpy(dst, (uint8_t*)data + offset, (size_t)mem_size);
+        unmap();
     }
-    void* data = res.unwrap();
-    std::memcpy(dst, (uint8_t*)data + offset, (size_t)mem_size);
-    unmap();
     return true;
 }
 
 Res<void*> Buffer::map() const {
-    void* data;
-    if (allocation) {
-        OnRet(vmaMapMemory(api, allocation, &data), "Failed to map buffer memory with allocation");
-    } else if (memory) {
-        OnRet(vkMapMemory(api, memory, 0, size, 0, &data), "Failed to map buffer memory");
+    if (!memory_mapped) {
+        if (allocation) {
+            OnRet(vmaMapMemory(api, allocation, &memory_mapped), "Failed to map buffer memory with allocation");
+        } else if (memory) {
+            OnRet(vkMapMemory(api, memory, 0, size, 0, &memory_mapped), "Failed to map buffer memory");
+        } else {
+            return Er("The buffer seemed doesn't borrow a memory to map");
+        }
     }
-    return Ok(data);
+    return Ok(memory_mapped);
 }
 
 void Buffer::unmap() const {
-    if (allocation) {
-        vmaUnmapMemory(api, allocation);
-    } else if (memory) {
-        vkUnmapMemory(api, memory);
+    if (borrowed_memory_mapped) {
+        return;
     }
+    if (memory_mapped) {
+        if (allocation) {
+            vmaUnmapMemory(api, allocation);
+        } else if (memory) {
+            vkUnmapMemory(api, memory);
+        }
+    }
+    memory_mapped = nullptr;
 }
 
 VkResult Buffer::getFd(int& fd, VkExternalMemoryHandleTypeFlagBits hdl_type) {
@@ -146,16 +166,11 @@ Res<Buffer> Buffer::from(const CoreApi& api, const BufferState& info) {
     return Ok(std::move(buffer));
 }
 
-Buffer Buffer::borrow(const CoreApi& api, VkBuffer _buffer, VkDeviceMemory _memory, VkDeviceSize _size) {
-    if (VK_NULL_HANDLE == _buffer) {
-        vktLogW("Buffer should borrow from a existed & valid VkBuffer");
+Res<Buffer> Buffer::borrow(const CoreApi& api, VkHandle<VkBuffer> handle, VkDeviceMemory memory, void* memory_mapped) {
+    if (!handle.valid()) {
+        return Er("Borrow requires a valid VkHandle for VkBuffer");
     }
-    Buffer buffer(api);
-    buffer.__borrowed = true;
-    buffer.handle = _buffer;
-    buffer.memory = _memory;
-    buffer.size = _size;
-    return buffer;
+    return Ok(Buffer(api, handle, memory, memory_mapped));
 }
 
 NAMESPACE_END(core)

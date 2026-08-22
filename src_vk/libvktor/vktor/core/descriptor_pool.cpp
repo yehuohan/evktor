@@ -43,20 +43,17 @@ Res<DescriptorPool> DescriptorPoolState::into(const CoreApi& api) const {
     return DescriptorPool::from(api, *this);
 }
 
-DescriptorPool::DescriptorPool(DescriptorPool&& rhs) : CoreResource(rhs.api), maxsets(rhs.maxsets) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+DescriptorPool::DescriptorPool(DescriptorPool&& rhs) : CoreResource(std::move(rhs)), maxsets(rhs.maxsets) {
     count = rhs.count;
     rhs.count = 0;
 }
 
 DescriptorPool::~DescriptorPool() {
-    if (!__borrowed && handle) {
+    if (!borrowed() && __handle) {
         // Descriptor set will be freed along with vkDestroyDescriptorPool
-        vkDestroyDescriptorPool(api, handle, api);
+        vkDestroyDescriptorPool(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
     count = 0;
 }
 
@@ -74,13 +71,13 @@ Res<DescriptorSet> DescriptorPool::allocate(VkDescriptorSetLayout setlayout, con
 }
 
 bool DescriptorPool::free(const DescriptorSet& descset) {
-    if (descset.getHandle()) {
-        auto res = vkFreeDescriptorSets(api, *this, 1, &descset.getHandle());
+    if (descset.handle()) {
+        auto res = vkFreeDescriptorSets(api, *this, 1, &descset.handle());
         if (res == VK_SUCCESS) {
             count--;
             return true;
         } else {
-            vktLogE("Failed to free descriptor set: {}", fmt::ptr(descset.getHandle()));
+            vktLogE("Failed to free descriptor set: {}", fmt::ptr(descset.handle()));
         }
     } else {
         vktLogW("Try to free a null descriptor set");
@@ -127,7 +124,7 @@ Res<Ref<DescriptorPool>> DescriptorPooler::request(const DescriptorSetLayout& se
         OnErr(res,
               DescriptorPoolState(std::move(name))
                   // Enable vkFreeDescriptorSets to free descriptor set
-                  .setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT)
+                  // .setFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT)
                   .setMaxsets(VKT_CORE_MAX_SETS)
                   .setFromSetLayout(setlayout)
                   .into(setlayout.api));

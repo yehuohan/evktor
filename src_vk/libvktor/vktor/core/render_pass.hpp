@@ -112,7 +112,7 @@ protected:
     explicit RenderPass(const CoreApi& api) : CoreResource(api) {}
 
 public:
-    RenderPass(RenderPass&&);
+    RenderPass(RenderPass&& rhs) : CoreResource(std::move(rhs)) {}
     ~RenderPass();
 
     static Res<RenderPass> from(const CoreApi& api, const RenderPassState& info);

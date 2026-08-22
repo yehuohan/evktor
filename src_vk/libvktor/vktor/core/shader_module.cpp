@@ -21,17 +21,11 @@ Res<ShaderModule> ShaderModuleState::into(const CoreApi& api) const {
     return ShaderModule::from(api, *this);
 }
 
-ShaderModule::ShaderModule(ShaderModule&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
-
 ShaderModule::~ShaderModule() {
-    if (!__borrowed && handle) {
-        vkDestroyShaderModule(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroyShaderModule(api, __handle, api);
+        __handle = nullptr;
     }
-    handle = nullptr;
 }
 
 Res<ShaderModule> ShaderModule::from(const CoreApi& api, const ShaderModuleState& info) {

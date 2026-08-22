@@ -73,20 +73,17 @@ Res<ImageView> ImageViewState::into(const CoreApi& api) const {
     return ImageView::from(api, *this);
 }
 
-ImageView::ImageView(ImageView&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+ImageView::ImageView(ImageView&& rhs) : CoreResource(std::move(rhs)) {
     image = rhs.image;
     rhs.image = VK_NULL_HANDLE;
     subresource_range = rhs.subresource_range;
 }
 
 ImageView::~ImageView() {
-    if (!__borrowed && handle) {
-        vkDestroyImageView(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroyImageView(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
     image = VK_NULL_HANDLE;
 }
 

@@ -79,17 +79,11 @@ Res<Debug> DebugState::into(CRef<Instance> instance) const {
     return Debug::from(instance, *this);
 }
 
-Debug::Debug(Debug&& rhs) : instance(rhs.instance) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
-
 Debug::~Debug() {
-    if (!__borrowed && handle) {
-        vkDestroyDebugUtilsMessengerEXT(instance.get(), handle, instance.get());
+    if (!borrowed() && __handle) {
+        vkDestroyDebugUtilsMessengerEXT(instance.get(), __handle, instance.get());
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 VkResult Debug::setDebugName(VkDevice device, VkObjectType type, uint64_t hdl, const char* name) const {
@@ -127,7 +121,7 @@ void Debug::cmdInsertLabel(VkCommandBuffer cmdbuf, const char* name, const Color
 Res<Debug> Debug::from(CRef<Instance> instance, const DebugState& info) {
     Debug debug(instance);
     info.debug_ci.pNext = info.__next;
-    OnRet(vkCreateDebugUtilsMessengerEXT(instance.get(), &info.debug_ci, instance.get(), &debug.handle),
+    OnRet(vkCreateDebugUtilsMessengerEXT(instance.get(), &info.debug_ci, instance.get(), &debug.__handle),
           "Failed to create debug utils messenger: {}",
           info.__name);
     return Ok(std::move(debug));

@@ -27,7 +27,7 @@ protected:
     explicit PipelineCache(const CoreApi& api) : CoreResource(api) {}
 
 public:
-    PipelineCache(PipelineCache&&);
+    PipelineCache(PipelineCache&& rhs) : CoreResource(std::move(rhs)) {}
     ~PipelineCache();
 
 public:

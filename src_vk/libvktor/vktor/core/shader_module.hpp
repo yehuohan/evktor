@@ -46,7 +46,7 @@ protected:
     explicit ShaderModule(const CoreApi& api) : CoreResource(api) {}
 
 public:
-    ShaderModule(ShaderModule&&);
+    ShaderModule(ShaderModule&& rhs) : CoreResource(std::move(rhs)) {}
     ~ShaderModule();
 
     static Res<ShaderModule> from(const CoreApi& api, const ShaderModuleState& info);

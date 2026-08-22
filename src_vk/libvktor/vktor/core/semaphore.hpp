@@ -27,7 +27,7 @@ protected:
     explicit Semaphore(const CoreApi& api) : CoreResource(api) {}
 
 public:
-    Semaphore(Semaphore&&);
+    Semaphore(Semaphore&& rhs) : CoreResource(std::move(rhs)) {}
     ~Semaphore();
 
     VkResult wait(uint64_t value, uint64_t timeout = UINT64_MAX) const;

@@ -31,17 +31,11 @@ Res<Framebuffer> FramebufferState::into(const CoreApi& api) const {
     return Framebuffer::from(api, *this);
 }
 
-Framebuffer::Framebuffer(Framebuffer&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
-
 Framebuffer::~Framebuffer() {
-    if (!__borrowed && handle) {
-        vkDestroyFramebuffer(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroyFramebuffer(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 Res<Framebuffer> Framebuffer::from(const CoreApi& api, const FramebufferState& info) {

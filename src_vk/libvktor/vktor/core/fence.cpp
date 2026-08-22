@@ -14,25 +14,19 @@ Res<Fence> FenceState::into(const CoreApi& api) const {
     return Fence::from(api, *this);
 }
 
-Fence::Fence(Fence&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
-
 Fence::~Fence() {
-    if (!__borrowed && handle) {
-        vkDestroyFence(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroyFence(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 VkResult Fence::wait(uint64_t timeout) const {
-    return vkWaitForFences(api, 1, &handle, VK_TRUE, timeout);
+    return vkWaitForFences(api, 1, &__handle, VK_TRUE, timeout);
 }
 
 VkResult Fence::reset() const {
-    return vkResetFences(api, 1, &handle);
+    return vkResetFences(api, 1, &__handle);
 }
 
 Res<Fence> Fence::from(const CoreApi& api, const FenceState& info) {

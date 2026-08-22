@@ -149,23 +149,26 @@ Res<PhysicalDevice> PhysicalDeviceState::into(CRef<Instance> instance) {
     return PhysicalDevice::from(instance, *this);
 }
 
-PhysicalDevice::PhysicalDevice(PhysicalDevice&& rhs) : instance(rhs.instance) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+VkHandle<VkPhysicalDevice>::VkHandle(VkPhysicalDevice h, VkSurfaceKHR surface) : __handle(h) {
+    if (VK_NULL_HANDLE != h) {
+        PhysicalDeviceDetails details{h, surface};
+        details.collect();
+        queue_family_props = details.convert();
+    }
+}
+
+PhysicalDevice::PhysicalDevice(PhysicalDevice&& rhs) : CoreHandle(std::move(rhs)), instance(rhs.instance) {
     queue_family_props = std::move(rhs.queue_family_props);
 }
 
 PhysicalDevice::~PhysicalDevice() {
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
     queue_family_props.clear();
 }
 
 PhysicalDevice& PhysicalDevice::operator=(PhysicalDevice&& rhs) {
     if (this != &rhs) {
-        handle = rhs.handle;
-        rhs.handle = VK_NULL_HANDLE;
-        __borrowed = rhs.__borrowed;
+        moveFrom(std::move(rhs));
         queue_family_props = std::move(rhs.queue_family_props);
     }
     return *this;
@@ -203,22 +206,17 @@ Res<PhysicalDevice> PhysicalDevice::from(CRef<Instance> instance, PhysicalDevice
     size_t best = info.pickBestSuitable(suitables);
 
     PhysicalDevice phy_dev{instance};
-    phy_dev.handle = suitables[best].physical_device;
+    phy_dev.__handle = suitables[best].physical_device;
     phy_dev.queue_family_props = suitables[best].convert();
 
     return Ok(std::move(phy_dev));
 }
 
-Res<PhysicalDevice> PhysicalDevice::borrow(CRef<Instance> instance, VkPhysicalDevice handle, VkSurfaceKHR surface) {
-    PhysicalDevice phy_dev{instance};
-    phy_dev.__borrowed = true;
-    phy_dev.handle = handle;
-
-    PhysicalDeviceDetails details{handle, surface};
-    details.collect();
-    phy_dev.queue_family_props = details.convert();
-
-    return Ok(std::move(phy_dev));
+Res<PhysicalDevice> PhysicalDevice::borrow(CRef<Instance> instance, VkHandle<VkPhysicalDevice> handle) {
+    if (!handle.valid()) {
+        return Er("Borrow requires a valid VkHandle for VkPhysicalDevice");
+    };
+    return Ok(PhysicalDevice{instance, handle});
 }
 
 NAMESPACE_END(core)

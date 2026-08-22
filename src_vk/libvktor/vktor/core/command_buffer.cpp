@@ -169,23 +169,19 @@ using Self = CommandBuffer::Self;
 
 CommandBuffer::CommandBuffer(const CommandPool& command_pool) : CoreResource(command_pool.api), command_pool(command_pool) {}
 
-CommandBuffer::CommandBuffer(CommandBuffer&& rhs) : CoreResource(rhs.api), command_pool(rhs.command_pool) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
+CommandBuffer::CommandBuffer(CommandBuffer&& rhs) : CoreResource(std::move(rhs)), command_pool(rhs.command_pool) {}
 
 CommandBuffer::~CommandBuffer() {
-    if (!__borrowed && handle) {
-        vkFreeCommandBuffers(api, command_pool, 1, &handle);
+    if (!borrowed() && __handle) {
+        vkFreeCommandBuffers(api, command_pool, 1, &__handle);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 VkResult CommandBuffer::begin(VkCommandBufferUsageFlags flags) const {
     auto cmdbuf_bi = Itor::CommandBufferBeginInfo();
     cmdbuf_bi.flags = flags;
-    return vkBeginCommandBuffer(handle, &cmdbuf_bi);
+    return vkBeginCommandBuffer(__handle, &cmdbuf_bi);
 }
 
 #if VK_KHR_dynamic_rendering
@@ -206,7 +202,7 @@ Self CommandBuffer::cmdBeginRendering(const VkOffset2D offset,
     if (stencil_index < attms.size()) {
         info.pStencilAttachment = &attms[stencil_index];
     }
-    vkCmdBeginRendering(handle, &info);
+    vkCmdBeginRendering(__handle, &info);
     return *this;
 }
 #endif
@@ -223,7 +219,7 @@ Self CommandBuffer::beginRenderPass(const VkOffset2D offset,
     render_pass_bi.renderArea = VkRect2D{offset, extent};
     render_pass_bi.clearValueCount = u32(clear_values.size());
     render_pass_bi.pClearValues = clear_values.data();
-    vkCmdBeginRenderPass(handle, &render_pass_bi, contents);
+    vkCmdBeginRenderPass(__handle, &render_pass_bi, contents);
     return *this;
 }
 
@@ -241,7 +237,7 @@ CommandBuffer::Self CommandBuffer::cmdBlitImage(const Arg<Image>& src,
     blit.dstSubresource = dst;
     blit.dstOffsets[0] = dst_offsets[0];
     blit.dstOffsets[1] = dst_offsets[1];
-    vkCmdBlitImage(handle, src, src_layout, dst, dst_layout, 1, &blit, filter);
+    vkCmdBlitImage(__handle, src, src_layout, dst, dst_layout, 1, &blit, filter);
     return *this;
 }
 
@@ -261,7 +257,7 @@ CommandBuffer::Self CommandBuffer::cmdBlitImage(const Arg<Image>& src,
     blit.dstOffsets[1] = VkOffset3D{dst.copy_offset.x + (int32_t)dst.copy_extent.width,
                                     dst.copy_offset.y + (int32_t)dst.copy_extent.height,
                                     dst.copy_offset.z + (int32_t)dst.copy_extent.depth};
-    vkCmdBlitImage(handle, src, src_layout, dst, dst_layout, 1, &blit, filter);
+    vkCmdBlitImage(__handle, src, src_layout, dst, dst_layout, 1, &blit, filter);
     return *this;
 }
 
@@ -291,7 +287,7 @@ CommandBuffer::Self CommandBuffer::cmdBlitImageMip(const Arg<Image>& img,
     blit.dstSubresource.mipLevel = mip + 1;
     blit.dstSubresource.baseArrayLayer = img.layer;
     blit.dstSubresource.layerCount = img.layer_count;
-    vkCmdBlitImage(handle,
+    vkCmdBlitImage(__handle,
                    img,
                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                    img,
@@ -343,7 +339,7 @@ CommandBuffer::Self CommandBuffer::cmdCopyImage(const Arg<Image>& src,
     copy.dstSubresource = dst;
     copy.dstOffset = dst.copy_offset;
     copy.extent = minExtent3D(src.copy_extent, dst.copy_extent);
-    vkCmdCopyImage(handle, src, src_layout, dst, dst_layout, 1, &copy);
+    vkCmdCopyImage(__handle, src, src_layout, dst, dst_layout, 1, &copy);
     return *this;
 }
 
@@ -357,7 +353,7 @@ CommandBuffer::Self CommandBuffer::cmdCopyBuffer(const Buffer& src,
     copy.srcOffset = src_offset;
     copy.dstOffset = dst_offset;
     copy.size = size;
-    vkCmdCopyBuffer(handle, src, dst, 1, &copy);
+    vkCmdCopyBuffer(__handle, src, dst, 1, &copy);
     return *this;
 }
 
@@ -374,7 +370,7 @@ CommandBuffer::Self CommandBuffer::cmdCopyImageToBuffer(const Arg<Image>& img,
     copy.bufferOffset = buf_offset;
     copy.bufferRowLength = buf_row_len;
     copy.bufferImageHeight = buf_img_hei;
-    vkCmdCopyImageToBuffer(handle, img, img_layout, buf, 1, &copy);
+    vkCmdCopyImageToBuffer(__handle, img, img_layout, buf, 1, &copy);
     return *this;
 };
 
@@ -391,7 +387,7 @@ CommandBuffer::Self CommandBuffer::cmdCopyBufferToImage(const Buffer& buf,
     copy.imageSubresource = img;
     copy.imageOffset = img.copy_offset;
     copy.imageExtent = img.copy_extent;
-    vkCmdCopyBufferToImage(handle, buf, img, img_layout, 1, &copy);
+    vkCmdCopyBufferToImage(__handle, buf, img, img_layout, 1, &copy);
     return *this;
 }
 

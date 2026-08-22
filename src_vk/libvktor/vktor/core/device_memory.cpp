@@ -19,27 +19,21 @@ Res<DeviceMemory> DeviceMemoryState::into(const CoreApi& api) const {
     return DeviceMemory::from(api, *this);
 }
 
-DeviceMemory::DeviceMemory(DeviceMemory&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
-
 DeviceMemory::~DeviceMemory() {
-    if (!__borrowed && handle) {
-        vkFreeMemory(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkFreeMemory(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 Res<void*> DeviceMemory::map(VkMemoryMapFlags flags) const {
     void* data;
-    OnRet(vkMapMemory(api, handle, 0, size, flags, &data), "Failed to map device memory");
+    OnRet(vkMapMemory(api, __handle, 0, size, flags, &data), "Failed to map device memory");
     return Ok(data);
 }
 
 void DeviceMemory::unmap() const {
-    vkUnmapMemory(api, handle);
+    vkUnmapMemory(api, __handle);
 }
 
 uint32_t DeviceMemory::findMemoryTypeIndex(VkPhysicalDevice phy_dev, uint32_t type_bits, VkMemoryPropertyFlags flags) {

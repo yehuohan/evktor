@@ -33,7 +33,7 @@ protected:
     explicit ComputePipeline(const CoreApi& api) : CoreResource(api) {}
 
 public:
-    ComputePipeline(ComputePipeline&&);
+    ComputePipeline(ComputePipeline&& rhs) : CoreResource(std::move(rhs)) {}
     ~ComputePipeline();
 
     static Res<ComputePipeline> from(const CoreApi& api, const ComputePipelineState& info);

@@ -31,7 +31,7 @@ core::CoreApi& Vktor::createApi(std::function<void(core::InstanceState&)> update
     api->add(dso).unwrap();
     Vector<const char*> exts{};
     if (create_surface) {
-        api->add(create_surface(*api), true);
+        api->add(VkHandle(create_surface(*api)), true);
         exts.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
     }
 

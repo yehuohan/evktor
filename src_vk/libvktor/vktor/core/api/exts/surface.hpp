@@ -10,9 +10,10 @@ struct Surface : public CoreHandle<VkSurfaceKHR> {
 
 protected:
     explicit Surface(CRef<Instance> instance) : instance(instance) {}
+    explicit Surface(CRef<Instance> instance, VkHandle<VkSurfaceKHR> h) : CoreHandle(h), instance(instance) {}
 
 public:
-    Surface(Surface&&);
+    Surface(Surface&& rhs) : CoreHandle(std::move(rhs)), instance(rhs.instance) {}
     ~Surface();
     Surface& operator=(Surface&&);
 
@@ -21,11 +22,11 @@ public:
      *
      * Be attention that the VkSurfaceKHR's ownership will transfer to the created core::Surface
      */
-    static Res<Surface> from(CRef<Instance> instance, VkSurfaceKHR& surface);
+    static Res<Surface> from(CRef<Instance> instance, VkHandle<VkSurfaceKHR> surface);
     /**
      * @brief Borrow VkSurfaceKHR as core::Surface
      */
-    static Res<Surface> borrow(CRef<Instance> instance, const VkSurfaceKHR& surface);
+    static Res<Surface> borrow(CRef<Instance> instance, VkHandle<VkSurfaceKHR> handle);
 };
 
 NAMESPACE_END(core)

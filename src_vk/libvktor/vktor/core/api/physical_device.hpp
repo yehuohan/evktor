@@ -61,11 +61,9 @@ public:
     Res<PhysicalDevice> into(CRef<Instance> instance);
 };
 
-struct PhysicalDevice : public CoreHandle<VkPhysicalDevice> {
-    friend class CoreApi;
-    friend struct Device;
-
-    CRef<Instance> instance;
+template <>
+struct VkHandle<VkPhysicalDevice> {
+    VK_HANDLE_IMPL(VkPhysicalDevice)
 
 protected:
     /** Map queue family index to it's properties
@@ -74,13 +72,8 @@ protected:
      */
     mutable HashMap<uint32_t, QueueFamilyProps> queue_family_props{};
 
-protected:
-    explicit PhysicalDevice(CRef<Instance> instance) : instance(instance) {}
-
 public:
-    PhysicalDevice(PhysicalDevice&&);
-    ~PhysicalDevice();
-    PhysicalDevice& operator=(PhysicalDevice&&);
+    explicit VkHandle(VkPhysicalDevice h, VkSurfaceKHR surface = VK_NULL_HANDLE);
 
     inline VkFormatProperties getPhysicalDeviceFormatProperties(VkFormat format) const;
     inline VkFormatProperties2 getPhysicalDeviceFormatProperties2(VkFormat format) const;
@@ -90,56 +83,75 @@ public:
     inline VkPhysicalDeviceProperties2 getPhysicalDeviceProperties2() const;
     inline VkPhysicalDeviceMemoryProperties getPhysicalDeviceMemoryProperties() const;
     inline VkPhysicalDeviceMemoryProperties2 getPhysicalDeviceMemoryProperties2() const;
-
-    static Res<PhysicalDevice> from(CRef<Instance> instance, PhysicalDeviceState& info);
-    static Res<PhysicalDevice> borrow(CRef<Instance> instance, VkPhysicalDevice handle, VkSurfaceKHR surface = VK_NULL_HANDLE);
 };
 
-inline VkFormatProperties PhysicalDevice::getPhysicalDeviceFormatProperties(VkFormat format) const {
+/**
+ * @brief Vulkan core physical device
+ */
+struct PhysicalDevice : public CoreHandle<VkPhysicalDevice> {
+    friend class CoreApi;
+    friend struct Device;
+
+    CRef<Instance> instance;
+
+protected:
+    explicit PhysicalDevice(CRef<Instance> instance) : instance(instance) {}
+    explicit PhysicalDevice(CRef<Instance> instance, VkHandle<VkPhysicalDevice> h) : CoreHandle(h), instance(instance) {}
+
+public:
+    PhysicalDevice(PhysicalDevice&&);
+    ~PhysicalDevice();
+    PhysicalDevice& operator=(PhysicalDevice&&);
+
+    static Res<PhysicalDevice> from(CRef<Instance> instance, PhysicalDeviceState& info);
+    static Res<PhysicalDevice> borrow(CRef<Instance> instance, VkHandle<VkPhysicalDevice> handle);
+};
+
+inline VkFormatProperties VkHandle<VkPhysicalDevice>::getPhysicalDeviceFormatProperties(VkFormat format) const {
     VkFormatProperties props;
-    vkGetPhysicalDeviceFormatProperties(handle, format, &props);
+    vkGetPhysicalDeviceFormatProperties(__handle, format, &props);
     return props;
 }
 
-inline VkFormatProperties2 PhysicalDevice::getPhysicalDeviceFormatProperties2(VkFormat format) const {
+inline VkFormatProperties2 VkHandle<VkPhysicalDevice>::getPhysicalDeviceFormatProperties2(VkFormat format) const {
     VkFormatProperties2 props;
-    vkGetPhysicalDeviceFormatProperties2(handle, format, &props);
+    vkGetPhysicalDeviceFormatProperties2(__handle, format, &props);
     return props;
 }
 
-inline VkPhysicalDeviceFeatures PhysicalDevice::getPhysicalDeviceFeatures() const {
+inline VkPhysicalDeviceFeatures VkHandle<VkPhysicalDevice>::getPhysicalDeviceFeatures() const {
     VkPhysicalDeviceFeatures feats{};
-    vkGetPhysicalDeviceFeatures(handle, &feats);
+    vkGetPhysicalDeviceFeatures(__handle, &feats);
     return feats;
 }
 
-inline VkPhysicalDeviceFeatures2 PhysicalDevice::getPhysicalDeviceFeatures2() const {
+inline VkPhysicalDeviceFeatures2 VkHandle<VkPhysicalDevice>::getPhysicalDeviceFeatures2() const {
     VkPhysicalDeviceFeatures2 feats{};
-    vkGetPhysicalDeviceFeatures2(handle, &feats);
+    vkGetPhysicalDeviceFeatures2(__handle, &feats);
     return feats;
 }
 
-inline VkPhysicalDeviceProperties PhysicalDevice::getPhysicalDeviceProperties() const {
+inline VkPhysicalDeviceProperties VkHandle<VkPhysicalDevice>::getPhysicalDeviceProperties() const {
     VkPhysicalDeviceProperties props{};
-    vkGetPhysicalDeviceProperties(handle, &props);
+    vkGetPhysicalDeviceProperties(__handle, &props);
     return props;
 }
 
-inline VkPhysicalDeviceProperties2 PhysicalDevice::getPhysicalDeviceProperties2() const {
+inline VkPhysicalDeviceProperties2 VkHandle<VkPhysicalDevice>::getPhysicalDeviceProperties2() const {
     VkPhysicalDeviceProperties2 props{};
-    vkGetPhysicalDeviceProperties2(handle, &props);
+    vkGetPhysicalDeviceProperties2(__handle, &props);
     return props;
 }
 
-inline VkPhysicalDeviceMemoryProperties PhysicalDevice::getPhysicalDeviceMemoryProperties() const {
+inline VkPhysicalDeviceMemoryProperties VkHandle<VkPhysicalDevice>::getPhysicalDeviceMemoryProperties() const {
     VkPhysicalDeviceMemoryProperties props{};
-    vkGetPhysicalDeviceMemoryProperties(handle, &props);
+    vkGetPhysicalDeviceMemoryProperties(__handle, &props);
     return props;
 }
 
-inline VkPhysicalDeviceMemoryProperties2 PhysicalDevice::getPhysicalDeviceMemoryProperties2() const {
+inline VkPhysicalDeviceMemoryProperties2 VkHandle<VkPhysicalDevice>::getPhysicalDeviceMemoryProperties2() const {
     VkPhysicalDeviceMemoryProperties2 props{};
-    vkGetPhysicalDeviceMemoryProperties2(handle, &props);
+    vkGetPhysicalDeviceMemoryProperties2(__handle, &props);
     return props;
 }
 

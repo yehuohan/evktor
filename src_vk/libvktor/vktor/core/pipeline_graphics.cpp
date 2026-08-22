@@ -235,17 +235,11 @@ Res<GraphicsPipeline> GraphicsPipelineState::into(const CoreApi& api) const {
     return GraphicsPipeline::from(api, *this);
 }
 
-GraphicsPipeline::GraphicsPipeline(GraphicsPipeline&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
-
 GraphicsPipeline::~GraphicsPipeline() {
-    if (!__borrowed && handle) {
-        vkDestroyPipeline(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroyPipeline(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 Res<GraphicsPipeline> GraphicsPipeline::from(const CoreApi& api, const GraphicsPipelineState& info) {

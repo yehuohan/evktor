@@ -27,7 +27,7 @@ protected:
     explicit Event(const CoreApi& api) : CoreResource(api) {}
 
 public:
-    Event(Event&&);
+    Event(Event&& rhs) : CoreResource(std::move(rhs)) {}
     ~Event();
 
     static Res<Event> from(const CoreApi& api, const EventState& info);

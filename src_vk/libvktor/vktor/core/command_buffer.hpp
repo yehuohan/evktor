@@ -109,6 +109,8 @@ public:
  * CommandBuffer must be allocated with CommandPool::allocate().
  */
 struct CommandBuffer : public CoreResource<VkCommandBuffer, VK_OBJECT_TYPE_COMMAND_BUFFER> {
+    friend struct CommandPool;
+
     const VkCommandPool command_pool = VK_NULL_HANDLE;
 
 public:
@@ -338,12 +340,12 @@ public:
 };
 
 inline VkResult CommandBuffer::end() const {
-    return vkEndCommandBuffer(handle);
+    return vkEndCommandBuffer(__handle);
 }
 
 #if VK_KHR_dynamic_rendering
 inline CommandBuffer::Self CommandBuffer::cmdBeginRendering(const VkRenderingInfo& rendering_bi) const {
-    vkCmdBeginRendering(handle, &rendering_bi);
+    vkCmdBeginRendering(__handle, &rendering_bi);
     return *this;
 }
 
@@ -356,14 +358,14 @@ inline CommandBuffer::Self CommandBuffer::cmdBeginRendering(const VkExtent2D ext
 }
 
 inline CommandBuffer::Self CommandBuffer::cmdEndRendering() const {
-    vkCmdEndRendering(handle);
+    vkCmdEndRendering(__handle);
     return *this;
 }
 #endif
 
 inline CommandBuffer::Self CommandBuffer::beginRenderPass(const VkRenderPassBeginInfo& render_pass_bi,
                                                           VkSubpassContents contents) const {
-    vkCmdBeginRenderPass(handle, &render_pass_bi, contents);
+    vkCmdBeginRenderPass(__handle, &render_pass_bi, contents);
     return *this;
 }
 
@@ -376,27 +378,27 @@ inline CommandBuffer::Self CommandBuffer::beginRenderPass(const VkExtent2D exten
 }
 
 inline CommandBuffer::Self CommandBuffer::endRenderPass() const {
-    vkCmdEndRenderPass(handle);
+    vkCmdEndRenderPass(__handle);
     return *this;
 }
 
 inline CommandBuffer::Self CommandBuffer::cmdNextSubpass(VkSubpassContents contents) const {
-    vkCmdNextSubpass(handle, contents);
+    vkCmdNextSubpass(__handle, contents);
     return *this;
 }
 
 inline CommandBuffer::Self CommandBuffer::cmdBindPipeline(VkPipelineBindPoint bind_point, VkPipeline pipeline) const {
-    vkCmdBindPipeline(handle, bind_point, pipeline);
+    vkCmdBindPipeline(__handle, bind_point, pipeline);
     return *this;
 }
 
 inline CommandBuffer::Self CommandBuffer::cmdBindGraphicsPipeline(VkPipeline pipeline) const {
-    vkCmdBindPipeline(handle, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+    vkCmdBindPipeline(__handle, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
     return *this;
 }
 
 inline CommandBuffer::Self CommandBuffer::cmdBindComputePipeline(VkPipeline pipeline) const {
-    vkCmdBindPipeline(handle, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
+    vkCmdBindPipeline(__handle, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
     return *this;
 }
 
@@ -407,7 +409,7 @@ inline CommandBuffer::Self CommandBuffer::cmdBindDescriptorSets(VkPipelineBindPo
                                                                 uint32_t first_set,
                                                                 uint32_t offsets_count,
                                                                 const uint32_t* dynamic_offsets) const {
-    vkCmdBindDescriptorSets(handle,
+    vkCmdBindDescriptorSets(__handle,
                             bind_point,
                             pipeline_layout,
                             first_set,
@@ -424,7 +426,7 @@ inline CommandBuffer::Self CommandBuffer::cmdBindGraphicsDescriptorSets(VkPipeli
                                                                         uint32_t first_set,
                                                                         uint32_t offsets_count,
                                                                         const uint32_t* dynamic_offsets) const {
-    vkCmdBindDescriptorSets(handle,
+    vkCmdBindDescriptorSets(__handle,
                             VK_PIPELINE_BIND_POINT_GRAPHICS,
                             pipeline_layout,
                             first_set,
@@ -439,7 +441,7 @@ inline CommandBuffer::Self CommandBuffer::cmdBindGraphicsDescriptorSet(VkPipelin
                                                                        const VkDescriptorSet desc_set,
                                                                        uint32_t first_set,
                                                                        const uint32_t* dynamic_offset) const {
-    vkCmdBindDescriptorSets(handle,
+    vkCmdBindDescriptorSets(__handle,
                             VK_PIPELINE_BIND_POINT_GRAPHICS,
                             pipeline_layout,
                             first_set,
@@ -456,7 +458,7 @@ inline CommandBuffer::Self CommandBuffer::cmdBindComputeDescriptorSets(VkPipelin
                                                                        uint32_t first_set,
                                                                        uint32_t offsets_count,
                                                                        const uint32_t* dynamic_offsets) const {
-    vkCmdBindDescriptorSets(handle,
+    vkCmdBindDescriptorSets(__handle,
                             VK_PIPELINE_BIND_POINT_COMPUTE,
                             pipeline_layout,
                             first_set,
@@ -471,7 +473,7 @@ inline CommandBuffer::Self CommandBuffer::cmdBindComputeDescriptorSet(VkPipeline
                                                                       const VkDescriptorSet desc_set,
                                                                       uint32_t first_set,
                                                                       const uint32_t* dynamic_offset) const {
-    vkCmdBindDescriptorSets(handle,
+    vkCmdBindDescriptorSets(__handle,
                             VK_PIPELINE_BIND_POINT_COMPUTE,
                             pipeline_layout,
                             first_set,
@@ -487,7 +489,7 @@ inline CommandBuffer::Self CommandBuffer::cmdPushConstants(VkPipelineLayout layo
                                                            const void* data,
                                                            uint32_t size,
                                                            uint32_t offset) const {
-    vkCmdPushConstants(handle, layout, stage, offset, size, data);
+    vkCmdPushConstants(__handle, layout, stage, offset, size, data);
     return *this;
 }
 
@@ -495,7 +497,7 @@ inline CommandBuffer::Self CommandBuffer::cmdPushGraphicsConstants(VkPipelineLay
                                                                    const void* data,
                                                                    uint32_t size,
                                                                    uint32_t offset) const {
-    vkCmdPushConstants(handle, layout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offset, size, data);
+    vkCmdPushConstants(__handle, layout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offset, size, data);
     return *this;
 }
 
@@ -503,7 +505,7 @@ inline CommandBuffer::Self CommandBuffer::cmdPushVertConstants(VkPipelineLayout 
                                                                const void* data,
                                                                uint32_t size,
                                                                uint32_t offset) const {
-    vkCmdPushConstants(handle, layout, VK_SHADER_STAGE_VERTEX_BIT, offset, size, data);
+    vkCmdPushConstants(__handle, layout, VK_SHADER_STAGE_VERTEX_BIT, offset, size, data);
     return *this;
 }
 
@@ -511,7 +513,7 @@ inline CommandBuffer::Self CommandBuffer::cmdPushFragConstants(VkPipelineLayout 
                                                                const void* data,
                                                                uint32_t size,
                                                                uint32_t offset) const {
-    vkCmdPushConstants(handle, layout, VK_SHADER_STAGE_FRAGMENT_BIT, offset, size, data);
+    vkCmdPushConstants(__handle, layout, VK_SHADER_STAGE_FRAGMENT_BIT, offset, size, data);
     return *this;
 }
 
@@ -519,24 +521,24 @@ inline CommandBuffer::Self CommandBuffer::cmdPushCompConstants(VkPipelineLayout 
                                                                const void* data,
                                                                uint32_t size,
                                                                uint32_t offset) const {
-    vkCmdPushConstants(handle, layout, VK_SHADER_STAGE_COMPUTE_BIT, offset, size, data);
+    vkCmdPushConstants(__handle, layout, VK_SHADER_STAGE_COMPUTE_BIT, offset, size, data);
     return *this;
 }
 
 inline CommandBuffer::Self CommandBuffer::cmdBindIndexBuffer(VkBuffer buffer,
                                                              VkDeviceSize offset,
                                                              VkIndexType index_type) const {
-    vkCmdBindIndexBuffer(handle, buffer, offset, index_type);
+    vkCmdBindIndexBuffer(__handle, buffer, offset, index_type);
     return *this;
 }
 
 inline CommandBuffer::Self CommandBuffer::cmdBindIndexBufferU32(VkBuffer buffer, VkDeviceSize offset) const {
-    vkCmdBindIndexBuffer(handle, buffer, offset, VK_INDEX_TYPE_UINT32);
+    vkCmdBindIndexBuffer(__handle, buffer, offset, VK_INDEX_TYPE_UINT32);
     return *this;
 }
 
 inline CommandBuffer::Self CommandBuffer::cmdBindIndexBufferU16(VkBuffer buffer, VkDeviceSize offset) const {
-    vkCmdBindIndexBuffer(handle, buffer, offset, VK_INDEX_TYPE_UINT16);
+    vkCmdBindIndexBuffer(__handle, buffer, offset, VK_INDEX_TYPE_UINT16);
     return *this;
 }
 
@@ -544,14 +546,14 @@ inline CommandBuffer::Self CommandBuffer::cmdBindVertexBuffers(uint32_t count,
                                                                const VkBuffer* buffers,
                                                                const VkDeviceSize* offsets,
                                                                uint32_t first_binding) const {
-    vkCmdBindVertexBuffers(handle, first_binding, count, buffers, offsets);
+    vkCmdBindVertexBuffers(__handle, first_binding, count, buffers, offsets);
     return *this;
 }
 
 inline CommandBuffer::Self CommandBuffer::cmdBindVertexBuffer(const VkBuffer buffer,
                                                               const VkDeviceSize offset,
                                                               uint32_t first_binding) const {
-    vkCmdBindVertexBuffers(handle, first_binding, 1, &buffer, &offset);
+    vkCmdBindVertexBuffers(__handle, first_binding, 1, &buffer, &offset);
     return *this;
 }
 
@@ -559,7 +561,7 @@ inline CommandBuffer::Self CommandBuffer::cmdDraw(uint32_t vertex_count,
                                                   uint32_t instance_count,
                                                   uint32_t first_vertex,
                                                   uint32_t first_instance) const {
-    vkCmdDraw(handle, vertex_count, instance_count, first_vertex, first_instance);
+    vkCmdDraw(__handle, vertex_count, instance_count, first_vertex, first_instance);
     return *this;
 }
 
@@ -568,14 +570,14 @@ inline CommandBuffer::Self CommandBuffer::cmdDrawIndexed(uint32_t index_count,
                                                          uint32_t first_index,
                                                          int32_t vertex_offset,
                                                          uint32_t first_instance) const {
-    vkCmdDrawIndexed(handle, index_count, instance_count, first_index, vertex_offset, first_instance);
+    vkCmdDrawIndexed(__handle, index_count, instance_count, first_index, vertex_offset, first_instance);
     return *this;
 };
 
 inline CommandBuffer::Self CommandBuffer::cmdDispatch(uint32_t group_count_x,
                                                       uint32_t group_count_y,
                                                       uint32_t group_count_z) const {
-    vkCmdDispatch(handle, group_count_x, group_count_y, group_count_z);
+    vkCmdDispatch(__handle, group_count_x, group_count_y, group_count_z);
     return *this;
 }
 
@@ -586,7 +588,7 @@ inline CommandBuffer::Self CommandBuffer::cmdBlitImage(const Image& src,
                                                        VkImageLayout src_layout,
                                                        VkImageLayout dst_layout,
                                                        VkFilter filter) const {
-    vkCmdBlitImage(handle, src, src_layout, dst, dst_layout, count, regions, filter);
+    vkCmdBlitImage(__handle, src, src_layout, dst, dst_layout, count, regions, filter);
     return *this;
 }
 
@@ -596,7 +598,7 @@ inline CommandBuffer::Self CommandBuffer::cmdCopyImage(const Image& src,
                                                        const VkImageCopy* regions,
                                                        VkImageLayout src_layout,
                                                        VkImageLayout dst_layout) const {
-    vkCmdCopyImage(handle, src, src_layout, dst, dst_layout, count, regions);
+    vkCmdCopyImage(__handle, src, src_layout, dst, dst_layout, count, regions);
     return *this;
 }
 
@@ -604,7 +606,7 @@ inline CommandBuffer::Self CommandBuffer::cmdCopyBuffer(const Buffer& src,
                                                         const Buffer& dst,
                                                         uint32_t count,
                                                         const VkBufferCopy* regions) const {
-    vkCmdCopyBuffer(handle, src, dst, count, regions);
+    vkCmdCopyBuffer(__handle, src, dst, count, regions);
     return *this;
 }
 
@@ -613,7 +615,7 @@ inline CommandBuffer::Self CommandBuffer::cmdCopyImageToBuffer(const Image& img,
                                                                uint32_t count,
                                                                const VkBufferImageCopy* regions,
                                                                VkImageLayout img_layout) const {
-    vkCmdCopyImageToBuffer(handle, img, img_layout, buf, count, regions);
+    vkCmdCopyImageToBuffer(__handle, img, img_layout, buf, count, regions);
     return *this;
 }
 
@@ -622,7 +624,7 @@ inline CommandBuffer::Self CommandBuffer::cmdCopyBufferToImage(const Buffer& buf
                                                                uint32_t count,
                                                                const VkBufferImageCopy* regions,
                                                                VkImageLayout img_layout) const {
-    vkCmdCopyBufferToImage(handle, buf, img, img_layout, count, regions);
+    vkCmdCopyBufferToImage(__handle, buf, img, img_layout, count, regions);
     return *this;
 }
 
@@ -631,7 +633,7 @@ inline CommandBuffer::Self CommandBuffer::cmdMemoryBarrier(VkPipelineStageFlags 
                                                            uint32_t count,
                                                            const VkMemoryBarrier* barriers,
                                                            VkDependencyFlags flags) const {
-    vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, count, barriers, 0, nullptr, 0, nullptr);
+    vkCmdPipelineBarrier(__handle, src_stage, dst_stage, flags, count, barriers, 0, nullptr, 0, nullptr);
     return *this;
 }
 
@@ -640,7 +642,7 @@ inline CommandBuffer::Self CommandBuffer::cmdBufferMemoryBarrier(VkPipelineStage
                                                                  uint32_t count,
                                                                  const VkBufferMemoryBarrier* barriers,
                                                                  VkDependencyFlags flags) const {
-    vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, count, barriers, 0, nullptr);
+    vkCmdPipelineBarrier(__handle, src_stage, dst_stage, flags, 0, nullptr, count, barriers, 0, nullptr);
     return *this;
 }
 
@@ -649,37 +651,37 @@ inline CommandBuffer::Self CommandBuffer::cmdImageMemoryBarrier(VkPipelineStageF
                                                                 uint32_t count,
                                                                 const VkImageMemoryBarrier* barriers,
                                                                 VkDependencyFlags flags) const {
-    vkCmdPipelineBarrier(handle, src_stage, dst_stage, flags, 0, nullptr, 0, nullptr, count, barriers);
+    vkCmdPipelineBarrier(__handle, src_stage, dst_stage, flags, 0, nullptr, 0, nullptr, count, barriers);
     return *this;
 }
 
 inline PipelineBarrier CommandBuffer::cmdPipelineBarrier(VkDependencyFlags flags) const {
-    return PipelineBarrier(handle, flags);
+    return PipelineBarrier(__handle, flags);
 }
 
 inline PipelineBarrier2 CommandBuffer::cmdPipelineBarrier2(VkDependencyFlags flags) const {
-    return PipelineBarrier2(handle, flags);
+    return PipelineBarrier2(__handle, flags);
 }
 
 inline CommandBuffer::Self CommandBuffer::cmdResetQueryPool(VkQueryPool query_pool, uint32_t first, uint32_t count) const {
-    vkCmdResetQueryPool(handle, query_pool, first, count);
+    vkCmdResetQueryPool(__handle, query_pool, first, count);
     return *this;
 }
 
 inline CommandBuffer::Self CommandBuffer::cmdWriteTimestamp(VkPipelineStageFlagBits stage,
                                                             VkQueryPool query_pool,
                                                             uint32_t index) const {
-    vkCmdWriteTimestamp(handle, stage, query_pool, index);
+    vkCmdWriteTimestamp(__handle, stage, query_pool, index);
     return *this;
 }
 
 inline CommandBuffer::Self CommandBuffer::cmdWriteTimestampAtTopPipe(VkQueryPool query_pool, uint32_t index) const {
-    vkCmdWriteTimestamp(handle, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, query_pool, index);
+    vkCmdWriteTimestamp(__handle, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, query_pool, index);
     return *this;
 }
 
 inline CommandBuffer::Self CommandBuffer::cmdWriteTimestampAtBottomPipe(VkQueryPool query_pool, uint32_t index) const {
-    vkCmdWriteTimestamp(handle, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, query_pool, index);
+    vkCmdWriteTimestamp(__handle, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, query_pool, index);
     return *this;
 }
 

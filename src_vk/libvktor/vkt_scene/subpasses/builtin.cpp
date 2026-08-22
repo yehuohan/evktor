@@ -10,11 +10,8 @@ BuiltinSubpass::BuiltinSubpass(vkt::Shader&& vert, vkt::Shader&& frag, Box<Built
 
 BuiltinSubpass::~BuiltinSubpass() {
     mesh.reset();
-    for (auto& ubo : builtin_ubo) {
-        ubo.unmap();
-    }
-    builtin_ubo.clear();
     builtin_ubo_ptr.clear();
+    builtin_ubo.clear();
 }
 
 Res<Void> BuiltinSubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {

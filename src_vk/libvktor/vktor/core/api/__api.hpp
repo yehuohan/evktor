@@ -8,54 +8,120 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-/**
- * @brief Conversion constructor
- *
- * This is mainly for the Vulkan handle
- */
-#define OnType(Type, Var)   \
-    OnConstType(Type, Var); \
-    operator Type*() {      \
-        return &Var;        \
+/** @brief Conversion constructor */
+#define OnType(Type, Var) \
+    operator Type*() {    \
+        return &Var;      \
     }
 
-/**
- * @brief Const conversion constructor
- *
- * This is mainly for the const Vulkan handle
- */
+/** @brief Const conversion constructor */
 #define OnConstType(Type, Var)     \
     operator Type() const {        \
         return Var;                \
+    }                              \
+    operator const Type*() {       \
+        return &Var;               \
     }                              \
     operator const Type*() const { \
         return &Var;               \
     }
 
-/**
- * @brief Vulkan core handle type
- *
- * Derived struct need to process `handle` at copy/move/assign constructor
- */
-template <typename T>
-struct CoreHandle : private NonCopyable {
-protected:
-    /** Vulkan handle */
-    T handle = VK_NULL_HANDLE;
+/** @brief Default VkHandle implementation */
+#define VK_HANDLE_IMPL(H)                  \
+protected:                                 \
+    H __handle = VK_NULL_HANDLE;           \
+                                           \
+protected:                                 \
+    OnType(H, this->__handle);             \
+                                           \
+public:                                    \
+    VkHandle() = default;                  \
+    ~VkHandle() = default;                 \
+    OnConstType(H, this->__handle);        \
+                                           \
+    inline const H& handle() const {       \
+        return __handle;                   \
+    }                                      \
+    inline bool valid() const {            \
+        return __handle != VK_NULL_HANDLE; \
+    }
 
-    /** Vulkan handle is borrowed or not
-     *
-     * A borrowed CoreHandle doesn't have ownership and must not destory the handle.
-     */
-    bool __borrowed = false;
+/**
+ * @brief Vulkan handle lite type
+ *
+ * - VkHandle should not hold handle ownership (create or destroy handle)
+ * - Specialized VkHandle with additional const members can refer to vktor/core/api/queue.hpp
+ */
+template <typename H>
+struct VkHandle {
+    VK_HANDLE_IMPL(H)
 
 public:
-    virtual ~CoreHandle() {}
-    OnType(T, this->handle);
+    /** Normal constructor for non-specialized sturct */
+    explicit VkHandle(H h) : __handle(h) {}
+};
 
-    inline const T& getHandle() const {
-        return handle;
+/**
+ * @brief Vulkan core handle type derived from VkHandle or specialized VkHandle
+ *
+ * - Derived struct (form CoreHandle)'s move/assign constructor must deal with
+ *   additional members from specialized VkHandle
+ */
+template <typename H>
+struct CoreHandle : public VkHandle<H>, private NonCopyable {
+private:
+    bool __borrowed = false;
+
+protected:
+    inline void moveFrom(CoreHandle<H>&& rhs) {
+        VkHandle<H>::__handle = rhs.__handle;
+        __borrowed = rhs.__borrowed;
+        rhs.__handle = VK_NULL_HANDLE;
+        rhs.__borrowed = false;
     }
+
+public:
+    /** @brief Normal (non-borrow) constructor */
+    explicit CoreHandle() : __borrowed(false) {}
+    /** @brief Borrow constructor with VkHandle's copy constructor */
+    explicit CoreHandle(VkHandle<H> h) : VkHandle<H>(h), __borrowed(true) {}
+    CoreHandle(CoreHandle&& rhs) {
+        moveFrom(std::move(rhs));
+    }
+    virtual ~CoreHandle() {
+        VkHandle<H>::__handle = VK_NULL_HANDLE;
+        __borrowed = false;
+    }
+    CoreHandle<H>& operator=(CoreHandle&& rhs) {
+        if (this != &rhs) {
+            moveFrom(std::move(rhs));
+        }
+        return *this;
+    }
+    inline VkHandle<H> vkhandle() const {
+        return *this;
+    }
+
+    inline bool borrowed() const {
+        return __borrowed;
+    }
+    /**
+     * @brief Take out Vulkan handle
+     *
+     * After take out Vulkan handle, core hanele will get into borrowed state
+     */
+    inline H take() {
+        __borrowed = true;
+        return VkHandle<H>::__handle;
+    }
+    // TODO: change borrowed handle need to update additional handle related data
+    // inline void borrow(H external_handle) {
+    //     if (__borrowed) {
+    //         VkHandle<H>::__handle = external_handle;
+    //     } else {
+    //         vktLogE("Can't borrow handle for non-borrowed core handle");
+    //     }
+    // }
 };
 
 /**

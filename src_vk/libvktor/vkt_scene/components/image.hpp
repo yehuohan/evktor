@@ -17,8 +17,8 @@ public:
         , imageview(std::move(imageview)) {}
     virtual ~Image() = default;
 
-    OnConstType(VkImage, image.getHandle());
-    OnConstType(VkImageView, imageview.getHandle());
+    OnConstType(VkImage, image.handle());
+    OnConstType(VkImageView, imageview.handle());
     const vkt::core::Image& getImage() const {
         return image;
     }

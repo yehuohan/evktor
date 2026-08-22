@@ -20,10 +20,7 @@ Res<CommandPool> CommandPoolState::into(const CoreApi& api) const {
     return CommandPool::from(api, *this);
 }
 
-CommandPool::CommandPool(CommandPool&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+CommandPool::CommandPool(CommandPool&& rhs) : CoreResource(std::move(rhs)) {
     primaries = std::move(rhs.primaries);
     secondaries = std::move(rhs.secondaries);
     active_primary_count = rhs.active_primary_count;
@@ -35,10 +32,10 @@ CommandPool::CommandPool(CommandPool&& rhs) : CoreResource(rhs.api) {
 CommandPool::~CommandPool() {
     primaries.clear();
     secondaries.clear();
-    if (!__borrowed && handle) {
-        vkDestroyCommandPool(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroyCommandPool(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 Res<CRef<CommandBuffer>> CommandPool::allocate(Level level, const String& name) {

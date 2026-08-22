@@ -27,16 +27,16 @@ protected:
     Box<Surface> surface = nullptr;
 
 public:
-    explicit CoreApi();
-    virtual ~CoreApi();
+    explicit CoreApi() : instance{}, physical_device(newCRef(instance)), device(newCRef(physical_device)) {}
+    virtual ~CoreApi() = default;
 
+    OnConstType(VkInstance, instance.__handle);
+    OnConstType(VkPhysicalDevice, physical_device.__handle);
+    OnConstType(VkDevice, device.__handle);
+    OnConstType(VmaAllocator, device.mem_allocator);
     operator const VkAllocationCallbacks*() const {
         return instance.allocator;
     }
-    OnConstType(VkInstance, instance.handle);
-    OnConstType(VkPhysicalDevice, physical_device.handle);
-    OnConstType(VkDevice, device.handle);
-    OnConstType(VmaAllocator, device.mem_allocator);
     operator const Instance&() const {
         return instance;
     }
@@ -46,19 +46,24 @@ public:
     operator const Device&() const {
         return device;
     }
+    const Instance& inst() const {
+        return instance;
+    }
+    const PhysicalDevice& phyDev() const {
+        return physical_device;
+    }
+    const Device& dev() const {
+        return device;
+    }
 
     Res<CRef<Instance>> init(InstanceState& info);
     Res<CRef<PhysicalDevice>> init(PhysicalDeviceState& info);
     Res<CRef<Device>> init(DeviceState& info);
-    Res<CRef<Instance>> borrow(VkInstance handle,
-                               PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
-                               uint32_t api_version = VKT_CORE_VK_API_VERSION,
-                               VkAllocationCallbacks* allocator = nullptr);
-    Res<CRef<PhysicalDevice>> borrow(VkPhysicalDevice handle, VkSurfaceKHR surface = VK_NULL_HANDLE);
-    Res<CRef<Device>> borrow(VkDevice handle,
-                             PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr = VK_NULL_HANDLE,
+    Res<CRef<Instance>> borrow(VkHandle<VkInstance> handle, PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr = nullptr);
+    Res<CRef<PhysicalDevice>> borrow(VkHandle<VkPhysicalDevice> handle);
+    Res<CRef<Device>> borrow(VkHandle<VkDevice> handle,
                              QueueFamilyIndices indices = {},
-                             VmaAllocator mem_allocator = VK_NULL_HANDLE);
+                             PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr = nullptr);
 
     inline const QueueFamilyIndices& queueFamilyIndices() const {
         return queue_family_indices;
@@ -75,10 +80,10 @@ public:
 
 public:
     Res<CRef<IDebug>> add(DebugState& info);
-    Res<CRef<Surface>> add(VkSurfaceKHR surface, bool with_ownership);
+    Res<CRef<Surface>> add(VkHandle<VkSurfaceKHR> surface, bool with_ownership);
 
     operator VkSurfaceKHR() const {
-        return surface ? surface->getHandle() : VK_NULL_HANDLE;
+        return surface ? surface->handle() : VK_NULL_HANDLE;
     }
 
     inline VkResult setDebugName(VkObjectType type, uint64_t handle, const char* name) const {

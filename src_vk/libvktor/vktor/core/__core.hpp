@@ -16,15 +16,22 @@ NAMESPACE_BEGIN(core)
  *  - need destruct CoreHandle mannual (move assignment operator won't call destructor)
  *  - need check `this != &rhs` (otherwise move assignment operator doesn't make sense and may destruct the CoreHandle)
  */
-template <typename T, VkObjectType OBJECT_TYPE>
-struct CoreResource : public CoreHandle<T> {
+template <typename H, VkObjectType OBJECT_TYPE>
+struct CoreResource : public CoreHandle<H> {
     const CoreApi& api;
 
+    /** @brief Normal (non-borrow) constructor */
     explicit CoreResource(const CoreApi& api) : api(api) {}
+    /** @brief Borrow constructor with CoreHandle's borrow constructor & VkHandle's copy constructor */
+    explicit CoreResource(const CoreApi& api, VkHandle<H> h) : CoreHandle<H>(h), api(api) {}
+    CoreResource(CoreResource&& rhs) : CoreHandle<H>(std::move(rhs)), api(rhs.api) {}
     virtual ~CoreResource() {}
 
+    inline VkResult setDebugName(const char* name) const {
+        return api.setDebugName(OBJECT_TYPE, u64(reinterpret_cast<uint64_t>(this->__handle)), name);
+    }
     inline VkResult setDebugName(const String& name) const {
-        return api.setDebugName(OBJECT_TYPE, u64(reinterpret_cast<uint64_t>(this->handle)), name.c_str());
+        return api.setDebugName(OBJECT_TYPE, u64(reinterpret_cast<uint64_t>(this->__handle)), name.c_str());
     }
 };
 

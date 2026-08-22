@@ -113,7 +113,7 @@ protected:
     explicit GraphicsPipeline(const CoreApi& api) : CoreResource(api) {}
 
 public:
-    GraphicsPipeline(GraphicsPipeline&&);
+    GraphicsPipeline(GraphicsPipeline&& rhs) : CoreResource(std::move(rhs)) {}
     ~GraphicsPipeline();
 
     static Res<GraphicsPipeline> from(const CoreApi& api, const GraphicsPipelineState& info);

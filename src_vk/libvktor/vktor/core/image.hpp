@@ -59,6 +59,25 @@ public:
     Res<Image> into(const CoreApi& api) const;
 };
 
+template <>
+struct VkHandle<VkImage> {
+    VK_HANDLE_IMPL(VkImage)
+
+public:
+    VkImageType type = VK_IMAGE_TYPE_2D;
+    VkFormat format = VK_FORMAT_UNDEFINED;
+    VkExtent3D extent{};
+    uint32_t mip_levels = 1;
+    uint32_t array_layers = 1;
+    VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
+    VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
+    VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT;
+    VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+public:
+    explicit VkHandle(VkImage h) : __handle(h) {}
+};
+
 /**
  * @brief Vulkan image
  *
@@ -82,22 +101,34 @@ struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE> {
     friend struct CommandBuffer;
 
 protected:
-    VkImageType type = VK_IMAGE_TYPE_2D;
-    VkFormat format = VK_FORMAT_UNDEFINED;
-    VkExtent3D extent{};
-    uint32_t mip_levels = 1;
-    uint32_t array_layers = 1;
-    VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
-    VkImageTiling tiling = VK_IMAGE_TILING_OPTIMAL;
-    VkImageUsageFlags usage = VK_IMAGE_USAGE_SAMPLED_BIT;
-    VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
+    using VkHandle<VkImage>::type;
+    using VkHandle<VkImage>::format;
+    using VkHandle<VkImage>::extent;
+    using VkHandle<VkImage>::mip_levels;
+    using VkHandle<VkImage>::array_layers;
+    using VkHandle<VkImage>::samples;
+    using VkHandle<VkImage>::tiling;
+    using VkHandle<VkImage>::usage;
+    using VkHandle<VkImage>::layout;
 
-    VkDeviceSize memory_size = 0;
-    VkDeviceMemory memory = VK_NULL_HANDLE;
     VmaAllocation allocation = VK_NULL_HANDLE;
+    VkDeviceMemory memory = VK_NULL_HANDLE;
+    VkDeviceSize memory_size = 0;
+    mutable void* memory_mapped = nullptr;
+    const bool borrowed_memory_mapped = false;
 
 protected:
     explicit Image(const CoreApi& api) : CoreResource(api) {}
+    explicit Image(const CoreApi& api,
+                   VkHandle<VkImage> h,
+                   VkDeviceMemory _memory = VK_NULL_HANDLE,
+                   VkDeviceSize _memory_size = 0,
+                   void* _memory_mapped = nullptr)
+        : CoreResource(api, h)
+        , memory(_memory)
+        , memory_size(_memory_size)
+        , memory_mapped(_memory_mapped)
+        , borrowed_memory_mapped(memory_mapped != nullptr) {}
 
 public:
     Image(Image&&);
@@ -154,14 +185,12 @@ public:
 #endif
 
     static Res<Image> from(const CoreApi& api, const ImageState& info);
-    /**
-     * @brief Borrow image from already created image (e.g. for swapchain images)
-     */
-    static Image borrow(const CoreApi& api,
-                        const ImageState& info,
-                        VkImage image,
-                        VkDeviceMemory memory = VK_NULL_HANDLE,
-                        VkDeviceSize memory_size = VK_WHOLE_SIZE);
+    /** @brief Borrow image from already created image (e.g. for swapchain images) */
+    static Res<Image> borrow(const CoreApi& api,
+                             VkHandle<VkImage> handle,
+                             VkDeviceMemory memory = VK_NULL_HANDLE,
+                             VkDeviceSize memory_size = 0,
+                             void* memory_mapped = nullptr);
 };
 
 /**
@@ -209,7 +238,7 @@ public:
         copy_offset = offset;
         copy_extent = minExtent3D(a.getExtent(), extent);
     }
-    OnConstType(VkImage, a.getHandle());
+    OnConstType(VkImage, a.handle());
     operator VkImageSubresourceRange() const {
         return VkImageSubresourceRange{aspect, mip, mip_count, layer, layer_count};
     }

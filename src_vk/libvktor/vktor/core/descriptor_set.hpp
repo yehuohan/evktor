@@ -92,8 +92,10 @@ struct DescriptorInfo {
  * DescriptorSet should be allocated with DescriptorPool::allocate() as vkAllocateDescriptorSets need VkDescriptorPool.
  */
 struct DescriptorSet : public CoreResource<VkDescriptorSet, VK_OBJECT_TYPE_DESCRIPTOR_SET> {
-    explicit DescriptorSet(const CoreApi& api);
-    DescriptorSet(DescriptorSet&&);
+    friend struct DescriptorPool;
+
+    explicit DescriptorSet(const CoreApi& api) : CoreResource(api) {}
+    DescriptorSet(DescriptorSet&& rhs) : CoreResource(std::move(rhs)) {}
     ~DescriptorSet();
     /**
      * @brief Update descriptor set

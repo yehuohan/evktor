@@ -7,7 +7,7 @@ NAMESPACE_BEGIN(core)
 
 struct Instance;
 
-struct InstanceState : public CoreState<InstanceState> {
+class InstanceState : public CoreState<InstanceState> {
     friend struct Instance;
 
 private:
@@ -50,21 +50,21 @@ public:
     Res<Instance> into();
 };
 
-struct Instance : public CoreHandle<VkInstance> {
-    friend class CoreApi;
-    friend struct Device;
+template <>
+struct VkHandle<VkInstance> {
+    VK_HANDLE_IMPL(VkInstance)
 
 protected:
     const VkAllocationCallbacks* allocator = nullptr;
     uint32_t api_version = VKT_CORE_VK_API_VERSION;
 
-protected:
-    explicit Instance() {}
-
 public:
-    Instance(Instance&&);
-    ~Instance();
-    Instance& operator=(Instance&&);
+    explicit VkHandle(VkInstance h,
+                      const VkAllocationCallbacks* _allocator = nullptr,
+                      uint32_t _api_version = VKT_CORE_VK_API_VERSION)
+        : __handle(h)
+        , allocator(_allocator)
+        , api_version(_api_version) {}
 
     operator const VkAllocationCallbacks*() const {
         return allocator;
@@ -73,12 +73,31 @@ public:
     inline uint32_t getApiVersion() const {
         return api_version;
     }
+};
+
+/**
+ * @brief Vulkan core instance
+ */
+struct Instance : public CoreHandle<VkInstance> {
+    friend class CoreApi;
+    friend struct Device;
+
+protected:
+    explicit Instance() {}
+    explicit Instance(VkHandle<VkInstance> h) : CoreHandle(h) {}
+
+public:
+    Instance(Instance&&);
+    ~Instance();
+    Instance& operator=(Instance&&);
 
     static Res<Instance> from(InstanceState& info);
-    static Res<Instance> borrow(VkInstance handle,
-                                PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
-                                uint32_t api_version = VKT_CORE_VK_API_VERSION,
-                                VkAllocationCallbacks* allocator = nullptr);
+    /**
+     * @brief Borrow instance
+     *
+     * `fpGetInstanceProcAddr != nullptr` is meant to manually initialize Vulkan loader with volk
+     */
+    static Res<Instance> borrow(VkHandle<VkInstance> handle, PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr = nullptr);
 };
 
 /**

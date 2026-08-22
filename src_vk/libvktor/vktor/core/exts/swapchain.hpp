@@ -52,13 +52,6 @@ public:
     Swapchain(Swapchain&&);
     ~Swapchain();
 
-    /**
-     * @brief Take out swapchain handle
-     *
-     * After take out handle, this swapchain will be `__borrowed = true`.
-     */
-    VkSwapchainKHR take();
-
     VkResult acquireNextImage(uint32_t& image_index, VkSemaphore semaphore, VkFence fence = VK_NULL_HANDLE) const;
     /** Create image from the index-th swapchain image */
     Res<Image> newImage(uint32_t index) const;
@@ -80,7 +73,7 @@ public:
 public:
     explicit Arg(const Swapchain& a) : a(a) {}
     explicit Arg(const Swapchain& a, uint32_t image_index) : a(a), image_index(image_index) {}
-    OnConstType(VkSwapchainKHR, a.getHandle());
+    OnConstType(VkSwapchainKHR, a.handle());
 };
 
 NAMESPACE_END(core)

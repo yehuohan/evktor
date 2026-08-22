@@ -14,17 +14,11 @@ Res<Event> EventState::into(const CoreApi& api) const {
     return Event::from(api, *this);
 }
 
-Event::Event(Event&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
-
 Event::~Event() {
-    if (!__borrowed && handle) {
-        vkDestroyEvent(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroyEvent(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 Res<Event> Event::from(const CoreApi& api, const EventState& info) {

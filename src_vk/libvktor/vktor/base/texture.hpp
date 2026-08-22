@@ -48,8 +48,8 @@ public:
      * ```
      */
     Texture(Texture&&);
-    OnConstType(VkImage, image.getHandle());
-    OnConstType(VkImageView, imageview.getHandle());
+    OnConstType(VkImage, image.handle());
+    OnConstType(VkImageView, imageview.handle());
 
     inline const core::Image& getImage() const {
         return image;

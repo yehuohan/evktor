@@ -69,29 +69,28 @@ Res<Instance> InstanceState::into() {
     return Instance::from(*this);
 }
 
-Instance::Instance(Instance&& rhs) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+Instance::Instance(Instance&& rhs) : CoreHandle(std::move(rhs)) {
+    allocator = rhs.allocator;
+    rhs.allocator = nullptr;
     api_version = rhs.api_version;
 }
 
 Instance::~Instance() {
-    if (!__borrowed && handle) {
-        vkDestroyInstance(handle, allocator);
+    if (!borrowed() && __handle) {
+        vkDestroyInstance(__handle, allocator);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
+    allocator = nullptr;
 };
 
 Instance& Instance::operator=(Instance&& rhs) {
     if (this != &rhs) {
-        if (!__borrowed && handle) {
-            vkDestroyInstance(handle, allocator);
+        if (!borrowed() && __handle) {
+            vkDestroyInstance(__handle, allocator);
         }
-
-        handle = rhs.handle;
-        rhs.handle = VK_NULL_HANDLE;
-        __borrowed = rhs.__borrowed;
+        moveFrom(std::move(rhs));
+        allocator = rhs.allocator;
+        rhs.allocator = nullptr;
         api_version = rhs.api_version;
     }
     return *this;
@@ -142,22 +141,19 @@ Res<Instance> Instance::from(InstanceState& info) {
     return Ok(std::move(instance));
 }
 
-Res<Instance> Instance::borrow(VkInstance handle,
-                               PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
-                               uint32_t api_version,
-                               VkAllocationCallbacks* allocator) {
-    // Initialize Vulkan loader:
-    //      * provide vkGetInstanceProcAddr
-    //      * call volkGenLoadLoader(VK_NULL_HANDLE, vkGetInstanceProcAddr))
-    volkInitializeCustom(fpGetInstanceProcAddr);
+Res<Instance> Instance::borrow(VkHandle<VkInstance> handle, PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr) {
+    if (!handle.valid()) {
+        return Er("Borrow requires a valid VkHandle for VkInstance");
+    }
 
-    Instance instance{};
-    instance.__borrowed = true;
-    instance.handle = handle;
-    instance.allocator = allocator;
-    instance.api_version = api_version;
-
-    volkLoadInstance(instance);
+    Instance instance{handle};
+    if (fpGetInstanceProcAddr) {
+        // Initialize Vulkan loader:
+        //      * provide vkGetInstanceProcAddr
+        //      * call volkGenLoadLoader(VK_NULL_HANDLE, vkGetInstanceProcAddr))
+        volkInitializeCustom(fpGetInstanceProcAddr);
+        volkLoadInstance(instance);
+    }
 
     return Ok(std::move(instance));
 }

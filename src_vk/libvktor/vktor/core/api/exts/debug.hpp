@@ -13,6 +13,7 @@ struct Debug;
 struct IDebug : public CoreHandle<VkDebugUtilsMessengerEXT> {
 public:
     explicit IDebug() {}
+    IDebug(IDebug&& rhs) : CoreHandle(std::move(rhs)) {}
     virtual ~IDebug() {}
 
 public:
@@ -98,7 +99,7 @@ protected:
     explicit Debug(CRef<Instance> instance) : instance(instance) {}
 
 public:
-    Debug(Debug&&);
+    Debug(Debug&& rhs) : IDebug(std::move(rhs)), instance(rhs.instance) {}
     virtual ~Debug();
 
     /**

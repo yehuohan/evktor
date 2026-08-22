@@ -14,36 +14,30 @@ Res<Semaphore> SemaphoreState::into(const CoreApi& api) const {
     return Semaphore::from(api, *this);
 }
 
-Semaphore::Semaphore(Semaphore&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
-
 Semaphore::~Semaphore() {
-    if (!__borrowed && handle) {
-        vkDestroySemaphore(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroySemaphore(api, __handle, api);
+        __handle = VK_NULL_HANDLE;
     }
-    handle = VK_NULL_HANDLE;
 }
 
 VkResult Semaphore::wait(uint64_t value, uint64_t timeout) const {
     auto info = Itor::SemaphoreWaitInfo();
     info.pValues = &value;
-    info.pSemaphores = &handle;
+    info.pSemaphores = &__handle;
     info.semaphoreCount = 1;
     return vkWaitSemaphores(api, &info, timeout);
 }
 
 VkResult Semaphore::signal(uint64_t value) const {
     auto info = Itor::SemaphoreSignalInfo();
-    info.semaphore = handle;
+    info.semaphore = __handle;
     info.value = value;
     return vkSignalSemaphore(api, &info);
 }
 
 VkResult Semaphore::getCounter(uint64_t* pvalue) const {
-    return vkGetSemaphoreCounterValue(api, handle, pvalue);
+    return vkGetSemaphoreCounterValue(api, __handle, pvalue);
 }
 
 Res<Semaphore> Semaphore::from(const CoreApi& api, const SemaphoreState& info) {

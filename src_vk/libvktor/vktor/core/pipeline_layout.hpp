@@ -35,7 +35,7 @@ protected:
     explicit PipelineLayout(const CoreApi& api) : CoreResource(api) {}
 
 public:
-    PipelineLayout(PipelineLayout&&);
+    PipelineLayout(PipelineLayout&& rhs) : CoreResource(std::move(rhs)) {}
     ~PipelineLayout();
 
     static Res<PipelineLayout> from(const CoreApi& api, const PipelineLayoutState& info);

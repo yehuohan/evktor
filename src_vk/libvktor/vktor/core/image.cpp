@@ -92,15 +92,7 @@ Res<Image> ImageState::into(const CoreApi& api) const {
     return Image::from(api, *this);
 }
 
-Image::Image(Image&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-    memory = rhs.memory;
-    rhs.memory = VK_NULL_HANDLE;
-    allocation = rhs.allocation;
-    rhs.allocation = VK_NULL_HANDLE;
-
+Image::Image(Image&& rhs) : CoreResource(std::move(rhs)), borrowed_memory_mapped(rhs.borrowed_memory_mapped) {
     type = rhs.type;
     format = rhs.format;
     extent = rhs.extent;
@@ -110,20 +102,35 @@ Image::Image(Image&& rhs) : CoreResource(rhs.api) {
     tiling = rhs.tiling;
     usage = rhs.usage;
     layout = rhs.layout;
+
+    allocation = rhs.allocation;
+    memory = rhs.memory;
+    memory_size = rhs.memory_size;
+    memory_mapped = rhs.memory_mapped;
+    rhs.allocation = VK_NULL_HANDLE;
+    rhs.memory = VK_NULL_HANDLE;
+    rhs.memory_size = 0;
+    rhs.memory_mapped = nullptr;
 }
 
 Image::~Image() {
-    if (!__borrowed && handle) {
+    unmap();
+    if (!borrowed() && __handle) {
         if (allocation) {
-            vmaDestroyImage(api, handle, allocation);
+            vmaDestroyImage(api, __handle, allocation);
         } else {
-            vkFreeMemory(api, memory, api);
-            vkDestroyImage(api, handle, api);
+            // This's a dead branch currently
+            if (memory) {
+                vkFreeMemory(api, memory, api);
+            }
+            vkDestroyImage(api, __handle, api);
         }
     }
-    handle = VK_NULL_HANDLE;
-    memory = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
     allocation = VK_NULL_HANDLE;
+    memory = VK_NULL_HANDLE;
+    memory_size = 0;
+    memory_mapped = nullptr;
 }
 
 VkSubresourceLayout Image::getSubresourceLayout(uint32_t mip, uint32_t layer, VkImageAspectFlags aspect) const {
@@ -132,7 +139,7 @@ VkSubresourceLayout Image::getSubresourceLayout(uint32_t mip, uint32_t layer, Vk
     subresource.mipLevel = mip;
     subresource.arrayLayer = layer;
     VkSubresourceLayout subresource_layout;
-    vkGetImageSubresourceLayout(api, handle, &subresource, &subresource_layout);
+    vkGetImageSubresourceLayout(api, __handle, &subresource, &subresource_layout);
     return subresource_layout;
 }
 
@@ -140,14 +147,17 @@ bool Image::copyFrom(const void* src, const VkDeviceSize src_size, uint32_t mip,
     VkSubresourceLayout subresource_layout = getSubresourceLayout(mip, layer);
     VkDeviceSize mem_size = std::min<VkDeviceSize>(src_size, subresource_layout.size);
     VkDeviceSize offset = subresource_layout.offset;
-
-    auto res = map();
-    if (res.isErr()) {
-        return false;
+    if (memory_mapped) {
+        std::memcpy((uint8_t*)memory_mapped + offset, src, (size_t)mem_size);
+    } else {
+        auto res = map();
+        if (res.isErr()) {
+            return false;
+        }
+        void* data = res.unwrap();
+        std::memcpy((uint8_t*)data + offset, src, (size_t)mem_size);
+        unmap();
     }
-    void* data = res.unwrap();
-    std::memcpy((uint8_t*)data + offset, src, (size_t)mem_size);
-    unmap();
     return true;
 }
 
@@ -155,33 +165,45 @@ bool Image::copyInto(void* dst, const VkDeviceSize dst_size, uint32_t mip, uint3
     VkSubresourceLayout subresource_layout = getSubresourceLayout(mip, layer);
     VkDeviceSize mem_size = std::min<VkDeviceSize>(dst_size, subresource_layout.size);
     VkDeviceSize offset = subresource_layout.offset;
-
-    auto res = map();
-    if (res.isErr()) {
-        return false;
+    if (memory_mapped) {
+        std::memcpy(dst, (uint8_t*)memory_mapped + offset, (size_t)mem_size);
+    } else {
+        auto res = map();
+        if (res.isErr()) {
+            return false;
+        }
+        void* data = res.unwrap();
+        std::memcpy(dst, (uint8_t*)data + offset, (size_t)mem_size);
+        unmap();
     }
-    void* data = res.unwrap();
-    std::memcpy(dst, (uint8_t*)data + offset, (size_t)mem_size);
-    unmap();
     return true;
 }
 
 Res<void*> Image::map() const {
-    void* data;
-    if (allocation) {
-        OnRet(vmaMapMemory(api, allocation, &data), "Failed to map image memory with allocation");
-    } else if (memory) {
-        OnRet(vkMapMemory(api, memory, 0, memory_size, 0, &data), "Failed to map image memory");
+    if (!memory_mapped) {
+        if (allocation) {
+            OnRet(vmaMapMemory(api, allocation, &memory_mapped), "Failed to map image memory with allocation");
+        } else if (memory) {
+            OnRet(vkMapMemory(api, memory, 0, memory_size, 0, &memory_mapped), "Failed to map image memory");
+        } else {
+            return Er("The image seemed doesn't borrow a memory to map");
+        }
     }
-    return Ok(data);
+    return Ok(memory_mapped);
 }
 
 void Image::unmap() const {
-    if (allocation) {
-        vmaUnmapMemory(api, allocation);
-    } else if (memory) {
-        vkUnmapMemory(api, memory);
+    if (borrowed_memory_mapped) {
+        return;
     }
+    if (memory_mapped) {
+        if (allocation) {
+            vmaUnmapMemory(api, allocation);
+        } else if (memory) {
+            vkUnmapMemory(api, memory);
+        }
+    }
+    memory_mapped = nullptr;
 }
 
 VkResult Image::getFd(int& fd, VkExternalMemoryHandleTypeFlagBits hdl_type) {
@@ -247,29 +269,15 @@ Res<Image> Image::from(const CoreApi& api, const ImageState& info) {
     return Ok(std::move(image));
 }
 
-Image Image::borrow(const CoreApi& api,
-                    const ImageState& info,
-                    VkImage _image,
-                    VkDeviceMemory memory,
-                    VkDeviceSize memory_size) {
-    if (VK_NULL_HANDLE == _image) {
-        vktLogW("Image should borrow from a existed & valid VkImage");
+Res<Image> Image::borrow(const CoreApi& api,
+                         VkHandle<VkImage> handle,
+                         VkDeviceMemory memory,
+                         VkDeviceSize memory_size,
+                         void* memory_mapped) {
+    if (!handle.valid()) {
+        return Er("Borrow requires a valid VkHandle for VkImage");
     }
-    Image image(api);
-    image.__borrowed = true;
-    image.handle = _image;
-    image.type = info.image_ci.imageType;
-    image.format = info.image_ci.format;
-    image.extent = info.image_ci.extent;
-    image.mip_levels = info.image_ci.mipLevels;
-    image.array_layers = info.image_ci.arrayLayers;
-    image.samples = info.image_ci.samples;
-    image.tiling = info.image_ci.tiling;
-    image.usage = info.image_ci.usage;
-    image.layout = info.image_ci.initialLayout;
-    image.memory = memory;
-    image.memory_size = memory_size;
-    return image;
+    return Ok(Image(api, handle, memory, memory_size, memory_mapped));
 }
 
 bool isDepthOnlyFormat(VkFormat format) {

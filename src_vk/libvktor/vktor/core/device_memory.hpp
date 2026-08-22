@@ -30,17 +30,17 @@ protected:
     explicit DeviceMemory(const CoreApi& api) : CoreResource(api) {}
 
 public:
-    DeviceMemory(DeviceMemory&&);
+    DeviceMemory(DeviceMemory&& rhs) : CoreResource(std::move(rhs)) {}
     ~DeviceMemory();
 
     inline VkDeviceSize getSize() const {
         return size;
     }
     inline VkResult bind(VkBuffer buffer, VkDeviceSize offset = 0) const {
-        return vkBindBufferMemory(api, buffer, handle, offset);
+        return vkBindBufferMemory(api, buffer, __handle, offset);
     }
     inline VkResult bind(VkImage image, VkDeviceSize offset = 0) const {
-        return vkBindImageMemory(api, image, handle, offset);
+        return vkBindImageMemory(api, image, __handle, offset);
     }
     Res<void*> map(VkMemoryMapFlags flags = 0) const;
     void unmap() const;

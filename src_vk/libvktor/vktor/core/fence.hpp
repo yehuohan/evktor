@@ -27,7 +27,7 @@ protected:
     explicit Fence(const CoreApi& api) : CoreResource(api) {}
 
 public:
-    Fence(Fence&&);
+    Fence(Fence&& rhs) : CoreResource(std::move(rhs)) {}
     ~Fence();
 
     VkResult wait(uint64_t timeout = UINT64_MAX) const;

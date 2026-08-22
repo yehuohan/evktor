@@ -41,18 +41,15 @@ Res<DescriptorSetLayout> DescriptorSetLayoutState::into(const CoreApi& api) cons
     return DescriptorSetLayout::from(api, *this);
 }
 
-DescriptorSetLayout::DescriptorSetLayout(DescriptorSetLayout&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+DescriptorSetLayout::DescriptorSetLayout(DescriptorSetLayout&& rhs) : CoreResource(std::move(rhs)) {
     bindings = std::move(rhs.bindings);
 }
 
 DescriptorSetLayout::~DescriptorSetLayout() {
-    if (!__borrowed && handle) {
-        vkDestroyDescriptorSetLayout(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroyDescriptorSetLayout(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 Res<DescriptorSetLayout> DescriptorSetLayout::from(const CoreApi& api, const DescriptorSetLayoutState& info) {

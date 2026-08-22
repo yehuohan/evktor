@@ -32,12 +32,12 @@ public:
     Res<Sampler> into(const CoreApi& api) const;
 };
 
-struct Sampler : CoreResource<VkSampler, VK_OBJECT_TYPE_SAMPLER> {
+struct Sampler : public CoreResource<VkSampler, VK_OBJECT_TYPE_SAMPLER> {
 protected:
     explicit Sampler(const CoreApi& api) : CoreResource(api) {}
 
 public:
-    Sampler(Sampler&&);
+    Sampler(Sampler&& rhs) : CoreResource(std::move(rhs)) {}
     ~Sampler();
 
     static Res<Sampler> from(const CoreApi& api, const SamplerState& info);

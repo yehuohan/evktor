@@ -26,17 +26,11 @@ Res<PipelineCache> PipelineCacheState::into(const CoreApi& api) const {
     return PipelineCache::from(api, *this);
 }
 
-PipelineCache::PipelineCache(PipelineCache&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
-
 PipelineCache::~PipelineCache() {
-    if (!__borrowed && handle) {
-        vkDestroyPipelineCache(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroyPipelineCache(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 Res<PipelineCache> PipelineCache::from(const CoreApi& api, const PipelineCacheState& info) {

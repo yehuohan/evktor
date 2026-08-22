@@ -42,33 +42,58 @@ public:
     Res<Device> into(CRef<PhysicalDevice> phy_dev);
 };
 
+template <>
+struct VkHandle<VkDevice> {
+    VK_HANDLE_IMPL(VkDevice)
+
+protected:
+    VmaAllocator mem_allocator = VK_NULL_HANDLE;
+
+public:
+    explicit VkHandle(VkDevice h, VmaAllocator _mem_allocator = VK_NULL_HANDLE) : __handle(h), mem_allocator(_mem_allocator) {}
+    OnConstType(VmaAllocator, mem_allocator);
+
+    VkResult createMemAllocator(VkHandle<VkInstance> instance,
+                                VkHandle<VkPhysicalDevice> phy_dev,
+                                VmaAllocatorCreateFlags flags = 0);
+
+    inline VkMemoryRequirements getMemoryRequirements(VkBuffer buffer) const;
+    inline VkMemoryRequirements getMemoryRequirements(VkImage image) const;
+};
+
+/**
+ * @brief Vulkan core device
+ */
 struct Device : public CoreHandle<VkDevice> {
     friend class CoreApi;
 
     CRef<PhysicalDevice> physical_device;
 
-protected:
-    VmaAllocator mem_allocator = VK_NULL_HANDLE;
+private:
+    bool borrowed_mem_allocator = false;
 
 protected:
     explicit Device(CRef<PhysicalDevice> physical_device) : physical_device(physical_device) {}
-
-    VkResult createMemAllocator(VmaAllocatorCreateFlags flags = 0);
+    explicit Device(CRef<PhysicalDevice> physical_device, VkHandle<VkDevice> h)
+        : CoreHandle(h)
+        , physical_device(physical_device) {
+        borrowed_mem_allocator = mem_allocator != VK_NULL_HANDLE;
+    }
 
 public:
     Device(Device&&);
     ~Device();
     Device& operator=(Device&&);
-    OnConstType(VmaAllocator, mem_allocator);
-
-    inline VkMemoryRequirements getMemoryRequirements(VkBuffer buffer) const;
-    inline VkMemoryRequirements getMemoryRequirements(VkImage image) const;
 
     static Res<Device> from(CRef<PhysicalDevice> phy_dev, DeviceState& info);
+    /**
+     * @brief Borrow device
+     *
+     * `fpGetDeviceProcAddr != nullptr` is meant to manually initialize Vulkan loader with volk
+     */
     static Res<Device> borrow(CRef<PhysicalDevice> phy_dev,
-                              VkDevice handle,
-                              PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr = VK_NULL_HANDLE,
-                              VmaAllocator mem_allocator = VK_NULL_HANDLE);
+                              VkHandle<VkDevice> handle,
+                              PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr = nullptr);
 };
 
 template <typename T>
@@ -77,15 +102,15 @@ DeviceState::Self DeviceState::setFeatures(std::function<void(T&)> fn) {
     return *this;
 }
 
-inline VkMemoryRequirements Device::getMemoryRequirements(VkBuffer buffer) const {
+inline VkMemoryRequirements VkHandle<VkDevice>::getMemoryRequirements(VkBuffer buffer) const {
     VkMemoryRequirements reqs{};
-    vkGetBufferMemoryRequirements(handle, buffer, &reqs);
+    vkGetBufferMemoryRequirements(__handle, buffer, &reqs);
     return reqs;
 }
 
-inline VkMemoryRequirements Device::getMemoryRequirements(VkImage image) const {
+inline VkMemoryRequirements VkHandle<VkDevice>::getMemoryRequirements(VkImage image) const {
     VkMemoryRequirements reqs{};
-    vkGetImageMemoryRequirements(handle, image, &reqs);
+    vkGetImageMemoryRequirements(__handle, image, &reqs);
     return reqs;
 }
 

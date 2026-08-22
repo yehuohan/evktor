@@ -28,18 +28,15 @@ Res<DeviceMemoryPool> DeviceMemoryPoolState::into(const CoreApi& api, const Imag
     return DeviceMemoryPool::from(api, *this, img_info);
 }
 
-DeviceMemoryPool::DeviceMemoryPool(DeviceMemoryPool&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+DeviceMemoryPool::DeviceMemoryPool(DeviceMemoryPool&& rhs) : CoreResource(std::move(rhs)) {
     export_memory_ai = std::move(rhs.export_memory_ai);
 }
 
 DeviceMemoryPool::~DeviceMemoryPool() {
-    if (!__borrowed && handle) {
-        vmaDestroyPool(api, handle);
+    if (!borrowed() && __handle) {
+        vmaDestroyPool(api, __handle);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
     export_memory_ai.reset();
 }
 

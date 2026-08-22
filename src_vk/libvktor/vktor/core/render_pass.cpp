@@ -63,17 +63,11 @@ Res<RenderPass> RenderPassState::into(const CoreApi& api) const {
     return RenderPass::from(api, *this);
 }
 
-RenderPass::RenderPass(RenderPass&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
-
 RenderPass::~RenderPass() {
-    if (!__borrowed && handle) {
-        vkDestroyRenderPass(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroyRenderPass(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 Res<RenderPass> RenderPass::from(const CoreApi& api, const RenderPassState& info) {

@@ -28,11 +28,8 @@ GeometrySubpass::GeometrySubpass(vkt::Shader&& vert, vkt::Shader&& frag, Scene& 
     , camera(_camera) {}
 
 GeometrySubpass::~GeometrySubpass() {
-    for (auto& ubo : pbr_ubo) {
-        ubo.unmap();
-    }
-    pbr_ubo.clear();
     pbr_ubo_ptr.clear();
+    pbr_ubo.clear();
 }
 
 Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {

@@ -38,7 +38,7 @@ protected:
     explicit Framebuffer(const CoreApi& api) : CoreResource(api) {}
 
 public:
-    Framebuffer(Framebuffer&&);
+    Framebuffer(Framebuffer&& rhs) : CoreResource(std::move(rhs)) {}
     ~Framebuffer();
 
     static Res<Framebuffer> from(const CoreApi& api, const FramebufferState& info);

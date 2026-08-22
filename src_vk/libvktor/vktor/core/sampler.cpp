@@ -82,17 +82,11 @@ Res<Sampler> SamplerState::into(const CoreApi& api) const {
     return Sampler::from(api, *this);
 }
 
-Sampler::Sampler(Sampler&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
-
 Sampler::~Sampler() {
-    if (!__borrowed && handle) {
-        vkDestroySampler(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroySampler(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 Res<Sampler> Sampler::from(const CoreApi& api, const SamplerState& info) {

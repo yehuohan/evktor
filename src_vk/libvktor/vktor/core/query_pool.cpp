@@ -29,18 +29,15 @@ Res<QueryPool> QueryPoolState::into(const CoreApi& api) const {
     return QueryPool::from(api, *this);
 }
 
-QueryPool::QueryPool(QueryPool&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+QueryPool::QueryPool(QueryPool&& rhs) : CoreResource(std::move(rhs)) {
     query_count = rhs.query_count;
 }
 
 QueryPool::~QueryPool() {
-    if (!__borrowed && handle) {
-        vkDestroyQueryPool(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroyQueryPool(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 VkResult QueryPool::getResults(uint32_t first,
@@ -49,11 +46,11 @@ VkResult QueryPool::getResults(uint32_t first,
                                void* data,
                                VkDeviceSize stride,
                                VkQueryResultFlags flags) const {
-    return vkGetQueryPoolResults(api, handle, first, count, data_size, data, stride, flags);
+    return vkGetQueryPoolResults(api, __handle, first, count, data_size, data, stride, flags);
 }
 
 VkResult QueryPool::getAllResults(size_t data_size, void* data, VkDeviceSize stride, VkQueryResultFlags flags) const {
-    return vkGetQueryPoolResults(api, handle, 0, query_count, data_size, data, stride, flags);
+    return vkGetQueryPoolResults(api, __handle, 0, query_count, data_size, data, stride, flags);
 }
 
 Res<QueryPool> QueryPool::from(const CoreApi& api, const QueryPoolState& info) {

@@ -81,10 +81,7 @@ Res<Swapchain> SwapchainState::into(const CoreApi& api) const {
     return Swapchain::from(api, *this);
 }
 
-Swapchain::Swapchain(Swapchain&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+Swapchain::Swapchain(Swapchain&& rhs) : CoreResource(std::move(rhs)) {
     images = std::move(rhs.images);
     image_count = rhs.image_count;
     image_format = rhs.image_format;
@@ -94,36 +91,32 @@ Swapchain::Swapchain(Swapchain&& rhs) : CoreResource(rhs.api) {
 }
 
 Swapchain::~Swapchain() {
-    if (!__borrowed && handle) {
-        vkDestroySwapchainKHR(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroySwapchainKHR(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
     images.clear(); // The images will be destroyed along with swapchain's destruction
 }
 
-VkSwapchainKHR Swapchain::take() {
-    __borrowed = true;
-    return handle;
-}
-
 VkResult Swapchain::acquireNextImage(uint32_t& image_index, VkSemaphore semaphore, VkFence fence) const {
-    return vkAcquireNextImageKHR(api, handle, UINT64_MAX, semaphore, fence, &image_index);
+    return vkAcquireNextImageKHR(api, __handle, UINT64_MAX, semaphore, fence, &image_index);
 }
 
 Res<Image> Swapchain::newImage(uint32_t index) const {
     if (index >= images.size()) {
         return Er("The index = {} is out of swapchain images", index);
     }
-    ImageState info{"SwapchainImage" + std::to_string(index)};
-    info.setFormat(image_format);
-    info.setExtent(image_extent.width, image_extent.height);
-    info.setMipLevels(1);
-    info.setArrayLayers(image_layers);
-    info.setSamples(VK_SAMPLE_COUNT_1_BIT);
-    info.setTiling(VK_IMAGE_TILING_OPTIMAL);
-    info.setUsage(image_usage);
-    Image image = Image::borrow(api, info, images[index]);
-    OnName(image, info.__name);
+    VkHandle<VkImage> vkimage(images[index]);
+    vkimage.format = image_format;
+    vkimage.extent = VkExtent3D{image_extent.width, image_extent.height, 1};
+    vkimage.mip_levels = 1;
+    vkimage.array_layers = image_layers;
+    vkimage.samples = VK_SAMPLE_COUNT_1_BIT;
+    vkimage.tiling = VK_IMAGE_TILING_OPTIMAL;
+    vkimage.usage = image_usage;
+    OnUnwrap(image, Image::borrow(api, vkimage));
+    std::string image_name{"SwapchainImage" + std::to_string(index)};
+    OnName(image, image_name);
     return Ok(std::move(image));
 }
 

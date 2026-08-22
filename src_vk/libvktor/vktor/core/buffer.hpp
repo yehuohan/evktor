@@ -39,25 +39,46 @@ public:
     Res<Buffer> into(const CoreApi& api) const;
 };
 
+template <>
+struct VkHandle<VkBuffer> {
+    VK_HANDLE_IMPL(VkBuffer)
+
+protected:
+    VkDeviceSize size = 0;
+
+public:
+    explicit VkHandle(VkBuffer h, VkDeviceSize _size = 0) : __handle(h), size(_size) {}
+
+    inline VkDeviceSize getSize() const {
+        return size;
+    }
+};
+
 struct Buffer : public CoreResource<VkBuffer, VK_OBJECT_TYPE_BUFFER> {
     friend struct CommandBuffer;
 
 protected:
-    VkDeviceSize size = 0;
-    VkDeviceMemory memory = VK_NULL_HANDLE;
     VmaAllocation allocation = VK_NULL_HANDLE;
+    VkDeviceMemory memory = VK_NULL_HANDLE;
+    mutable void* memory_mapped = nullptr;
+    const bool borrowed_memory_mapped = false;
 
 protected:
     explicit Buffer(const CoreApi& api) : CoreResource(api) {}
+    explicit Buffer(const CoreApi& api,
+                    VkHandle<VkBuffer> h,
+                    VkDeviceMemory _memory = VK_NULL_HANDLE,
+                    void* _memory_mapped = nullptr)
+        : CoreResource(api, h)
+        , memory(_memory)
+        , memory_mapped(_memory_mapped)
+        , borrowed_memory_mapped(memory_mapped != nullptr) {}
 
 public:
     Buffer(Buffer&&);
     ~Buffer();
     OnConstType(VkDeviceMemory, memory);
 
-    inline VkDeviceSize getSize() const {
-        return size;
-    }
     /**
      * @brief Copy data from cpu memory `src` into gpu buffer memory
      *
@@ -84,10 +105,10 @@ public:
     /**
      * @brief Borrow buffer from already created buffer
      */
-    static Buffer borrow(const CoreApi& api,
-                         VkBuffer buffer,
-                         VkDeviceMemory memory = VK_NULL_HANDLE,
-                         VkDeviceSize size = VK_WHOLE_SIZE);
+    static Res<Buffer> borrow(const CoreApi& api,
+                              VkHandle<VkBuffer> handle,
+                              VkDeviceMemory memory = VK_NULL_HANDLE,
+                              void* memory_mapped = nullptr);
 };
 
 NAMESPACE_END(core)

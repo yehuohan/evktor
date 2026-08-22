@@ -37,17 +37,11 @@ Res<ComputePipeline> ComputePipelineState::into(const CoreApi& api) const {
     return ComputePipeline::from(api, *this);
 }
 
-ComputePipeline::ComputePipeline(ComputePipeline&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
-
 ComputePipeline::~ComputePipeline() {
-    if (!__borrowed && handle) {
-        vkDestroyPipeline(api, handle, api);
+    if (!borrowed() && __handle) {
+        vkDestroyPipeline(api, __handle, api);
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 Res<ComputePipeline> ComputePipeline::from(const CoreApi& api, const ComputePipelineState& info) {

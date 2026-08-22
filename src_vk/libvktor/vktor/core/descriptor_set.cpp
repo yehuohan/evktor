@@ -56,19 +56,11 @@ DescriptorImage& DescriptorImage::bind(size_t _index) {
     return *this;
 }
 
-DescriptorSet::DescriptorSet(const CoreApi& api) : CoreResource(api) {}
-
-DescriptorSet::DescriptorSet(DescriptorSet&& rhs) : CoreResource(rhs.api) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
-}
-
 DescriptorSet::~DescriptorSet() {
-    if (!__borrowed && handle) {
+    if (!borrowed() && __handle) {
         // Descriptor set will be freed along with vkDestroyDescriptorPool
     }
-    handle = VK_NULL_HANDLE;
+    __handle = VK_NULL_HANDLE;
 }
 
 void DescriptorSet::update(const DescriptorInfo& info, const DescriptorSetLayout& setlayout) const {
@@ -77,7 +69,7 @@ void DescriptorSet::update(const DescriptorInfo& info, const DescriptorSetLayout
         const auto& bind = setlayout.bindings.at(item.first);
         const auto& bufs = item.second;
         auto write = Itor::WriteDescriptorSet();
-        write.dstSet = handle;
+        write.dstSet = __handle;
         write.dstBinding = bind.binding;
         write.dstArrayElement = 0;
         write.descriptorCount = bind.descriptorCount;
@@ -89,7 +81,7 @@ void DescriptorSet::update(const DescriptorInfo& info, const DescriptorSetLayout
         const auto& bind = setlayout.bindings.at(item.first);
         const auto& imgs = item.second;
         auto write = Itor::WriteDescriptorSet();
-        write.dstSet = handle;
+        write.dstSet = __handle;
         write.dstBinding = bind.binding;
         write.dstArrayElement = 0;
         write.descriptorCount = bind.descriptorCount;

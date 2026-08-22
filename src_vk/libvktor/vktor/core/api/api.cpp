@@ -3,13 +3,6 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
-CoreApi::CoreApi() : instance{}, physical_device(newCRef(instance)), device(newCRef(physical_device)) {}
-
-CoreApi::~CoreApi() {
-    debug = newBox<IDebug>();
-    queues.clear();
-}
-
 Res<CRef<Instance>> CoreApi::init(InstanceState& info) {
     OnErr(res, info.into());
     instance = res.unwrap();
@@ -21,11 +14,8 @@ Res<CRef<Instance>> CoreApi::init(InstanceState& info) {
     return Ok(newCRef(instance));
 }
 
-Res<CRef<Instance>> CoreApi::borrow(VkInstance handle,
-                                    PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
-                                    uint32_t api_version,
-                                    VkAllocationCallbacks* allocator) {
-    OnErr(res, Instance::borrow(handle, fpGetInstanceProcAddr, api_version, allocator));
+Res<CRef<Instance>> CoreApi::borrow(VkHandle<VkInstance> handle, PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr) {
+    OnErr(res, Instance::borrow(handle, fpGetInstanceProcAddr));
     instance = res.unwrap();
 
     // Reset objects that depends on instance
@@ -36,7 +26,7 @@ Res<CRef<Instance>> CoreApi::borrow(VkInstance handle,
 }
 
 Res<CRef<PhysicalDevice>> CoreApi::init(PhysicalDeviceState& info) {
-    if (!instance.handle) {
+    if (!instance.__handle) {
         return Er("Must have initialized a valid instance to initialize physical device");
     }
     OnErr(res, info.into(newCRef(instance)));
@@ -44,11 +34,11 @@ Res<CRef<PhysicalDevice>> CoreApi::init(PhysicalDeviceState& info) {
     return Ok(newCRef(physical_device));
 }
 
-Res<CRef<PhysicalDevice>> CoreApi::borrow(VkPhysicalDevice handle, VkSurfaceKHR surface) {
-    if (!instance.handle) {
+Res<CRef<PhysicalDevice>> CoreApi::borrow(VkHandle<VkPhysicalDevice> handle) {
+    if (!instance.__handle) {
         return Er("Must have borrowed a valid instance to initialize physical device");
     }
-    OnErr(res, PhysicalDevice::borrow(newCRef(instance), handle, surface));
+    OnErr(res, PhysicalDevice::borrow(newCRef(instance), handle));
     physical_device = res.unwrap();
     return Ok(newCRef(physical_device));
 }
@@ -95,17 +85,17 @@ static uint32_t findQueueFamilyIndex(const HashMap<uint32_t, QueueFamilyProps>& 
 }
 
 Res<CRef<Device>> CoreApi::init(DeviceState& info) {
-    if (!instance.handle) {
+    if (!instance.__handle) {
         return Er("Must have initialized a valid instance to initialize device");
     }
-    if (!physical_device.handle) {
+    if (!physical_device.__handle) {
         return Er("Must have initialized a valid physical device");
     }
     OnErr(res, info.into(newCRef(physical_device)));
     device = res.unwrap();
 
-    OnRet(setDebugName(VK_OBJECT_TYPE_DEVICE, reinterpret_cast<uint64_t>(device.handle), info.__name.c_str()),
-          "Failed to set debug name: {}",
+    OnRet(setDebugName(VK_OBJECT_TYPE_DEVICE, reinterpret_cast<uint64_t>(device.__handle), info.__name.c_str()),
+          "Failed to set device debug name: {}",
           info.__name);
 
     // Queues are automatically created along with device, and we need to retrieve their handles.
@@ -115,9 +105,9 @@ Res<CRef<Device>> CoreApi::init(DeviceState& info) {
         const auto& prop = q.second;
         for (uint32_t index = 0; index < prop.count; index++) {
             auto queue = Queue::from(device, family_index, index);
-            const String name = "Queue" + std::to_string(family_index) + "." + std::to_string(index);
-            OnRet(setDebugName(VK_OBJECT_TYPE_QUEUE, reinterpret_cast<uint64_t>(queue.getHandle()), name.c_str()),
-                  "Failed to set debug name: {}",
+            const String name = "Queue." + std::to_string(family_index) + "." + std::to_string(index);
+            OnRet(setDebugName(VK_OBJECT_TYPE_QUEUE, reinterpret_cast<uint64_t>(queue.handle()), name.c_str()),
+                  "Failed to set queue debug name: {}",
                   name);
             queues[family_index].push_back(std::move(queue));
         }
@@ -141,17 +131,16 @@ Res<CRef<Device>> CoreApi::init(DeviceState& info) {
     return Ok(newCRef(device));
 }
 
-Res<CRef<Device>> CoreApi::borrow(VkDevice handle,
-                                  PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr,
+Res<CRef<Device>> CoreApi::borrow(VkHandle<VkDevice> handle,
                                   QueueFamilyIndices indices,
-                                  VmaAllocator mem_allocator) {
-    if (!instance.handle) {
+                                  PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr) {
+    if (!instance.__handle) {
         return Er("Must have borrowed a valid instance to initialize device");
     }
-    if (!physical_device.handle) {
+    if (!physical_device.__handle) {
         return Er("Must have borrowed a valid physical device");
     }
-    OnErr(res, Device::borrow(newCRef(physical_device), handle, fpGetDeviceProcAddr, mem_allocator));
+    OnErr(res, Device::borrow(newCRef(physical_device), handle, fpGetDeviceProcAddr));
     device = res.unwrap();
 
     // Only get one queue for each queue family
@@ -226,7 +215,7 @@ Res<CRef<Queue>> CoreApi::transferQueue(const uint32_t index) const {
 }
 
 Res<CRef<IDebug>> CoreApi::add(DebugState& info) {
-    if (!instance.handle) {
+    if (!instance.__handle) {
         return Er("Must have initialized or borrowed a valid instance to add debug utils messenger");
     }
     OnErr(res, info.into(instance));
@@ -234,8 +223,8 @@ Res<CRef<IDebug>> CoreApi::add(DebugState& info) {
     return Ok(newCRef(*debug));
 }
 
-Res<CRef<Surface>> CoreApi::add(VkSurfaceKHR _surface, bool with_ownership) {
-    if (!instance.handle) {
+Res<CRef<Surface>> CoreApi::add(VkHandle<VkSurfaceKHR> _surface, bool with_ownership) {
+    if (!instance.__handle) {
         return Er("Must have initialized or borrowed a valid instance to add surface");
     }
     OnErr(res, with_ownership ? Surface::from(newCRef(instance), _surface) : Surface::borrow(newCRef(instance), _surface));
