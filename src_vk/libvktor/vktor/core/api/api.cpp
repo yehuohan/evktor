@@ -22,10 +22,11 @@ Res<CRef<Instance>> CoreApi::init(InstanceState& info) {
 }
 
 Res<CRef<Instance>> CoreApi::borrow(VkInstance handle,
+                                    uint64_t gid,
                                     PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
                                     uint32_t api_version,
                                     VkAllocationCallbacks* allocator) {
-    OnErr(res, Instance::borrow(handle, fpGetInstanceProcAddr, api_version, allocator));
+    OnErr(res, Instance::borrow(handle, gid, fpGetInstanceProcAddr, api_version, allocator));
     instance = res.unwrap();
 
     // Reset objects that depends on instance
@@ -44,11 +45,11 @@ Res<CRef<PhysicalDevice>> CoreApi::init(PhysicalDeviceState& info) {
     return Ok(newCRef(physical_device));
 }
 
-Res<CRef<PhysicalDevice>> CoreApi::borrow(VkPhysicalDevice handle, VkSurfaceKHR surface) {
+Res<CRef<PhysicalDevice>> CoreApi::borrow(VkPhysicalDevice handle, uint64_t gid, VkSurfaceKHR surface) {
     if (!instance.handle) {
         return Er("Must have borrowed a valid instance to initialize physical device");
     }
-    OnErr(res, PhysicalDevice::borrow(newCRef(instance), handle, surface));
+    OnErr(res, PhysicalDevice::borrow(newCRef(instance), handle, gid, surface));
     physical_device = res.unwrap();
     return Ok(newCRef(physical_device));
 }
@@ -142,6 +143,7 @@ Res<CRef<Device>> CoreApi::init(DeviceState& info) {
 }
 
 Res<CRef<Device>> CoreApi::borrow(VkDevice handle,
+                                  uint64_t gid,
                                   PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr,
                                   QueueFamilyIndices indices,
                                   VmaAllocator mem_allocator) {
@@ -151,7 +153,7 @@ Res<CRef<Device>> CoreApi::borrow(VkDevice handle,
     if (!physical_device.handle) {
         return Er("Must have borrowed a valid physical device");
     }
-    OnErr(res, Device::borrow(newCRef(physical_device), handle, fpGetDeviceProcAddr, mem_allocator));
+    OnErr(res, Device::borrow(newCRef(physical_device), handle, gid, fpGetDeviceProcAddr, mem_allocator));
     device = res.unwrap();
 
     // Only get one queue for each queue family

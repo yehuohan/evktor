@@ -69,10 +69,9 @@ Res<Instance> InstanceState::into() {
     return Instance::from(*this);
 }
 
-Instance::Instance(Instance&& rhs) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+Instance::Instance(Instance&& rhs) : CoreHandle(std::move(rhs)) {
+    allocator = rhs.allocator;
+    rhs.allocator = nullptr;
     api_version = rhs.api_version;
 }
 
@@ -81,6 +80,7 @@ Instance::~Instance() {
         vkDestroyInstance(handle, allocator);
     }
     handle = VK_NULL_HANDLE;
+    allocator = nullptr;
 };
 
 Instance& Instance::operator=(Instance&& rhs) {
@@ -89,9 +89,9 @@ Instance& Instance::operator=(Instance&& rhs) {
             vkDestroyInstance(handle, allocator);
         }
 
-        handle = rhs.handle;
-        rhs.handle = VK_NULL_HANDLE;
-        __borrowed = rhs.__borrowed;
+        CoreHandle::operator=(std::move(rhs));
+        allocator = rhs.allocator;
+        rhs.allocator = nullptr;
         api_version = rhs.api_version;
     }
     return *this;
@@ -134,6 +134,7 @@ Res<Instance> Instance::from(InstanceState& info) {
 
     Instance instance{};
     OnRet(vkCreateInstance(&instance_ci, info.allocator, instance), "Failed to create instance: {}", info.__name);
+    instance.assignGID();
     instance.allocator = info.allocator;
     instance.api_version = info.app_info.apiVersion;
 
@@ -143,6 +144,7 @@ Res<Instance> Instance::from(InstanceState& info) {
 }
 
 Res<Instance> Instance::borrow(VkInstance handle,
+                               uint64_t gid,
                                PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
                                uint32_t api_version,
                                VkAllocationCallbacks* allocator) {
@@ -151,9 +153,7 @@ Res<Instance> Instance::borrow(VkInstance handle,
     //      * call volkGenLoadLoader(VK_NULL_HANDLE, vkGetInstanceProcAddr))
     volkInitializeCustom(fpGetInstanceProcAddr);
 
-    Instance instance{};
-    instance.__borrowed = true;
-    instance.handle = handle;
+    Instance instance{handle, gid};
     instance.allocator = allocator;
     instance.api_version = api_version;
 

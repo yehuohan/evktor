@@ -1,4 +1,5 @@
 #pragma once
+#include <atomic>
 #include <volk.h>
 
 #include "generated/vk_initializer.hpp"
@@ -32,6 +33,21 @@ NAMESPACE_BEGIN(core)
         return &Var;               \
     }
 
+/** @brief Vulkan handle generation */
+class VkHandleGeneration : public Singleton<VkHandleGeneration> {
+public:
+    enum {
+        None = 0 /**< Vuklan handle doesn't have a generation id  */
+    };
+
+    inline uint64_t next() {
+        return next_generation.fetch_add(1, std::memory_order_relaxed);
+    }
+
+private:
+    std::atomic<uint64_t> next_generation{1};
+};
+
 /**
  * @brief Vulkan core handle type
  *
@@ -42,19 +58,69 @@ struct CoreHandle : private NonCopyable {
 protected:
     /** Vulkan handle */
     T handle = VK_NULL_HANDLE;
-
+    /** Vulkan handle generation id */
+    uint64_t __gid = VkHandleGeneration::None;
     /** Vulkan handle is borrowed or not
      *
      * A borrowed CoreHandle doesn't have ownership and must not destory the handle.
      */
     bool __borrowed = false;
 
+protected:
+    inline void moveFrom(CoreHandle<T>&& rhs) {
+        handle = rhs.handle;
+        __gid = rhs.__gid;
+        __borrowed = rhs.__borrowed;
+        rhs.handle = VK_NULL_HANDLE;
+        rhs.__gid = VkHandleGeneration::None;
+        rhs.__borrowed = false;
+    }
+    inline void assignGID() {
+        __gid = VkHandleGeneration::get().next();
+    }
+    inline void removeGID() {
+        __gid = VkHandleGeneration::None;
+    }
+
 public:
-    virtual ~CoreHandle() {}
+    CoreHandle() {}
+    CoreHandle(T external_handle, uint64_t external_gid) : handle(external_handle), __gid(external_gid), __borrowed(true) {}
+    CoreHandle(CoreHandle&& rhs) {
+        moveFrom(std::move(rhs));
+    }
+    virtual ~CoreHandle() {
+        handle = VK_NULL_HANDLE;
+        __gid = VkHandleGeneration::None;
+        __borrowed = false;
+    }
+    CoreHandle<T>& operator=(CoreHandle&& rhs) {
+        if (this != &rhs) {
+            moveFrom(std::move(rhs));
+        }
+        return *this;
+    }
     OnType(T, this->handle);
 
     inline const T& getHandle() const {
         return handle;
+    }
+    inline uint64_t gid() const {
+        return __gid;
+    }
+    /** @brief Get hash id */
+    inline uint64_t hid() const {
+        return __gid == VkHandleGeneration::None ? (uint64_t)handle : __gid;
+    }
+    inline bool borrowed() const {
+        return __borrowed;
+    }
+    inline void borrowHandle(T external_handle, uint64_t external_gid = VkHandleGeneration::None) {
+        if (__borrowed) {
+            handle = external_handle;
+            __gid = external_gid;
+        } else {
+            vktLogE("Can't borrow handle for non-borrowed handle");
+        }
     }
 };
 

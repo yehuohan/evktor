@@ -61,11 +61,11 @@ void testCoreApi() {
     {
         DebugState dso{};
         dso.setMessageSeverity(false, false);
-        auto& instance = api_.borrow((VkInstance)api, vkGetInstanceProcAddr).unwrap().get();
+        auto& instance = api_.borrow((VkInstance)api, api.inst().gid(), vkGetInstanceProcAddr).unwrap().get();
         auto& idebug = api_.add(dso).unwrap().get();
         auto& debug = *dynamic_cast<const Debug*>(&idebug);
-        auto& phy_dev = api_.borrow((VkPhysicalDevice)api).unwrap().get();
-        auto& device = api_.borrow((VkDevice)api, vkGetDeviceProcAddr).unwrap().get();
+        auto& phy_dev = api_.borrow((VkPhysicalDevice)api, api.phyDev().gid()).unwrap().get();
+        auto& device = api_.borrow((VkDevice)api, api.dev().gid(), vkGetDeviceProcAddr).unwrap().get();
         tstOut("Check borrowed:");
         check(api_, instance, phy_dev, device, debug);
     }

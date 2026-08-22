@@ -149,10 +149,7 @@ Res<PhysicalDevice> PhysicalDeviceState::into(CRef<Instance> instance) {
     return PhysicalDevice::from(instance, *this);
 }
 
-PhysicalDevice::PhysicalDevice(PhysicalDevice&& rhs) : instance(rhs.instance) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+PhysicalDevice::PhysicalDevice(PhysicalDevice&& rhs) : CoreHandle(std::move(rhs)), instance(rhs.instance) {
     queue_family_props = std::move(rhs.queue_family_props);
 }
 
@@ -163,9 +160,7 @@ PhysicalDevice::~PhysicalDevice() {
 
 PhysicalDevice& PhysicalDevice::operator=(PhysicalDevice&& rhs) {
     if (this != &rhs) {
-        handle = rhs.handle;
-        rhs.handle = VK_NULL_HANDLE;
-        __borrowed = rhs.__borrowed;
+        CoreHandle::operator=(std::move(rhs));
         queue_family_props = std::move(rhs.queue_family_props);
     }
     return *this;
@@ -203,16 +198,18 @@ Res<PhysicalDevice> PhysicalDevice::from(CRef<Instance> instance, PhysicalDevice
     size_t best = info.pickBestSuitable(suitables);
 
     PhysicalDevice phy_dev{instance};
+    phy_dev.assignGID();
     phy_dev.handle = suitables[best].physical_device;
     phy_dev.queue_family_props = suitables[best].convert();
 
     return Ok(std::move(phy_dev));
 }
 
-Res<PhysicalDevice> PhysicalDevice::borrow(CRef<Instance> instance, VkPhysicalDevice handle, VkSurfaceKHR surface) {
-    PhysicalDevice phy_dev{instance};
-    phy_dev.__borrowed = true;
-    phy_dev.handle = handle;
+Res<PhysicalDevice> PhysicalDevice::borrow(CRef<Instance> instance,
+                                           VkPhysicalDevice handle,
+                                           uint64_t gid,
+                                           VkSurfaceKHR surface) {
+    PhysicalDevice phy_dev{instance, handle, gid};
 
     PhysicalDeviceDetails details{handle, surface};
     details.collect();

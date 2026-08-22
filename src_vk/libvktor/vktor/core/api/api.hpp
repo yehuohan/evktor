@@ -46,16 +46,27 @@ public:
     operator const Device&() const {
         return device;
     }
+    const Instance& inst() const {
+        return instance;
+    }
+    const PhysicalDevice& phyDev() const {
+        return physical_device;
+    }
+    const Device& dev() const {
+        return device;
+    }
 
     Res<CRef<Instance>> init(InstanceState& info);
     Res<CRef<PhysicalDevice>> init(PhysicalDeviceState& info);
     Res<CRef<Device>> init(DeviceState& info);
     Res<CRef<Instance>> borrow(VkInstance handle,
+                               uint64_t gid,
                                PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
                                uint32_t api_version = VKT_CORE_VK_API_VERSION,
                                VkAllocationCallbacks* allocator = nullptr);
-    Res<CRef<PhysicalDevice>> borrow(VkPhysicalDevice handle, VkSurfaceKHR surface = VK_NULL_HANDLE);
+    Res<CRef<PhysicalDevice>> borrow(VkPhysicalDevice handle, uint64_t gid, VkSurfaceKHR surface = VK_NULL_HANDLE);
     Res<CRef<Device>> borrow(VkDevice handle,
+                             uint64_t gid,
                              PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr = VK_NULL_HANDLE,
                              QueueFamilyIndices indices = {},
                              VmaAllocator mem_allocator = VK_NULL_HANDLE);

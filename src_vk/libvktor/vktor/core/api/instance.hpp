@@ -60,6 +60,7 @@ protected:
 
 protected:
     explicit Instance() {}
+    explicit Instance(VkInstance ehandle, uint64_t egid) : CoreHandle(ehandle, egid) {}
 
 public:
     Instance(Instance&&);
@@ -76,6 +77,7 @@ public:
 
     static Res<Instance> from(InstanceState& info);
     static Res<Instance> borrow(VkInstance handle,
+                                uint64_t gid,
                                 PFN_vkGetInstanceProcAddr fpGetInstanceProcAddr,
                                 uint32_t api_version = VKT_CORE_VK_API_VERSION,
                                 VkAllocationCallbacks* allocator = nullptr);

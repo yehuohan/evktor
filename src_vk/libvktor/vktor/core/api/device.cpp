@@ -36,10 +36,7 @@ Res<Device> DeviceState::into(CRef<PhysicalDevice> phy_dev) {
     return Device::from(phy_dev, *this);
 }
 
-Device::Device(Device&& rhs) : physical_device(rhs.physical_device) {
-    handle = rhs.handle;
-    rhs.handle = VK_NULL_HANDLE;
-    __borrowed = rhs.__borrowed;
+Device::Device(Device&& rhs) : CoreHandle(std::move(rhs)), physical_device(rhs.physical_device) {
     mem_allocator = rhs.mem_allocator;
     rhs.mem_allocator = VK_NULL_HANDLE;
 }
@@ -64,9 +61,7 @@ Device& Device::operator=(Device&& rhs) {
             vkDestroyDevice(handle, physical_device.get().instance.get());
         }
 
-        handle = rhs.handle;
-        rhs.handle = VK_NULL_HANDLE;
-        __borrowed = rhs.__borrowed;
+        CoreHandle::operator=(std::move(rhs));
         mem_allocator = rhs.mem_allocator;
         rhs.mem_allocator = VK_NULL_HANDLE;
     }
@@ -139,6 +134,7 @@ Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     OnRet(vkCreateDevice(phy_dev.get(), &dev_ci, phy_dev.get().instance.get(), device),
           "Failed to create device: {}",
           info.__name);
+    device.assignGID();
 
     // Support only just one VkDevice object
     volkLoadDevice(device);
@@ -151,11 +147,10 @@ Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
 
 Res<Device> Device::borrow(CRef<PhysicalDevice> phy_dev,
                            VkDevice handle,
+                           uint64_t gid,
                            PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr,
                            VmaAllocator mem_allocator) {
-    Device device{phy_dev};
-    device.__borrowed = true;
-    device.handle = handle;
+    Device device{phy_dev, handle, gid};
 
     if (fpGetDeviceProcAddr) {
         vkGetDeviceProcAddr = fpGetDeviceProcAddr;

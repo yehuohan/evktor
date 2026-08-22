@@ -52,6 +52,9 @@ protected:
 
 protected:
     explicit Device(CRef<PhysicalDevice> physical_device) : physical_device(physical_device) {}
+    explicit Device(CRef<PhysicalDevice> physical_device, VkDevice ehandle, uint64_t egid)
+        : CoreHandle(ehandle, egid)
+        , physical_device(physical_device) {}
 
     VkResult createMemAllocator(VmaAllocatorCreateFlags flags = 0);
 
@@ -67,6 +70,7 @@ public:
     static Res<Device> from(CRef<PhysicalDevice> phy_dev, DeviceState& info);
     static Res<Device> borrow(CRef<PhysicalDevice> phy_dev,
                               VkDevice handle,
+                              uint64_t gid,
                               PFN_vkGetDeviceProcAddr fpGetDeviceProcAddr = VK_NULL_HANDLE,
                               VmaAllocator mem_allocator = VK_NULL_HANDLE);
 };

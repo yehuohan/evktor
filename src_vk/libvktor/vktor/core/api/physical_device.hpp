@@ -76,6 +76,9 @@ protected:
 
 protected:
     explicit PhysicalDevice(CRef<Instance> instance) : instance(instance) {}
+    explicit PhysicalDevice(CRef<Instance> instance, VkPhysicalDevice ehandle, uint64_t egid)
+        : CoreHandle(ehandle, egid)
+        , instance(instance) {}
 
 public:
     PhysicalDevice(PhysicalDevice&&);
@@ -92,7 +95,10 @@ public:
     inline VkPhysicalDeviceMemoryProperties2 getPhysicalDeviceMemoryProperties2() const;
 
     static Res<PhysicalDevice> from(CRef<Instance> instance, PhysicalDeviceState& info);
-    static Res<PhysicalDevice> borrow(CRef<Instance> instance, VkPhysicalDevice handle, VkSurfaceKHR surface = VK_NULL_HANDLE);
+    static Res<PhysicalDevice> borrow(CRef<Instance> instance,
+                                      VkPhysicalDevice handle,
+                                      uint64_t gid,
+                                      VkSurfaceKHR surface = VK_NULL_HANDLE);
 };
 
 inline VkFormatProperties PhysicalDevice::getPhysicalDeviceFormatProperties(VkFormat format) const {
