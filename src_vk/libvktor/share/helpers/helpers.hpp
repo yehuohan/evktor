@@ -79,7 +79,11 @@ inline static bool strLess(const char* a, const char* b) {
 template <class T>
 inline void hashCombine(size_t& seed, const T& v) {
     size_t hash = std::hash<T>{}(v);
-    hash += 0x9e3779b9 + (seed << 6) + (seed >> 2);
+#if SIZE_MAX == 0xffffffffffffffffULL
+    hash += 0x9e3779b97f4a7c15ULL + (seed << 6) + (seed >> 2);
+#else
+    hash += 0x9e3779b9UL + (seed << 6) + (seed >> 2);
+#endif
     seed ^= hash;
 }
 
