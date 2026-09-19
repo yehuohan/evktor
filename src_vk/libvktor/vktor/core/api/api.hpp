@@ -19,7 +19,7 @@ protected:
     Instance instance;
     PhysicalDevice physical_device;
     Device device;
-    HashMap<uint32_t, Vector<Queue>> queues{}; /**< Map queue family index to corresponding queue array */
+    Vector<Vector<Queue>> queues{};            /**< Map queue family index to corresponding queue array */
     QueueFamilyIndices queue_family_indices{}; /**< Queue family indices for frequently-used queues */
 
 protected:
@@ -68,10 +68,21 @@ public:
     inline const QueueFamilyIndices& queueFamilyIndices() const {
         return queue_family_indices;
     }
-    Res<CRef<Queue>> presentQueue(const uint32_t index = 0) const;
-    Res<CRef<Queue>> graphicsQueue(const uint32_t index = 0) const;
-    Res<CRef<Queue>> computeQueue(const uint32_t index = 0) const;
-    Res<CRef<Queue>> transferQueue(const uint32_t index = 0) const;
+    inline Res<CRef<Queue>> presentQueue(const uint32_t index = 0) const {
+        return getQueue(queue_family_indices.present, index);
+    }
+    inline Res<CRef<Queue>> graphicsQueue(const uint32_t index = 0) const {
+        return getQueue(queue_family_indices.graphics, index);
+    }
+    inline Res<CRef<Queue>> computeQueue(const uint32_t index = 0) const {
+        return getQueue(queue_family_indices.compute, index);
+    }
+    inline Res<CRef<Queue>> transferQueue(const uint32_t index = 0) const {
+        return getQueue(queue_family_indices.transfer, index);
+    }
+
+protected:
+    Res<CRef<Queue>> getQueue(const uint32_t family_index, const uint32_t index) const;
 
 public:
     inline VkResult waitIdle() const {

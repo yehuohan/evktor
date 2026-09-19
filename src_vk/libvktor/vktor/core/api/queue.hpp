@@ -74,6 +74,23 @@ struct QueueFamilyIndices {
     uint32_t graphics = VK_QUEUE_FAMILY_IGNORED;
     uint32_t compute = VK_QUEUE_FAMILY_IGNORED;
     uint32_t transfer = VK_QUEUE_FAMILY_IGNORED;
+
+    inline uint32_t maxIndex() const {
+        uint32_t res = 0;
+        if (present != VK_QUEUE_FAMILY_IGNORED) {
+            res = std::max<uint32_t>(res, present);
+        }
+        if (graphics != VK_QUEUE_FAMILY_IGNORED) {
+            res = std::max<uint32_t>(res, graphics);
+        }
+        if (compute != VK_QUEUE_FAMILY_IGNORED) {
+            res = std::max<uint32_t>(res, compute);
+        }
+        if (transfer != VK_QUEUE_FAMILY_IGNORED) {
+            res = std::max<uint32_t>(res, transfer);
+        }
+        return res;
+    }
 };
 
 NAMESPACE_END(core)

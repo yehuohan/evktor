@@ -25,7 +25,7 @@ struct PhysicalDeviceDetails {
 
     void print() const;
     void collect();
-    HashMap<uint32_t, QueueFamilyProps> convert() const;
+    Vector<QueueFamilyProps> convert() const;
 };
 
 class PhysicalDeviceState : public CoreState<PhysicalDeviceState> {
@@ -70,7 +70,7 @@ protected:
      *  - For `PhysicalDevice`: it's available queues to create for `Device`
      *  - For `Device`: it's available queues to get from the `Device` (the `Device` may update `QueueFamilyProps.count`)
      */
-    mutable HashMap<uint32_t, QueueFamilyProps> queue_family_props{};
+    mutable Vector<QueueFamilyProps> queue_family_props{};
 
 public:
     explicit VkHandle(VkPhysicalDevice h, VkSurfaceKHR surface = VK_NULL_HANDLE);

@@ -43,45 +43,48 @@ Res<CRef<PhysicalDevice>> CoreApi::borrow(VkHandle<VkPhysicalDevice> handle) {
     return Ok(newCRef(physical_device));
 }
 
-static uint32_t findQueueFamilyIndex(const HashMap<uint32_t, QueueFamilyProps>& props, VkQueueFlags flags) {
+static uint32_t findQueueFamilyIndex(const Vector<QueueFamilyProps>& props, VkQueueFlags flags) {
     // Find present queue
     if (flags == 0) {
         uint32_t index = VK_QUEUE_FAMILY_IGNORED;
-        for (const auto& q : props) {
-            const auto& prop = q.second;
+        for (uint32_t fi = 0; fi < props.size(); fi++) {
+            const auto& prop = props[fi];
             if (prop.present && !prop.graphics) {
-                return q.first;
+                return fi;
             }
             if (prop.present) {
-                index = q.first;
+                index = fi;
             }
         }
         return index;
     }
 
-    // Prefer dedicated queue
-    const VkQueueFlags tmp = VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT | VK_QUEUE_TRANSFER_BIT;
-    for (const auto& q : props) {
-        const auto& prop = q.second;
-        if ((prop.flags & tmp) == flags) {
-            return q.first;
-        }
-    }
-
-    // Prefer non-graphics queue
     uint32_t index = VK_QUEUE_FAMILY_IGNORED;
-    for (const auto& q : props) {
-        const auto& prop = q.second;
-        if ((prop.flags & flags) && (!prop.graphics)) {
-            return q.first;
+    if (flags & VK_QUEUE_GRAPHICS_BIT) {
+        // Prefer graphics queue with more abilities
+        for (uint32_t fi = 0; fi < props.size(); fi++) {
+            const auto& prop = props[fi];
+            const VkQueueFlags tmp = VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT | VK_QUEUE_TRANSFER_BIT;
+            if (prop.flags & flags) {
+                if (prop.flags & tmp) {
+                    return fi;
+                }
+                index = fi;
+            }
         }
-        if (prop.flags & flags) {
-            index = q.first;
+    } else {
+        // Prefer dedicated queue without graphics queue
+        for (uint32_t fi = 0; fi < props.size(); fi++) {
+            const auto& prop = props[fi];
+            if (prop.flags & flags) {
+                if (!prop.graphics) {
+                    return fi;
+                }
+                index = fi;
+            }
         }
     }
     return index;
-
-    return VK_QUEUE_FAMILY_IGNORED;
 }
 
 Res<CRef<Device>> CoreApi::init(DeviceState& info) {
@@ -99,17 +102,16 @@ Res<CRef<Device>> CoreApi::init(DeviceState& info) {
           info.__name);
 
     // Queues are automatically created along with device, and we need to retrieve their handles.
-    queues.clear();
-    for (const auto& q : physical_device.queue_family_props) {
-        uint32_t family_index = q.first;
-        const auto& prop = q.second;
+    queues.resize(physical_device.queue_family_props.size());
+    for (uint32_t fi = 0; fi < physical_device.queue_family_props.size(); fi++) {
+        const auto& prop = physical_device.queue_family_props[fi];
         for (uint32_t index = 0; index < prop.count; index++) {
-            auto queue = Queue::from(device, family_index, index);
-            const String name = "Queue." + std::to_string(family_index) + "." + std::to_string(index);
+            auto queue = Queue::from(device, fi, index);
+            const String name = "Queue." + std::to_string(fi) + "." + std::to_string(index);
             OnRet(setDebugName(VK_OBJECT_TYPE_QUEUE, reinterpret_cast<uint64_t>(queue.handle()), name.c_str()),
                   "Failed to set queue debug name: {}",
                   name);
-            queues[family_index].push_back(std::move(queue));
+            queues[fi].push_back(std::move(queue));
         }
     }
 
@@ -144,23 +146,13 @@ Res<CRef<Device>> CoreApi::borrow(VkHandle<VkDevice> handle,
     device = res.unwrap();
 
     // Only get one queue for each queue family
+    queues.resize(indices.maxIndex() + 1);
+    for (auto fi : std::initializer_list<uint32_t>{indices.present, indices.graphics, indices.compute, indices.transfer}) {
+        if (fi != VK_QUEUE_FAMILY_IGNORED && queues[fi].empty()) {
+            queues[fi].push_back(Queue::from(device, fi, 0));
+        }
+    }
     queue_family_indices = indices;
-    queues.clear();
-    if (queue_family_indices.present != VK_QUEUE_FAMILY_IGNORED) {
-        queues[queue_family_indices.present].clear();
-    }
-    if (queue_family_indices.graphics != VK_QUEUE_FAMILY_IGNORED) {
-        queues[queue_family_indices.graphics].clear();
-    }
-    if (queue_family_indices.compute != VK_QUEUE_FAMILY_IGNORED) {
-        queues[queue_family_indices.compute].clear();
-    }
-    if (queue_family_indices.transfer != VK_QUEUE_FAMILY_IGNORED) {
-        queues[queue_family_indices.transfer].clear();
-    }
-    for (auto& q : queues) {
-        q.second.push_back(Queue::from(device, q.first, 0));
-    }
 
     return Ok(newCRef(device));
 }
@@ -171,46 +163,16 @@ Res<CRef<Device>> CoreApi::borrow(VkHandle<VkDevice> handle,
  * Queue reference is safe for CoreApi.queues will only initialize once at
  * CoreApi::init(DeviceState&) or CoreApi::borrow(VkDevice).
  */
-static Res<CRef<Queue>> getQueue(const HashMap<uint32_t, Vector<Queue>>& queues,
-                                 const uint32_t family_index,
-                                 const uint32_t index) {
-    auto& list = queues.at(family_index);
-    if (index < list.size()) {
-        return Ok(newCRef(list[index]));
+Res<CRef<Queue>> CoreApi::getQueue(const uint32_t family_index, const uint32_t index) const {
+    if (family_index < queues.size()) {
+        const auto& que = queues[family_index];
+        if (index < que.size()) {
+            return Ok(newCRef(que[index]));
+        } else {
+            return Er("The queue index = {} is out of created queues = {}", index, que.size());
+        }
     } else {
-        return Er("The queue index = {} is out of created family queues = {}", index, family_index);
-    }
-}
-
-Res<CRef<Queue>> CoreApi::presentQueue(const uint32_t index) const {
-    if (queue_family_indices.present != VK_QUEUE_FAMILY_IGNORED) {
-        return getQueue(queues, queue_family_indices.present, index);
-    } else {
-        return Er("Present queue is not supported");
-    }
-}
-
-Res<CRef<Queue>> CoreApi::graphicsQueue(const uint32_t index) const {
-    if (queue_family_indices.graphics != VK_QUEUE_FAMILY_IGNORED) {
-        return getQueue(queues, queue_family_indices.graphics, index);
-    } else {
-        return Er("Graphics queue is not supported");
-    }
-}
-
-Res<CRef<Queue>> CoreApi::computeQueue(const uint32_t index) const {
-    if (queue_family_indices.compute != VK_QUEUE_FAMILY_IGNORED) {
-        return getQueue(queues, queue_family_indices.compute, index);
-    } else {
-        return Er("Compute queue is not supported");
-    }
-}
-
-Res<CRef<Queue>> CoreApi::transferQueue(const uint32_t index) const {
-    if (queue_family_indices.transfer != VK_QUEUE_FAMILY_IGNORED) {
-        return getQueue(queues, queue_family_indices.transfer, index);
-    } else {
-        return Er("Transfer queue is not supported");
+        return Er("The queue family index = {} is out of created queues = {}", family_index, queues.size());
     }
 }
 

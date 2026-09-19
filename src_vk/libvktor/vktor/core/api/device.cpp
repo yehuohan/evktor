@@ -131,14 +131,15 @@ Res<Device> Device::from(CRef<PhysicalDevice> phy_dev, DeviceState& info) {
     // Create all queues
     Vector<VkDeviceQueueCreateInfo> queues_ci{};
     Vector<Vector<float>> priorities(phy_dev.get().queue_family_props.size());
-    for (auto& q : phy_dev.get().queue_family_props) {
+    for (uint32_t fi = 0; fi < phy_dev.get().queue_family_props.size(); fi++) {
+        auto& prop = phy_dev.get().queue_family_props[fi];
         // Update the number of queues to create
-        q.second.count = std::min<uint32_t>(info.max_queue_count, q.second.count);
-        priorities.emplace_back(q.second.count, VKT_CORE_QUEUE_PRIORITY);
+        prop.count = std::min<uint32_t>(info.max_queue_count, prop.count);
+        priorities.emplace_back(prop.count, VKT_CORE_QUEUE_PRIORITY);
 
         auto dev_queue_ci = Itor::DeviceQueueCreateInfo();
-        dev_queue_ci.queueFamilyIndex = q.first;
-        dev_queue_ci.queueCount = q.second.count;
+        dev_queue_ci.queueFamilyIndex = fi;
+        dev_queue_ci.queueCount = prop.count;
         dev_queue_ci.pQueuePriorities = priorities.back().data();
         queues_ci.push_back(dev_queue_ci);
     }

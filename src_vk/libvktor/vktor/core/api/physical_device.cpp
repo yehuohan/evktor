@@ -58,8 +58,8 @@ void PhysicalDeviceDetails::collect() {
     }
 }
 
-HashMap<uint32_t, QueueFamilyProps> PhysicalDeviceDetails::convert() const {
-    HashMap<uint32_t, QueueFamilyProps> res{};
+Vector<QueueFamilyProps> PhysicalDeviceDetails::convert() const {
+    Vector<QueueFamilyProps> res{queue_family_props.size()};
     for (uint32_t idx = 0; idx < u32(queue_family_props.size()); idx++) {
         res[idx].count = queue_family_props[idx].queueCount;
         res[idx].flags = queue_family_props[idx].queueFlags;
