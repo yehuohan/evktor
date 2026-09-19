@@ -21,9 +21,20 @@ snippet core-hpp
         Res<${1}> into(const CoreApi& api) const;
     };
 
+    template <>
+    struct VkHandle<Vk${1}> {
+        VK_HANDLE_IMPL(Vk${1})
+
+    protected:
+
+    public:
+        explicit VkHandle(Vk${1} h) : __handle(h) {}
+    };
+
     struct ${1} : public CoreResource<Vk${1}, ${2:object}> {
     protected:
         explicit ${1}(const CoreApi& api) : CoreResource(api) {}
+        explicit ${1}(const CoreApi& api, VkHandle<Vk${1}> h) : CoreResource(api, h) {}
 
     public:
         ${1}(${1}&&);
