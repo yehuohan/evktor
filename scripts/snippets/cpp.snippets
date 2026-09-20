@@ -21,14 +21,16 @@ snippet core-hpp
         Res<${1}> into(const CoreApi& api) const;
     };
 
+    using Vkh${1} = VkHandle<Vk${1}>;
+
     template <>
-    struct VkHandle<Vk${1}> {
+    struct VkHandle<Vk${1}> : public vk_parent_s<Vk${1}> {
         VK_HANDLE_IMPL(Vk${1})
 
     protected:
 
     public:
-        explicit VkHandle(Vk${1} h) : __handle(h) {}
+        explicit VkHandle(Vk${1} h, VkDevice p = VK_NULL_HANDLE) : HasDevice(p), __handle(h) {}
     };
 
     struct ${1} : public CoreResource<Vk${1}, ${2:object}> {

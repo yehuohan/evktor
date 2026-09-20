@@ -18,6 +18,7 @@ from base_generator import SetOutputDirectory, SetTargetApiName, SetMergedApiNam
 from generators.ldt_generator import LDTGenerator
 from generators.initializer_generator import InitializerGenerator
 from generators.onstring_generator import OnStringGenerator
+from generators.traits_generator import TraitsGenerator
 
 __VK_Out = f"{__DIR_ROOT}/src_vk"
 __VK_Sty = f"{__DIR_ROOT}/.clang-format"
@@ -28,6 +29,7 @@ __VK_Generators = {
     "libvktor/generated/vk_initializer.hpp": lambda: InitializerGenerator(["vkt", "Itor"]),
     "libvktor/generated/vk_string.hpp": lambda: OnStringGenerator(["vkt"]),
     "libvktor/generated/vk_string.cpp": lambda: OnStringGenerator(["vkt"], "vk_string.hpp"),
+    "libvktor/generated/vk_traits.hpp": lambda: TraitsGenerator(["vkt"]),
 }
 
 

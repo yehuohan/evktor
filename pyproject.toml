@@ -19,6 +19,8 @@ reportAny = false
 [[tool.basedpyright.executionEnvironments]]
 root = "scripts"
 extraPaths = [
+    "scripts",
+    "scripts/generators",
     "deps/repos/Vulkan-ValidationLayers/scripts",
     "deps/x64-mingw-mix/share/vulkan/registry",
 ]
