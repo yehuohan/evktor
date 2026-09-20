@@ -3,6 +3,7 @@
 
 #include "generated/vk_initializer.hpp"
 #include "generated/vk_string.hpp"
+#include "generated/vk_traits.hpp"
 #include "share/share.hpp"
 
 NAMESPACE_BEGIN(vkt)
@@ -39,7 +40,7 @@ public:                                    \
     ~VkHandle() = default;                 \
     OnConstType(H, this->__handle);        \
                                            \
-    inline const H& handle() const {       \
+    inline H handle() const {              \
         return __handle;                   \
     }                                      \
     inline bool valid() const {            \
@@ -53,17 +54,22 @@ public:                                    \
  * - Specialized VkHandle with additional const members can refer to vktor/core/api/queue.hpp
  */
 template <typename H>
-struct VkHandle {
+struct VkHandle : public vk_parent_s<H> {
     VK_HANDLE_IMPL(H)
 
 public:
     /** Normal constructor for non-specialized sturct */
     explicit VkHandle(H h) : __handle(h) {}
+    explicit VkHandle(H h, vk_parent_t<H> d)
+        requires(vk_has_parent_v<H>)
+        : __handle(h)
+        , vk_parent_s<H>(d) {}
 };
 
 /**
  * @brief Vulkan core handle type derived from VkHandle or specialized VkHandle
  *
+ * - Derived struct (from CoreHandle) need to deal with VkHandle.__parent
  * - Derived struct (form CoreHandle)'s move/assign constructor must deal with
  *   additional members from specialized VkHandle
  */
@@ -74,7 +80,11 @@ private:
 
 protected:
     inline void moveFrom(CoreHandle<H>&& rhs) {
-        VkHandle<H>::__handle = rhs.__handle;
+        if constexpr (vk_has_parent_v<H>) {
+            this->__parent = rhs.__parent;
+            rhs.__parent = VK_NULL_HANDLE;
+        }
+        this->__handle = rhs.__handle;
         __borrowed = rhs.__borrowed;
         rhs.__handle = VK_NULL_HANDLE;
         rhs.__borrowed = false;
@@ -112,12 +122,12 @@ public:
      */
     inline H take() {
         __borrowed = true;
-        return VkHandle<H>::__handle;
+        return this->__handle;
     }
     // TODO: change borrowed handle need to update additional handle related data
     // inline void borrow(H external_handle) {
     //     if (__borrowed) {
-    //         VkHandle<H>::__handle = external_handle;
+    //         this->__handle = external_handle;
     //     } else {
     //         vktLogE("Can't borrow handle for non-borrowed core handle");
     //     }

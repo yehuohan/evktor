@@ -50,8 +50,10 @@ public:
     Res<Instance> into();
 };
 
+using VkhInstance = VkHandle<VkInstance>;
+
 template <>
-struct VkHandle<VkInstance> {
+struct VkHandle<VkInstance> : public vk_parent_s<VkInstance> {
     VK_HANDLE_IMPL(VkInstance)
 
 protected:

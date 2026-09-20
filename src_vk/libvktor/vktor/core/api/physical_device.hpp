@@ -61,8 +61,10 @@ public:
     Res<PhysicalDevice> into(CRef<Instance> instance);
 };
 
+using VkhPhysicalDevice = VkHandle<VkPhysicalDevice>;
+
 template <>
-struct VkHandle<VkPhysicalDevice> {
+struct VkHandle<VkPhysicalDevice> : public vk_parent_s<VkPhysicalDevice> {
     VK_HANDLE_IMPL(VkPhysicalDevice)
 
 protected:
@@ -73,7 +75,7 @@ protected:
     mutable Vector<QueueFamilyProps> queue_family_props{};
 
 public:
-    explicit VkHandle(VkPhysicalDevice h, VkSurfaceKHR surface = VK_NULL_HANDLE);
+    explicit VkHandle(VkPhysicalDevice h, VkSurfaceKHR surface = VK_NULL_HANDLE, VkInstance p = VK_NULL_HANDLE);
 
     inline VkFormatProperties getPhysicalDeviceFormatProperties(VkFormat format) const;
     inline VkFormatProperties2 getPhysicalDeviceFormatProperties2(VkFormat format) const;
@@ -95,8 +97,12 @@ struct PhysicalDevice : public CoreHandle<VkPhysicalDevice> {
     CRef<Instance> instance;
 
 protected:
-    explicit PhysicalDevice(CRef<Instance> instance) : instance(instance) {}
-    explicit PhysicalDevice(CRef<Instance> instance, VkHandle<VkPhysicalDevice> h) : CoreHandle(h), instance(instance) {}
+    explicit PhysicalDevice(CRef<Instance> instance) : instance(instance) {
+        this->__parent = instance.get();
+    }
+    explicit PhysicalDevice(CRef<Instance> instance, VkHandle<VkPhysicalDevice> h) : CoreHandle(h), instance(instance) {
+        this->__parent = instance.get();
+    }
 
 public:
     PhysicalDevice(PhysicalDevice&&);

@@ -59,8 +59,10 @@ public:
     Res<Image> into(const CoreApi& api) const;
 };
 
+using VkhImage = VkHandle<VkImage>;
+
 template <>
-struct VkHandle<VkImage> {
+struct VkHandle<VkImage> : public vk_parent_s<VkImage> {
     VK_HANDLE_IMPL(VkImage)
 
 public:
@@ -75,7 +77,7 @@ public:
     VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 public:
-    explicit VkHandle(VkImage h) : __handle(h) {}
+    explicit VkHandle(VkImage h, VkDevice p = VK_NULL_HANDLE) : HasDevice(p), __handle(h) {}
 };
 
 /**
@@ -238,7 +240,9 @@ public:
         copy_offset = offset;
         copy_extent = minExtent3D(a.getExtent(), extent);
     }
-    OnConstType(VkImage, a.handle());
+    operator VkImage() const {
+        return a.handle();
+    }
     operator VkImageSubresourceRange() const {
         return VkImageSubresourceRange{aspect, mip, mip_count, layer, layer_count};
     }

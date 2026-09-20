@@ -12,7 +12,9 @@ public:
     Buffer(vkt::core::Buffer&& buffer, const String& name = "") : Component(name), buffer(std::move(buffer)) {}
     virtual ~Buffer() = default;
 
-    OnConstType(VkBuffer, buffer.handle());
+    operator VkBuffer() const {
+        return buffer.handle();
+    }
     const vkt::core::Buffer& getBuffer() const {
         return buffer;
     }

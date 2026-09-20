@@ -73,7 +73,9 @@ public:
 public:
     explicit Arg(const Swapchain& a) : a(a) {}
     explicit Arg(const Swapchain& a, uint32_t image_index) : a(a), image_index(image_index) {}
-    OnConstType(VkSwapchainKHR, a.handle());
+    operator VkSwapchainKHR() const {
+        return a.handle();
+    }
 };
 
 NAMESPACE_END(core)

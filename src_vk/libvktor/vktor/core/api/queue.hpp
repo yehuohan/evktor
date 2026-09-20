@@ -4,8 +4,10 @@
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
 
+using VkhQueue = VkHandle<VkQueue>;
+
 template <>
-struct VkHandle<VkQueue> {
+struct VkHandle<VkQueue> : public vk_parent_s<VkQueue> {
     VK_HANDLE_IMPL(VkQueue)
 
 public:
@@ -13,8 +15,9 @@ public:
     const uint32_t index = 0;
 
 public:
-    explicit VkHandle(VkQueue h, uint32_t family_index = 0, uint32_t index = 0)
-        : __handle(h)
+    explicit VkHandle(VkQueue h, uint32_t family_index = 0, uint32_t index = 0, VkDevice p = VK_NULL_HANDLE)
+        : HasDevice(p)
+        , __handle(h)
         , family_index(family_index)
         , index(index) {}
 

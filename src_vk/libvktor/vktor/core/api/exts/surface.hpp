@@ -9,8 +9,12 @@ struct Surface : public CoreHandle<VkSurfaceKHR> {
     CRef<Instance> instance;
 
 protected:
-    explicit Surface(CRef<Instance> instance) : instance(instance) {}
-    explicit Surface(CRef<Instance> instance, VkHandle<VkSurfaceKHR> h) : CoreHandle(h), instance(instance) {}
+    explicit Surface(CRef<Instance> instance) : instance(instance) {
+        this->__parent = instance.get();
+    }
+    explicit Surface(CRef<Instance> instance, VkHandle<VkSurfaceKHR> h) : CoreHandle(h), instance(instance) {
+        this->__parent = instance.get();
+    }
 
 public:
     Surface(Surface&& rhs) : CoreHandle(std::move(rhs)), instance(rhs.instance) {}

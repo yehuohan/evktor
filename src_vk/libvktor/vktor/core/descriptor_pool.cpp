@@ -72,7 +72,7 @@ Res<DescriptorSet> DescriptorPool::allocate(VkDescriptorSetLayout setlayout, con
 
 bool DescriptorPool::free(const DescriptorSet& descset) {
     if (descset.handle()) {
-        auto res = vkFreeDescriptorSets(api, *this, 1, &descset.handle());
+        auto res = vkFreeDescriptorSets(api, *this, 1, descset);
         if (res == VK_SUCCESS) {
             count--;
             return true;

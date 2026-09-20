@@ -42,15 +42,20 @@ public:
     Res<Device> into(CRef<PhysicalDevice> phy_dev);
 };
 
+using VkhDevice = VkHandle<VkDevice>;
+
 template <>
-struct VkHandle<VkDevice> {
+struct VkHandle<VkDevice> : public vk_parent_s<VkDevice> {
     VK_HANDLE_IMPL(VkDevice)
 
 protected:
     VmaAllocator mem_allocator = VK_NULL_HANDLE;
 
 public:
-    explicit VkHandle(VkDevice h, VmaAllocator _mem_allocator = VK_NULL_HANDLE) : __handle(h), mem_allocator(_mem_allocator) {}
+    explicit VkHandle(VkDevice h, VmaAllocator _mem_allocator = VK_NULL_HANDLE, VkPhysicalDevice p = VK_NULL_HANDLE)
+        : HasPhysicalDevice(p)
+        , __handle(h)
+        , mem_allocator(_mem_allocator) {}
     OnConstType(VmaAllocator, mem_allocator);
 
     VkResult createMemAllocator(VkHandle<VkInstance> instance,
@@ -73,10 +78,13 @@ private:
     bool borrowed_mem_allocator = false;
 
 protected:
-    explicit Device(CRef<PhysicalDevice> physical_device) : physical_device(physical_device) {}
+    explicit Device(CRef<PhysicalDevice> physical_device) : physical_device(physical_device) {
+        this->__parent = physical_device.get();
+    }
     explicit Device(CRef<PhysicalDevice> physical_device, VkHandle<VkDevice> h)
         : CoreHandle(h)
         , physical_device(physical_device) {
+        this->__parent = physical_device.get();
         borrowed_mem_allocator = mem_allocator != VK_NULL_HANDLE;
     }
 

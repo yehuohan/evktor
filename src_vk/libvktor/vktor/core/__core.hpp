@@ -21,9 +21,17 @@ struct CoreResource : public CoreHandle<H> {
     const CoreApi& api;
 
     /** @brief Normal (non-borrow) constructor */
-    explicit CoreResource(const CoreApi& api) : api(api) {}
+    explicit CoreResource(const CoreApi& api) : api(api) {
+        if constexpr (vk_has_parent_v<H>) {
+            this->__parent = api;
+        }
+    }
     /** @brief Borrow constructor with CoreHandle's borrow constructor & VkHandle's copy constructor */
-    explicit CoreResource(const CoreApi& api, VkHandle<H> h) : CoreHandle<H>(h), api(api) {}
+    explicit CoreResource(const CoreApi& api, VkHandle<H> h) : CoreHandle<H>(h), api(api) {
+        if constexpr (vk_has_parent_v<H>) {
+            this->__parent = api;
+        }
+    }
     CoreResource(CoreResource&& rhs) : CoreHandle<H>(std::move(rhs)), api(rhs.api) {}
     virtual ~CoreResource() {}
 

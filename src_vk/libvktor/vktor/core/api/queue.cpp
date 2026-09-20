@@ -30,6 +30,7 @@ VkResult VkHandle<VkQueue>::waitIdle() const {
 
 Queue Queue::from(VkDevice device, uint32_t family_index, uint32_t index) {
     Queue queue(family_index, index);
+    queue.__parent = device;
     vkGetDeviceQueue(device, queue.family_index, queue.index, queue);
     return queue;
 }

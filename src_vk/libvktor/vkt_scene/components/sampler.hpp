@@ -12,7 +12,9 @@ public:
     Sampler(vkt::core::Sampler&& sampler, const String& name = "") : Component(name), sampler(std::move(sampler)) {}
     virtual ~Sampler() = default;
 
-    OnConstType(VkSampler, sampler.handle());
+    operator VkSampler() const {
+        return sampler.handle();
+    }
     const vkt::core::Sampler& getSampler() const {
         return sampler;
     }

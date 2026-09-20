@@ -39,15 +39,20 @@ public:
     Res<Buffer> into(const CoreApi& api) const;
 };
 
+using VkhBuffer = VkHandle<VkBuffer>;
+
 template <>
-struct VkHandle<VkBuffer> {
+struct VkHandle<VkBuffer> : public vk_parent_s<VkBuffer> {
     VK_HANDLE_IMPL(VkBuffer)
 
 protected:
     VkDeviceSize size = 0;
 
 public:
-    explicit VkHandle(VkBuffer h, VkDeviceSize _size = 0) : __handle(h), size(_size) {}
+    explicit VkHandle(VkBuffer h, VkDeviceSize _size = 0, VkDevice p = VK_NULL_HANDLE)
+        : HasDevice(p)
+        , __handle(h)
+        , size(_size) {}
 
     inline VkDeviceSize getSize() const {
         return size;

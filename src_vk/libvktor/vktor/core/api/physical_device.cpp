@@ -149,7 +149,7 @@ Res<PhysicalDevice> PhysicalDeviceState::into(CRef<Instance> instance) {
     return PhysicalDevice::from(instance, *this);
 }
 
-VkHandle<VkPhysicalDevice>::VkHandle(VkPhysicalDevice h, VkSurfaceKHR surface) : __handle(h) {
+VkHandle<VkPhysicalDevice>::VkHandle(VkPhysicalDevice h, VkSurfaceKHR surface, VkInstance p) : HasInstance(p), __handle(h) {
     if (VK_NULL_HANDLE != h) {
         PhysicalDeviceDetails details{h, surface};
         details.collect();

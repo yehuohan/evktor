@@ -96,7 +96,9 @@ struct Debug : public IDebug {
     CRef<Instance> instance;
 
 protected:
-    explicit Debug(CRef<Instance> instance) : instance(instance) {}
+    explicit Debug(CRef<Instance> instance) : instance(instance) {
+        this->__parent = instance.get();
+    }
 
 public:
     Debug(Debug&& rhs) : IDebug(std::move(rhs)), instance(rhs.instance) {}
