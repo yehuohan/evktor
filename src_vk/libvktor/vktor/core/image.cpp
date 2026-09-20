@@ -92,6 +92,16 @@ Res<Image> ImageState::into(const CoreApi& api) const {
     return Image::from(api, *this);
 }
 
+VkSubresourceLayout VkhImage::getSubresourceLayout(uint32_t mip, uint32_t layer, VkImageAspectFlags aspect) const {
+    VkImageSubresource subresource;
+    subresource.aspectMask = aspect == 0 ? getAspectMask(format) : aspect;
+    subresource.mipLevel = mip;
+    subresource.arrayLayer = layer;
+    VkSubresourceLayout subresource_layout;
+    vkGetImageSubresourceLayout(parent(), handle(), &subresource, &subresource_layout);
+    return subresource_layout;
+}
+
 Image::Image(Image&& rhs) : CoreResource(std::move(rhs)), borrowed_memory_mapped(rhs.borrowed_memory_mapped) {
     type = rhs.type;
     format = rhs.format;
@@ -131,16 +141,6 @@ Image::~Image() {
     memory = VK_NULL_HANDLE;
     memory_size = 0;
     memory_mapped = nullptr;
-}
-
-VkSubresourceLayout Image::getSubresourceLayout(uint32_t mip, uint32_t layer, VkImageAspectFlags aspect) const {
-    VkImageSubresource subresource;
-    subresource.aspectMask = aspect == 0 ? getAspectMask(format) : aspect;
-    subresource.mipLevel = mip;
-    subresource.arrayLayer = layer;
-    VkSubresourceLayout subresource_layout;
-    vkGetImageSubresourceLayout(api, __handle, &subresource, &subresource_layout);
-    return subresource_layout;
 }
 
 bool Image::copyFrom(const void* src, const VkDeviceSize src_size, uint32_t mip, uint32_t layer) const {

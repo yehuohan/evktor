@@ -9,7 +9,7 @@ private:
 
 public:
     const RenderTargetTable& rtt;
-    const core::CommandBuffer& cmdbuf;
+    const core::VkhCommandBuffer cmdbuf;
     const core::RenderPass& render_pass;
     const core::Framebuffer& framebuffer;
     uint32_t subpass_index = 0;
@@ -17,7 +17,7 @@ public:
 public:
     RenderCmdbuf(RenderContext& rctx,
                  const RenderTargetTable& rtt,
-                 const core::CommandBuffer& cmdbuf,
+                 const core::VkhCommandBuffer& cmdbuf,
                  const core::RenderPass& render_pass,
                  const core::Framebuffer& framebuffer)
         : rctx(rctx)

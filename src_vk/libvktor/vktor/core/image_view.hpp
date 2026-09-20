@@ -28,6 +28,8 @@ public:
     Res<ImageView> into(const CoreApi& api) const;
 };
 
+using VkhImageView = VkHandle<VkImageView>;
+
 struct ImageView : public CoreResource<VkImageView, VK_OBJECT_TYPE_IMAGE_VIEW> {
 protected:
     VkImage image = VK_NULL_HANDLE; /**< Store the image that this image view created for */

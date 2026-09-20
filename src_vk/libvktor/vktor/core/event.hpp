@@ -22,6 +22,8 @@ public:
     Res<Event> into(const CoreApi& api) const;
 };
 
+using VkhEvent = VkHandle<VkEvent>;
+
 struct Event : public CoreResource<VkEvent, VK_OBJECT_TYPE_EVENT> {
 protected:
     explicit Event(const CoreApi& api) : CoreResource(api) {}
@@ -37,7 +39,7 @@ class EventPool : private NonCopyable {
 private:
     uint32_t active_count = 0;
     /** Actived events */
-    Vector<Box<Event>> events{};
+    Vector<Event> events{};
     /** Cached events */
     Vector<Event> events_cache{};
 
@@ -49,7 +51,7 @@ public:
     ~EventPool();
 
     /** Request event without ownership */
-    Res<CRef<Event>> request(String&& name = "Event");
+    Res<VkhEvent> request(String&& name = "Event");
     /** Acquire event with ownership */
     Res<Event> acquire(String&& name = "Event");
     /** Reback acquired event with ownership */

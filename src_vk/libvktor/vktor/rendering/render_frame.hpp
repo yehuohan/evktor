@@ -26,7 +26,7 @@ private:
     /** Map DescriptorSetLayout to DescriptorPooler */
     Vector<HashMap<size_t, core::DescriptorPooler>> desc_poolers{};
     /** Map DescriptorSetLayout + DescriptorPool + DescriptorInfo to DescriptorSet */
-    Vector<HashMap<size_t, Box<core::DescriptorSet>>> desc_sets{};
+    Vector<HashMap<size_t, core::DescriptorSet>> desc_sets{};
     core::FencePool fence_pool;
     core::SemaphorePool semaphore_pool;
     core::EventPool event_pool;
@@ -45,18 +45,18 @@ public:
      *
      * Reset command buffer via vkResetCommandBuffer or vkBeginCommandBuffer
      */
-    Res<CRef<core::CommandBuffer>> requestCommandBuffer(const core::Queue& queue,
-                                                        const String& cmd_name = "Command",
-                                                        size_t thread_index = 0);
+    Res<core::VkhCommandBuffer> requestCommandBuffer(const core::VkhQueue& queue,
+                                                     const String& cmd_name = "RFrm",
+                                                     size_t thread_index = 0);
     /**
      * @brief Request one descriptor set from an available descriptor pool that is got from pooler
      *
      * To return the referrence of the DescriptorSet, store DescriptorSet inside Box.
      */
-    Res<CRef<core::DescriptorSet>> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
-                                                        const core::DescriptorInfo& desc_info,
-                                                        const String& desc_name = "Descriptor",
-                                                        size_t thread_index = 0);
+    Res<core::VkhDescriptorSet> requestDescriptorSet(const core::DescriptorSetLayout& desc_setlayout,
+                                                     const core::DescriptorInfo& desc_info,
+                                                     const String& desc_name = "RFrm",
+                                                     size_t thread_index = 0);
 
 private:
     /**
@@ -64,12 +64,12 @@ private:
      *
      * DescriptorPool will only be referrenced inside RenderFrame, so can store DescriptorPool without Box.
      */
-    Res<Ref<core::DescriptorPool>> requestDescriptorPool(const core::DescriptorSetLayout& desc_setlayout,
-                                                         String&& name = "Descriptor#Pool",
-                                                         size_t thread_index = 0);
+    Res<CRef<core::DescriptorPool>> requestDescriptorPool(const core::DescriptorSetLayout& desc_setlayout,
+                                                          String&& name = "RFrm#DescPool",
+                                                          size_t thread_index = 0);
 
 public:
-    inline Res<CRef<core::Fence>> requestFence(String&& name = "Fence") {
+    inline Res<core::VkhFence> requestFence(String&& name = "Fence") {
         return fence_pool.request(std::move(name));
     }
     inline Res<core::Fence> acquireFence(String&& name = "Fence") {
@@ -78,7 +78,7 @@ public:
     inline void rebackFence(core::Fence&& fence) {
         return fence_pool.reback(std::move(fence));
     }
-    inline Res<CRef<core::Semaphore>> requestSemaphore(String&& name = "Semaphore") {
+    inline Res<core::VkhSemaphore> requestSemaphore(String&& name = "Semaphore") {
         return semaphore_pool.request(std::move(name));
     }
     inline Res<core::Semaphore> acquireSemaphore(String&& name = "Semaphore") {
@@ -87,7 +87,7 @@ public:
     inline void rebackSemaphore(core::Semaphore&& semaphore) {
         return semaphore_pool.reback(std::move(semaphore));
     }
-    inline Res<CRef<core::Event>> requestEvent(String&& name = "Event") {
+    inline Res<core::VkhEvent> requestEvent(String&& name = "Event") {
         return event_pool.request(std::move(name));
     }
     inline Res<core::Event> acquireEvent(String&& name = "Event") {

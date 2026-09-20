@@ -68,7 +68,7 @@ Res<Void> BuiltinSubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
     OnUnwrapGet(pipeline, rctx.requestGraphicsPipeline(pso));
     cmdbuf.cmdBindGraphicsPipeline(pipeline);
 
-    OnUnwrapGet(desc_set, rfrm.requestDescriptorSet(desc_setlayout, desc_info));
+    OnUnwrap(desc_set, rfrm.requestDescriptorSet(desc_setlayout, desc_info));
 
     cmdbuf.cmdBindGraphicsDescriptorSet(pipeline_layout, desc_set)
         .cmdBindIndexBufferU16(mesh->index)

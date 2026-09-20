@@ -68,21 +68,21 @@ public:
     inline const QueueFamilyIndices& queueFamilyIndices() const {
         return queue_family_indices;
     }
-    inline Res<CRef<Queue>> presentQueue(const uint32_t index = 0) const {
+    inline Res<VkhQueue> presentQueue(const uint32_t index = 0) const {
         return getQueue(queue_family_indices.present, index);
     }
-    inline Res<CRef<Queue>> graphicsQueue(const uint32_t index = 0) const {
+    inline Res<VkhQueue> graphicsQueue(const uint32_t index = 0) const {
         return getQueue(queue_family_indices.graphics, index);
     }
-    inline Res<CRef<Queue>> computeQueue(const uint32_t index = 0) const {
+    inline Res<VkhQueue> computeQueue(const uint32_t index = 0) const {
         return getQueue(queue_family_indices.compute, index);
     }
-    inline Res<CRef<Queue>> transferQueue(const uint32_t index = 0) const {
+    inline Res<VkhQueue> transferQueue(const uint32_t index = 0) const {
         return getQueue(queue_family_indices.transfer, index);
     }
 
 protected:
-    Res<CRef<Queue>> getQueue(const uint32_t family_index, const uint32_t index) const;
+    Res<VkhQueue> getQueue(const uint32_t family_index, const uint32_t index) const;
 
 public:
     inline VkResult waitIdle() const {

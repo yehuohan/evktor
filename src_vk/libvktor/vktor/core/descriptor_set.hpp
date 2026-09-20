@@ -86,6 +86,21 @@ struct DescriptorInfo {
     }
 };
 
+using VkhDescriptorSet = VkHandle<VkDescriptorSet>;
+
+template <>
+struct VkHandle<VkDescriptorSet> : public vk_parent_s<VkDescriptorSet> {
+    VK_HANDLE_IMPL(VkDescriptorSet)
+
+public:
+    explicit VkHandle(VkDescriptorSet h, VkDevice p = VK_NULL_HANDLE) : HasDevice(p), __handle(h) {}
+
+    /**
+     * @brief Update descriptor set
+     */
+    void update(const DescriptorInfo& info, const DescriptorSetLayout& setlayout) const;
+};
+
 /**
  * @brief Descriptor set
  *
@@ -96,11 +111,9 @@ struct DescriptorSet : public CoreResource<VkDescriptorSet, VK_OBJECT_TYPE_DESCR
 
     explicit DescriptorSet(const CoreApi& api) : CoreResource(api) {}
     DescriptorSet(DescriptorSet&& rhs) : CoreResource(std::move(rhs)) {}
-    ~DescriptorSet();
-    /**
-     * @brief Update descriptor set
-     */
-    void update(const DescriptorInfo& info, const DescriptorSetLayout& setlayout) const;
+    ~DescriptorSet() {
+        // Descriptor set will be freed along with vkDestroyDescriptorPool
+    }
 };
 
 NAMESPACE_END(core)

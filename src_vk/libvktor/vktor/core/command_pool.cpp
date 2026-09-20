@@ -38,48 +38,46 @@ CommandPool::~CommandPool() {
     __handle = VK_NULL_HANDLE;
 }
 
-Res<CRef<CommandBuffer>> CommandPool::allocate(Level level, const String& name) {
+Res<VkhCommandBuffer> CommandPool::allocate(Level level, const String& name) {
     CommandBuffer* ptr = nullptr;
     switch (level) {
     case Level::Primary:
         {
             if (active_primary_count < primaries.size()) {
-                ptr = &*primaries[active_primary_count++];
+                ptr = &primaries[active_primary_count++];
             } else {
-                auto cmdbuf = newBox<CommandBuffer>(*this);
+                CommandBuffer cmdbuf(*this);
                 auto cmdbuf_ai = Itor::CommandBufferAllocateInfo();
                 cmdbuf_ai.commandPool = *this;
                 cmdbuf_ai.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
                 cmdbuf_ai.commandBufferCount = 1;
-                OnRet(vkAllocateCommandBuffers(api, &cmdbuf_ai, *cmdbuf),
-                      "Failed to allocate primary command buffer: {}",
-                      name);
-                OnName((*cmdbuf), name);
+                OnRet(vkAllocateCommandBuffers(api, &cmdbuf_ai, cmdbuf), "Failed to allocate primary command buffer: {}", name);
+                OnName(cmdbuf, name);
 
                 active_primary_count++;
                 primaries.push_back(std::move(cmdbuf));
-                ptr = &*primaries.back();
+                ptr = &primaries.back();
             }
             break;
         }
     case Level::Secondary:
         {
             if (active_secondary_count < secondaries.size()) {
-                ptr = &*secondaries[active_secondary_count++];
+                ptr = &secondaries[active_secondary_count++];
             } else {
-                auto cmdbuf = newBox<CommandBuffer>(*this);
+                CommandBuffer cmdbuf(*this);
                 auto cmdbuf_ai = Itor::CommandBufferAllocateInfo();
                 cmdbuf_ai.commandPool = *this;
                 cmdbuf_ai.level = VK_COMMAND_BUFFER_LEVEL_SECONDARY;
                 cmdbuf_ai.commandBufferCount = 1;
-                OnRet(vkAllocateCommandBuffers(api, &cmdbuf_ai, *cmdbuf),
+                OnRet(vkAllocateCommandBuffers(api, &cmdbuf_ai, cmdbuf),
                       "Failed to allocate secondary command buffer: {}",
                       name);
-                OnName(*cmdbuf, name);
+                OnName(cmdbuf, name);
 
                 active_secondary_count++;
                 secondaries.push_back(std::move(cmdbuf));
-                ptr = &*secondaries.back();
+                ptr = &secondaries.back();
             }
             break;
         }
@@ -87,8 +85,7 @@ Res<CRef<CommandBuffer>> CommandPool::allocate(Level level, const String& name) 
         return Er("The command buffer level = {} to allocate is not supported",
                   VkStr(VkCommandBufferLevel, (VkCommandBufferLevel)level));
     }
-
-    return Ok(newCRef(*ptr));
+    return Ok(ptr->vkhandle());
 }
 
 void CommandPool::resetPool() {

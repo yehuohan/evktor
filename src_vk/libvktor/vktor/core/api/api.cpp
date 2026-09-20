@@ -107,7 +107,7 @@ Res<CRef<Device>> CoreApi::init(DeviceState& info) {
         const auto& prop = physical_device.queue_family_props[fi];
         for (uint32_t index = 0; index < prop.count; index++) {
             auto queue = Queue::from(device, fi, index);
-            const String name = "Queue." + std::to_string(fi) + "." + std::to_string(index);
+            const String name = "Queue#" + std::to_string(fi) + "." + std::to_string(index);
             OnRet(setDebugName(VK_OBJECT_TYPE_QUEUE, reinterpret_cast<uint64_t>(queue.handle()), name.c_str()),
                   "Failed to set queue debug name: {}",
                   name);
@@ -157,17 +157,11 @@ Res<CRef<Device>> CoreApi::borrow(VkHandle<VkDevice> handle,
     return Ok(newCRef(device));
 }
 
-/**
- * @brief Get queue according to indices
- *
- * Queue reference is safe for CoreApi.queues will only initialize once at
- * CoreApi::init(DeviceState&) or CoreApi::borrow(VkDevice).
- */
-Res<CRef<Queue>> CoreApi::getQueue(const uint32_t family_index, const uint32_t index) const {
+Res<VkhQueue> CoreApi::getQueue(const uint32_t family_index, const uint32_t index) const {
     if (family_index < queues.size()) {
         const auto& que = queues[family_index];
         if (index < que.size()) {
-            return Ok(newCRef(que[index]));
+            return Ok(que[index].vkhandle());
         } else {
             return Er("The queue index = {} is out of created queues = {}", index, que.size());
         }

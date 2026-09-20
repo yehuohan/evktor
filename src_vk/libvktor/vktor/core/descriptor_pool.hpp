@@ -35,7 +35,7 @@ struct DescriptorPool : public CoreResource<VkDescriptorPool, VK_OBJECT_TYPE_DES
 private:
     VkDescriptorPoolCreateFlags flags = 0;
     /** Counter for allocated descriptor set from this pool */
-    uint32_t count = 0;
+    mutable uint32_t count = 0;
 
 protected:
     explicit DescriptorPool(const CoreApi& api, const uint32_t maxsets) : CoreResource(api), maxsets(maxsets) {}
@@ -50,8 +50,8 @@ public:
      */
     Res<DescriptorSet> allocate(VkDescriptorSetLayout setlayout,
                                 const void* next = nullptr,
-                                const String& name = "DescriptorSet");
-    bool free(const DescriptorSet& descset);
+                                const String& name = "DescriptorSet") const;
+    bool free(const DescriptorSet& descset) const;
     bool available() const;
 
     static Res<DescriptorPool> from(const CoreApi& api, const DescriptorPoolState& info);
@@ -69,7 +69,7 @@ public:
     DescriptorPooler(DescriptorPooler&&);
     ~DescriptorPooler();
 
-    Res<Ref<DescriptorPool>> request(const DescriptorSetLayout& setlayout, String&& name = "DescriptorSetPool");
+    Res<CRef<DescriptorPool>> request(const DescriptorSetLayout& setlayout, String&& name = "DescriptorSetPool");
 };
 
 NAMESPACE_END(core)

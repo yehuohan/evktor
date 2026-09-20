@@ -22,6 +22,19 @@ public:
     Res<Fence> into(const CoreApi& api) const;
 };
 
+using VkhFence = VkHandle<VkFence>;
+
+template <>
+struct VkHandle<VkFence> : public vk_parent_s<VkFence> {
+    VK_HANDLE_IMPL(VkFence)
+
+public:
+    explicit VkHandle(VkFence h, VkDevice p = VK_NULL_HANDLE) : HasDevice(p), __handle(h) {}
+
+    VkResult wait(uint64_t timeout = UINT64_MAX) const;
+    VkResult reset() const;
+};
+
 struct Fence : public CoreResource<VkFence, VK_OBJECT_TYPE_FENCE> {
 protected:
     explicit Fence(const CoreApi& api) : CoreResource(api) {}
@@ -30,9 +43,6 @@ public:
     Fence(Fence&& rhs) : CoreResource(std::move(rhs)) {}
     ~Fence();
 
-    VkResult wait(uint64_t timeout = UINT64_MAX) const;
-    VkResult reset() const;
-
     static Res<Fence> from(const CoreApi& api, const FenceState& info);
 };
 
@@ -40,7 +50,7 @@ class FencePool : private NonCopyable {
 private:
     uint32_t active_count = 0;
     /** Actived fences */
-    Vector<Box<Fence>> fences{};
+    Vector<Fence> fences{};
     /** Cached fences */
     Vector<Fence> fences_cache{};
 
@@ -52,7 +62,7 @@ public:
     ~FencePool();
 
     /** Request fence without ownership */
-    Res<CRef<Fence>> request(String&& name = "Fence");
+    Res<VkhFence> request(String&& name = "Fence");
     /** Acquire fence with ownership */
     Res<Fence> acquire(String&& name = "Fence");
     /** Reback acquired fence with ownership */

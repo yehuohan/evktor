@@ -38,7 +38,6 @@ public:
 };
 
 struct DescriptorSetLayout : public CoreResource<VkDescriptorSetLayout, VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT> {
-    friend struct DescriptorSet;
     friend struct DescriptorPool;
     friend class DescriptorPoolState;
 
@@ -58,6 +57,9 @@ protected:
 public:
     DescriptorSetLayout(DescriptorSetLayout&&);
     ~DescriptorSetLayout();
+    inline const Map<uint32_t, VkDescriptorSetLayoutBinding>& getBindings() const {
+        return bindings;
+    }
 
     static Res<DescriptorSetLayout> from(const CoreApi& api, const DescriptorSetLayoutState& info);
 };

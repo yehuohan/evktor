@@ -14,19 +14,19 @@ Res<Fence> FenceState::into(const CoreApi& api) const {
     return Fence::from(api, *this);
 }
 
+VkResult VkhFence::wait(uint64_t timeout) const {
+    return vkWaitForFences(parent(), 1, &__handle, VK_TRUE, timeout);
+}
+
+VkResult VkhFence::reset() const {
+    return vkResetFences(parent(), 1, &__handle);
+}
+
 Fence::~Fence() {
     if (!borrowed() && __handle) {
         vkDestroyFence(api, __handle, api);
     }
     __handle = VK_NULL_HANDLE;
-}
-
-VkResult Fence::wait(uint64_t timeout) const {
-    return vkWaitForFences(api, 1, &__handle, VK_TRUE, timeout);
-}
-
-VkResult Fence::reset() const {
-    return vkResetFences(api, 1, &__handle);
 }
 
 Res<Fence> Fence::from(const CoreApi& api, const FenceState& info) {
@@ -51,22 +51,22 @@ FencePool::~FencePool() {
     fences_cache.clear();
 }
 
-Res<CRef<Fence>> FencePool::request(String&& name) {
+Res<VkhFence> FencePool::request(String&& name) {
     if (active_count < fences.size()) {
-        return Ok(newCRef(*fences[active_count++]));
+        return Ok(fences[active_count++].vkhandle());
     }
 
     OnErr(res, FenceState(std::move(name)).into(api));
-    fences.push_back(newBox<Fence>(res.unwrap()));
+    fences.push_back(res.unwrap());
     active_count++;
-    return Ok(newCRef(*fences.back()));
+    return Ok(fences.back().vkhandle());
 }
 
 Res<Fence> FencePool::acquire(String&& name) {
     if (active_count < fences.size()) {
         auto fen = std::move(fences.back());
         fences.pop_back();
-        return Ok(std::move(*fen));
+        return Ok(std::move(fen));
     }
     return FenceState(std::move(name)).into(api);
 }
@@ -81,7 +81,7 @@ VkResult FencePool::waitPool(uint64_t timeout) {
     if (active_count > 0) {
         Vector<VkFence> actived(active_count);
         for (uint32_t k = 0; k < active_count; k++) {
-            actived[k] = *fences[k];
+            actived[k] = fences[k];
         }
         res = vkWaitForFences(api, active_count, actived.data(), true, timeout);
     }
@@ -95,7 +95,7 @@ VkResult FencePool::resetPool() {
     if (active_count > 0) {
         Vector<VkFence> actived(active_count);
         for (uint32_t k = 0; k < active_count; k++) {
-            actived[k] = *fences[k];
+            actived[k] = fences[k];
         }
         // Only reset actived fences.
         // The cached fences should be reset manually.
@@ -103,7 +103,7 @@ VkResult FencePool::resetPool() {
     }
     active_count = 0;
     for (auto& fen : fences_cache) {
-        fences.push_back(newBox<Fence>(std::move(fen)));
+        fences.push_back(std::move(fen));
     }
     fences_cache.clear();
 

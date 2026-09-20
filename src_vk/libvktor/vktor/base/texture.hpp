@@ -5,8 +5,29 @@
 
 NAMESPACE_BEGIN(vkt)
 
+struct VkhTexture {
+protected:
+    core::VkhImage image;
+    core::VkhImageView imageview;
+
+public:
+    VkhTexture(core::VkhImage _image, core::VkhImageView _imageview) : image(_image), imageview(_imageview) {}
+    operator VkImage() const {
+        return image.handle();
+    }
+    operator VkImageView() const {
+        return imageview.handle();
+    }
+    inline const core::VkhImage& getImage() const {
+        return image;
+    }
+    inline const core::VkhImageView& getImageView() const {
+        return imageview;
+    }
+};
+
 class Texture : private NonCopyable {
-private:
+protected:
     core::Image image;
     core::ImageView imageview;
 
@@ -53,6 +74,15 @@ public:
     }
     operator VkImageView() const {
         return imageview.handle();
+    }
+    operator core::VkhImage() const {
+        return image.vkhandle();
+    }
+    operator core::VkhImageView() const {
+        return imageview.vkhandle();
+    }
+    operator VkhTexture() const {
+        return VkhTexture(image, imageview);
     }
     inline const core::Image& getImage() const {
         return image;

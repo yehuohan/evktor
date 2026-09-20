@@ -78,6 +78,13 @@ public:
 
 public:
     explicit VkHandle(VkImage h, VkDevice p = VK_NULL_HANDLE) : HasDevice(p), __handle(h) {}
+
+    /**
+     * @brief Get image subresource layout
+     *
+     * @param aspect The 0 (VK_IMAGE_ASPECT_NONE) means auto select the image aspect
+     */
+    VkSubresourceLayout getSubresourceLayout(uint32_t mip = 0, uint32_t layer = 0, VkImageAspectFlags aspect = 0) const;
 };
 
 /**
@@ -100,7 +107,6 @@ struct Image : public CoreResource<VkImage, VK_OBJECT_TYPE_IMAGE> {
     friend struct Arg<Image>;
     friend struct ImageView;
     friend class ImageViewState;
-    friend struct CommandBuffer;
 
 protected:
     using VkHandle<VkImage>::type;
@@ -140,6 +146,12 @@ public:
     inline const VkExtent3D& getExtent() const {
         return extent;
     }
+    inline uint32_t getMipLevels() const {
+        return mip_levels;
+    }
+    inline uint32_t getArrayLayers() const {
+        return array_layers;
+    }
     inline VkFormat getFormat() const {
         return format;
     }
@@ -149,12 +161,6 @@ public:
     inline VkImageUsageFlags getUsage() const {
         return usage;
     }
-    /**
-     * @brief Get image subresource layout
-     *
-     * @param aspect The 0 (VK_IMAGE_ASPECT_NONE) means auto select the image aspect
-     */
-    VkSubresourceLayout getSubresourceLayout(uint32_t mip = 0, uint32_t layer = 0, VkImageAspectFlags aspect = 0) const;
     /**
      * @brief Copy data from cpu memory `src` into gpu image memory
      *

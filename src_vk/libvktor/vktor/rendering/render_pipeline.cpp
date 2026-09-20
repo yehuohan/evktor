@@ -16,7 +16,7 @@ Vector<CRef<core::RenderSubpassState>> RenderPipeline::getSubpassStates() {
     return states;
 }
 
-Res<Void> RenderPipeline::draw(const core::CommandBuffer& cmdbuf, const RenderTargetTable& rtt, VkSubpassContents contents) {
+Res<Void> RenderPipeline::draw(const core::VkhCommandBuffer& cmdbuf, const RenderTargetTable& rtt, VkSubpassContents contents) {
     if (subpasses.empty()) {
         return Er("There's no subpass to draw for this render pipeline");
     }

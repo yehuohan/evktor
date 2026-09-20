@@ -25,11 +25,10 @@ Self DescriptorPoolState::addPoolSize(VkDescriptorPoolSize poolsize) {
     return *this;
 }
 
-Self DescriptorPoolState::setFromSetLayout(const DescriptorSetLayout& _setlayout) {
+Self DescriptorPoolState::setFromSetLayout(const DescriptorSetLayout& setlayout) {
     // Get poolsize from setlayout
     HashMap<VkDescriptorType, uint32_t> desc_types{};
-    for (const auto& item : _setlayout.bindings) {
-        const auto& binding = item.second;
+    for (const auto& [_, binding] : setlayout.bindings) {
         // HashMap operator[] will invoke uint32_t's default construct that will give 0
         desc_types[binding.descriptorType] += binding.descriptorCount;
     }
@@ -57,7 +56,7 @@ DescriptorPool::~DescriptorPool() {
     count = 0;
 }
 
-Res<DescriptorSet> DescriptorPool::allocate(VkDescriptorSetLayout setlayout, const void* next, const String& name) {
+Res<DescriptorSet> DescriptorPool::allocate(VkDescriptorSetLayout setlayout, const void* next, const String& name) const {
     auto descset = DescriptorSet(api);
     auto descset_ai = Itor::DescriptorSetAllocateInfo(next);
     descset_ai.descriptorPool = *this;
@@ -70,7 +69,7 @@ Res<DescriptorSet> DescriptorPool::allocate(VkDescriptorSetLayout setlayout, con
     return Ok(std::move(descset));
 }
 
-bool DescriptorPool::free(const DescriptorSet& descset) {
+bool DescriptorPool::free(const DescriptorSet& descset) const {
     if (descset.handle()) {
         auto res = vkFreeDescriptorSets(api, *this, 1, descset);
         if (res == VK_SUCCESS) {
@@ -119,7 +118,7 @@ DescriptorPooler::~DescriptorPooler() {
     desc_pools.clear();
 }
 
-Res<Ref<DescriptorPool>> DescriptorPooler::request(const DescriptorSetLayout& setlayout, String&& name) {
+Res<CRef<DescriptorPool>> DescriptorPooler::request(const DescriptorSetLayout& setlayout, String&& name) {
     if (desc_pools.empty() || !desc_pools.back().available()) {
         OnErr(res,
               DescriptorPoolState(std::move(name))
@@ -131,7 +130,7 @@ Res<Ref<DescriptorPool>> DescriptorPooler::request(const DescriptorSetLayout& se
         desc_pools.push_back(res.unwrap());
     }
 
-    return Ok(newRef(desc_pools.back()));
+    return Ok(newCRef(desc_pools.back()));
 }
 
 NAMESPACE_END(core)

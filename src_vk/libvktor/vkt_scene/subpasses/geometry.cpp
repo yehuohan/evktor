@@ -95,7 +95,7 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
                             .bind(*tex->getSampler());
                     }
                 }
-                OnUnwrapGet(desc_set, rfrm.requestDescriptorSet(desc_setlayout, desc_info));
+                OnUnwrap(desc_set, rfrm.requestDescriptorSet(desc_setlayout, desc_info));
 
                 static VkBuffer buffers[3];
                 static VkDeviceSize offsets[3];

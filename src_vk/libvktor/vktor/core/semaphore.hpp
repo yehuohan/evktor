@@ -22,6 +22,20 @@ public:
     Res<Semaphore> into(const CoreApi& api) const;
 };
 
+using VkhSemaphore = VkHandle<VkSemaphore>;
+
+template <>
+struct VkHandle<VkSemaphore> : public vk_parent_s<VkSemaphore> {
+    VK_HANDLE_IMPL(VkSemaphore)
+
+public:
+    explicit VkHandle(VkSemaphore h, VkDevice p = VK_NULL_HANDLE) : HasDevice(p), __handle(h) {}
+
+    VkResult wait(uint64_t value, uint64_t timeout = UINT64_MAX) const;
+    VkResult signal(uint64_t value) const;
+    VkResult getCounter(uint64_t* pvalue) const;
+};
+
 struct Semaphore : public CoreResource<VkSemaphore, VK_OBJECT_TYPE_SEMAPHORE> {
 protected:
     explicit Semaphore(const CoreApi& api) : CoreResource(api) {}
@@ -30,10 +44,6 @@ public:
     Semaphore(Semaphore&& rhs) : CoreResource(std::move(rhs)) {}
     ~Semaphore();
 
-    VkResult wait(uint64_t value, uint64_t timeout = UINT64_MAX) const;
-    VkResult signal(uint64_t value) const;
-    VkResult getCounter(uint64_t* pvalue) const;
-
     static Res<Semaphore> from(const CoreApi& api, const SemaphoreState& info);
 };
 
@@ -41,7 +51,7 @@ class SemaphorePool : private NonCopyable {
 private:
     uint32_t active_count = 0;
     /** Actived semaphores */
-    Vector<Box<Semaphore>> semaphores{};
+    Vector<Semaphore> semaphores{};
     /** Cached semaphores */
     Vector<Semaphore> semaphores_cache{};
 
@@ -53,7 +63,7 @@ public:
     ~SemaphorePool();
 
     /** Request semaphore without ownership */
-    Res<CRef<Semaphore>> request(String&& name = "Semaphore");
+    Res<VkhSemaphore> request(String&& name = "Semaphore");
     /** Acquire semaphore with ownership */
     Res<Semaphore> acquire(String&& name = "Semaphore");
     /** Reback acquired semaphore with ownership */

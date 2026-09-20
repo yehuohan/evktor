@@ -34,7 +34,7 @@ public:
     Vector<CRef<core::RenderSubpassState>> getSubpassStates();
 
     /** @brief Draw all subpass on render targets */
-    Res<Void> draw(const core::CommandBuffer& cmdbuf,
+    Res<Void> draw(const core::VkhCommandBuffer& cmdbuf,
                    const RenderTargetTable& rtt,
                    VkSubpassContents contents = VK_SUBPASS_CONTENTS_INLINE);
 };

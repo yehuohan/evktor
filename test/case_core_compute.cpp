@@ -7,9 +7,9 @@ void case_core_compute() {
     const Quad quad{};
 
     // Create command buffer
-    auto& queue = api.computeQueue().unwrap().get();
+    auto queue = api.computeQueue().unwrap();
     auto cmdpool = CommandPoolState{}.setQueueFamilyIndex(queue.family_index).into(api).unwrap();
-    auto& cmdbuf = cmdpool.allocate(CommandPool::Level::Primary).unwrap().get();
+    auto cmdbuf = cmdpool.allocate(CommandPool::Level::Primary).unwrap();
     tstOut("Command buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module

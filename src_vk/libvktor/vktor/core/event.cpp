@@ -43,22 +43,22 @@ EventPool::~EventPool() {
     events_cache.clear();
 }
 
-Res<CRef<Event>> EventPool::request(String&& name) {
+Res<VkhEvent> EventPool::request(String&& name) {
     if (active_count < events.size()) {
-        return Ok(newCRef(*events[active_count++]));
+        return Ok(events[active_count++].vkhandle());
     }
 
     OnErr(res, EventState(std::move(name)).into(api));
-    events.push_back(newBox<Event>(res.unwrap()));
+    events.push_back(res.unwrap());
     active_count++;
-    return Ok(newCRef(*events.back()));
+    return Ok(events.back().vkhandle());
 }
 
 Res<Event> EventPool::acquire(String&& name) {
     if (active_count < events.size()) {
         auto evt = std::move(events.back());
         events.pop_back();
-        return Ok(std::move(*evt));
+        return Ok(std::move(evt));
     }
     return EventState(std::move(name)).into(api);
 }
@@ -70,7 +70,7 @@ void EventPool::reback(Event&& event) {
 void EventPool::resetPool() {
     active_count = 0;
     for (auto& evt : events_cache) {
-        events.push_back(newBox<Event>(std::move(evt)));
+        events.push_back(std::move(evt));
     }
     events_cache.clear();
 }

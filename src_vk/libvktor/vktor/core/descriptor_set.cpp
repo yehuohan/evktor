@@ -56,20 +56,14 @@ DescriptorImage& DescriptorImage::bind(size_t _index) {
     return *this;
 }
 
-DescriptorSet::~DescriptorSet() {
-    if (!borrowed() && __handle) {
-        // Descriptor set will be freed along with vkDestroyDescriptorPool
-    }
-    __handle = VK_NULL_HANDLE;
-}
-
-void DescriptorSet::update(const DescriptorInfo& info, const DescriptorSetLayout& setlayout) const {
-    Vector<VkWriteDescriptorSet> desc_writes{};
+void VkhDescriptorSet::update(const DescriptorInfo& info, const DescriptorSetLayout& setlayout) const {
+    static thread_local Vector<VkWriteDescriptorSet> desc_writes{};
+    desc_writes.clear();
     for (const auto& item : info.bufs) {
-        const auto& bind = setlayout.bindings.at(item.first);
+        const auto& bind = setlayout.getBindings().at(item.first);
         const auto& bufs = item.second;
         auto write = Itor::WriteDescriptorSet();
-        write.dstSet = __handle;
+        write.dstSet = handle();
         write.dstBinding = bind.binding;
         write.dstArrayElement = 0;
         write.descriptorCount = bind.descriptorCount;
@@ -78,10 +72,10 @@ void DescriptorSet::update(const DescriptorInfo& info, const DescriptorSetLayout
         desc_writes.push_back(write);
     }
     for (const auto& item : info.imgs) {
-        const auto& bind = setlayout.bindings.at(item.first);
+        const auto& bind = setlayout.getBindings().at(item.first);
         const auto& imgs = item.second;
         auto write = Itor::WriteDescriptorSet();
-        write.dstSet = __handle;
+        write.dstSet = handle();
         write.dstBinding = bind.binding;
         write.dstArrayElement = 0;
         write.descriptorCount = bind.descriptorCount;
@@ -89,7 +83,7 @@ void DescriptorSet::update(const DescriptorInfo& info, const DescriptorSetLayout
         write.pImageInfo = imgs.data();
         desc_writes.push_back(write);
     }
-    vkUpdateDescriptorSets(api, desc_writes.size(), desc_writes.data(), 0, nullptr);
+    vkUpdateDescriptorSets(parent(), desc_writes.size(), desc_writes.data(), 0, nullptr);
 }
 
 NAMESPACE_END(core)

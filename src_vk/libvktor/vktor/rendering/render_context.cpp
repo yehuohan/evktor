@@ -94,7 +94,7 @@ bool RenderContext::updateSwapchain(bool force) {
     return false;
 }
 
-Res<CRef<core::CommandBuffer>> RenderContext::beginFrame() {
+Res<core::VkhCommandBuffer> RenderContext::beginFrame() {
     if (frame_actived) {
         return Er("Requires invoke endFrame to inactivate the frame before beginFrame");
     }
@@ -130,19 +130,19 @@ Res<CRef<core::CommandBuffer>> RenderContext::beginFrame() {
     OnErr(res_void, frame.resetFrame());
     frame_actived = true;
 
-    OnUnwrapGet(queue, api.graphicsQueue());
-    return frame.requestCommandBuffer(queue);
+    OnUnwrap(queue, api.graphicsQueue());
+    return frame.requestCommandBuffer(queue, "RCtx#beginFrame");
 }
 
-Res<CRef<core::Fence>> RenderContext::endFrame(const core::CommandBuffer& cmdbuf) {
+Res<core::VkhFence> RenderContext::endFrame(const core::VkhCommandBuffer& cmdbuf) {
     if (!frame_actived) {
         return Er("Requires invoke beginFrame to activate the frame before endFrame");
     }
 
     auto& frame = frames[frame_index];
-    OnUnwrapGet(queue, api.graphicsQueue());
-    OnUnwrapGet(fence, frame.requestFence());
-    OnUnwrapGet(present_semaphore, frame.requestSemaphore());
+    OnUnwrap(queue, api.graphicsQueue());
+    OnUnwrap(fence, frame.requestFence("RCtx#endFrame#Fence"));
+    OnUnwrap(present_semaphore, frame.requestSemaphore("RCtx#endFrame#Semaphore"));
 
     QueueSubmitter submitter(queue);
     VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_ALL_COMMANDS_BIT};
@@ -153,7 +153,7 @@ Res<CRef<core::Fence>> RenderContext::endFrame(const core::CommandBuffer& cmdbuf
     submitter.signal(1, present_semaphore).submit(cmdbuf, fence);
 
     if (hasSwapchain()) {
-        OnUnwrapGet(present_queue, api.presentQueue());
+        OnUnwrap(present_queue, api.presentQueue());
 
         // Present swapchain image
         auto res = present_queue.present(*swapchain, frame_index, present_semaphore);
@@ -171,7 +171,7 @@ Res<CRef<core::Fence>> RenderContext::endFrame(const core::CommandBuffer& cmdbuf
     }
 
     frame_actived = false;
-    return Ok(newCRef(fence));
+    return Ok(fence);
 }
 
 void RenderContext::watchStatus() const {

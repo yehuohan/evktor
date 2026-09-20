@@ -87,7 +87,7 @@ public:
      *
      * @return The main command buffer from the activated render frame with graphics queue
      */
-    Res<CRef<core::CommandBuffer>> beginFrame();
+    Res<core::VkhCommandBuffer> beginFrame();
     /**
      * @brief End the activated render frame
      *
@@ -96,7 +96,7 @@ public:
      *
      * @param wait_semaphore Semaphore to wait before present the activated swapchain image
      */
-    Res<CRef<core::Fence>> endFrame(const core::CommandBuffer& cmdbuf);
+    Res<core::VkhFence> endFrame(const core::VkhCommandBuffer& cmdbuf);
     /**
      * @brief Get the activated render frame
      */

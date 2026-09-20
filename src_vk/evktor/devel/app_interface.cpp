@@ -129,8 +129,8 @@ void IApp::setupGui(const core::Swapchain& swapchain) {
     info.Instance = api;
     info.PhysicalDevice = api;
     info.Device = api;
-    info.QueueFamily = api.graphicsQueue().unwrap().get().family_index;
-    info.Queue = api.graphicsQueue().unwrap().get();
+    info.QueueFamily = api.graphicsQueue().unwrap().family_index;
+    info.Queue = api.graphicsQueue().unwrap();
     info.MinImageCount = swapchain.image_count;
     info.ImageCount = swapchain.image_count;
     info.DescriptorPool = *gui_desc_pool;

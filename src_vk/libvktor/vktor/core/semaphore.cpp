@@ -14,30 +14,30 @@ Res<Semaphore> SemaphoreState::into(const CoreApi& api) const {
     return Semaphore::from(api, *this);
 }
 
+VkResult VkhSemaphore::wait(uint64_t value, uint64_t timeout) const {
+    auto info = Itor::SemaphoreWaitInfo();
+    info.pValues = &value;
+    info.pSemaphores = &__handle;
+    info.semaphoreCount = 1;
+    return vkWaitSemaphores(parent(), &info, timeout);
+}
+
+VkResult VkhSemaphore::signal(uint64_t value) const {
+    auto info = Itor::SemaphoreSignalInfo();
+    info.semaphore = handle();
+    info.value = value;
+    return vkSignalSemaphore(parent(), &info);
+}
+
+VkResult VkhSemaphore::getCounter(uint64_t* pvalue) const {
+    return vkGetSemaphoreCounterValue(parent(), handle(), pvalue);
+}
+
 Semaphore::~Semaphore() {
     if (!borrowed() && __handle) {
         vkDestroySemaphore(api, __handle, api);
         __handle = VK_NULL_HANDLE;
     }
-}
-
-VkResult Semaphore::wait(uint64_t value, uint64_t timeout) const {
-    auto info = Itor::SemaphoreWaitInfo();
-    info.pValues = &value;
-    info.pSemaphores = &__handle;
-    info.semaphoreCount = 1;
-    return vkWaitSemaphores(api, &info, timeout);
-}
-
-VkResult Semaphore::signal(uint64_t value) const {
-    auto info = Itor::SemaphoreSignalInfo();
-    info.semaphore = __handle;
-    info.value = value;
-    return vkSignalSemaphore(api, &info);
-}
-
-VkResult Semaphore::getCounter(uint64_t* pvalue) const {
-    return vkGetSemaphoreCounterValue(api, __handle, pvalue);
 }
 
 Res<Semaphore> Semaphore::from(const CoreApi& api, const SemaphoreState& info) {
@@ -62,22 +62,22 @@ SemaphorePool::~SemaphorePool() {
     semaphores_cache.clear();
 }
 
-Res<CRef<Semaphore>> SemaphorePool::request(String&& name) {
+Res<VkhSemaphore> SemaphorePool::request(String&& name) {
     if (active_count < semaphores.size()) {
-        return Ok(newCRef(*semaphores[active_count++]));
+        return Ok(semaphores[active_count++].vkhandle());
     }
 
     OnErr(res, SemaphoreState(std::move(name)).into(api));
-    semaphores.push_back(newBox<Semaphore>(res.unwrap()));
+    semaphores.push_back(res.unwrap());
     active_count++;
-    return Ok(newCRef(*semaphores.back()));
+    return Ok(semaphores.back().vkhandle());
 }
 
 Res<Semaphore> SemaphorePool::acquire(String&& name) {
     if (active_count < semaphores.size()) {
         auto sem = std::move(semaphores.back());
         semaphores.pop_back();
-        return Ok(std::move(*sem));
+        return Ok(std::move(sem));
     }
     return SemaphoreState(std::move(name)).into(api);
 }
@@ -89,7 +89,7 @@ void SemaphorePool::reback(Semaphore&& semaphore) {
 void SemaphorePool::resetPool() {
     active_count = 0;
     for (auto& sem : semaphores_cache) {
-        semaphores.push_back(newBox<Semaphore>(std::move(sem)));
+        semaphores.push_back(std::move(sem));
     }
     semaphores_cache.clear();
 }

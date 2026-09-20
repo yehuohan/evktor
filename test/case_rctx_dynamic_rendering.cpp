@@ -9,8 +9,8 @@ void case_rctx_dynamic_rendering() {
     const Triangle tri{};
 
     // Create command buffer
-    auto& queue = api.graphicsQueue().unwrap().get();
-    auto& cmdbuf = rctx->getFrame().get().requestCommandBuffer(queue).unwrap().get();
+    auto queue = api.graphicsQueue().unwrap();
+    auto cmdbuf = rctx->getFrame().get().requestCommandBuffer(queue).unwrap();
     tstOut("Command buffer: {}", fmt::ptr((VkCommandBuffer)cmdbuf));
 
     // Create shader module
@@ -35,7 +35,7 @@ void case_rctx_dynamic_rendering() {
 
     // Create pipeline
     auto& desc_setlayout = rctx->requestDescriptorSetLayout(0, shaders).unwrap().get();
-    auto& desc_set = rfrm.requestDescriptorSet(desc_setlayout, desc_info).unwrap().get();
+    auto desc_set = rfrm.requestDescriptorSet(desc_setlayout, desc_info).unwrap();
     auto& pipeline_layout = rctx->requestPipelineLayout(shaders).unwrap().get();
     auto& pipeline = rctx->requestGraphicsPipeline(
                              GraphicsPipelineState()

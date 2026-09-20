@@ -61,15 +61,13 @@ core::CoreApi& Vktor::createApi(std::function<void(core::InstanceState&)> update
 
 void Vktor::pushData(const core::Image& image, const Vector<uint8_t>& data, bool mipmaps) const {
     // Prepare command buffer
-    auto _queue = api->graphicsQueue().unwrap();
-    auto& queue = _queue.get();
+    auto queue = api->graphicsQueue().unwrap();
     auto cmdpool = core::CommandPoolState("Vktor.CommandPool")
                        .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
                        .setQueueFamilyIndex(queue.family_index)
                        .into(*api)
                        .unwrap();
-    auto _cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "Vktor.CommandBuffer").unwrap();
-    auto& cmdbuf = _cmdbuf.get();
+    auto cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "Vktor.CommandBuffer").unwrap();
 
     // Push data to image
     auto staging = newStagingBuffer(data.size());
@@ -91,15 +89,13 @@ void Vktor::pushData(const core::Image& image, const Vector<uint8_t>& data, bool
 
 void Vktor::pushData(const core::Buffer& buffer, const Vector<uint8_t>& data) const {
     // Prepare command buffer
-    auto _queue = api->transferQueue().unwrap();
-    auto& queue = _queue.get();
+    auto queue = api->transferQueue().unwrap();
     auto cmdpool = core::CommandPoolState("Vktor.CommandPool")
                        .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
                        .setQueueFamilyIndex(queue.family_index)
                        .into(*api)
                        .unwrap();
-    auto _cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "Vktor.CommandBuffer").unwrap();
-    auto& cmdbuf = _cmdbuf.get();
+    auto cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "Vktor.CommandBuffer").unwrap();
 
     // Push data to buffer
     auto staging = newStagingBuffer(data.size());

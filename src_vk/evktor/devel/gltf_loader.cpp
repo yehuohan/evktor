@@ -281,15 +281,13 @@ void GLTFLoader::loadSamplers(Scene& scene) const {
 
 void GLTFLoader::loadBuffers(Scene& scene) const {
     // Prepare command buffer
-    auto _queue = api.transferQueue().unwrap();
-    auto& queue = _queue.get();
+    auto queue = api.transferQueue().unwrap();
     auto cmdpool = core::CommandPoolState("GLTFLoader.loadBuffers.CommandPool")
                        .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
                        .setQueueFamilyIndex(queue.family_index)
                        .into(api)
                        .unwrap();
-    auto _cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "GLTFLoader.loadBuffers.CommandBuffer").unwrap();
-    auto& cmdbuf = _cmdbuf.get();
+    auto cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "GLTFLoader.loadBuffers.CommandBuffer").unwrap();
     auto fence = core::FenceState("GLTFLoader.loadBuffers.Fence").into(api).unwrap();
 
     // Load buffers
@@ -328,15 +326,13 @@ void GLTFLoader::loadBuffers(Scene& scene) const {
 
 void GLTFLoader::loadImages(Scene& scene) const {
     // Prepare command buffer
-    auto _queue = api.graphicsQueue().unwrap();
-    auto& queue = _queue.get();
+    auto queue = api.graphicsQueue().unwrap();
     auto cmdpool = core::CommandPoolState("GLTFLoader.loadImages.CommandPool")
                        .setFlags(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)
                        .setQueueFamilyIndex(queue.family_index)
                        .into(api)
                        .unwrap();
-    auto _cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "GLTFLoader.loadImages.CommandBuffer").unwrap();
-    auto& cmdbuf = _cmdbuf.get();
+    auto cmdbuf = cmdpool.allocate(core::CommandPool::Level::Primary, "GLTFLoader.loadImages.CommandBuffer").unwrap();
     auto fence = core::FenceState("GLTFLoader.loadImages.Fence").into(api).unwrap();
 
     // Load images

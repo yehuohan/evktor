@@ -134,7 +134,7 @@ void App::setupSkyboxPass() {
 void App::tick(float cur_time, float delta_time) {
     tickCamera(*scene_camera, delta_time);
 
-    auto& cmdbuf = rctx->beginFrame().unwrap().get();
+    auto cmdbuf = rctx->beginFrame().unwrap();
     auto& rtt = rctx->getFrameRTT().unwrap().get();
     cmdbuf.begin();
 
@@ -154,11 +154,11 @@ void App::tick(float cur_time, float delta_time) {
 
     cmdbuf.end();
 
-    rctx->endFrame(cmdbuf).unwrap().get().wait();
+    rctx->endFrame(cmdbuf).unwrap().wait();
     // rctx->watchStatus();
 }
 
-void App::drawGui(const core::CommandBuffer& cmdbuf, RenderTargetTable& rtt) {
+void App::drawGui(const core::VkhCommandBuffer& cmdbuf, RenderTargetTable& rtt) {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
