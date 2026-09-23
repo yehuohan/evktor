@@ -23,60 +23,63 @@ Res<CRef<ShaderModule>> RenderResource::requestShaderModule(const Shader& shader
     });
 }
 
-Res<CRef<DescriptorSetLayout>> RenderResource::requestDescriptorSetLayout(const uint32_t set,
-                                                                          const Vector<CRef<Shader>>& shaders,
-                                                                          String&& name) {
-    size_t key = hash(set, shaders);
-    return descriptor_setlayouts.request(key, [this, set, &shaders, &name]() -> Res<DescriptorSetLayout> {
-        DescriptorSetLayoutState dso{std::move(name)};
-        for (const auto& ref : shaders) {
-            auto& s = ref.get();
-            switch (s.getStage()) {
-            case VK_SHADER_STAGE_VERTEX_BIT:
-            case VK_SHADER_STAGE_FRAGMENT_BIT:
-            case VK_SHADER_STAGE_COMPUTE_BIT:
-                {
-                    const auto& desc_sets = s.getDescriptorSets();
-                    if (auto it = desc_sets.find(set); it != desc_sets.end()) {
-                        for (const auto& d : it->second) {
-                            dso.addBinding(d.binding, static_cast<VkDescriptorType>(d.type), d.count, s.getStage());
+Res<Vector<CRef<core::DescriptorSetLayout>>> RenderResource::requestDescriptorSetLayouts(const Vector<CRef<Shader>>& shaders,
+                                                                                         String&& name) {
+    uint32_t count = 0;
+    for (const auto& ref : shaders) {
+        count = std::max<uint32_t>(count, ref.get().getDescriptorSets().size());
+    }
+
+    Vector<CRef<core::DescriptorSetLayout>> desc_setlayouts{};
+    for (uint32_t set = 0; set < count; set++) {
+        size_t key = hash(set, shaders); // Same set in different shaders (e.g. vert & frag) must has same layout
+        OnErr(res, descriptor_setlayouts.request(key, [this, set, &shaders, &name]() -> Res<DescriptorSetLayout> {
+            DescriptorSetLayoutState dslo{vktFmt("{}#{}", name, set)};
+
+            for (const auto& ref : shaders) {
+                const auto& s = ref.get();
+                switch (s.getStage()) {
+                case VK_SHADER_STAGE_VERTEX_BIT:
+                case VK_SHADER_STAGE_FRAGMENT_BIT:
+                case VK_SHADER_STAGE_COMPUTE_BIT:
+                    {
+                        for (const auto& [_, d] : s.getDescriptorSets()[set]) {
+                            dslo.addBinding(d.binding, static_cast<VkDescriptorType>(d.type), d.count, s.getStage());
                         }
                     }
+                    break;
+                default:
+                    return Er("Request with unsupported shader ({}) stage: {}",
+                              s.getSourcePath(),
+                              VkStr(VkShaderStageFlags, s.getStage()));
                 }
-                break;
-            default:
-                return Er("Request with unsupported shader ({}) stage: {}",
-                          s.getSourcePath(),
-                          VkStr(VkShaderStageFlags, s.getStage()));
             }
-        }
-        return dso.into(api);
-    });
+
+            return dslo.into(api);
+        }));
+        desc_setlayouts.push_back(res.unwrap());
+    }
+
+    return Ok(std::move(desc_setlayouts));
 }
 
 Res<CRef<PipelineLayout>> RenderResource::requestPipelineLayout(const Vector<CRef<Shader>>& shaders, String&& name) {
     size_t key = hash(shaders);
     return pipeline_layouts.request(key, [this, &shaders, &name]() -> Res<PipelineLayout> {
         PipelineLayoutState plso{std::move(name)};
-        std::set<uint32_t> sets{};
+
+        OnUnwrap(desc_setlayouts, requestDescriptorSetLayouts(shaders));
+        for (const auto& item : desc_setlayouts) {
+            plso.addDescriptorSetLayout(item.get());
+        }
         for (const auto& ref : shaders) {
-            // Collect all set index
             auto& s = ref.get();
-            const auto& desc_sets = s.getDescriptorSets();
-            for (const auto& item : desc_sets) {
-                sets.insert(item.first);
-            }
-            // Collect all push constants
             const auto& push = s.getPushConstant();
             if (push.size > 0) {
                 plso.addPushConstantRange(s.getStage(), push.size, push.offset);
             }
         }
-        // Collect all descriptor sets
-        for (const auto& s : sets) {
-            OnErr(res, requestDescriptorSetLayout(s, shaders));
-            plso.addDescriptorSetLayout(res.unwrap().get());
-        }
+
         return plso.into(api);
     });
 }

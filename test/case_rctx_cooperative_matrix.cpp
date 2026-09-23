@@ -117,10 +117,10 @@ void case_rctx_cooperative_matrix() {
             .setDefine("SUB_GROUP_SIZE", std::to_string(sub_group_size))
             .setDefine("DType", "float16_t");
     }
-    shader_comp.addDescriptor(ShaderDescriptor::Type::BufferStorage, 0)
-        .addDescriptor(ShaderDescriptor::Type::BufferStorage, 1)
-        .addDescriptor(ShaderDescriptor::Type::BufferStorage, 2)
-        .addDescriptor(ShaderDescriptor::Type::BufferStorage, 3)
+    shader_comp.setDescriptor(ShaderDescriptor::Type::BufferStorage, 0)
+        .setDescriptor(ShaderDescriptor::Type::BufferStorage, 1)
+        .setDescriptor(ShaderDescriptor::Type::BufferStorage, 2)
+        .setDescriptor(ShaderDescriptor::Type::BufferStorage, 3)
         .setPushConstant(sizeof(Conv2DParams))
         .addSpecConstant(0, (const uint8_t*)&tiles.TILE_W, sizeof(uint32_t))
         .addSpecConstant(1, (const uint8_t*)&tiles.TILE_H, sizeof(uint32_t))
@@ -141,7 +141,7 @@ void case_rctx_cooperative_matrix() {
     desc_info.addBuf().bind(bias);
 
     // Create pipeline
-    auto& desc_setlayout = rctx->requestDescriptorSetLayout(0, shaders).unwrap().get();
+    auto& desc_setlayout = rctx->requestDescriptorSetLayouts(shaders).unwrap()[0].get();
     auto desc_set = rfrm.requestDescriptorSet(desc_setlayout, desc_info).unwrap();
     auto& pipeline_layout = rctx->requestPipelineLayout(shaders).unwrap().get();
     auto& pipeline = rctx->requestComputePipeline(ComputePipelineState()
@@ -174,7 +174,7 @@ void case_rctx_cooperative_matrix() {
     auto gcz = (params.OC + tiles.TILE_N - 1) / tiles.TILE_N;
     cmdbuf.begin();
     cmdbuf.cmdBindComputePipeline(pipeline)
-        .cmdBindComputeDescriptorSets(pipeline_layout, 1, {desc_set})
+        .cmdBindComputeDescriptorSet(pipeline_layout, desc_set)
         .cmdPushCompConstants(pipeline_layout, &params, sizeof(Conv2DParams))
         .cmdDispatch(gcx, gcy, gcz);
     cmdbuf.cmdCopyBuffer(yout, staging);

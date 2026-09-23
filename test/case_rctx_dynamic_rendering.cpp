@@ -16,8 +16,8 @@ void case_rctx_dynamic_rendering() {
     // Create shader module
     auto shader_vert = Shader::fromVert(vktdev::Assets::getShader(tri.vert_file)).unwrap();
     auto shader_frag = Shader::fromFrag(vktdev::Assets::getShader(tri.frag_file)).unwrap();
-    shader_vert.addDescriptor(ShaderDescriptor::Type::BufferUniform, 0).setPushConstant(sizeof(int));
-    shader_frag.addDescriptor(ShaderDescriptor::Type::ImageSampler, 1)
+    shader_vert.setDescriptor(ShaderDescriptor::Type::BufferUniform, 0).setPushConstant(sizeof(int));
+    shader_frag.setDescriptor(ShaderDescriptor::Type::ImageSampler, 1)
         .setPushConstant(sizeof(int), 20)
         .addSpecConstant(0, reinterpret_cast<const uint8_t*>(&tri.spec_args.alpha), sizeof(int));
     auto shaders = Vector<CRef<Shader>>{newCRef(shader_vert), newCRef(shader_frag)};
@@ -34,7 +34,7 @@ void case_rctx_dynamic_rendering() {
     desc_info.addImg().bind(tex).bind(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL).bind(spl);
 
     // Create pipeline
-    auto& desc_setlayout = rctx->requestDescriptorSetLayout(0, shaders).unwrap().get();
+    auto& desc_setlayout = rctx->requestDescriptorSetLayouts(shaders).unwrap()[0].get();
     auto desc_set = rfrm.requestDescriptorSet(desc_setlayout, desc_info).unwrap();
     auto& pipeline_layout = rctx->requestPipelineLayout(shaders).unwrap().get();
     auto& pipeline = rctx->requestGraphicsPipeline(

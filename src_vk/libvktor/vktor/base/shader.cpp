@@ -95,8 +95,11 @@ Self Shader::setEntry(const String& _entry) {
     return *this;
 }
 
-Self Shader::addDescriptor(ShaderDescriptor::Type type, uint32_t binding, uint32_t set, uint32_t count) {
-    desc_sets[set].emplace_back(type, set, binding, count);
+Self Shader::setDescriptor(ShaderDescriptor::Type type, uint32_t binding, uint32_t set, uint32_t count) {
+    while (set >= desc_sets.size()) {
+        desc_sets.emplace_back();
+    }
+    desc_sets[set].insert_or_assign(binding, ShaderDescriptor(type, set, binding, count));
     return *this;
 }
 

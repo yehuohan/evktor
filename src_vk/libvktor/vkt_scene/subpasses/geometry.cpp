@@ -56,7 +56,7 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
     auto& ubo_ptr = pbr_ubo_ptr[rfrm_idx];
     ubo_ptr->view_proj = camera.getProj() * camera.getView();
 
-    OnUnwrapGet(desc_setlayout, rctx.requestDescriptorSetLayout(0, Shaders()));
+    OnUnwrap(desc_setlayouts, rctx.requestDescriptorSetLayouts(Shaders()));
     OnUnwrapGet(pipeline_layout, rctx.requestPipelineLayout(Shaders()));
     OnUnwrapGet(vert, rctx.requestShaderModule(vert_shader));
     OnUnwrapGet(frag, rctx.requestShaderModule(frag_shader));
@@ -95,7 +95,10 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
                             .bind(*tex->getSampler());
                     }
                 }
-                OnUnwrap(desc_set, rfrm.requestDescriptorSet(desc_setlayout, desc_info));
+                for (const auto& item : desc_setlayouts) {
+                    OnUnwrap(desc_set, rfrm.requestDescriptorSet(item, desc_info));
+                    cmdbuf.cmdBindGraphicsDescriptorSet(pipeline_layout, desc_set);
+                }
 
                 static VkBuffer buffers[3];
                 static VkDeviceSize offsets[3];
@@ -106,7 +109,7 @@ Res<Void> GeometrySubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
                 offsets[1] = sub->getVertexBuffer("texcoord_0")->offset;
                 offsets[2] = sub->getVertexBuffer("normal")->offset;
 
-                cmdbuf.cmdBindGraphicsDescriptorSet(pipeline_layout, desc_set).cmdBindVertexBuffers(3, buffers, offsets);
+                cmdbuf.cmdBindVertexBuffers(3, buffers, offsets);
                 if (sub->index_count > 0) {
                     cmdbuf.cmdBindIndexBuffer(*sub->getIndexBuffer(), sub->getIndexBuffer()->offset, sub->index_type);
                     cmdbuf.cmdDrawIndexed(u32(sub->index_count));

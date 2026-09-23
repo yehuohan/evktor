@@ -70,7 +70,7 @@ private:
     // TODO: automating shader resources
     // Vector<ShaderInputOutput> inputs{};
     // Vector<ShaderInputOutput> outputs{};
-    HashMap<uint32_t, Vector<ShaderDescriptor>> desc_sets{}; /**< Map descriptor set index to it's all descriptor */
+    Vector<HashMap<uint32_t, ShaderDescriptor>> desc_sets{}; /**< All shader descriptor sets with bindings */
     ShaderPushConstant push_constant{};
     ShaderSpecConstant spec_constant{};
 
@@ -125,10 +125,10 @@ public:
     }
 
 public:
-    Self addDescriptor(ShaderDescriptor::Type type, uint32_t binding, uint32_t set = 0, uint32_t count = 1);
+    Self setDescriptor(ShaderDescriptor::Type type, uint32_t binding, uint32_t set = 0, uint32_t count = 1);
     Self setPushConstant(uint32_t size, uint32_t offset = 0);
     Self addSpecConstant(uint32_t id, const uint8_t* data, size_t data_size);
-    inline const HashMap<uint32_t, Vector<ShaderDescriptor>>& getDescriptorSets() const {
+    inline const Vector<HashMap<uint32_t, ShaderDescriptor>>& getDescriptorSets() const {
         return desc_sets;
     }
     inline const ShaderPushConstant& getPushConstant() const {

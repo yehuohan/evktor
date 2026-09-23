@@ -31,9 +31,8 @@ public:
     RenderResource(RenderResource&&);
 
     Res<CRef<core::ShaderModule>> requestShaderModule(const Shader& shader, String&& name = "ShaderModule");
-    Res<CRef<core::DescriptorSetLayout>> requestDescriptorSetLayout(const uint32_t set,
-                                                                    const Vector<CRef<Shader>>& shaders,
-                                                                    String&& name = "DescriptorSetLayout");
+    Res<Vector<CRef<core::DescriptorSetLayout>>> requestDescriptorSetLayouts(const Vector<CRef<Shader>>& shaders,
+                                                                             String&& name = "DescriptorSetLayout");
     Res<CRef<core::PipelineLayout>> requestPipelineLayout(const Vector<CRef<Shader>>& shaders,
                                                           String&& name = "PipelineLayout");
     Res<CRef<core::GraphicsPipeline>> requestGraphicsPipeline(const core::GraphicsPipelineState& pso);

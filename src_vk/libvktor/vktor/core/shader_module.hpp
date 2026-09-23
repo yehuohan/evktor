@@ -54,14 +54,3 @@ public:
 
 NAMESPACE_END(core)
 NAMESPACE_END(vkt)
-
-NAMESPACE_BEGIN(std)
-
-template <>
-struct hash<vkt::core::ShaderModule> {
-    inline size_t operator()(const vkt::core::ShaderModule& shader_module) const {
-        return hash<VkShaderModule>{}(shader_module);
-    }
-};
-
-NAMESPACE_END(std)

@@ -46,8 +46,6 @@ void case_core_graphics() {
                         // Vulkan use top-left as original (0, 0), flip the Y axis with negative viewport height
                         .addViewport(0, tri.hei, tri.wid, -float(tri.hei))
                         .addScissor(0, 0, tri.wid, tri.hei)
-                        // Disable culling face to display flipped y axis
-                        .setRasterizationCullFace(VK_CULL_MODE_NONE)
                         .addColorBlendAttachment(VkPipelineColorBlendAttachmentState{
                             .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
                                               VK_COLOR_COMPONENT_A_BIT})

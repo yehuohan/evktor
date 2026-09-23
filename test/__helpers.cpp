@@ -62,7 +62,7 @@ Triangle::Triangle() {
 
     vert_file = "test/triangle.vert";
     frag_file = "test/triangle.frag";
-    push_args.flipy = 1;
+    push_args.flipy = 0;
     push_args.scaler = 2;
     spec_args.alpha = 3;
     ubo.view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f) /* eye */,

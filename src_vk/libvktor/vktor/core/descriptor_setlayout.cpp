@@ -63,7 +63,7 @@ Res<DescriptorSetLayout> DescriptorSetLayout::from(const CoreApi& api, const Des
     auto layout_ci = Itor::DescriptorSetLayoutCreateInfo(info.__next);
     layout_ci.flags = info.flags;
     layout_ci.bindingCount = u32(bindings.size());
-    layout_ci.pBindings = bindings.data();
+    layout_ci.pBindings = bindings.empty() ? nullptr : bindings.data();
     OnRet(vkCreateDescriptorSetLayout(api, &layout_ci, api, setlayout),
           "Failed to create descriptor set layout: {}",
           info.__name);

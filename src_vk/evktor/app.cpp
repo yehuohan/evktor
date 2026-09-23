@@ -67,8 +67,8 @@ void App::setupBasePass() {
     {
         auto vert = Shader::fromVert(Assets::getShader("pbr.vert")).unwrap();
         auto frag = Shader::fromFrag(Assets::getShader("pbr.frag")).unwrap();
-        vert.addDescriptor(ShaderDescriptor::BufferUniform, 0);
-        frag.addDescriptor(ShaderDescriptor::ImageSampler, 1);
+        vert.setDescriptor(ShaderDescriptor::BufferUniform, 0);
+        frag.setDescriptor(ShaderDescriptor::ImageSampler, 1);
 
         // Subpass for base scene
         base->addSubpass<GeometrySubpass>(std::move(vert), std::move(frag), *scene, *scene_camera)
@@ -78,8 +78,8 @@ void App::setupBasePass() {
     {
         auto vert = Shader::fromVert(Assets::getShader("builtin.vert")).unwrap();
         auto frag = Shader::fromFrag(Assets::getShader("builtin.frag")).unwrap();
-        vert.addDescriptor(ShaderDescriptor::BufferUniform, 0);
-        frag.addDescriptor(ShaderDescriptor::ImageSampler, 1);
+        vert.setDescriptor(ShaderDescriptor::BufferUniform, 0);
+        frag.setDescriptor(ShaderDescriptor::ImageSampler, 1);
         frag.setDefine("HAS_TEX");
 
         // Subpass for builtin mesh
@@ -103,8 +103,8 @@ void App::setupSkyboxPass() {
     {
         auto vert = Shader::fromVert(Assets::getShader("builtin.vert")).unwrap();
         auto frag = Shader::fromFrag(Assets::getShader("builtin.frag")).unwrap();
-        vert.addDescriptor(ShaderDescriptor::BufferUniform, 0);
-        frag.addDescriptor(ShaderDescriptor::ImageSampler, 1);
+        vert.setDescriptor(ShaderDescriptor::BufferUniform, 0);
+        frag.setDescriptor(ShaderDescriptor::ImageSampler, 1);
         vert.setDefine("HAS_SKYBOX");
         frag.setDefine("HAS_SKYBOX");
 

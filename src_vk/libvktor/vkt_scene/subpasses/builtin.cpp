@@ -44,7 +44,7 @@ Res<Void> BuiltinSubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
         desc_info.setImg(1).bind(*mesh->texture).bind(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL).bind(*mesh->sampler);
     }
 
-    OnUnwrapGet(desc_setlayout, rctx.requestDescriptorSetLayout(0, Shaders()));
+    OnUnwrap(desc_setlayouts, rctx.requestDescriptorSetLayouts(Shaders()));
     OnUnwrapGet(pipeline_layout, rctx.requestPipelineLayout(Shaders()));
     OnUnwrapGet(vert, rctx.requestShaderModule(vert_shader));
     OnUnwrapGet(frag, rctx.requestShaderModule(frag_shader));
@@ -68,12 +68,11 @@ Res<Void> BuiltinSubpass::draw(vkt::RenderCmdbuf& rd_cmdbuf) {
     OnUnwrapGet(pipeline, rctx.requestGraphicsPipeline(pso));
     cmdbuf.cmdBindGraphicsPipeline(pipeline);
 
-    OnUnwrap(desc_set, rfrm.requestDescriptorSet(desc_setlayout, desc_info));
-
-    cmdbuf.cmdBindGraphicsDescriptorSet(pipeline_layout, desc_set)
-        .cmdBindIndexBufferU16(mesh->index)
-        .cmdBindVertexBuffer(mesh->vertex)
-        .cmdDrawIndexed(u32(mesh->data.indices.size()));
+    for (const auto& item : desc_setlayouts) {
+        OnUnwrap(desc_set, rfrm.requestDescriptorSet(item, desc_info));
+        cmdbuf.cmdBindGraphicsDescriptorSet(pipeline_layout, desc_set);
+    }
+    cmdbuf.cmdBindIndexBufferU16(mesh->index).cmdBindVertexBuffer(mesh->vertex).cmdDrawIndexed(u32(mesh->data.indices.size()));
 
     return Ok(Void{});
 }
