@@ -7,34 +7,18 @@
 #include <mutex>
 
 template <typename T>
-class ResourceCache : private NonCopyable {
+class Cache : private NonCopyable {
 private:
     HashMap<size_t, T> map{};
     std::mutex mtx{};
 
 public:
-    ResourceCache() {}
+    Cache() {}
     // Just create a new mutex, no need to move mutex and mutex doesn't has move constructor.
-    ResourceCache(ResourceCache&& rhs) : map(std::move(rhs.map)) {}
-    ResourceCache& operator=(ResourceCache&& rhs) {
+    Cache(Cache&& rhs) : map(std::move(rhs.map)) {}
+    Cache& operator=(Cache&& rhs) {
         map = std::move(rhs.map);
         return *this;
-    }
-
-    auto begin() {
-        return map.begin();
-    }
-
-    auto end() {
-        return map.end();
-    }
-
-    const auto begin() const {
-        return map.begin();
-    }
-
-    const auto end() const {
-        return map.end();
     }
 
     inline size_t size() const {
@@ -42,15 +26,8 @@ public:
     }
 
     inline void clear() {
+        std::lock_guard<std::mutex> guard(mtx);
         map.clear();
-    }
-
-    inline HashMap<size_t, T>::iterator find(size_t key) {
-        return map.find(key);
-    }
-
-    inline bool found(const HashMap<size_t, T>::iterator& item) {
-        return item != map.end();
     }
 
     /**
@@ -62,7 +39,7 @@ public:
         std::lock_guard<std::mutex> guard(mtx);
 
         T* ptr;
-        if (auto it = this->find(key); this->found(it)) {
+        if (auto it = map.find(key); it != map.end()) {
             ptr = &it->second;
         } else {
             OnErr(res, fn());

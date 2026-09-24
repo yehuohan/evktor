@@ -18,13 +18,13 @@ class RenderResource : private NonCopyable {
 protected:
     const core::CoreApi& api;
 
-    ResourceCache<core::ShaderModule> shader_modules{};
-    ResourceCache<core::DescriptorSetLayout> descriptor_setlayouts{};
-    ResourceCache<core::PipelineLayout> pipeline_layouts{};
-    ResourceCache<core::GraphicsPipeline> graphics_pipelines{};
-    ResourceCache<core::ComputePipeline> compute_pipelines{};
-    ResourceCache<core::RenderPass> render_passes{};
-    ResourceCache<core::Framebuffer> framebuffers{};
+    Cache<core::ShaderModule> shader_modules{};
+    Cache<core::DescriptorSetLayout> descriptor_setlayouts{};
+    Cache<core::PipelineLayout> pipeline_layouts{};
+    Cache<core::GraphicsPipeline> graphics_pipelines{};
+    Cache<core::ComputePipeline> compute_pipelines{};
+    Cache<core::RenderPass> render_passes{};
+    Cache<core::Framebuffer> framebuffers{};
 
 public:
     RenderResource(const core::CoreApi& api) : api(api) {}

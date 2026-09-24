@@ -3,8 +3,8 @@
 #include "config.hpp"
 #include "printer.hpp"
 
+#include "helpers/cache.hpp"
 #include "helpers/helpers.hpp"
-#include "helpers/resource_cache.hpp"
 #include "helpers/result.hpp"
 #include "helpers/traits.hpp"
 
