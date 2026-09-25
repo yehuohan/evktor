@@ -343,8 +343,10 @@ struct CommandBuffer : public CoreResource<VkCommandBuffer, VK_OBJECT_TYPE_COMMA
 
     const VkCommandPool command_pool = VK_NULL_HANDLE;
 
-public:
+protected:
     explicit CommandBuffer(const CommandPool& command_pool);
+
+public:
     CommandBuffer(CommandBuffer&&);
     ~CommandBuffer();
 };

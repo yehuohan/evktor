@@ -5,6 +5,7 @@
 #include "generated/vk_string.hpp"
 #include "generated/vk_traits.hpp"
 #include "share/share.hpp"
+#include <atomic>
 
 NAMESPACE_BEGIN(vkt)
 NAMESPACE_BEGIN(core)
@@ -27,24 +28,53 @@ NAMESPACE_BEGIN(core)
         return &Var;               \
     }
 
+/** @brief Vulkan handle generation */
+class VkHandleGeneration : public Singleton<VkHandleGeneration> {
+public:
+    enum {
+        None = 0 /**< Vuklan handle doesn't have a generation id  */
+    };
+
+    inline uint64_t next() {
+        return next_generation.fetch_add(1, std::memory_order_relaxed);
+    }
+
+private:
+    std::atomic<uint64_t> next_generation{1};
+};
+
 /** @brief Default VkHandle implementation */
-#define VK_HANDLE_IMPL(H)                  \
-protected:                                 \
-    H __handle = VK_NULL_HANDLE;           \
-                                           \
-protected:                                 \
-    OnType(H, this->__handle);             \
-                                           \
-public:                                    \
-    VkHandle() = default;                  \
-    ~VkHandle() = default;                 \
-    OnConstType(H, this->__handle);        \
-                                           \
-    inline H handle() const {              \
-        return __handle;                   \
-    }                                      \
-    inline bool valid() const {            \
-        return __handle != VK_NULL_HANDLE; \
+#define VK_HANDLE_IMPL(H)                                                      \
+protected:                                                                     \
+    H __handle = VK_NULL_HANDLE;                                               \
+    uint64_t __gid = VkHandleGeneration::None;                                 \
+                                                                               \
+protected:                                                                     \
+    OnType(H, this->__handle);                                                 \
+                                                                               \
+    inline void assignGID() {                                                  \
+        __gid = VkHandleGeneration::get().next();                              \
+    }                                                                          \
+    inline void removeGID() {                                                  \
+        __gid = VkHandleGeneration::None;                                      \
+    }                                                                          \
+                                                                               \
+public:                                                                        \
+    VkHandle() = default;                                                      \
+    ~VkHandle() = default;                                                     \
+    OnConstType(H, this->__handle);                                            \
+                                                                               \
+    inline H handle() const {                                                  \
+        return __handle;                                                       \
+    }                                                                          \
+    inline bool valid() const {                                                \
+        return __handle != VK_NULL_HANDLE;                                     \
+    }                                                                          \
+    inline uint64_t gid() const {                                              \
+        return __gid;                                                          \
+    }                                                                          \
+    inline uint64_t key() const {                                              \
+        return __gid == VkHandleGeneration::None ? (uint64_t)__handle : __gid; \
     }
 
 /**
@@ -79,27 +109,30 @@ private:
     bool __borrowed = false;
 
 protected:
+    /** @brief Normal (non-borrow) constructor */
+    explicit CoreHandle() : __borrowed(false) {}
+    /** @brief Borrow constructor with VkHandle's copy constructor */
+    explicit CoreHandle(VkHandle<H> h) : VkHandle<H>(h), __borrowed(true) {}
     inline void moveFrom(CoreHandle<H>&& rhs) {
         if constexpr (vk_has_parent_v<H>) {
             this->__parent = rhs.__parent;
             rhs.__parent = VK_NULL_HANDLE;
         }
         this->__handle = rhs.__handle;
+        this->__gid = rhs.__gid;
         __borrowed = rhs.__borrowed;
         rhs.__handle = VK_NULL_HANDLE;
+        rhs.__gid = VkHandleGeneration::None;
         rhs.__borrowed = false;
     }
 
 public:
-    /** @brief Normal (non-borrow) constructor */
-    explicit CoreHandle() : __borrowed(false) {}
-    /** @brief Borrow constructor with VkHandle's copy constructor */
-    explicit CoreHandle(VkHandle<H> h) : VkHandle<H>(h), __borrowed(true) {}
     CoreHandle(CoreHandle&& rhs) {
         moveFrom(std::move(rhs));
     }
     virtual ~CoreHandle() {
-        VkHandle<H>::__handle = VK_NULL_HANDLE;
+        this->__handle = VK_NULL_HANDLE;
+        this->__gid = VkHandleGeneration::None;
         __borrowed = false;
     }
     CoreHandle<H>& operator=(CoreHandle&& rhs) {

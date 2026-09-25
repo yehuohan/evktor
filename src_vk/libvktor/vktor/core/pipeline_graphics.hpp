@@ -12,7 +12,6 @@ class GraphicsPipelineState : public CoreState<GraphicsPipelineState> {
     friend struct GraphicsPipeline;
     friend struct std::hash<GraphicsPipelineState>;
 
-public:
 private:
     VkPipelineCreateFlags flags = 0;
     Vector<PipelineShader> shaders{};

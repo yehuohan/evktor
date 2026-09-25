@@ -109,7 +109,10 @@ public:
 struct DescriptorSet : public CoreResource<VkDescriptorSet, VK_OBJECT_TYPE_DESCRIPTOR_SET> {
     friend struct DescriptorPool;
 
+protected:
     explicit DescriptorSet(const CoreApi& api) : CoreResource(api) {}
+
+public:
     DescriptorSet(DescriptorSet&& rhs) : CoreResource(std::move(rhs)) {}
     ~DescriptorSet() {
         // Descriptor set will be freed along with vkDestroyDescriptorPool

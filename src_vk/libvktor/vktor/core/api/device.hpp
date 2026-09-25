@@ -74,7 +74,7 @@ struct Device : public CoreHandle<VkDevice> {
 
     CRef<PhysicalDevice> physical_device;
 
-private:
+protected:
     bool borrowed_mem_allocator = false;
 
 protected:

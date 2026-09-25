@@ -32,7 +32,7 @@ public:
 struct DescriptorPool : public CoreResource<VkDescriptorPool, VK_OBJECT_TYPE_DESCRIPTOR_POOL> {
     const uint32_t maxsets;
 
-private:
+protected:
     VkDescriptorPoolCreateFlags flags = 0;
     /** Counter for allocated descriptor set from this pool */
     mutable uint32_t count = 0;
